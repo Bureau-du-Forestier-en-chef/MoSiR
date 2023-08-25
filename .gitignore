@@ -1,0 +1,7 @@
+MoSiR/inputs/MiroParserServerSecrets.json
+MoSiR/templates/Temp_*.html
+MoSiR/uploads/*.json
+MoSiR/__pycache__/
+tests/__pycache__/
+build/
+MoSiR.egg-info/

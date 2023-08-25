@@ -1,0 +1,12 @@
+{
+"Choose":{
+    "type" : ["shape"],
+    "data/shape" : ["circle"]
+},
+"Describe" :{
+    "Half-life" : {"style/borderStyle" : ["dashed"]},
+    "EternalStock" : {"style/borderColor" : ["#f24726"]},
+    "Oxydation": {"style/fillColor" : ["#9510ac"]},
+    "Export": {"style/fillColor" : ["#da0063"]}
+    }
+}

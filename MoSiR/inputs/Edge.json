@@ -1,0 +1,16 @@
+{
+"Choose":{
+    },
+"Describe" :{
+    "Recycling" : {"style/strokeColor" : ["#f24726"]},
+    "Overflow" : {"style/strokeColor" : ["#17df23"]}
+    },
+"ChooseValues":{
+    "style/fillColor" : ["light_green"],
+    "type" :["sticky_note"]
+    },
+"ChooseFork":{
+        "type": ["shape"],
+        "data/shape" : ["rectangle"]
+        }
+}
