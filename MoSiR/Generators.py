@@ -97,7 +97,7 @@ class MiroGenerator(Generator):
         for Datatype,Data in zip(["Nodes","Edges"],[self.__Nodes__.values(),self.__Edges__.values()]):
             for NodeItems in Data:
                 for Name,Element in NodeItems.items():
-                    if Name not in ["Name","Values","From","To"]:
+                    if Name not in ["Name","Values","From","To","X","Y"]:
                         if Name not in Alldata[Datatype]:
                             Alldata[Datatype][Name] = 0
                         Alldata[Datatype][Name] += int(Element)
@@ -145,6 +145,9 @@ class MiroGenerator(Generator):
             if (self.__IsNode(Item)):
                 NodeId = int(Item["id"])
                 self.__Nodes__[NodeId] = self.__ItemToNode(Item)
+                if "position" in Item:
+                    self.__Nodes__[NodeId]["X"] = (Item["position"]["x"]/10)
+                    self.__Nodes__[NodeId]["Y"] = (Item["position"]["y"] / 10)
         ENDMESSAGE = "Found "+str(len(self.__Nodes__))+" Potential Nodes"
         self.__LogStatus(ENDMESSAGE)
     def __BuildEdges(self)->None:
@@ -297,13 +300,18 @@ class MiroGenerator(Generator):
             raise(AssertionError(Message))
     def __CleanNodes(self):
         ConnectedNodes = set()
+        Tonodes = set()
         for EdgeItems in self.__Edges__.values():
             ConnectedNodes.add(EdgeItems["From"])
             ConnectedNodes.add(EdgeItems["To"])
+            Tonodes.add(EdgeItems["To"])
         NodestoKeep = {}
         for NodeId,NodeItems in self.__Nodes__.items():
             if NodeId in  ConnectedNodes:
                 NodestoKeep[NodeId] = NodeItems
+                if NodeId not in Tonodes:
+                    MESSAGE = "Node named "+NodeItems["Name"]+" has no source node"
+                    warnings.warn(MESSAGE)
             else:
                 MESSAGE = "Node named "+NodeItems["Name"]+" is not linked to graph and will be ignored"
                 warnings.warn(MESSAGE)

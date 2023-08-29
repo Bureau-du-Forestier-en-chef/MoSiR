@@ -31,11 +31,19 @@ class HTMLAnimation:
         return Color
     def __GenerateNetworkGraph(self,Time:int)->None:
         self.__GraphNetwork__ = Network(select_menu=True,filter_menu=True,directed=True,cdn_resources='in_line')
+        #Count the edges connection for the value of the nodes
+        NodesConnections = {}
+        for EdgeItems in self.__BASEGRAPH ["Edges"].values():
+            for ID in [EdgeItems["From"],EdgeItems["To"]]:
+                if ID not in NodesConnections:
+                    NodesConnections[ID] = 0
+                NodesConnections[ID]+=1
         NodeIds = list(self.__BASEGRAPH ["Nodes"].keys())
         NodeIds.sort()
         NodeNames = []
         NodeIndex = 0
         IndexMatch = {}
+        Gotposition = False
         for Nodeid in NodeIds:
             NodeItems = self.__BASEGRAPH ["Nodes"][Nodeid]
             NAME = NodeItems["Name"]
@@ -46,7 +54,16 @@ class HTMLAnimation:
                     Values += datakey +":"+str(data) +"\n"
             TITLE = Values
             COLOR = self.__GetColor("Node",NodeItems)
-            self.__GraphNetwork__.add_node(NodeIndex,title=TITLE,label=NAME,color=COLOR)
+            X = None
+            Y = None
+            Physics = True
+            if "X" in NodeItems:
+                X = NodeItems["X"]
+                Y = NodeItems["Y"]
+                Gotposition = True
+                Physics = False
+            Value = NodesConnections[Nodeid]
+            self.__GraphNetwork__.add_node(NodeIndex,title=TITLE,label=NAME,color=COLOR,value = Value,x=X,y=Y,physics=Physics)
             IndexMatch[Nodeid] = NodeIndex
             NodeIndex+=1
         for EdgeItems in self.__BASEGRAPH ["Edges"].values():
@@ -59,7 +76,8 @@ class HTMLAnimation:
             NUMVALUE = self.__GetEdgeWeigth(EdgeItems,Time)
             Color = self.__GetColor("Edge",EdgeItems)
             self.__GraphNetwork__.add_edge(FROMID,TOID,title =Values,value=NUMVALUE,color=Color)
-        self.__GraphNetwork__.show_buttons(filter_=['physics'])
+        if not Gotposition:
+            self.__GraphNetwork__.show_buttons(filter_=['physics'])
     def GetNetWork(self,Time:int)->str:
         self.__GenerateNetworkGraph(Time)
         FILENAME = self.__NAME+"_"+str(Time)+".html"
