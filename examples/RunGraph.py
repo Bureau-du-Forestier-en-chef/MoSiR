@@ -16,7 +16,3 @@ if __name__ == '__main__':
 #    ParserServer.AddAllEndpoints()
 #    ParserServer.SignIn()
 #    ParserServer.Run(debug=False)
-
-
-# This is a test 
-# Test1 

@@ -18,7 +18,6 @@ df.to_csv('C:/Users/langa3/Documents/Script/Panier_produit/dummy_table.csv',
           index = False, sep = ';')
 
 """
-
 #import pandas as pd
 #import numpy as np
 #import cProfile # Pour le run time

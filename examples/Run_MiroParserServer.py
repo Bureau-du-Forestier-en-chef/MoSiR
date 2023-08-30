@@ -12,8 +12,7 @@ from MoSiR import FlaskMiroWrapper
 if __name__ == '__main__':
     ParserServer = FlaskMiroWrapper("ParserServer",
                                     "http://localhost",
-                                    3000,VerifySSL=False)
+                                    3000,VerifySSL = False)
     ParserServer.AddAllEndpoints()
     ParserServer.SignIn()
-    ParserServer.Run(debug=False)
-    
+    ParserServer.Run(debug = False)
