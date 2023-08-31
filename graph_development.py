@@ -21,6 +21,7 @@ df.to_csv('C:/Users/langa3/Documents/Script/Panier_produit/dummy_table.csv',
 #import pandas as pd
 #import numpy as np
 #import cProfile # Pour le run time
+import json
 import networkx as nx
 from abc import ABCMeta, abstractmethod
 
@@ -200,79 +201,37 @@ class Edge():
     def GetValueTime(self, Time: int) -> float:
         return self.__VALUES__[min(Time, len(self.__VALUES__) - 1)]
 
-
-# Faire un node factory pour produire les noeuds
-
-class WPGraph():
-    def __init__(self) -> None:
-        self.__GRAPH = nx.DiGraph()
-        pass
-    def setname():
-        def setNode()
-        def setEdge()
-        def GetNode(Name:str) ->Node
-        
-
 class GraphFactory(): # Intrant sera un JSON file
     def __init__(self, DIR: str):
         self._DIRECTORY = DIR
-        with open(DIR, "r") as files: 
-            self.__DATA__ = json.load(files)
-        nom = []
-        self.__GRAPS = []
-        for GRAPH in self.__DATA__:
-            NewGraph = WPGraph()
-            NewGraph.setname()
+        with open(self._DIRECTORY, "r") as files: 
+            self.__DATA = json.load(files)
+        for GRAPH in self.__DATA:
+            NewGraph = WPGraph(GRAPH, self)
             
-            nom.append(GRAPH.upper())
-            #setattr(self, f"__{GRAPH.upper()}__", self.__DATA__[GRAPH])
-            #setattr(self, f"__{GRAPH.upper()}_NODES__", self.__DATA__[GRAPH].get('Nodes', {}))
-            #setattr(self, f"__{GRAPH.upper()}_EDGES__", self.__DATA__[GRAPH].get('Edges', {}))
-            setattr(self, f"__{GRAPH.upper()}__", nx.DiGraph())
-            NODES = self.__DATA__[GRAPH].get('Nodes', {}).items()
-            EDGES = self.__DATA__[GRAPH].get('EDGES', {}).items()
-            
-            NODES_ID = [ID for ID in NODES]
-            TO_EDGES = [edge_data['To'] for edge_data in EDGES.values()]
-            
-            FIRSTNODE = set(NODES_ID) - set(TO_EDGES)
-            
-            for node_id, node_data in NODES:
-                setattr(self, f"_{node_id}", ProportionNode(node_data['Name']))
-                getattr(self, f"__{GRAPH.upper()}__").add_node(f"_{node_id}")
-            for edge_id, edge_data in EDGES:
-                getattr(self, f"__{GRAPH.upper()}__").add_edge(edge_data['From'], 
-                                                               edge_data['To'], 
-                                                               Proportion = edge_data['Values'])
-
-[edge_data['To'] for edge_data in edge.values()]
-
-
-def test_warning(a, b):
-    c = list(set(a) - set(b))
-    if len(c) > 1:
-        raise Warning("More than one FirstNode present, proceed carefully")
-    else:
-        return c
-
-
-a = [1, 2, 3, 4, 5]
-b = [1, 2, 3]
-
-test_warning(a, b)
+class WPGraph():
+    def __init__(self, GRAPH):
+        self.__DATA = GRAPH
     
-c = list(set(a) - set(b))
-len(c)
+    @property
+    def NAME(self):
+        return self._NAME
     
-    
-b = GraphFactory('C:/Users/langa3/Documents/Script/Panier_produit/Graphs.json')
+    @NAME.setter
+    def NAME(self, input):
+       raise ConstError("Graph name can't be changed")
+   
+    def setNode():
+        
+        pass
+    def setEdge():
+        pass
+    def GetNode(Name:str):
+        pass
 
-b._3458764561320344631.CountCarbon(b.__PRODUITSDUBOIS__, 0)
-
-b.__TEST__
+test = GraphFactory('C:/Users/langa3/Documents/Script/Panier_produit/Graphs.json')
 
 # ----------------------------------------------------------------------------
-import json
 
 with open('C:/Users/langa3/Documents/Script/Panier_produit/Graphs.json', "r") as files:
     data = json.load(files)
@@ -322,21 +281,6 @@ for edge_id, edge_data in edge.items():
 # ----------------------------------------------------------------------------
 
 
-class TimeNode(IndustrialNode): 
-    def __init__(self, NAME: str):
-        super().__init__(NAME)
-        
-    def CountCarbon(self, Graph: nx.DiGraph) -> int:
-        print(Graph.predecessors(self))
-        #for Parent in Graph.predecessors:
-        #    if isinstance(Parent, ProportionNode):
-        #        print("Proportion")
-        #    elif isinstance(Parent, DecayNode):
-        #        print("Decay")
-                
-    
-    def CountCarbonFrom(self, Graph: nx.DiGraph) -> int:
-        return super().CountCarbonFrom(Graph)
             
 
 
@@ -384,34 +328,6 @@ T0.CountCarbon(test, Time = 0)
 
 for i in test.successors(T0):
     print(i)
-
-# test -----------------------------------------------------------------------
-
-test = nx.DiGraph()
-A1 = TopNode("First", Quantities = 100)
-A2 = ProportionNode("Deux")
-A3 = DecayNode("DeuxA", HalfLife = 5)
-A4 = TimeNode("Trois")
-
-
-test.add_node(A1)
-test.add_node(A2)
-test.add_node(A3)
-test.add_node(A4)
-test.add_edge(A1, A2, Proportion = 0.5)
-test.add_edge(A1, A3, Proportion = 0.5)
-test.add_edge(A2, A4, Proportion = 1)
-test.add_edge(A3, A4, Proportion = 1)
-
-for i in test.successors(A3):
-    isinstance(i, TimeNode)
-    
-    
-df = {
-    'Time': np.arange(1, 6),
-    'Tonne_C': np.random.uniform(20, 60, 5)
-}
-
 
 # Json section ---------------------------------------------------------------
 
@@ -485,7 +401,7 @@ a.addition(1, 2, 5)
 
 
 
-# ----------------------------------------------------------------------------
+# Old code -------------------------------------------------------------------
 #G = nx.Graph()
 #p0 = point(0,0)
 #p1 = point(1,1)
@@ -495,3 +411,32 @@ a.addition(1, 2, 5)
 #G.add_edge(0,1, weight=4)
 #G[0]
 #AtlasView({1: {'weight': 4}})  #in networkx 1.x this is actually a dict. In 2.x it is an "AtlasView"
+
+#class GraphFactory(): # Intrant sera un JSON file
+#    def __init__(self, DIR: str):
+#        self._DIRECTORY = DIR
+#        with open(DIR, "r") as files: 
+#            self.__DATA__ = json.load(files)
+#        nom = []
+#        self.__GRAPS = []
+#        for GRAPH in self.__DATA__:
+#            nom.append(GRAPH.upper())
+#            #setattr(self, f"__{GRAPH.upper()}__", self.__DATA__[GRAPH])
+#            #setattr(self, f"__{GRAPH.upper()}_NODES__", self.__DATA__[GRAPH].get('Nodes', {}))
+#            #setattr(self, f"__{GRAPH.upper()}_EDGES__", self.__DATA__[GRAPH].get('Edges', {}))
+#            setattr(self, f"__{GRAPH.upper()}__", nx.DiGraph())
+#            NODES = self.__DATA__[GRAPH].get('Nodes', {}).items()
+#            EDGES = self.__DATA__[GRAPH].get('EDGES', {}).items()
+#            
+#            NODES_ID = [ID for ID in NODES]
+#            TO_EDGES = [edge_data['To'] for edge_data in EDGES.values()]
+#            
+#            FIRSTNODE = set(NODES_ID) - set(TO_EDGES)
+#            
+#            for node_id, node_data in NODES:
+#                setattr(self, f"_{node_id}", ProportionNode(node_data['Name']))
+#                getattr(self, f"__{GRAPH.upper()}__").add_node(f"_{node_id}")
+#            for edge_id, edge_data in EDGES:
+#                getattr(self, f"__{GRAPH.upper()}__").add_edge(edge_data['From'], 
+#                                                               edge_data['To'], 
+#                                                               Proportion = edge_data['Values'])
