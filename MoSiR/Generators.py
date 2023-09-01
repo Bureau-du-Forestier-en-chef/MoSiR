@@ -8,6 +8,7 @@ from abc import ABCMeta
 from abc import abstractmethod
 
 from . import Utilities
+from . import Exceptions
 import copy,warnings,re
 
 
@@ -120,7 +121,7 @@ class MiroGenerator(Generator):
         FromNodeId = int(Connector["startItem"]["id"])
         ToNodeId = int(Connector["endItem"]["id"])
         if FromNodeId == ToNodeId:
-            raise(AssertionError("Edge id "+str(EdgeID)+" has the same source and target node "+str(FromNodeId)))
+            raise(Exceptions.MiroError("Edge id "+str(EdgeID)+" has the same source and target node "+str(FromNodeId),EdgeID))
         Holder = {"From":FromNodeId,"To":ToNodeId,"Values":[1.0]}
         OtherData = self.__EDGEBUILDER.GetDescription(Connector)
         Holder.update(OtherData)
@@ -166,7 +167,7 @@ class MiroGenerator(Generator):
             Values = [float(value)/100 for value in WorkableString.split(",")]
         except:
             MESSAGE = "Cannot get edge value for edge id " + Item["id"] + " on Item "+str(Item)
-            raise(ValueError(MESSAGE))
+            raise(Exceptions.MiroError(MESSAGE,Item["id"]))
         return Values
     def __GetEdgeValues(self)->dict():
         TagLocation = {}
@@ -186,7 +187,7 @@ class MiroGenerator(Generator):
         for EdgeId,EdgeItems in self.__Edges__.items():
             if EdgeItems["To"] in TAGLOCATION:
                 if EdgeItems["From"] in TAGLOCATION:
-                    raise(AssertionError("Edge id "+str(EdgeId)+" from a tag "+str(EdgeItems)))
+                    raise(Exceptions.MiroError("Edge id "+str(EdgeId)+" from a tag "+str(EdgeItems),EdgeId))
                 NewValues = TAGLOCATION[EdgeItems["To"]]
                 EdgeItems["Values"] = NewValues
                 GotAtarget = False
@@ -196,7 +197,7 @@ class MiroGenerator(Generator):
                         GotAtarget = True
                         break
                 if not GotAtarget:
-                    raise(AssertionError("Tag ID "+str(EdgeItems["To"])+" has no out edge"))
+                    raise(Exceptions.MiroError("Tag ID "+str(EdgeItems["To"])+" has no out edge",EdgeItems["To"]))
                 NewEdges[EdgeId] = EdgeItems
             elif(all(Item in ValidLocations for Item in (EdgeItems["To"],EdgeItems["From"]))):
                 NewEdges[EdgeId] = EdgeItems
@@ -204,7 +205,7 @@ class MiroGenerator(Generator):
         self.__Edges__ = NewEdges
         for EdgeId,EdgeItems in self.__Edges__.items():
             if EdgeItems["From"] in TAGLOCATION or EdgeItems["To"] in TAGLOCATION:
-                 raise(AssertionError("Edge id "+str(EdgeId)+" still with Tag "+str(EdgeItems)))
+                 raise(Exceptions.MiroError("Edge id "+str(EdgeId)+" still with Tag "+str(EdgeItems),EdgeId))
         ENDMESSAGE = "Removed "+str(Removed)+" Edges after simplification"
         self.__LogStatus(ENDMESSAGE)
     def __GetNodesFork(self)->set:
@@ -297,7 +298,7 @@ class MiroGenerator(Generator):
                     Message += " Sourced on " + BUTSOURCE
             #Take a look with this https://miro.com/app/board/uXjVMvp8bjE=/?moveToWidget=3458764561316365196&cot=14
             Message += " FROM " + str(FromITEM) +" ID("+str(FROMID)+")" + " TO " + str( ToITEM ) +" ID("+str(TOID)+") FOR Connector "+str(Connectordata)
-            raise(AssertionError(Message))
+            raise(Exceptions.MiroError(Message,EdgeId))
     def __CleanNodes(self):
         ConnectedNodes = set()
         Tonodes = set()

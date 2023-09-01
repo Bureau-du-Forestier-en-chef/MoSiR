@@ -1,0 +1,15 @@
+README.md
+setup.py
+MoSiR/Animator.py
+MoSiR/Generators.py
+MoSiR/Main.py
+MoSiR/ParserServer.py
+MoSiR/Utilities.py
+MoSiR/__init__.py
+sample.egg-info/PKG-INFO
+sample.egg-info/SOURCES.txt
+sample.egg-info/dependency_links.txt
+sample.egg-info/top_level.txt
+tests/test_Generators.py
+tests/test_Utilities.py
+tests/test_main.py
