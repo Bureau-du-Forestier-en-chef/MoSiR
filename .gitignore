@@ -5,3 +5,4 @@ MoSiR/__pycache__/
 tests/__pycache__/
 build/
 MoSiR.egg-info/
+__pycache__
