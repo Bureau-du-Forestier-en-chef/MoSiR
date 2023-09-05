@@ -40,7 +40,7 @@ class EndpointAction:
 
 class FlaskMiroWrapper:
     app = None
-    def __init__(self, Name:str,Host:str,Port:int,VerifySSL=False):
+    def __init__(self, Name:str,Host:str,Port:int):
         self.__app = Flask(Name,root_path=os.path.dirname(os.path.abspath(__file__)))
         self.__PORT = Port
         self.__MAINURL = Host + ":"+str(self.__PORT)
@@ -53,7 +53,6 @@ class FlaskMiroWrapper:
         self.__BoardGraphs={}
         self.__GrapGenerators=[]
         self.__Session = requests.Session()
-        self.__Session.verify = VerifySSL
         self.__app.config["UPLOAD_FOLDER"] = os.path.join(os.path.dirname(os.path.abspath(__file__)),"uploads")
         self.__GRAPHSNAME= 'Graphs.json'
     def __ReadSecrets(self):
