@@ -1,4 +1,4 @@
-# Last update : 2023-07-19
+# Last update : 2023-09-05
 # Author : Gabriel Landry
 
 """ 
@@ -39,28 +39,6 @@ sys.excepthook = ColorTB()
 #df_1 = df.query("Species == 'A' & Time <= 10")\
 #    .assign(newColonne = df.Time * df.Tonne_C,
 #            Test = df.Time ^ 2)
-
-# Test -----------------------------------------------------------------------
-
-# Using @property decorator
-#class Celsius:
-#    def __init__(self, temperature_1 = 0):
-#        self.temperature = temperature_1
-#
-#    def to_fahrenheit(self):
-#        return (self.temperature * 1.8) + 32
-#
-#    @property
-#    def temperature(self):
-#        print("Getting value...")
-#        return self._temperature
-#
-#    @temperature.setter
-#    def temperature(self, value):
-#        print("Setting value...")
-#        if value < -273.15:
-#            raise ValueError("Temperature below -273 is not possible")
-#        self._temperature = value
 
 # Draft ----------------------------------------------------------------------
 
@@ -275,7 +253,12 @@ for i in test2._GRAPHS:
     print(i)
 test2._GRAPHS[1]._GRAPH._3458764562375288770.CountCarbon()
 
-test2._GRAPHS[0]._FIRSTNODE
+for i, j in list(test2._GRAPHS[0]._GRAPH.edges.items()):
+    liste = []
+    for x in i:
+        liste.append(x)
+    print(f"De {liste[0]._NAME} à {liste[1]._NAME} à {list(j.values())[0]}")    
+
 
 # ----------------------------------------------------------------------------
 
