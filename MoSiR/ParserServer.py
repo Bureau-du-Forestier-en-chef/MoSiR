@@ -4,15 +4,31 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 """
 
-from flask import Flask,render_template, Response,request,redirect,send_file
+from flask import Flask,render_template, Response,request,redirect,send_file,make_response
 from . import Utilities
 from datetime import datetime, timedelta
 import webbrowser,requests,os
 from .Generators import MiroGenerator
 from .Animator import HTMLAnimation
-import os
+from . import Exceptions
+import os,werkzeug,traceback,sys
 
-
+class MiroError(werkzeug.exceptions.HTTPException):
+    code = 507
+    def __init__(self,MiroException: Exceptions.MiroError,Board:str):
+        self.__TraceBack = traceback.format_tb(MiroException.__traceback__)
+        self.__ID = MiroException.GetItemID()
+        self.__BOARD = Board
+        self.__LOCATION = "https://miro.com/app/board/" + Board+"/?moveToWidget=" + str(self.__ID) + "&cot=14"
+        self.description = str(MiroException)
+    def get_body(self, environ):
+        return self.description
+    def get_headers(self, environ):
+        return [('Content-Type', 'text/plain; charset=UTF-8')]
+    def get_response(self,environ):
+        return make_response(render_template("MiroError.html",Traces=self.__TraceBack,Description=self.description,MiroUrl =self.__LOCATION),200)
+    def get_description(self,environ):
+        return  self.description
 
 
 class EndpointAction:
@@ -151,18 +167,28 @@ class FlaskMiroWrapper:
             if STATS["Nodes"]["Size"] > 0:
                 GraphInfo.append((GRAPHNAME,STATS))
         return render_template("GraphsMenu.html",GraphStats=GraphInfo)
-    def __GraphGeneration(self):
-        BOARDNAMES = self.__GetSortedBoardNames()
-        self.__GrapGenerators.clear()
-        for GraphName in BOARDNAMES:
+    def __BuildGenerator(self,GraphName:str)->MiroGenerator:
+        try:
             GraphID = self.__BoardGraphs[GraphName]
             BoardItems = self.__GetBoardItems(GraphID)
             BoardConnectors = self.__GetBoardConnectors(GraphID)
             Generator = MiroGenerator(GraphName,BoardItems,BoardConnectors)
             Generator.Build()
-            self.__GrapGenerators.append(Generator)
-        self.__WriteGraphs(self.__GRAPHSNAME)
-        self.__GenerateGraphsHTML()
+            return Generator
+        except Exception as RegularOne:
+            raise(RegularOne)
+    def __GraphGeneration(self):
+        try:
+            BOARDNAMES = self.__GetSortedBoardNames()
+            self.__GrapGenerators.clear()
+            for GraphName in BOARDNAMES:
+                self.__GrapGenerators.append(self.__BuildGenerator(GraphName))
+            self.__WriteGraphs(self.__GRAPHSNAME)
+            self.__GenerateGraphsHTML()
+        except Exceptions.MiroError as Mirotrouble:
+            raise MiroError(Mirotrouble,self.__BoardGraphs[GraphName])
+        except Exception as RegularOne:
+            raise(RegularOne)
         return self.__GraphsMenu()
     def __GraphRendering(self,HTMLname:str):
         TARGET = "Temp_" + HTMLname.replace('<','').replace('>','') + "_0.html"
