@@ -18,8 +18,8 @@ df.to_csv('C:/Users/langa3/Documents/Script/Panier_produit/dummy_table.csv',
           index = False, sep = ';')
 
 """
-#import pandas as pd
-#import numpy as np
+import pandas as pd
+import numpy as np
 #import cProfile # Pour le run time
 import json
 import networkx as nx
@@ -34,21 +34,15 @@ sys.excepthook = ColorTB()
 
 # Test avec fonction seulement -----------------------------------------------
 
-#df = pd.read_csv("C:/Users/langa3/Documents/Script"
-#                 "/Panier_produit/dummy_table.csv", sep = ';')
-#df_1 = df.query("Species == 'A' & Time <= 10")\
-#    .assign(newColonne = df.Time * df.Tonne_C,
-#            Test = df.Time ^ 2)
+#df_1 = df.query("Species == 'A' & Time <= 10")#\
+    #.assign(newColonne = df.Time * df.Tonne_C,
+           # Test = df.Time ^ 2)
 
-# Draft ----------------------------------------------------------------------
-
-# Faire un interface
-# 
+# Class ----------------------------------------------------------------------
 
 class ConstError(Exception):
     def __init__(self, message: str):            
-        # Call the base class constructor with the parameters it needs
-        super().__init__(message) # Super affecte la class parent
+        super().__init__(message) # Super vient chercher la class parent
 
 class IndustrialNode(metaclass = ABCMeta): # aller voir la doc sur pourquoi ABC à l'intérieur d'une class et aller voir class virtuelle
     def __init__(self, LOCALNAME: str):
@@ -85,43 +79,77 @@ class IndustrialNode(metaclass = ABCMeta): # aller voir la doc sur pourquoi ABC 
     
     def __eq__(self, Other):
         return self.NAME == Other.NAME   
-
+      
 class TopNode(IndustrialNode):
-    def __init__(self, NAME: str, Quantities: list[float]):
+    def __init__(self, NAME: str,  Time: list[int], Quantities: list[float]):
         super().__init__(NAME)
+        self._Time = Time
         self._Quantities = Quantities
-    
-    def CountCarbon(self, Graph: nx.DiGraph, Time: int) -> float:
-        return self._GetValueTime(self._Quantities, Time)
+        
+    def _GetQuantityTime(self, When: int) -> float:
+        try: 
+            index = self._Time.index(When)
+            return self._Quantities[index]
+        except ValueError:
+            return 0
+        
+        # modifier ici pour utiliser le get quantity à la place
+    def CountCarbon(self, Graph: nx.DiGraph, Time: int, Cumulative = True) -> float:
+        Total = 0
+        for Parent in Graph.predecessors(self):
+            ProportionParent = Graph.get_edge_data(Parent, self)["Proportion"]
+            ParentCarbon = Parent.CountCarbon(Graph, Time) # Récursivité
+            Total += (ProportionParent * ParentCarbon)         
+        return Total
         
     def CountCarbonFrom(self, Graph: nx.DiGraph, Time: int) -> float:
         return super().CountCarbonFrom(Graph)
-
+ 
 class ProportionNode(IndustrialNode):
     def __init__(self, NAME: str):
         super().__init__(NAME)
-        
-    def CountCarbon(self, Graph: nx.DiGraph, Time: int) -> float:
+    
+    def CountCarbon(self, Graph: nx.DiGraph, Time: int, Cumulative = True) -> float:
         Total = 0
         for Parent in Graph.predecessors(self):
-            ProportionParent = self._GetValueTime(Graph.get_edge_data(Parent, self)["Proportion"], Time)
+            ProportionParent = Graph.get_edge_data(Parent, self)["Proportion"]
             ParentCarbon = Parent.CountCarbon(Graph, Time) # Récursivité
             Total += (ProportionParent * ParentCarbon)         
         return Total
     
-    def CountCarbonFrom(self, Graph: nx.DiGraph, From: IndustrialNode, Time: int) -> float:
+    def CountCarbonFrom(self, Graph: nx.DiGraph, From: IndustrialNode, 
+                        Time: int, Cumulative = True) -> float:
         INITCARBON = From.CountCarbon(Graph, Time)
         Total = 0
         for path in nx.all_simple_paths(Graph, source = From, target = self):
             Facteur = 1
             for node_id in range(0, len(path) - 1):
-                EDGEDATA = test.get_edge_data(path[node_id], path[node_id + 1])
-                PROPORTIONS = EDGEDATA['Proportion']
-                PROPORTION = self._GetValueTime(PROPORTIONS, Time)
+                EDGEDATA = Graph.get_edge_data(path[node_id], path[node_id + 1])
+                PROPORTION = EDGEDATA['Proportion']
                 Facteur *= PROPORTION
             Total += INITCARBON * Facteur
         return Total
-    
+
+
+test1 = nx.DiGraph()
+
+A = TopNode('Test', [0, 1, 5, 3, 4, 8], [10, 12, 32, 14, 15, 20])  
+B = ProportionNode('B')
+
+test1.add_node(A)
+test1.add_node(B)
+
+test1.add_edge(A, B, Proportion = 0.5)
+
+A._GetQuantityTime(5)
+A.CountCarbon(test1, 5)
+
+B.CountCarbon(test1, 5) 
+
+for i in test1.predecessors(B):
+    type(i) == TopNode
+
+   
 class DecayNode(ProportionNode):
     def __init__(self, NAME: str, HalfLife: int):
         super().__init__(NAME)
@@ -309,7 +337,7 @@ for edge_id, edge_data in edge.items():
 
 # ----------------------------------------------------------------------------
 
-T0 = TopNode("Roundwood", Quantities = 100)
+T0 = TopNode("Roundwood", Time = [12, 13, 14], Quantities = [50, 75, 100])
     
 T1 = ProportionNode("Industrial roundwood")
 T1_1 = ProportionNode("Export")
@@ -346,6 +374,8 @@ test.add_edge(T3_1, T4, Proportion = 1)
 test.add_edge(T3_2, T4, Proportion = 0.7)
 test.add_edge(T3_2, T4_1, Proportion = 0.3)
 test.add_edge(T1_1, T4, Proportion = 1)
+
+T4_1.CountCarbon(test, 0)
 
 for i, j in list(test.edges.items()):
     liste = []
