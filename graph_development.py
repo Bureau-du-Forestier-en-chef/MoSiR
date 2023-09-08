@@ -74,6 +74,13 @@ class IndustrialNode(metaclass = ABCMeta): # aller voir la doc sur pourquoi ABC 
         '''
         pass
     
+    @abstractmethod
+    def GetCarbon(self, Graph: nx.DiGraph, Time: int) -> float:
+        '''
+        Retreive carbon along the graph
+        '''
+        return self.CountCarbon()
+    
     def __hash__(self): # Aller voir plus en détail ce que fait le hashing
         return hash(self.NAME)
     
@@ -93,7 +100,6 @@ class TopNode(IndustrialNode):
         except ValueError:
             return 0
         
-        # modifier ici pour utiliser le get quantity à la place
     def CountCarbon(self, Graph: nx.DiGraph, Time: int, Cumulative = True) -> float:        
         return self._GetQuantityTime(Time)
         
@@ -104,8 +110,7 @@ class ProportionNode(IndustrialNode):
     def __init__(self, NAME: str):
         super().__init__(NAME)
     
-    def CountCarbon(self, Graph: nx.DiGraph, Time: int, Cumulative = True) -> float:
-        Total = 0
+    def GetCarbon(self, Graph: nx.DiGraph, Time: int, Cumulative = True) -> float:
         for Parent in Graph.predecessors(self):
             ProportionParent = Graph.get_edge_data(Parent, self)["Proportion"]
             ParentCarbon = Parent.CountCarbon(Graph, Time) # Récursivité
@@ -125,26 +130,6 @@ class ProportionNode(IndustrialNode):
             Total += INITCARBON * Facteur
         return Total
 
-
-test1 = nx.DiGraph()
-
-A = TopNode('Test', [0, 1, 5, 3, 4, 8], [10, 12, 32, 14, 15, 20])  
-B = ProportionNode('B')
-
-test1.add_node(A)
-test1.add_node(B)
-
-test1.add_edge(A, B, Proportion = 0.5)
-
-A._GetQuantityTime(5)
-A.CountCarbon(test1, 5)
-
-B.CountCarbon(test1, 5) 
-
-for i in test1.predecessors(B):
-    type(i) == TopNode
-
-   
 class DecayNode(ProportionNode):
     def __init__(self, NAME: str, HalfLife: int):
         super().__init__(NAME)
@@ -157,23 +142,41 @@ class DecayNode(ProportionNode):
     @HalfLife.setter # À voir si ça vaut la peine de la protéger
     def HalfLife(self, Value):
        self._HalfLife = Value
-        
+    
     def CountCarbon(self, Graph: nx.DiGraph, Time: int) -> float:
         Total = super().CountCarbon(Graph, Time)         
-        if Time == 0:
-            return Total
-        else:
-            Remains = Total * ((0.5) ** (Time/self.HalfLife))
-            return Remains
+        return Total - ( Total * ((0.5) ** (Time/self.HalfLife)) )
         
     def CountCarbonFrom(self, Graph: nx.DiGraph, From: ProportionNode, Time: int) -> float:
         Total = super().CountCarbonFrom(Graph, From, Time)
-        if Time == 0:
-            return Total
-        else:
-            Remains = Total * ((0.5) ** (Time/self.HalfLife))
-            return Remains
+        return Total * ((0.5) ** (Time/self.HalfLife))
 
+test1 = nx.DiGraph()
+
+A = TopNode('Test', [0, 1, 5, 3, 4, 8], [10, 12, 32, 14, 15, 20])  
+B = ProportionNode('B')
+C = DecayNode('C', 10)
+D = ProportionNode('D')
+
+test1.add_node(A)
+test1.add_node(B)
+test1.add_node(C)
+test1.add_node(D)
+
+test1.add_edge(A, B, Proportion = 0.5)
+test1.add_edge(B, C, Proportion = 1)
+test1.add_edge(C, D, Proportion = 0.5)
+
+A.GetCarbon(test1, 1)
+B.GetCarbon(test1, 1)
+C.CountCarbon(test1, 1)
+D.CountCarbon(test1, 8)
+
+
+B.CountCarbonFrom(test1, A, 4) 
+
+for i in test1.predecessors(B):
+    type(i) == TopNode
 
 # Vérifier si on met list[something] ou juste []
 
@@ -333,7 +336,7 @@ for edge_id, edge_data in edge.items():
 # ----------------------------------------------------------------------------
 
 T0 = TopNode("Roundwood", Time = [12, 13, 14], Quantities = [50, 75, 100])
-    
+
 T1 = ProportionNode("Industrial roundwood")
 T1_1 = ProportionNode("Export")
 
