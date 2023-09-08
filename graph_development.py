@@ -94,13 +94,8 @@ class TopNode(IndustrialNode):
             return 0
         
         # modifier ici pour utiliser le get quantity à la place
-    def CountCarbon(self, Graph: nx.DiGraph, Time: int, Cumulative = True) -> float:
-        Total = 0
-        for Parent in Graph.predecessors(self):
-            ProportionParent = Graph.get_edge_data(Parent, self)["Proportion"]
-            ParentCarbon = Parent.CountCarbon(Graph, Time) # Récursivité
-            Total += (ProportionParent * ParentCarbon)         
-        return Total
+    def CountCarbon(self, Graph: nx.DiGraph, Time: int, Cumulative = True) -> float:        
+        return self._GetQuantityTime(Time)
         
     def CountCarbonFrom(self, Graph: nx.DiGraph, Time: int) -> float:
         return super().CountCarbonFrom(Graph)
