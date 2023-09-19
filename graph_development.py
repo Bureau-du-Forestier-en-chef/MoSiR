@@ -1,4 +1,4 @@
-# Last update : 2023-09-05
+# Last update : 2023-09-19
 # Author : Gabriel Landry
 
 """ 
@@ -32,11 +32,18 @@ from IPython.core.ultratb import ColorTB
 
 sys.excepthook = ColorTB()
 
-# Test avec fonction seulement -----------------------------------------------
+# Test convolve -----------------------------------------------
 
-#df_1 = df.query("Species == 'A' & Time <= 10")#\
-    #.assign(newColonne = df.Time * df.Tonne_C,
-           # Test = df.Time ^ 2)
+'''
+Insane la fonction, passe le premier vecteur en ordre d'occurance au deuxième,
+exemple : 1 * 10, 1 * 20 + 5 * 10, 1 * 100 + 5 * 20, et ainsi de suite
+'''
+
+a = [1, 5]
+b = [10, 20, 100, 1000]
+
+c = np.convolve(a, b)
+c
 
 # Class ----------------------------------------------------------------------
 
@@ -60,14 +67,14 @@ class IndustrialNode(metaclass = ABCMeta): # aller voir la doc sur pourquoi ABC 
        raise ConstError("Node name can't be changed")
     
     @abstractmethod
-    def CountCarbon(self, Graph: nx.DiGraph, Time: int) -> float:
+    def CountCarbon(self, Graph: nx.DiGraph, Time: int, Cumulative: bool) -> float:
         '''
         This function counts the amount of carbon present in the node
         '''
         pass
     
     @abstractmethod
-    def CountCarbonFrom(self, Graph: nx.DiGraph, Time: int) -> float:
+    def CountCarbonFrom(self, Graph: nx.DiGraph, Time: int, Cumulative: bool) -> float:
         '''
         This function counts the amount of carbon present in the node that
         comes from a specified parent node
@@ -75,7 +82,7 @@ class IndustrialNode(metaclass = ABCMeta): # aller voir la doc sur pourquoi ABC 
         pass
     
     @abstractmethod
-    def GetCarbon(self, Graph: nx.DiGraph, Time: int) -> float:
+    def GetCarbon(self, Graph: nx.DiGraph, Time: int, Cumulative: bool) -> float:
         '''
         Retreive carbon along the graph
         '''
@@ -100,8 +107,11 @@ class TopNode(IndustrialNode):
         except ValueError:
             return 0
         
-    def CountCarbon(self, Graph: nx.DiGraph, Time: int, Cumulative = True) -> float:        
+    def CountCarbon(self, Graph: nx.DiGraph, Time: int, Cumulative: bool) -> float:        
         return self._GetQuantityTime(Time)
+    
+    def GetCarbon(self, Graph: nx.DiGraph, Time: int, Cumulative: bool) -> float:
+        return self.CountCarbon(Graph, Time, Cumulative)
         
     def CountCarbonFrom(self, Graph: nx.DiGraph, Time: int) -> float:
         return super().CountCarbonFrom(Graph)
@@ -110,16 +120,26 @@ class ProportionNode(IndustrialNode):
     def __init__(self, NAME: str):
         super().__init__(NAME)
     
-    def GetCarbon(self, Graph: nx.DiGraph, Time: int, Cumulative = True) -> float:
+    def CountCarbon(self, Graph: nx.DiGraph, Time: int, Cumulative: bool) -> float:
+        Total = 0
         for Parent in Graph.predecessors(self):
             ProportionParent = Graph.get_edge_data(Parent, self)["Proportion"]
-            ParentCarbon = Parent.CountCarbon(Graph, Time) # Récursivité
+            ParentCarbon = Parent.GetCarbon(Graph, Time, Cumulative) # Récursivité
+            Total += (ProportionParent * ParentCarbon)         
+        return Total
+   
+   # Regarder s'il n'y a pas une manière plus sexy de faire ça... 
+    def GetCarbon(self, Graph: nx.DiGraph, Time: int, Cumulative: bool) -> float:
+        Total = 0
+        for Parent in Graph.predecessors(self):
+            ProportionParent = Graph.get_edge_data(Parent, self)["Proportion"]
+            ParentCarbon = Parent.GetCarbon(Graph, Time, Cumulative) # Récursivité
             Total += (ProportionParent * ParentCarbon)         
         return Total
     
     def CountCarbonFrom(self, Graph: nx.DiGraph, From: IndustrialNode, 
-                        Time: int, Cumulative = True) -> float:
-        INITCARBON = From.CountCarbon(Graph, Time)
+                        Time: int, Cumulative: bool) -> float:
+        INITCARBON = From.CountCarbon(Graph, Time, Cumulative)
         Total = 0
         for path in nx.all_simple_paths(Graph, source = From, target = self):
             Facteur = 1
@@ -143,17 +163,34 @@ class DecayNode(ProportionNode):
     def HalfLife(self, Value):
        self._HalfLife = Value
     
-    def CountCarbon(self, Graph: nx.DiGraph, Time: int) -> float:
-        Total = super().CountCarbon(Graph, Time)         
-        return Total - ( Total * ((0.5) ** (Time/self.HalfLife)) )
+    # Mettre un standard sur l'année 0 versus année "1"
+    def GetCarbon(self, Graph: nx.DiGraph, Time: int, Cumulative: bool) -> float:
+        Total = 0
+        if Cumulative == True:
+            for Year in range(Time + 1):
+                Annual = super().GetCarbon(Graph, Year, Cumulative)
+                Total += (Annual - (Annual * ((0.5) ** ((Time - Year)/self.HalfLife))))
+            return Total
+        else:
+            print('YO')
+    
+    def CountCarbon(self, Graph: nx.DiGraph, Time: int, Cumulative: bool) -> float:
+        Total = 0
+        if Cumulative == True:
+            for Year in range(Time + 1):
+                Annual = super().GetCarbon(Graph, Year, Cumulative)    
+                Total += (Annual * ((0.5) ** ((Time - Year)/self.HalfLife)))
+            return Total
+        else:
+            return "YO"
         
-    def CountCarbonFrom(self, Graph: nx.DiGraph, From: ProportionNode, Time: int) -> float:
-        Total = super().CountCarbonFrom(Graph, From, Time)
+    def CountCarbonFrom(self, Graph: nx.DiGraph, From: ProportionNode, Time: int, Cumulative: bool) -> float:
+        Total = super().CountCarbonFrom(Graph, From, Time, Cumulative)
         return Total * ((0.5) ** (Time/self.HalfLife))
 
 test1 = nx.DiGraph()
 
-A = TopNode('Test', [0, 1, 5, 3, 4, 8], [10, 12, 32, 14, 15, 20])  
+A = TopNode('Test', [0, 5, 8], [10, 12, 20])  
 B = ProportionNode('B')
 C = DecayNode('C', 10)
 D = ProportionNode('D')
@@ -165,12 +202,18 @@ test1.add_node(D)
 
 test1.add_edge(A, B, Proportion = 0.5)
 test1.add_edge(B, C, Proportion = 1)
-test1.add_edge(C, D, Proportion = 0.5)
+test1.add_edge(C, D, Proportion = 1)
 
-A.GetCarbon(test1, 1)
-B.GetCarbon(test1, 1)
-C.CountCarbon(test1, 1)
-D.CountCarbon(test1, 8)
+A.CountCarbon(test1, 0, Cumulative = True)
+B.CountCarbon(test1, 1, Cumulative = True)
+C.CountCarbon(test1, 2, Cumulative = True)
+D.CountCarbon(test1, 2, Cumulative = True)
+
+(5 * ((0.5) ** (4/10)))
+(6 * ((0.5) ** (0/10)))
+
+5 - (5 * ((0.5) ** (8/10)))
+6 - (6 * ((0.5) ** (3/10)))
 
 
 B.CountCarbonFrom(test1, A, 4) 
@@ -308,8 +351,6 @@ FIRSTNODE =set(NODES_ID) - set(TO_EDGES)
 FIRSTNODE
 {3458764561110338471, 3458764561110458430}
 
-
-
 n_test = []
 for id in nodes:
     n_test.append(id)
@@ -387,22 +428,6 @@ for i in list(test.nodes):
     print(i._NAME)
     print(i.CountCarbon(test, 0))
 
-# Test 2 ---------------------------------------------------------------------
-
-test2 = nx.DiGraph()
-
-test2.add_node(TopNode('A', [10, 1000, 50000]))
-test2.add_node(ProportionNode('B'))
-test2.add_node(ProportionNode('C'))
-
-test2.add_edge(TopNode('A', [10, 1000, 50000]), ProportionNode('B'), Proportion = 1)
-test2.add_edge(TopNode('A', [10, 1000, 50000]), ProportionNode('C'), Proportion = 0.5)
-
-for i in test2.nodes:
-    print(i.CountCarbon(test2, 0))
-
-T0.CountCarbon()
-
 # Json section ---------------------------------------------------------------
 
 import json
@@ -450,30 +475,6 @@ t2 = t1.get('Nodes', {})
 # CONST_1.FOO = 4321              # AttributeError: 'CONST' object attribute 'FOO' is read-only
 # CONST_1.__dict__['FOO'] = 4321  # AttributeError: 'CONST' object has no attribute '__dict__'
 # CONST_1.BAR = 5678 
-
-# ----------------------------------------------------------------------------
-from abc import ABC, abstractmethod
-
-class Interface(ABC):
-    def __init__(self):
-        self.constante = 3
-    
-    @abstractmethod
-    def addition(self, a: int, b: int):
-        print("test01")
-        return a + b
-
-class Normale(Interface):
-    def addition(self, a: int, b: int):
-        print("test02")
-        return a + b
-
-a = Normale('allo')
-
-a.addition(1, 2, 5)
-
-
-
 
 # Old code -------------------------------------------------------------------
 # G = nx.Graph()
