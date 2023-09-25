@@ -1,4 +1,4 @@
-# Last update : 2023-09-19
+#+ Last update : 2023-09-25
 # Author : Gabriel Landry
 
 """ 
@@ -67,21 +67,6 @@ class IndustrialNode(metaclass = ABCMeta): # aller voir la doc sur pourquoi ABC 
     def NAME(self, input):
        raise ConstError("Node name can't be changed")
     
-    #@abstractmethod
-    #def CountCarbon(self, Graph: nx.DiGraph, Time: int, Cumulative: bool = True) -> float:
-    #    '''
-    #    This function counts the amount of carbon present in the node
-    #    '''
-    #    pass
-    #
-    #@abstractmethod
-    #def CountCarbonFrom(self, Graph: nx.DiGraph, Time: int, Cumulative: bool = True) -> float:
-    #    '''
-    #    This function counts the amount of carbon present in the node that
-    #    comes from a specified parent node
-    #    '''
-    #    pass
-    
     @abstractmethod
     def GetCarbon(self, Graph: nx.DiGraph, Time: int, Cumulative: bool = True) -> float:
         '''
@@ -109,48 +94,20 @@ class TopNode(IndustrialNode):
             return self._Quantities[index]
         except ValueError:
             return 0
-        
-    #def CountCarbon(self, Graph: nx.DiGraph, Time: int, Cumulative: bool = True) -> float:        
-    #    return self._GetQuantityTime(Time)
     
     def GetCarbon(self, Graph: nx.DiGraph, Time: int, Cumulative: bool = True) -> float:
         return self._GetQuantityTime(Time)
         
-    #def CountCarbonFrom(self, Graph: nx.DiGraph, Time: int) -> float:
-    #    return super().CountCarbonFrom(Graph)
- 
 class ProportionNode(IndustrialNode):
     def __init__(self, NAME: str):
         super().__init__(NAME)
-        
-    #def CountCarbon(self, Graph: nx.DiGraph, Time: int, Cumulative: bool = True) -> float:
-    #    Total = 0
-    #    for Parent in Graph.predecessors(self):
-    #        ProportionParent = Graph.get_edge_data(Parent, self)["Proportion"]
-    #        ParentCarbon = Parent.GetCarbon(Graph, Time, Cumulative) # Récursivité
-    #        Total += (ProportionParent * ParentCarbon) 
-    #    return Total
     
     def GetCarbon(self, Graph: nx.DiGraph, Time: int, Cumulative: bool = True) -> float:
-        Total = 0
         for Parent in Graph.predecessors(self):
             ProportionParent = Graph.get_edge_data(Parent, self)["Proportion"]
             ParentCarbon = Parent.GetCarbon(Graph, Time, Cumulative) # Récursivité
-            Total += (ProportionParent * ParentCarbon)   
+            Total = ProportionParent * ParentCarbon
         return Total
-    
-    #def CountCarbonFrom(self, Graph: nx.DiGraph, From: IndustrialNode, 
-    #                    Time: int, Cumulative: bool = True) -> float:
-    #    INITCARBON = From.CountCarbon(Graph, Time, Cumulative)
-    #    Total = 0
-    #    for path in nx.all_simple_paths(Graph, source = From, target = self):
-    #        Facteur = 1
-    #        for node_id in range(0, len(path) - 1):
-    #            EDGEDATA = Graph.get_edge_data(path[node_id], path[node_id + 1])
-    #            PROPORTION = EDGEDATA['Proportion']
-    #            Facteur *= PROPORTION
-    #        Total += INITCARBON * Facteur
-    #    return Total
 
 class DecayNode(ProportionNode):
     def __init__(self, NAME: str, HalfLife: int):
@@ -165,40 +122,29 @@ class DecayNode(ProportionNode):
     def HalfLife(self, Value):
        self._HalfLife = Value
     
-    # Mettre un standard sur l'année 0 versus année "1"
-    
     def GetCarbon(self, Graph: nx.DiGraph, Time: int, Cumulative: bool = True) -> float:
         Total = 0
-        for Year in range(Time + 1):
-            Annual = super().GetCarbon(Graph, Year, Cumulative)
-            Minus1 = Year - 1
-            Year_Minus1 = super().GetCarbon(Graph, Minus1, Cumulative)
-            Output_annual = (Annual - (Annual * ((0.5) ** ((Time - Year)/self.HalfLife))))
-            Output_minus1 = (Year_Minus1 - (Year_Minus1 * ((0.5) ** ((Time - Minus1)/self.HalfLife))))
-            Total += Output_annual - Output_minus1
-            return Total
-    
-    #def CountCarbon(self, Graph: nx.DiGraph, Time: int, Cumulative: bool = True) -> float:
-    #    Total = 0
-    #    for Year in range(Time + 1):
-    #        Annual = self.GetCarbon(Graph, Year, Cumulative)  
-    #        Total += (Annual * ((0.5) ** ((Time - Year)/self.HalfLife)))
-    #    return Total
-        
-    #def CountCarbonFrom(self, Graph: nx.DiGraph, From: ProportionNode, Time: int, Cumulative: bool = True) -> float:
-    #    Total = super().CountCarbonFrom(Graph, From, Time, Cumulative)
-    #    return Total * ((0.5) ** (Time/self.HalfLife))
-    
+        for Year in range(Time + 1): 
+            if Year == Time:
+                Total += 0
+            else:    
+                Annual = super().GetCarbon(Graph, Year, Cumulative)
+                Output_annual = (Annual - (Annual * ((0.5) ** ((Time - Year)/self.HalfLife)))) - \
+                    (Annual - (Annual * ((0.5) ** ((Time - Year - 1)/self.HalfLife))))
+                Total += Output_annual
+        return Total
+
 class PoolNode(ProportionNode):
     def __init__(self, NAME):
         super().__init__(NAME)
         
     def CountCarbon(self, Graph: nx.DiGraph, Time: int, Cumulative: bool = True) -> float:
         Total = 0
-        for Parent in Graph.predecessors(self):
-            ProportionParent = Graph.get_edge_data(Parent, self)["Proportion"]
-            ParentCarbon = Parent.GetCarbon(Graph, Time, Cumulative) # Récursivité
-            Total += (ProportionParent * ParentCarbon)   
+        for Year in range(Time + 1):
+            for Parent in Graph.predecessors(self):
+                ProportionParent = Graph.get_edge_data(Parent, self)["Proportion"]
+                ParentCarbon = Parent.GetCarbon(Graph, Year, Cumulative) # Récursivité
+                Total += (ProportionParent * ParentCarbon)   
         return Total
 
 
@@ -209,7 +155,8 @@ B = ProportionNode('B')
 C = DecayNode('C', 10)
 D = ProportionNode('D')
 E = DecayNode('E', 20)
-F = PoolNode('F')
+F = ProportionNode('F')
+G = PoolNode('G')
 
 test1.add_node(A)
 test1.add_node(B)
@@ -217,20 +164,22 @@ test1.add_node(C)
 test1.add_node(D)
 test1.add_node(E)
 test1.add_node(F)
+test1.add_node(G)
 
 test1.add_edge(A, B, Proportion = 1)
 test1.add_edge(B, C, Proportion = 1)
 test1.add_edge(C, D, Proportion = 1)
 test1.add_edge(D, E, Proportion = 1)
 test1.add_edge(E, F, Proportion = 1)
+test1.add_edge(F, G, Proportion = 1)
 
-A.GetCarbon(test1, 0)
+A.GetCarbon(test1, 2)
 B.GetCarbon(test1, 0)
-C.GetCarbon(test1, 3)
-D.GetCarbon(test1, 3)
-E.GetCarbon(test1, 3)
-
-F.CountCarbon(test1, 1)
+C.GetCarbon(test1, 4)
+D.GetCarbon(test1, 5)
+E.GetCarbon(test1, 5)
+F.GetCarbon(test1, 3)
+G.CountCarbon(test1, 5)
 
 test = [0, 1, 2, 3, 4, 5, 6]
 
