@@ -46,13 +46,21 @@ b = [10, 20, 100, 1000]
 c = np.convolve(a, b)
 c
 
-# Class ----------------------------------------------------------------------
+# Exception handling ---------------------------------------------------------
 
 class ConstError(Exception):
     def __init__(self, message: str):            
         super().__init__(message) # Super vient chercher la class parent
 
-class IndustrialNode(metaclass = ABCMeta): # aller voir la doc sur pourquoi ABC à l'intérieur d'une class et aller voir class virtuelle
+# gérer les recursion
+class RecursionNode(RecursionError):
+    def __init__(self, message: str):            
+        super().__init__(message) # Super vient chercher la class parent
+# Lire sur maximum recusion depth exceeded
+
+# Node class -----------------------------------------------------------------
+
+class IndustrialNode(metaclass = ABCMeta): # aller voir la doc ABC
     def __init__(self, LOCALNAME: str):
         self._NAME = LOCALNAME
     
@@ -69,12 +77,21 @@ class IndustrialNode(metaclass = ABCMeta): # aller voir la doc sur pourquoi ABC 
     
     @abstractmethod
     def GetCarbon(self, Graph: nx.DiGraph, Time: int, Cumulative: bool = True) -> float:
-        '''
-        Retreive carbon along the graph
+        ''' Get Carbon Documentation
+        
+        Cette fonction sert à retracer le flux de carbone parcourant le réseau
+        de noeuds. Cette information est utilisé par CountCarbon qui calcule
+        la quantité de carbone totale se retrouvant dans un noeud spécifique.
+        
+        Args: 
+            Graph : Le nx.DiGraph qui a servit à construire le réseau
+            Time (int): Le temps en année
+            Cumulative (bool): To be implemented
+            
+        Returns:
+            float: Une quantité de carbone
         '''
         pass
-        #print(type(self))
-        #return self.CountCarbon(Graph, Time, Cumulative)
     
     def __hash__(self): # Aller voir plus en détail ce que fait le hashing
         return hash(self.NAME)
@@ -103,10 +120,11 @@ class ProportionNode(IndustrialNode):
         super().__init__(NAME)
     
     def GetCarbon(self, Graph: nx.DiGraph, Time: int, Cumulative: bool = True) -> float:
+        Total = 0
         for Parent in Graph.predecessors(self):
             ProportionParent = Graph.get_edge_data(Parent, self)["Proportion"]
             ParentCarbon = Parent.GetCarbon(Graph, Time, Cumulative) # Récursivité
-            Total = ProportionParent * ParentCarbon
+            Total += ProportionParent * ParentCarbon
         return Total
 
 class DecayNode(ProportionNode):
@@ -139,65 +157,73 @@ class PoolNode(ProportionNode):
         super().__init__(NAME)
         
     def CountCarbon(self, Graph: nx.DiGraph, Time: int, Cumulative: bool = True) -> float:
-        Total = 0
-        for Year in range(Time + 1):
-            for Parent in Graph.predecessors(self):
-                ProportionParent = Graph.get_edge_data(Parent, self)["Proportion"]
-                ParentCarbon = Parent.GetCarbon(Graph, Year, Cumulative) # Récursivité
-                Total += (ProportionParent * ParentCarbon)   
-        return Total
-
+        ''' CountCarbon Documentation
+        
+        La fonction CountCarbon sert à faire le cumulatif des flux annuels 
+        de 0 jusqu'à l'année demandé pour un noeud en particulier grâce à la
+        fonction GetCarbon. En d'autres mots, la fonction CountCarbon sert
+        à calculer les stocks présent dans un noeud grâce à l'ensemble
+        des flux en provenance des nodes parents depuis le début.
+        
+        Args: 
+            Graph (nx.DiGraph): le DiGraph utilisé pour construire le réseau
+            Time (int): Le temps en année
+            Cumulative (bool): To be implemented
+            
+        Returns: 
+            float: Le cumulatif des fluxs, donc le stock de carbone présent
+            dans une noeud (self) à un temps donnée (Time)
+        
+        '''
+        try:
+            Total = 0
+            for Year in range(Time + 1):
+                for Parent in Graph.predecessors(self):
+                    ProportionParent = Graph.get_edge_data(Parent, self)["Proportion"]
+                    ParentCarbon = Parent.GetCarbon(Graph, Year, Cumulative)
+                    Total += (ProportionParent * ParentCarbon)   
+            return Total
+        except RecursionError:
+            raise  RecursionNode("Un maximum de demande a été effectué. \
+                                 Une boucle entre des ProportionNode est présente")
+            
+            
 
 test1 = nx.DiGraph()
 
 A = TopNode('A', [0], [10])  
 B = ProportionNode('B')
-C = DecayNode('C', 10)
+C = ProportionNode('C')
 D = ProportionNode('D')
-E = DecayNode('E', 20)
-F = ProportionNode('F')
+#E = DecayNode('E', 20)
+#F = ProportionNode('F')
 G = PoolNode('G')
 
 test1.add_node(A)
 test1.add_node(B)
 test1.add_node(C)
 test1.add_node(D)
-test1.add_node(E)
-test1.add_node(F)
 test1.add_node(G)
 
+test1.add_edge(D, B, Proportion = 0.5)
 test1.add_edge(A, B, Proportion = 1)
 test1.add_edge(B, C, Proportion = 1)
 test1.add_edge(C, D, Proportion = 1)
-test1.add_edge(D, E, Proportion = 1)
-test1.add_edge(E, F, Proportion = 1)
-test1.add_edge(F, G, Proportion = 1)
+test1.add_edge(D, G, Proportion = 0.5)
 
-A.GetCarbon(test1, 2)
+
+A.GetCarbon(test1, 0)
 B.GetCarbon(test1, 0)
-C.GetCarbon(test1, 4)
-D.GetCarbon(test1, 5)
-E.GetCarbon(test1, 5)
-F.GetCarbon(test1, 3)
+C.GetCarbon(test1, 2)
 G.CountCarbon(test1, 5)
 
-test = [0, 1, 2, 3, 4, 5, 6]
+print(B.GetCarbon(test1, 1))
+print(C.GetCarbon(test1, 3))
+#D.GetCarbon(test1, 5)
+#G.CountCarbon(test1, 3)
 
-for i in test:
-    while i < 4:
-        print(f'{i} est en bas de 4')
-        break
-    else: 
-        print('yo')
-        break
-        
 
-B.CountCarbonFrom(test1, A, 4) 
-
-for i in test1.predecessors(B):
-    type(i) == TopNode
-
-# Vérifier si on met list[something] ou juste []
+# Factory -------------------------------------------------------------------- 
 
 class Edge(): 
     def __init__(self, RECYCLING: bool, VALUES: list[float], OVERFLOW: bool):
@@ -264,18 +290,24 @@ class WPGraph():
         self._NODES = VALUES.get('Nodes', {})
         self._EDGES = VALUES.get('Edges', {})
         self._NODESID = []
-        self._FIRSTNODE = set([int(ID) for ID in self._NODES]) - set([edge_data['To'] for edge_data in self._EDGES.values()])
+        self._FIRSTNODE = set([int(ID) for ID in self._NODES]) -\
+            set([edge_data['To'] for edge_data in self._EDGES.values()])
         
         for node_id, node_data in self._NODES.items():
             self._NODESID.append(node_id)
-            setattr(self._GRAPH, f"_{node_id}", ProportionNode(node_data['Name']))
+            if node_data["Half-life"] > 0:
+                self._GRAPH.add_node
+                setattr(self._GRAPH, f"_{node_id}", DecayNode(node_data['Name']))
+            else: 
+                setattr(self._GRAPH, f"_{node_id}", ProportionNode(node_data['Name']))
             
         for edge_id, edge_data in self._EDGES.items():
             self._GRAPH.add_edge(edge_data['From'], edge_data['To'], Proportion = edge_data['Values'])
     
+test2._GRAPHS[1]._GRAPH._3458764562375288770.GetCarbon(test2, 1)
 
-for node_id, node_data in nodes.items():
-    print(f'Node ID: {node_id}')
+for node_id, node_data in test2._GRAPHS[1]._EDGES.items():
+    print(f'Node data: {node_data}')
     #for key, value in node_data.items():
     #    print(f'    {key}: {value}')
 
@@ -290,15 +322,19 @@ for node_id, node_data in nodes.items():
 
 test2 = GraphFactory('C:/Users/langa3/Documents/Script/Panier_produit/Graphs.json')
 
-for i in test2._GRAPHS[1]._GRAPH.nodes:
+for i in test2._GRAPHS:
+    print(i._NAME)
+
+test2._GRAPHS[1]._NODESID
+
+for i in test2._GRAPHS[0]._GRAPH.nodes:
     print(i)
 
 
 for i in test2._GRAPHS:
     print(i)
-test2._GRAPHS[1]._GRAPH._3458764562375288770.CountCarbon()
 
-for i, j in list(test2._GRAPHS[0]._GRAPH.edges.items()):
+for i, j in list(test2._GRAPHS[1]._GRAPH.edges.items()):
     liste = []
     for x in i:
         liste.append(x)
@@ -491,3 +527,13 @@ t2 = t1.get('Nodes', {})
 #                 getattr(self, f"__{GRAPH.upper()}__").add_edge(edge_data['From'], 
 #                                                                edge_data['To'], 
 #                                                                Proportion = edge_data['Values'])
+# 
+#test = [0, 1, 2, 3, 4, 5, 6]
+#
+#for i in test:
+#    while i < 4:
+#        print(f'{i} est en bas de 4')
+#        break
+#    else: 
+#        print('yo')
+#        break
