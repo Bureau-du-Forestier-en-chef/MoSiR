@@ -152,6 +152,19 @@ class DecayNode(ProportionNode):
                 Total += Output_annual
         return Total
 
+class RecyclingNode(ProportionNode):
+    def __init__(self, NAME: str):
+        super().__init__(NAME)
+    
+    def GetCarbon(self, Graph: nx.DiGraph, Time: int, Cumulative: bool = True) -> float:
+        Total = 0
+        for Year in range(Time + 1): 
+            if Year + 1 == Time:
+                Total += super().GetCarbon(Graph, Year, Cumulative)
+            else:    
+                Total += 0 # Pour Guillaume
+        return Total
+
 class PoolNode(ProportionNode):
     def __init__(self, NAME):
         super().__init__(NAME)
@@ -193,11 +206,13 @@ test1 = nx.DiGraph()
 
 A = TopNode('A', [0], [10])  
 B = ProportionNode('B')
-C = ProportionNode('C')
+C = RecyclingNode('C')
 D = ProportionNode('D')
 #E = DecayNode('E', 20)
 #F = ProportionNode('F')
 G = PoolNode('G')
+
+test1.add_node(TopNode('A', [0], [10]))
 
 test1.add_node(A)
 test1.add_node(B)
@@ -205,16 +220,14 @@ test1.add_node(C)
 test1.add_node(D)
 test1.add_node(G)
 
-test1.add_edge(D, B, Proportion = 0.5)
 test1.add_edge(A, B, Proportion = 1)
 test1.add_edge(B, C, Proportion = 1)
 test1.add_edge(C, D, Proportion = 1)
 test1.add_edge(D, G, Proportion = 0.5)
 
-
 A.GetCarbon(test1, 0)
 B.GetCarbon(test1, 0)
-C.GetCarbon(test1, 2)
+C.GetCarbon(test1, 1)
 G.CountCarbon(test1, 5)
 
 print(B.GetCarbon(test1, 1))
@@ -287,27 +300,34 @@ class WPGraph():
     def __init__(self, KEY, VALUES):
         self._GRAPH = nx.DiGraph()
         self._NAME = KEY
-        self._NODES = VALUES.get('Nodes', {})
-        self._EDGES = VALUES.get('Edges', {})
-        self._NODESID = []
+        #self._EDGES = VALUES.get('Edges', {})
+        #self._NODES = VALUES.get('Nodes', {})
+        #self._NODESID = []
         self._FIRSTNODE = set([int(ID) for ID in self._NODES]) -\
             set([edge_data['To'] for edge_data in self._EDGES.values()])
         
-        for node_id, node_data in self._NODES.items():
-            self._NODESID.append(node_id)
+        for node_id, node_data in VALUES.get('Nodes', {}):
+           # if node_id == self._FIRSTNODE:
+           #     self._GRAPH.add_note(TopNode(node_data['Name'], Time:, Quantities:))
             if node_data["Half-life"] > 0:
-                self._GRAPH.add_node
-                setattr(self._GRAPH, f"_{node_id}", DecayNode(node_data['Name']))
-            else: 
-                setattr(self._GRAPH, f"_{node_id}", ProportionNode(node_data['Name']))
+                self._GRAPH.add_node(DecayNode(node_data['Name'], \
+                    node_data['Half-life']))
+            if node_data['Recycling'] == 1: 
+                self._GRAPH.add_node(RecyclingNode(node_data['Name']))
+            else:
+                self._GRAPH.add_node(ProportionNode(node_data['Name']))
             
         for edge_id, edge_data in self._EDGES.items():
             self._GRAPH.add_edge(edge_data['From'], edge_data['To'], Proportion = edge_data['Values'])
     
 test2._GRAPHS[1]._GRAPH._3458764562375288770.GetCarbon(test2, 1)
 
-for node_id, node_data in test2._GRAPHS[1]._EDGES.items():
-    print(f'Node data: {node_data}')
+list(test2._GRAPHS[0]._FIRSTNODE)[0]
+
+for node_id, node_data in test2._GRAPHS[0]._NODES.items():
+    if list(test2._GRAPHS[0]._FIRSTNODE)[0] == node_id:
+        print('YUP')
+
     #for key, value in node_data.items():
     #    print(f'    {key}: {value}')
 
@@ -325,7 +345,7 @@ test2 = GraphFactory('C:/Users/langa3/Documents/Script/Panier_produit/Graphs.jso
 for i in test2._GRAPHS:
     print(i._NAME)
 
-test2._GRAPHS[1]._NODESID
+test2._GRAPHS[0]._FIRSTNODE
 
 for i in test2._GRAPHS[0]._GRAPH.nodes:
     print(i)
@@ -528,6 +548,9 @@ t2 = t1.get('Nodes', {})
 #                                                                edge_data['To'], 
 #                                                                Proportion = edge_data['Values'])
 # 
+
+# setattr(self._GRAPH, f"_{node_id}", DecayNode(node_data['Name']))
+
 #test = [0, 1, 2, 3, 4, 5, 6]
 #
 #for i in test:
