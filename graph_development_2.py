@@ -18,10 +18,10 @@ df.to_csv('C:/Users/langa3/Documents/Script/Panier_produit/dummy_table.csv',
           index = False, sep = ';')
 
 """
-
 import pandas as pd
 import numpy as np
-#import cProfile # Pour le run time
+import matplotlib.pyplot as plt
+import cProfile # Pour le run time
 import json
 import networkx as nx
 from abc import ABCMeta, abstractmethod
@@ -122,7 +122,9 @@ class ProportionNode(IndustrialNode):
     def GetCarbon(self, Graph: nx.DiGraph, Time: int, Cumulative: bool = True) -> float:
         Total = 0
         for Parent in Graph.predecessors(self):
-            ProportionParent = Graph.get_edge_data(Parent, self)["Proportion"]
+            ProportionParent = self._GetValueTime(Graph.get_edge_data(Parent, self)["Proportion"], Time)
+            if ProportionParent == 0:
+                continue
             ParentCarbon = Parent.GetCarbon(Graph, Time, Cumulative) # Récursivité
             Total += ProportionParent * ParentCarbon
         return Total
@@ -191,50 +193,34 @@ class PoolNode(ProportionNode):
         try:
             Total = 0
             for Year in range(Time + 1):
-                for Parent in Graph.predecessors(self):
-                    ProportionParent = Graph.get_edge_data(Parent, self)["Proportion"]
-                    ParentCarbon = Parent.GetCarbon(Graph, Year, Cumulative)
-                    Total += (ProportionParent * ParentCarbon)   
+                Total += super().GetCarbon(Graph, Year, Cumulative)  
             return Total
         except RecursionError:
             raise  RecursionNode("Un maximum de demande a été effectué. \
-                                 Une boucle entre des ProportionNode est présente")
-            
-            
+                                 Une boucle entre des ProportionNode est présente")          
 
-test1 = nx.DiGraph()
-
-A = TopNode('A', [0], [10])  
-B = ProportionNode('B')
-C = RecyclingNode('C')
-D = ProportionNode('D')
-#E = DecayNode('E', 20)
-#F = ProportionNode('F')
-G = PoolNode('G')
-
-test1.add_node(TopNode('A', [0], [10]))
-
-test1.add_node(A)
-test1.add_node(B)
-test1.add_node(C)
-test1.add_node(D)
-test1.add_node(G)
-
-test1.add_edge(A, B, Proportion = 1)
-test1.add_edge(B, C, Proportion = 1)
-test1.add_edge(C, D, Proportion = 1)
-test1.add_edge(D, G, Proportion = 0.5)
-
-A.GetCarbon(test1, 0)
-B.GetCarbon(test1, 0)
-C.GetCarbon(test1, 1)
-G.CountCarbon(test1, 5)
-
-print(B.GetCarbon(test1, 1))
-print(C.GetCarbon(test1, 3))
-#D.GetCarbon(test1, 5)
-#G.CountCarbon(test1, 3)
-
+#test1 = nx.DiGraph()
+#
+#A = TopNode('A', [0], [10])  
+#B = ProportionNode('B')
+#C = RecyclingNode('C')
+#D = ProportionNode('D')
+##E = DecayNode('E', 20)
+##F = ProportionNode('F')
+#G = PoolNode('G')
+#
+#test1.add_node(TopNode('A', [0], [10]))
+#
+#test1.add_node(A)
+#test1.add_node(B)
+#test1.add_node(C)
+#test1.add_node(D)
+#test1.add_node(G)
+#
+#test1.add_edge(A, B, Proportion = 1)
+#test1.add_edge(B, C, Proportion = 1)
+#test1.add_edge(C, D, Proportion = 1)
+#test1.add_edge(D, G, Proportion = 0.5)
 
 # Factory -------------------------------------------------------------------- 
 
@@ -290,209 +276,72 @@ class GraphFactory():
     def GetData(self, input):
         raise ConstError("Data from graphs can't be changed")
     
-    def GetNodesItems(self, GraphName: str):
-        return self._DATA[GraphName].get('Nodes', {}).items()
+    def GetNodes(self, GraphName: str):
+        return self._DATA[GraphName].get('Nodes', {})
     
-    def GetEdgesItems(self, GraphName: str):
-        return self._DATA[GraphName].get('Edges', {}).items()
+    def GetEdges(self, GraphName: str):
+        return self._DATA[GraphName].get('Edges', {})
         
 class WPGraph():
     def __init__(self, KEY, VALUES):
         self._GRAPH = nx.DiGraph()
         self._NAME = KEY
-        #self._EDGES = VALUES.get('Edges', {})
-        #self._NODES = VALUES.get('Nodes', {})
-        #self._NODESID = []
-        self._FIRSTNODE = set([int(ID) for ID in self._NODES]) -\
-            set([edge_data['To'] for edge_data in self._EDGES.values()])
+        _EDGES = VALUES.get('Edges', {})
+        _NODES = VALUES.get('Nodes', {})
+        _TOPNODE = set([int(ID) for ID in _NODES]) - \
+            set([data['To'] for keys, data in _EDGES.items()])
+        _ENDNODE = set([int(ID) for ID in _NODES]) - \
+            set([data['From'] for keys, data in _EDGES.items()])
         
-        for node_id, node_data in VALUES.get('Nodes', {}):
-           # if node_id == self._FIRSTNODE:
-           #     self._GRAPH.add_note(TopNode(node_data['Name'], Time:, Quantities:))
-            if node_data["Half-life"] > 0:
-                self._GRAPH.add_node(DecayNode(node_data['Name'], \
-                    node_data['Half-life']))
-            if node_data['Recycling'] == 1: 
-                self._GRAPH.add_node(RecyclingNode(node_data['Name']))
-            else:
-                self._GRAPH.add_node(ProportionNode(node_data['Name']))
-            
-        for edge_id, edge_data in self._EDGES.items():
-            self._GRAPH.add_edge(edge_data['From'], edge_data['To'], Proportion = edge_data['Values'])
-    
-test2._GRAPHS[1]._GRAPH._3458764562375288770.GetCarbon(test2, 1)
+        node_map = {}
+        
+        # Prendre le foor loop et le mettre dans le Factory?
+        
+        for node_id, node_data in _NODES.items():
+            new_node = ProportionNode(node_data['Name'])
+            if int(node_id) in _TOPNODE:    
+                new_node =  TopNode(node_data['Name'], [0], [10])   
+            elif int(node_id) in _ENDNODE:
+                new_node = PoolNode(node_data['Name'])
+            elif node_data["Half-life"] > 0:
+                new_node = DecayNode(node_data['Name'], node_data['Half-life'])
+            elif node_data['Recycling'] == 1: 
+                new_node = RecyclingNode(node_data['Name'])
+            self._GRAPH.add_node(new_node)
+            node_map[int(node_id)] = new_node        
 
-list(test2._GRAPHS[0]._FIRSTNODE)[0]
+        for edge_id, edge_data in _EDGES.items():
+            From = node_map[edge_data['From']]
+            To = node_map[edge_data['To']]
+            self._GRAPH.add_edge(From, To, Proportion = edge_data['Values'])
 
-for node_id, node_data in test2._GRAPHS[0]._NODES.items():
-    if list(test2._GRAPHS[0]._FIRSTNODE)[0] == node_id:
-        print('YUP')
-
-    #for key, value in node_data.items():
-    #    print(f'    {key}: {value}')
-
-#             for node_id, node_data in NODES:
-#                 setattr(self, f"_{node_id}", ProportionNode(node_data['Name']))
-#                 getattr(self, f"__{GRAPH.upper()}__").add_node(f"_{node_id}")
-#             for edge_id, edge_data in EDGES:
-#                 getattr(self, f"__{GRAPH.upper()}__").add_edge(edge_data['From'], 
-#                                                                edge_data['To'], 
-#                                                                Proportion = edge_data['Values'])
-
-
+        
 test2 = GraphFactory('C:/Users/langa3/Documents/Script/Panier_produit/Graphs.json')
 
-for i in test2._GRAPHS:
-    print(i._NAME)
-
-test2._GRAPHS[0]._FIRSTNODE
-
-for i in test2._GRAPHS[0]._GRAPH.nodes:
-    print(i)
-
-
-for i in test2._GRAPHS:
-    print(i)
-
-for i, j in list(test2._GRAPHS[1]._GRAPH.edges.items()):
-    liste = []
-    for x in i:
-        liste.append(x)
-    print(f"De {liste[0]._NAME} à {liste[1]._NAME} à {list(j.values())[0]}")    
-
-
-# ----------------------------------------------------------------------------
-
-
-with open('C:/Users/langa3/Documents/Script/Panier_produit/Graphs.json', "r") as files:
-    data = json.load(files)
-
-Pb = data.get('Produitsdubois', {})
-nodes = Pb.get('Nodes', {})
-edge = Pb.get('Edges', {})
-nodes
-edge
-Pb
-NODES_ID = [int(ID) for ID in nodes]
-TO_EDGES = [edge_data['To'] for edge_data in edge.values()]
-
-NODES_ID
-TO_EDGES
-
-FIRSTNODE =set(NODES_ID) - set(TO_EDGES)
-FIRSTNODE
-{3458764561110338471, 3458764561110458430}
-
-n_test = []
-for id in nodes:
-    n_test.append(id)
-[id for id in nodes]
-
-for node_id, node_data in nodes.items():
-    print(f'Node ID: {node_id}')
-    #for key, value in node_data.items():
-    #    print(f'    {key}: {value}')
-
-for edge_id, edge_data in edge.items():
-    print(f'Edge ID: {edge_id}')
-    #Edge(edge_data['Recycling'], edge_data['Values'], edge_data['Overflow'])
-    for key, value in edge_data.items():
-        print(f'    {key}: {value}')
-        print(edge_data['Values'])
-        #test = int(edge_data['Values'])
-        #print(test + 1)
-
-for edge_id, edge_data in edge.items():
-    for key, value in edge_data.items():
-        print(edge_data['To'])
-
-# ----------------------------------------------------------------------------
-
-T0 = TopNode("Roundwood", Time = [12, 13, 14], Quantities = [50, 75, 100])
-
-T1 = ProportionNode("Industrial roundwood")
-T1_1 = ProportionNode("Export")
-
-T2_1 = ProportionNode("Bioenergy")
-T2_2 = ProportionNode("PulpPaper")
-
-T3_1 = ProportionNode("Residential")
-T3_2 = ProportionNode("NonResidential")
-
-T4 = ProportionNode("CO2")
-T4_1 = ProportionNode("CH4")
-
-test = nx.DiGraph()
-
-test.add_node(T0)
-test.add_node(T1)
-test.add_node(T1_1)
-test.add_node(T2_1)
-test.add_node(T2_2)
-test.add_node(T3_1)
-test.add_node(T3_2)
-test.add_node(T4)
-test.add_node(T4_1)
-
-test.add_edge(T0, T1, Proportion = 0.9)
-test.add_edge(T0, T1_1, Proportion = 0.1)
-test.add_edge(T1, T2_1, Proportion = 0.5)
-test.add_edge(T1, T2_2, Proportion = 0.5)
-test.add_edge(T2_1, T3_1, Proportion = 0.45)
-test.add_edge(T2_1, T3_2, Proportion = 0.55)
-test.add_edge(T2_2, T4_1, Proportion = 1)
-test.add_edge(T3_1, T4, Proportion = 1)
-test.add_edge(T3_2, T4, Proportion = 0.7)
-test.add_edge(T3_2, T4_1, Proportion = 0.3)
-test.add_edge(T1_1, T4, Proportion = 1)
-
-T4_1.CountCarbon(test, 0)
-
-for i, j in list(test.edges.items()):
-    liste = []
-    for x in i:
-        liste.append(x)
-    print(f"De {liste[0]._NAME} à {liste[1]._NAME} à {list(j.values())[0]}")    
-
-test.edges.items
-
-for i in list(test.nodes):
-    print(i._NAME)
-    print(i.CountCarbon(test, 0))
-
-# Json section ---------------------------------------------------------------
-
-import json
-
-with open('C:/Users/langa3/Documents/Script/Panier_produit/Graphs.json', "r") as files:
-    data = json.load(files)
-
-Pb = data.get('Produitsdubois', {})
-nodes = Pb.get('Nodes', {})
-edge = Pb.get('Edges', {})
-
-for node_id, node_data in nodes.items():
-    print(f'Node ID: {node_id}')
-    for key, value in node_data.items():
-        print(f'    {key}: {value}')
-
-for edge_id, edge_data in edge.items():
-    print(f'Edge ID: {edge_id}')
-    #Edge(edge_data['Recycling'], edge_data['Values'], edge_data['Overflow'])
-    for key, value in edge_data.items():
-        print(f'    {key}: {value}')
-        print(edge_data['Values'])
-        #test = int(edge_data['Values'])
-        #print(test + 1)
-
-with open('C:/Users/langa3/Documents/Script/Panier_produit/Graphs.json', "r") as files:
-    test_dict = {}
-    data = json.load(files)
-    for graph in data.keys():
-        test_dict[graph] = data.get(graph, {})
-        
-t1 = test_dict.get('Produitsdubois', {})
-t2 = t1.get('Nodes', {})
+#nx.draw(test2._GRAPHS[0]._GRAPH)
+#with open('C:/Users/langa3/Documents/Script/Panier_produit/Graphs.json', "r") as files:
+#    data = json.load(files)
+#Pb = data.get('Produitsdubois_V2', {})
+#nodes = Pb.get('Nodes', {})
+#edges = Pb.get('Edges', {})
+#
+#edges
+#
+#for edge_id, edge_data in edges.items():
+#    From = edge_data['From']
+#    To = edge_data['To']
+#    nom_from = None
+#    nom_to = None
+#    for node_id, node_data in nodes.items():
+#        if int(node_id) == From:
+#            nom_from = node_data['Name']
+#        elif int(node_id) == To:
+#            nom_to = node_data['Name']
+#    print(f'Connection entre {nom_from} à {nom_to}')
+   
+for i in test2._GRAPHS[0]._GRAPH.nodes(): 
+    if type(i) == PoolNode:
+        print(f"La node {i._NAME} contient {i.CountCarbon(test2._GRAPHS[0]._GRAPH, 10)} à l'année 10")
 
 # Test section --------------------------------------------------------------- 
 
