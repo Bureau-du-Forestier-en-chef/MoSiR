@@ -1,5 +1,4 @@
-#+ Last update : 2023-09-25
-# Author : Gabriel Landry
+# Last update : 2023-10-05 (GL)
 
 """ 
 Pour faire un profile manuel :
@@ -40,11 +39,11 @@ Insane la fonction, passe le premier vecteur en ordre d'occurance au deuxième,
 exemple : 1 * 10, 1 * 20 + 5 * 10, 1 * 100 + 5 * 20, et ainsi de suite
 '''
 
-a = [1, 5]
-b = [10, 20, 100, 1000]
+#a = [1, 5]
+#b = [10, 20, 100, 1000]
 
-c = np.convolve(a, b)
-c
+#c = np.convolve(a, b)
+#c
 
 # Exception handling ---------------------------------------------------------
 
@@ -117,6 +116,9 @@ class TopNode(IndustrialNode):
     
     def GetCarbon(self, Graph: WPGraph, Time: int, Cumulative: bool = True) -> float:
         return self._GetQuantityTime(Time)
+    
+    def CountCarbon(self, Graph: WPGraph, Time: int, Cumulative: bool = True) -> float:
+        return self._GetQuantityTime(Time)
         
 class ProportionNode(IndustrialNode):
     def __init__(self, NAME: str):
@@ -124,7 +126,6 @@ class ProportionNode(IndustrialNode):
         
     #  À y revenir
     #def _GutsofGetCarbon(self, Proportion: list[float], Values: list[float]) -> float:
-        
     
     def GetCarbon(self, Graph: WPGraph, Time: int, Cumulative: bool = True) -> float:
         Total = 0
@@ -200,6 +201,9 @@ class RecyclingNode(ProportionNode):
             if Year + 1 == Time:
                 Total += super().GetCarbon(Graph, Year, Cumulative)
         return Total
+    
+    def CountCarbon(self, Graph: WPGraph, Time: int, Cumulative: bool = True) -> float:
+        Total = super().GetCarbon(Graph, Time, Cumulative)
 
 class PoolNode(ProportionNode):
     def __init__(self, NAME):
@@ -233,45 +237,6 @@ class PoolNode(ProportionNode):
             raise  RecursionNode("Un maximum de demande a été effectué. \
                                  Une boucle entre des ProportionNode est présente")          
 
-#test1 = nx.DiGraph()
-#
-#A = TopNode('A', [0], [10])  
-#B = DecayNode('B', 3)
-#C = DecayNode('C', 3)
-#D = DecayNode('D', 3)
-#E = RecyclingNode('E')
-#F = PoolNode('F')
-###F = ProportionNode('F')
-##G = PoolNode('G')
-##
-##test1.add_node(TopNode('A', [0], [10]))
-##
-#test1.add_node(A)
-#test1.add_node(B)
-#test1.add_node(C)
-#test1.add_node(D)
-#test1.add_node(E)
-#test1.add_node(F)
-##test1.add_node(G)
-##
-#test1.add_edge(A, B, Proportion = [1])
-#test1.add_edge(B, C, Proportion = [1])
-#test1.add_edge(C, D, Proportion = [0.5])
-#test1.add_edge(C, E, Proportion = [0.5])
-#test1.add_edge(E, B, Proportion = [1])
-#test1.add_edge(D, F, Proportion = [1])
-#
-#total = 0
-#for i in test1.nodes():
-#    if type(i) == PoolNode:
-#        total += i.CountCarbon(test1, 16)
-#    if type(i) == DecayNode:
-#        total += i.CountCarbon(test1, 16)
-#    if type(i) == RecyclingNode:
-#        total += i.GetCarbon(test1, 17)
-#    print(total)
-#
-
 # Factory -------------------------------------------------------------------- 
 
 #class Edge(): 
@@ -299,7 +264,7 @@ class PoolNode(ProportionNode):
 #    def GetValueTime(self, Time: int) -> float:
 #        return self._VALUES[min(Time, len(self._VALUES) - 1)]
     
-class GraphFactory2(): 
+class GraphFactory(): 
     def __init__(self, DIR: str):
         self._DIRECTORY = DIR
         with open(self._DIRECTORY, "r") as files: 
@@ -312,7 +277,7 @@ class GraphFactory2():
         keys.sort()
         for KEY in keys:
             self._GRAPHNAME.append(KEY.upper())
-            self._GRAPHS.append(WPGraph2(KEY))
+            self._GRAPHS.append(WPGraph(KEY))
             _EDGES = self.GetData[KEY].get('Edges', {})
             _NODES = self.GetData[KEY].get('Nodes', {})
             _TOPNODES = set([int(ID) for ID in _NODES]) - \
@@ -356,7 +321,7 @@ class GraphFactory2():
     def GetData(self, input):
         raise ConstError("Data from graphs can't be changed outside Miro")  
    
-class WPGraph2():
+class WPGraph():
     def __init__(self, KEY):
         super().__init__()
         self._Graph = nx.DiGraph()
@@ -365,8 +330,8 @@ class WPGraph2():
     def AddNode(self, node):
         return self._Graph.add_node(node)
     
-    def AddEdge(self, From, To, Proportion_value):
-        return self._Graph.add_edge(From, To, Proportion = Proportion_value)
+    def AddEdge(self, From, To, Proportions):
+        return self._Graph.add_edge(From, To, Proportion = Proportions)
     
     def GetEdgeProportions(self, From: IndustrialNode, To: IndustrialNode) -> list[float]:
         return self._Graph.get_edge_data(From, To)["Proportion"]
@@ -378,70 +343,9 @@ class WPGraph2():
         return self._Graph.nodes()
     
     @property
-    def GetGraphName(self):
+    def GetName(self):
         return self._NAME
     
-    @GetGraphName.setter
-    def GetGraphName(self):
+    @GetName.setter
+    def GetName(self):
         return ConstError("Graph name can't be changed outside Miro")
-       
-test3 = GraphFactory2('C:/Users/langa3/Documents/Script/Panier_produit/Graphs.json')
-
-#for i in test3._GRAPHS[0].nodes():
-#    print(i)
-
-total = 0
-
-for i in test3._GRAPHS[0].Nodes():
-    if type(i) == PoolNode:
-        #print(f"La node {i._NAME} contient {i.CountCarbon(test3._GRAPHS[0], 10)} à l'année 10")
-        total += i.CountCarbon(test3._GRAPHS[0], 10)
-    if type(i) == DecayNode:
-        #print(f"La node {i._NAME} contient {i.CountCarbon(test3._GRAPHS[0], 10)} à l'année 10")
-        total += i.CountCarbon(test3._GRAPHS[0], 10)
-        print(total)
-        
-        
-#total = 0
-#for i in test3._GRAPHS[0].nodes():
-#    if type(i) == PoolNode:
-#        total += i.CountCarbon(test3._GRAPHS[0], 10)
-#    elif type(i) == DecayNode:
-#        total += i.CountCarbon(test3._GRAPHS[0], 10)
-#    print(total)
-    
-    
-#nx.draw(test2._GRAPHS[0]._GRAPH)
-#with open('C:/Users/langa3/Documents/Script/Panier_produit/Graphs.json', "r") as files:
-#    data = json.load(files)
-#Pb = data.get('Produitsdubois_V2', {})
-#nodes = Pb.get('Nodes', {})
-#edges = Pb.get('Edges', {})
-#
-#edges
-#
-#for edge_id, edge_data in edges.items():
-#    From = edge_data['From']
-#    To = edge_data['To']
-#    nom_from = None
-#    nom_to = None
-#    for node_id, node_data in nodes.items():
-#        if int(node_id) == From:
-#            nom_from = node_data['Name']
-#        elif int(node_id) == To:
-#            nom_to = node_data['Name']
-#    print(f'Connection entre {nom_from} à {nom_to}')
- 
-# Test section --------------------------------------------------------------- 
-
-# class CONST(object):
-#     __slots__ = ()
-#     FOO = 1234
-# 
-# CONST_1 = CONST()
-# 
-# print(CONST_1.FOO)    # 1234
-# 
-# CONST_1.FOO = 4321              # AttributeError: 'CONST' object attribute 'FOO' is read-only
-# CONST_1.__dict__['FOO'] = 4321  # AttributeError: 'CONST' object has no attribute '__dict__'
-# CONST_1.BAR = 5678 
