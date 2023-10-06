@@ -204,6 +204,7 @@ class RecyclingNode(ProportionNode):
     
     def CountCarbon(self, Graph: WPGraph, Time: int, Cumulative: bool = True) -> float:
         Total = super().GetCarbon(Graph, Time, Cumulative)
+        return Total
 
 class PoolNode(ProportionNode):
     def __init__(self, NAME):
@@ -304,6 +305,7 @@ class GraphFactory():
                 To = node_map[edge_data['To']]
                 self._GRAPHS[Graph_num].AddEdge(From, To, edge_data['Values'])  
             Graph_num += 1     
+    
 
     @property
     def GetGraphName(self) -> list:
@@ -313,6 +315,11 @@ class GraphFactory():
     def GetGraphName(self, input):
         raise ConstError("Graph name can't be changed outside Miro")
     
+    def GetGraph(self, Name) -> WPGraph:
+        Names = self.GetGraphName
+        Index = Names.index(Name)
+        return self._GRAPHS[Index]
+        
     @property
     def GetData(self):
         return self._DATA
@@ -320,7 +327,7 @@ class GraphFactory():
     @GetData.setter
     def GetData(self, input):
         raise ConstError("Data from graphs can't be changed outside Miro")  
-   
+
 class WPGraph():
     def __init__(self, KEY):
         super().__init__()
@@ -337,7 +344,10 @@ class WPGraph():
         return self._Graph.get_edge_data(From, To)["Proportion"]
     
     def GetPredecessors(self, Node: IndustrialNode) -> list[IndustrialNode]:
-        return [Parent for Parent in self._Graph.predecessors(Node)]
+        return self._Graph.predecessors(Node)
+    
+    def GetSuccessors(self, Node: IndustrialNode) -> list[IndustrialNode]:
+        return self._Graph.successors(Node)
     
     def Nodes(self):
         return self._Graph.nodes()
