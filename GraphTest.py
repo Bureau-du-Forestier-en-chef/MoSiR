@@ -1,8 +1,13 @@
 import GraphFactory as gf
+import warnings
 
 class QuantityError(Exception):
     def __init__(self, message: str):            
-        super().__init__(message) # Super vient chercher la class parent
+        super().__init__(message) 
+        
+class EdgeError(Exception):
+    def __init__(self, message: str):            
+        super().__init__(message)
 
 # Test indépendant du import -------------------------------------------------
 
@@ -49,9 +54,9 @@ class QuantityError(Exception):
 
 # Test de l'import -----------------------------------------------------------
 
-Test_02 = gf.GraphFactory('C:/Users/langa3/Documents/Script/Panier_produit/Graphs.json')
+Test_02 = gf.GraphFactory('T:/Donnees/Usagers/LANGA3/MoSiR/Graphs_03.json')
 
-# Total des Edges  
+# Total des Edges 
 
 for Name in Test_02.GetGraphName:
     Graph = Test_02.GetGraph(Name)
@@ -62,7 +67,9 @@ for Name in Test_02.GetGraphName:
                 continue
             Total += Node._GetValueTime(Graph.GetEdgeProportions(Node, Successors), 0)
         if Total != 1 and Total != 0:
-            print(f'{Total} pour {Node.NAME}')  
+            raise EdgeError(f"La somme des edges sortant de {Node.NAME} n'est pas égale à 100%") 
+        if Total == 0:
+            warnings.warn(f'La somme des edges sortant de la node {Node.NAME} est de 0')
 
 #total = 0
 #for i in Test_02._GRAPHS[0].Nodes():
@@ -76,27 +83,27 @@ for Name in Test_02.GetGraphName:
 #        #total += i.CountCarbon(Test_02._GRAPHS[0], 0)
 #total
 #
-## Total input versus in system
-#
-#for Name in Test_02.GetGraphName:
-#    Graph = Test_02.GetGraph(Name)
-#    Input = 0
-#    for Time in range(5):
-#        InSystem = 0
-#        for Node in Graph.Nodes():
-#            if type(Node) == gf.TopNode:
-#                Input += Node.CountCarbon(Graph, Time)
-#            elif Node.NAME == 'N2O emissions':
-#                continue
-#            elif type(Node) == gf.PoolNode or type(Node) == gf.DecayNode or \
-#                type(Node) == gf.RecyclingNode:
-#                InSystem += Node.CountCarbon(Graph, Time)
-#        if Input == InSystem :
-#            continue
-#        else:
-#            raise QuantityError(f"Graph : {Graph.GetName} La quantité total \
-#                en input ({Input}) au temps {Time} n'est pas égale au total \
-#                présent dans le système ({InSystem})")
+# Total input versus in system
+for Name in Test_02.GetGraphName:
+    Graph = Test_02.GetGraph(Name)
+    Input = 0
+    for Time in range(10): # Ajuster le temps des simulations
+        InSystem = 0
+        for Node in Graph.Nodes():
+            if type(Node) == gf.TopNode:
+                Input += Node.CountCarbon(Graph, Time)
+            elif Node.NAME == 'N2O emissions':
+                continue
+            elif type(Node) == gf.PoolNode or type(Node) == gf.DecayNode or \
+                type(Node) == gf.RecyclingNode:
+                InSystem += Node.CountCarbon(Graph, Time)
+        if Input > InSystem - 0.0000001 and Input < InSystem + 0.0000001 :
+            print(f'Time: {Time}, Input: {Input}, InSystem: {InSystem}')
+            continue
+        else:
+            raise QuantityError(f"Graph : {Graph.GetName} La quantité total \
+                en input ({Input}) au temps {Time} n'est pas égale au total \
+                présent dans le système ({InSystem})")
   
   
 

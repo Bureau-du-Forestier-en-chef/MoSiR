@@ -23,6 +23,7 @@ import matplotlib.pyplot as plt
 import cProfile # Pour le run time
 import json
 import networkx as nx
+import warnings
 from abc import ABCMeta, abstractmethod
 
 # Test output avec couleur ---------------------------------------------------
@@ -264,7 +265,7 @@ class PoolNode(ProportionNode):
 #   
 #    def GetValueTime(self, Time: int) -> float:
 #        return self._VALUES[min(Time, len(self._VALUES) - 1)]
-    
+
 class GraphFactory(): 
     def __init__(self, DIR: str):
         self._DIRECTORY = DIR
@@ -283,6 +284,10 @@ class GraphFactory():
             _NODES = self.GetData[KEY].get('Nodes', {})
             _TOPNODES = set([int(ID) for ID in _NODES]) - \
                 set([data['To'] for keys, data in _EDGES.items()])
+            if len(_TOPNODES) > 1:
+                warnings.warn(f"Attention, plus d'une TopNode présente.\
+                    Les inputs vont être acheminés à ces deux nodes : \
+                    {_TOPNODES}")  
             _LASTNODES = set([int(ID) for ID in _NODES]) - \
                 set([data['From'] for keys, data in _EDGES.items()])
         
