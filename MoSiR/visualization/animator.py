@@ -5,16 +5,17 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 """
 
 from pyvis.network import Network
-from . import Utilities
+from .. import utilities
 import os
 
-class HTMLAnimation:
+class Htmlanimation:
     def __init__(self,Graphdict : dict(),Name:str):
         self.__NAME = Name
         self.__BASEGRAPH = Graphdict
-        self.__COLORS = self.__GetRenderingItems("inputs/Rendering.json")
+        base_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),"inputs")
+        self.__COLORS = self.__GetRenderingItems(os.path.join(base_path,"Rendering.json"))
     def __GetRenderingItems(self,File:str)->{}:
-        return Utilities.JsonParser.Read(File)
+        return utilities.Jsonparser.read(File)
     def __GetEdgeWeigth(self,EdgeData: dict(), Time : int) -> float:
         Value = int(EdgeData["Values"][-1]* 100)
         if Time < len(EdgeData["Values"]):

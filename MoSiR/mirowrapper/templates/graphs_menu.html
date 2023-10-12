@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link rel="stylesheet" href="../static/css/style.css" />
+        <link rel="stylesheet" href="{{ url_for('.static', filename='css/style.css') }}" />
         <title>Génération des graphs</title>
         <!-- <link rel="stylesheet" href="../static/css/mirotone/styles.css" /> --> 
         <script src="https://miro.com/app/static/sdk/v2/miro.js"></script>
@@ -11,7 +11,7 @@
     <body>
             <div class="grid container">
                 <div class="cs1 ce12">
-                    <img src="/static/image/Illustration_Blog_RunningRemoteMeetings_FY22Q4-1.png" alt="" />
+                    <img src="{{ url_for('.static', filename='image/Illustration_Blog_RunningRemoteMeetings_FY22Q4-1.png') }}" alt="" />
                 </div>
                 <div name="WPSelection" class="selectpicker form-control">
                     <div class="cs1 ce12">
@@ -33,7 +33,7 @@
                             </table>
                             <a
                             class="button button-primary"
-                            href='/GraphRendering/<{{ Name }}>'
+                            href={{ url_for('Mirowrapper./graphrendering/<HTMLname>',HTMLname="{}".format(Name) ) }}
                             target="_blank"
                             >
                             Visualiser
@@ -44,7 +44,7 @@
                 <div class="cs1 ce12">
                         <a
                             class="button button-primary"
-                            href='/GraphsDownload'
+                            href={{ url_for('Mirowrapper./graphs_download')}}
                             target="_blank"
                         >
                         Télécharger les Graphs

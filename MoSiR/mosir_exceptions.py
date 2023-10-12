@@ -4,7 +4,7 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 """
 
-class MiroError(Exception):
+class Miroerror(Exception):
     def __init__(self, message:str,itemid:int):            
         super().__init__(message)
         self.__ID = itemid

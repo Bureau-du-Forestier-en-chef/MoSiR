@@ -7,7 +7,10 @@ import sys
 sys.path.append("../MoSiR")
 
 from MoSiR import Flaskwrapper
-from MoSiR.blueprints.Mirowrapper.miro import Mirowrapper
+from MoSiR.mirowrapper.views import mirowrapper
+from MoSiR.visualization.views import visualization
+from MoSiR.download.views import download
+from MoSiR.upload.views import upload
 
 
 if __name__ == '__main__':
@@ -15,7 +18,10 @@ if __name__ == '__main__':
     port = 3000
     host = '0.0.0.0'
     server = Flaskwrapper(base_url,host,port)
-    server.register(Mirowrapper())
+    server.register(mirowrapper)
+    server.register(visualization)
+    server.register(download)
+    server.register(upload)
     server.sign_in()
     server.run()
     
