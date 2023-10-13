@@ -12,6 +12,7 @@ from MoSiR.visualization.views import visualization
 from MoSiR.download.views import download
 from MoSiR.upload.views import upload
 from MoSiR.stats.views import stats
+from MoSiR.reporting.views import reporting
 
 
 if __name__ == '__main__':
@@ -24,6 +25,7 @@ if __name__ == '__main__':
     server.register(download)
     server.register(upload)
     server.register(stats)
+    server.register(reporting)
     server.sign_in()
     server.run()
     

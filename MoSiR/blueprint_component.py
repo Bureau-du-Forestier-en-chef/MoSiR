@@ -5,8 +5,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 """
 from abc import ABC
 from abc import abstractmethod
-from flask import Blueprint,Flask,Response,url_for,request,render_template
-import os,webbrowser
+from flask import Blueprint,Response,url_for,request
+import os
 from . import utilities
 from .generators import Dictgenerator,Generator
 
