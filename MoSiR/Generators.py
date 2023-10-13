@@ -5,7 +5,6 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 """
 
 from abc import ABCMeta
-from abc import abstractmethod
 
 class Generator(metaclass=ABCMeta):
     def __init__(self,GraphName:str):
@@ -26,7 +25,10 @@ class Generator(metaclass=ABCMeta):
                     if Name not in ["Name","Values","From","To","X","Y"]:
                         if Name not in Alldata[Datatype]:
                             Alldata[Datatype][Name] = 0
-                        Alldata[Datatype][Name] += int(Element)
+                        target_value = 0
+                        if int(Element) > 0:
+                            target_value = 1
+                        Alldata[Datatype][Name] += target_value
                     elif (Name == "Values"):
                         for Value in Element:
                             Minedgevalue = min(Value,Minedgevalue)

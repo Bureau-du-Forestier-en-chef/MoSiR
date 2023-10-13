@@ -10,20 +10,33 @@
 <style>
 html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
 </style>
+<style>
+  body {
+    background-image: url("{{ url_for('static', filename='image/MoSiR-logos_white.png') }}");
+    background-repeat: no-repeat;
+    background-position: 50% 10%; 
+    background-size: 60%;
+  }
+</style>
 </head>
 <body class="w3-light-grey">
 
 <!-- Top container -->
 <div class="w3-bar w3-top w3-black w3-large" style="z-index:4">
   <button class="w3-bar-item w3-button w3-hide-large w3-hover-none w3-hover-text-light-grey" onclick="w3_open();"><i class="fa fa-bars"></i>  Menu</button>
-  <span class="w3-bar-item w3-right"><img src="{{ url_for('.static', filename='image/MoSiR-logos_white.png') }}" style="width:50px;height:50px;"></span>
+  <span class="w3-bar-item w3-right">MoSiR</span>
 </div>
 
 <!-- Sidebar/menu -->
 <nav class="w3-sidebar w3-collapse w3-white w3-animate-left" style="z-index:3;width:300px;" id="mySidebar"><br>
+  <div class="w3-container w3-row">
+    <div class="w3-col s4">
+      <img alt="Logo MoSiR" src="{{ url_for('static', filename='image/MoSiR-logos.jpeg') }}" class="w3-circle w3-margin-right" style="width:50px">
+    </div>
+  </div>
   <hr>
   <div class="w3-container">
-    <h5>Aller à</h5>
+    <h5>Allez à</h5>
   </div>
   <div class="w3-bar-block">
     <a href="#" class="w3-bar-item w3-button w3-padding-16 w3-hide-large w3-dark-grey w3-hover-black" onclick="w3_close()" title="close menu"><i class="fa fa-remove fa-fw"></i>  Close Menu</a>
@@ -63,9 +76,12 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
   
 
   <!-- Footer -->
-  <footer class="w3-container w3-padding-16 w3-light-grey">
-    <h4>FOOTER</h4>
-    <p>Powered by <a href="https://www.w3schools.com/w3css/default.asp" target="_blank">w3.css</a></p>
+  <footer class="w3-container w3-padding-16" margin-top: -200px>
+    <!--<h4>FOOTER</h4>-->
+    <p>Par le <a href="https://github.com/Bureau-du-Forestier-en-chef/" target="_blank">
+    <img alt="fec" src="{{ url_for('static', filename='image/fec.png') }}" class="w3-circle w3-margin-right" style="width:20px">
+    Bureau du Forestier en Chef
+    </a></p>
   </footer>
 
   <!-- End page content -->

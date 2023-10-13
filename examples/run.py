@@ -11,6 +11,7 @@ from MoSiR.mirowrapper.views import mirowrapper
 from MoSiR.visualization.views import visualization
 from MoSiR.download.views import download
 from MoSiR.upload.views import upload
+from MoSiR.stats.views import stats
 
 
 if __name__ == '__main__':
@@ -22,6 +23,7 @@ if __name__ == '__main__':
     server.register(visualization)
     server.register(download)
     server.register(upload)
+    server.register(stats)
     server.sign_in()
     server.run()
     
