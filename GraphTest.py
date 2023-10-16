@@ -11,42 +11,42 @@ class EdgeError(Exception):
 
 # Test indépendant du import -------------------------------------------------
 
-#Test_01 = gf.WPGraph("Test Graph")
-#
-#A = gf.TopNode('A', [0], [10])  
-#B = gf.ProportionNode('B')
-#C = gf.DecayNode('C', 3)
-#D = gf.DecayNode('D', 3)
-#E = gf.RecyclingNode('E')
-#F = gf.PoolNode('F')
-#
-#Test_01.AddNode(A)
-#Test_01.AddNode(B)
-#Test_01.AddNode(C)
-#Test_01.AddNode(D)
-#Test_01.AddNode(E)
-#Test_01.AddNode(F)
-#
-#Test_01.AddEdge(A, B, Proportions = [1])
-#Test_01.AddEdge(B, C, Proportions = [1])
-#Test_01.AddEdge(C, D, Proportions = [0.5])
-#Test_01.AddEdge(C, E, Proportions = [0.5])
-#Test_01.AddEdge(E, B, Proportions = [1])
-#Test_01.AddEdge(D, F, Proportions = [1])
-#
-#A.CountCarbon(Test_01, 0) == C.CountCarbon(Test_01, 0)
-#B.GetCarbon(Test_01, 0)
-#C.CountCarbon(Test_01, 0)
-
-#total = 0
-#for i in test1.nodes():
-#    if type(i) == PoolNode:
-#        total += i.CountCarbon(test1, 16)
-#    if type(i) == DecayNode:
-#        total += i.CountCarbon(test1, 16)
-#    if type(i) == RecyclingNode:
-#        total += i.GetCarbon(test1, 17)
-#    print(total)
+# Test_01 = gf.WPGraph("Test Graph")
+# 
+# A = gf.TopNode('A', [0], [10])  
+# B = gf.ProportionNode('B')
+# C = gf.DecayNode('C', 3)
+# D = gf.DecayNode('D', 3)
+# E = gf.RecyclingNode('E')
+# F = gf.PoolNode('F')
+# 
+# Test_01.AddNode(A)
+# Test_01.AddNode(B)
+# Test_01.AddNode(C)
+# Test_01.AddNode(D)
+# Test_01.AddNode(E)
+# Test_01.AddNode(F)
+# 
+# Test_01.AddEdge(A, B, Proportions = [1])
+# Test_01.AddEdge(B, C, Proportions = [1])
+# Test_01.AddEdge(C, D, Proportions = [0.5])
+# Test_01.AddEdge(C, E, Proportions = [0.5])
+# Test_01.AddEdge(E, B, Proportions = [1])
+# Test_01.AddEdge(D, F, Proportions = [1])
+# 
+# A.CountCarbon(Test_01, 0) == C.CountCarbon(Test_01, 0)
+# B.GetCarbon(Test_01, 0)
+# C.CountCarbon(Test_01, 0)
+ 
+# total = 0
+# for i in test1.nodes():
+#     if type(i) == PoolNode:
+#         total += i.CountCarbon(test1, 16)
+#     if type(i) == DecayNode:
+#         total += i.CountCarbon(test1, 16)
+#     if type(i) == RecyclingNode:
+#         total += i.GetCarbon(test1, 17)
+#     print(total)
 #
 
 
@@ -56,6 +56,26 @@ class EdgeError(Exception):
 
 Test_02 = gf.GraphFactory('T:/Donnees/Usagers/LANGA3/MoSiR/Graphs_03.json')
 
+# First node et last node
+
+Graphs_keys = list(Test_02.GetData.keys())
+
+for KEY in Graphs_keys:
+    NODES = Test_02.GetData[KEY].get('Nodes', {})
+    EDGES = Test_02.GetData[KEY].get('Edges', {})
+    _TOPNODES = set([int(ID) for ID in NODES]) - \
+                set([data['To'] for keys, data in EDGES.items()])
+    if len(_TOPNODES) > 1:
+        warnings.warn(f"Attention, plus d'une TopNode présente.\
+            Les inputs vont être acheminés à ces deux nodes: \
+            {_TOPNODES}")  
+    _LASTNODES = set([int(ID) for ID in NODES]) - \
+                set([data['From'] for keys, data in EDGES.items()])
+    if len(_LASTNODES) == 0:
+        warnings.warn(f"Attention, aucune PoolNode présente. La quantité \
+            de carbone présente dans le système sera calculé seulement sur \
+            des nodes de demi-vie ou de recyclage")
+    
 # Total des Edges 
 
 for Name in Test_02.GetGraphName:
@@ -71,19 +91,7 @@ for Name in Test_02.GetGraphName:
         if Total == 0:
             warnings.warn(f'La somme des edges sortant de la node {Node.NAME} est de 0')
 
-#total = 0
-#for i in Test_02._GRAPHS[0].Nodes():
-#    if i.NAME == "N2O emissions":
-#        print('Y')
-#    elif type(i) == gf.PoolNode or type(i) == gf.DecayNode or type(i) == gf.RecyclingNode:
-#        print(f"La node {i.NAME} contient {i.CountCarbon(Test_02._GRAPHS[0], 2)} à l'année 1")
-#        total += i.CountCarbon(Test_02._GRAPHS[0], 2)
-#    elif type(i) == gf.TopNode:
-#        print(f"La Topnode {i.NAME} contient {i.CountCarbon(Test_02._GRAPHS[0], 2)} à l'année 1")
-#        #total += i.CountCarbon(Test_02._GRAPHS[0], 0)
-#total
-#
-# Total input versus in system
+# Total input versus in system 
 for Name in Test_02.GetGraphName:
     Graph = Test_02.GetGraph(Name)
     Input = 0

@@ -5,57 +5,31 @@ Pour faire un profile manuel :
     cProfile.run('addition(5, 3)')
     Dans un terminal : python -m cProfile -s time myscript.py
 
-# Fichier pour générer une table dummy
-df = {
-    'Time': np.repeat(np.arange(1, 151), 3),
-    'Species': np.array(['A', 'B', 'C'] * 150),
-    'Tonne_C': np.random.uniform(20, 60, 450)
-}
-
-df = pd.DataFrame(df)
-df.to_csv('C:/Users/langa3/Documents/Script/Panier_produit/dummy_table.csv', 
-          index = False, sep = ';')
-
 """
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import cProfile # Pour le run time
 import json
-import networkx as nx
-import warnings
+import warnings # Maybe
+import WPGraph as wp
 from abc import ABCMeta, abstractmethod
 
-# Test output avec couleur ---------------------------------------------------
-
 import sys
-from IPython.core.ultratb import ColorTB
+from IPython.core.ultratb import ColorTB # Couleur powershell
 
 sys.excepthook = ColorTB()
-
-# Test convolve -----------------------------------------------
-
-'''
-Insane la fonction, passe le premier vecteur en ordre d'occurance au deuxième,
-exemple : 1 * 10, 1 * 20 + 5 * 10, 1 * 100 + 5 * 20, et ainsi de suite
-'''
-
-#a = [1, 5]
-#b = [10, 20, 100, 1000]
-
-#c = np.convolve(a, b)
-#c
 
 # Exception handling ---------------------------------------------------------
 
 class ConstError(Exception):
-    def __init__(self, message: str):            
-        super().__init__(message) # Super vient chercher la class parent
+    def __init__(self, message: str):    
+        super().__init__(message)
 
 # gérer les recursion
 class RecursionNode(RecursionError):
-    def __init__(self, message: str):            
-        super().__init__(message) # Super vient chercher la class parent
+    def __init__(self, message: str):
+        super().__init__(message)
 # Lire sur maximum recusion depth exceeded
 
 # Node class -----------------------------------------------------------------
@@ -79,7 +53,7 @@ class IndustrialNode(metaclass = ABCMeta): # aller voir la doc ABC
        raise ConstError("Node name can't be changed")
     
     @abstractmethod
-    def GetCarbon(self, Graph: WPGraph, Time: int, Cumulative: bool = True) -> float:
+    def GetCarbon(self, Graph: wp.WPGraph, Time: int, Cumulative: bool = True) -> float:
         ''' Get Carbon Documentation
         
         Cette fonction sert à retracer le flux de carbone parcourant le réseau
@@ -115,10 +89,10 @@ class TopNode(IndustrialNode):
         except ValueError:
             return 0
     
-    def GetCarbon(self, Graph: WPGraph, Time: int, Cumulative: bool = True) -> float:
+    def GetCarbon(self, Graph: wp.WPGraph, Time: int, Cumulative: bool = True) -> float:
         return self._GetQuantityTime(Time)
     
-    def CountCarbon(self, Graph: WPGraph, Time: int, Cumulative: bool = True) -> float:
+    def CountCarbon(self, Graph: wp.WPGraph, Time: int, Cumulative: bool = True) -> float:
         return self._GetQuantityTime(Time)
         
 class ProportionNode(IndustrialNode):
@@ -128,7 +102,7 @@ class ProportionNode(IndustrialNode):
     #  À y revenir
     #def _GutsofGetCarbon(self, Proportion: list[float], Values: list[float]) -> float:
     
-    def GetCarbon(self, Graph: WPGraph, Time: int, Cumulative: bool = True) -> float:
+    def GetCarbon(self, Graph: wp.WPGraph, Time: int, Cumulative: bool = True) -> float:
         Total = 0
         for Parent in Graph.GetPredecessors(self):
             ProportionParent = self._GetValueTime(Graph.GetEdgeProportions(Parent, self), Time)
@@ -151,7 +125,7 @@ class DecayNode(ProportionNode):
     def HalfLife(self, Value):
        self._HalfLife = Value
     
-    def GetCarbon(self, Graph: WPGraph, Time: int, Cumulative: bool = True) -> float:
+    def GetCarbon(self, Graph: wp.WPGraph, Time: int, Cumulative: bool = True) -> float:
         Total = 0
         for Year in range(Time + 1): 
             if Year != Time:   
@@ -161,7 +135,7 @@ class DecayNode(ProportionNode):
                 Total += Output_annual
         return Total
     
-    def CountCarbon(self, Graph: WPGraph, Time: int, Cumulative: bool = True) -> float:
+    def CountCarbon(self, Graph: wp.WPGraph, Time: int, Cumulative: bool = True) -> float:
         ''' CountCarbon Documentation
 
         La fonction CountCarbon sert à faire le cumulatif des flux annuels 
@@ -196,14 +170,14 @@ class RecyclingNode(ProportionNode):
     def __init__(self, NAME: str):
         super().__init__(NAME)
     
-    def GetCarbon(self, Graph: WPGraph, Time: int, Cumulative: bool = True) -> float:
+    def GetCarbon(self, Graph: wp.WPGraph, Time: int, Cumulative: bool = True) -> float:
         Total = 0
         for Year in range(Time + 1): 
             if Year + 1 == Time:
                 Total += super().GetCarbon(Graph, Year, Cumulative)
         return Total
     
-    def CountCarbon(self, Graph: WPGraph, Time: int, Cumulative: bool = True) -> float:
+    def CountCarbon(self, Graph: wp.WPGraph, Time: int, Cumulative: bool = True) -> float:
         Total = super().GetCarbon(Graph, Time, Cumulative)
         return Total
 
@@ -211,7 +185,7 @@ class PoolNode(ProportionNode):
     def __init__(self, NAME):
         super().__init__(NAME)
         
-    def CountCarbon(self, Graph: WPGraph, Time: int, Cumulative: bool = True) -> float:
+    def CountCarbon(self, Graph: wp.WPGraph, Time: int, Cumulative: bool = True) -> float:
         ''' CountCarbon Documentation
         
         La fonction CountCarbon sert à faire le cumulatif des flux annuels 
@@ -241,31 +215,6 @@ class PoolNode(ProportionNode):
 
 # Factory -------------------------------------------------------------------- 
 
-#class Edge(): 
-#    def __init__(self, RECYCLING: int, VALUES: list[float], OVERFLOW: bool):
-#        self._RECYCLING = RECYCLING
-#        self._VALUES = VALUES
-#        self._OVERFLOW = OVERFLOW
-#        
-#    @property
-#    def RECYCLING(self):
-#        return self._RECYCLING
-#    
-#    @RECYCLING.setter
-#    def RECYCLING(self, input):
-#       raise ConstError("Original value from Miro can't be changed")
-#   
-#    @property
-#    def OVERFLOW(self):
-#        return self._OVERFLOW
-#    
-#    @OVERFLOW.setter
-#    def OVERFLOW(self, input):
-#       raise ConstError("Original value from Miro can't be changed")
-#   
-#    def GetValueTime(self, Time: int) -> float:
-#        return self._VALUES[min(Time, len(self._VALUES) - 1)]
-
 class GraphFactory(): 
     def __init__(self, DIR: str):
         self._DIRECTORY = DIR
@@ -279,15 +228,11 @@ class GraphFactory():
         keys.sort()
         for KEY in keys:
             self._GRAPHNAME.append(KEY.upper())
-            self._GRAPHS.append(WPGraph(KEY))
+            self._GRAPHS.append(wp.WPGraph_IG(KEY))
             _EDGES = self.GetData[KEY].get('Edges', {})
             _NODES = self.GetData[KEY].get('Nodes', {})
             _TOPNODES = set([int(ID) for ID in _NODES]) - \
                 set([data['To'] for keys, data in _EDGES.items()])
-            if len(_TOPNODES) > 1:
-                warnings.warn(f"Attention, plus d'une TopNode présente.\
-                    Les inputs vont être acheminés à ces deux nodes : \
-                    {_TOPNODES}")  
             _LASTNODES = set([int(ID) for ID in _NODES]) - \
                 set([data['From'] for keys, data in _EDGES.items()])
         
@@ -320,7 +265,7 @@ class GraphFactory():
     def GetGraphName(self, input):
         raise ConstError("Graph name can't be changed outside Miro")
     
-    def GetGraph(self, Name) -> WPGraph:
+    def GetGraph(self, Name) -> wp.WPGraph:
         Names = self.GetGraphName
         Index = Names.index(Name)
         return self._GRAPHS[Index]
@@ -332,35 +277,3 @@ class GraphFactory():
     @GetData.setter
     def GetData(self, input):
         raise ConstError("Data from graphs can't be changed outside Miro")  
-
-class WPGraph():
-    def __init__(self, KEY):
-        super().__init__()
-        self._Graph = nx.DiGraph()
-        self._NAME = KEY
-    
-    def AddNode(self, node):
-        return self._Graph.add_node(node)
-    
-    def AddEdge(self, From, To, Proportions):
-        return self._Graph.add_edge(From, To, Proportion = Proportions)
-    
-    def GetEdgeProportions(self, From: IndustrialNode, To: IndustrialNode) -> list[float]:
-        return self._Graph.get_edge_data(From, To)["Proportion"]
-    
-    def GetPredecessors(self, Node: IndustrialNode) -> list[IndustrialNode]:
-        return self._Graph.predecessors(Node)
-    
-    def GetSuccessors(self, Node: IndustrialNode) -> list[IndustrialNode]:
-        return self._Graph.successors(Node)
-    
-    def Nodes(self):
-        return self._Graph.nodes()
-    
-    @property
-    def GetName(self):
-        return self._NAME
-    
-    @GetName.setter
-    def GetName(self):
-        return ConstError("Graph name can't be changed outside Miro")
