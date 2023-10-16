@@ -1,5 +1,6 @@
 import GraphFactory as gf
 import warnings
+import igraph as ig
 
 class QuantityError(Exception):
     def __init__(self, message: str):            
@@ -53,8 +54,9 @@ class EdgeError(Exception):
 
 
 # Test de l'import -----------------------------------------------------------
-
+print('Test 0 / 3')
 Test_02 = gf.GraphFactory('T:/Donnees/Usagers/LANGA3/MoSiR/Graphs_03.json')
+MOSIR_TOLERENCE = 0.0001
 
 # First node et last node
 
@@ -75,9 +77,10 @@ for KEY in Graphs_keys:
         warnings.warn(f"Attention, aucune PoolNode présente. La quantité \
             de carbone présente dans le système sera calculé seulement sur \
             des nodes de demi-vie ou de recyclage")
-    
-# Total des Edges 
 
+print('Test 1 / 3')    
+   
+# Total des Edges 
 for Name in Test_02.GetGraphName:
     Graph = Test_02.GetGraph(Name)
     for Node in Graph.Nodes():
@@ -86,10 +89,12 @@ for Name in Test_02.GetGraphName:
             if Successors.NAME == 'N2O emissions':
                 continue
             Total += Node._GetValueTime(Graph.GetEdgeProportions(Node, Successors), 0)
-        if Total != 1 and Total != 0:
+        if Total - 1 > MOSIR_TOLERENCE or 1 - Total > MOSIR_TOLERENCE and Total != 0:
             raise EdgeError(f"La somme des edges sortant de {Node.NAME} n'est pas égale à 100%") 
-        if Total == 0:
+        elif Total < MOSIR_TOLERENCE:
             warnings.warn(f'La somme des edges sortant de la node {Node.NAME} est de 0')
+
+print('Test 2 / 3')
 
 # Total input versus in system 
 for Name in Test_02.GetGraphName:
@@ -106,17 +111,15 @@ for Name in Test_02.GetGraphName:
                 type(Node) == gf.RecyclingNode:
                 InSystem += Node.CountCarbon(Graph, Time)
         if Input > InSystem - 0.0000001 and Input < InSystem + 0.0000001 :
-            print(f'Time: {Time}, Input: {Input}, InSystem: {InSystem}')
+            print(f'Time {Time} checked')
             continue
         else:
             raise QuantityError(f"Graph : {Graph.GetName} La quantité total \
                 en input ({Input}) au temps {Time} n'est pas égale au total \
                 présent dans le système ({InSystem})")
   
-  
+print('Test 3 / 3')  
 
-
- 
 #total = 0
 #for i in test3._GRAPHS[0].nodes():
 #    if type(i) == PoolNode:
@@ -145,3 +148,77 @@ for Name in Test_02.GetGraphName:
 #        elif int(node_id) == To:
 #            nom_to = node_data['Name']
 #    print(f'Connection entre {nom_from} à {nom_to}')
+
+# ----------------------------------------------------------------------------
+""" Test_02 = ('T:/Donnees/Usagers/LANGA3/MoSiR/Graphs_03.json')
+
+import json
+J = open('T:/Donnees/Usagers/LANGA3/MoSiR/Graphs_03.json')
+data = json.load(J)
+data
+PB = data.get('Produitsdubois_V2')
+
+Nodes = PB.get('Nodes')
+Edges = PB.get('Edges')
+
+
+node_map = {}
+id_list = []
+for node_id, node_data in Nodes.items():
+    new_node = 'test'
+    node_map[int(node_id)] = new_node
+    id_list.append(node_id)     
+       
+node_map.get(int(id_list[2]))
+
+
+
+for i, j in enumerate(node_map):
+    print(i, j)
+    
+node_map[3458764565184960178]
+
+
+G = ig.Graph(directed = True)
+
+a = TopNode('P1', [0], [10])
+b = ProportionNode('P2')
+c = ProportionNode('P3')
+d = ProportionNode('P4')
+
+G.add_vertex(a, Nom = 'Test1')
+G.add_vertex(b, Nom = 'Test2')
+G.add_vertex(c, Nom = 'Test3')
+G.add_vertex(d, Nom = 'Test4')
+
+G.add_edge(0, 1, Proportion = 0.1)
+G.add_edge(0, 2, Proportion = 0.2)
+G.add_edge(1, 3, Proportion = 0.3)
+G.add_edge(2, 3, Proportion = 0.4)
+
+G.to_dict_dict()
+G.get_vertex_dataframe()
+G.es.select(3)['Proportion']
+G.vs.select(1)['Name']
+G.es[G.get_eid(0, 1)]['Proportion']
+
+dictio = G.to_dict_dict()
+
+G.predecessors()
+
+
+
+
+help(G.Full)
+G.Full(len(G.vs.indices))
+
+
+for i in G.vs:
+    print(i)
+
+
+liste = {1: 'a', 2: 'b', 3: "ce"}
+
+for i, j in enumerate(liste):
+    print(i)
+     """

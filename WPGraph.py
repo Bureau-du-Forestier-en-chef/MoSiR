@@ -36,30 +36,39 @@ class WPGraph():
     @GetName.setter
     def GetName(self):
         return ConstError("Graph name can't be changed outside Miro")
-    
+
 class WPGraph_IG():
     def __init__(self, KEY):
         super().__init__()
-        self._Graph = ig.Graph()
+        self._Graph = ig.Graph(directed = True)
         self._NAME = KEY
-    
+   
+    def __ToIGNode(self, node):
+        return self._Graph.vs.find(data = node)
+   
     def AddNode(self, node):
-        return self._Graph.add_vertex(node)
+        return self._Graph.add_vertex(data = node)
     
     def AddEdge(self, From, To, Proportions):
-        return self._Graph.add_edge(From, To, Proportion = Proportions)
+        From_VS = self.__ToIGNode(From)
+        To_VS = self.__ToIGNode(To)
+        return self._Graph.add_edge(From_VS, To_VS, Proportion = Proportions)
     
     def GetEdgeProportions(self, From, To) -> list[float]:
-        return self._Graph.get_edge_dataframe(From, To)["Proportion"]
+        From_VS = self.__ToIGNode(From)
+        To_VS = self.__ToIGNode(To)
+        return self._Graph.es[self._Graph.get_eid(From_VS, To_VS)]['Proportion']
     
     def GetPredecessors(self, Node):
-        return self._Graph.predecessors(Node)
+        From_VS = self.__ToIGNode(Node)
+        return [self._Graph.vs[i]['data'] for i in self._Graph.predecessors(From_VS)]
     
     def GetSuccessors(self, Node):
-        return self._Graph.successors(Node)
+        To_VS = self.__ToIGNode(Node)
+        return [self._Graph.vs[i]['data'] for i in self._Graph.successors(To_VS)]
     
     def Nodes(self):
-        return self._Graph.nodes()
+        return [i['data'] for i in self._Graph.vs]
     
     @property
     def GetName(self):
@@ -68,4 +77,3 @@ class WPGraph_IG():
     @GetName.setter
     def GetName(self):
         return ConstError("Graph name can't be changed outside Miro")
-    

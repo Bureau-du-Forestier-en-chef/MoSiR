@@ -70,12 +70,27 @@ class IndustrialNode(metaclass = ABCMeta): # aller voir la doc ABC
         '''
         pass
     
-    def __hash__(self): # Aller voir plus en détail ce que fait le hashing
+    def __hash__(self): 
         return hash(self.NAME)
     
     def __eq__(self, Other):
         return self.NAME == Other.NAME   
+    
+    def __ne__(self, Other):
+        return not self.__eq__(Other)
+    
+    def __gt__(self, Other):
+        return self.NAME > Other.NAME
+    
+    def __ge__(self, Other):
+        return self.NAME >= Other.NAME
+    
+    def __lt__(self, Other):
+        return self.NAME < Other.NAME
       
+    def __le__(self, Other):
+        return self.NAME <= Other.NAME
+        
 class TopNode(IndustrialNode):
     def __init__(self, NAME: str,  Time: list[int], Quantities: list[float]):
         super().__init__(NAME)
@@ -211,7 +226,7 @@ class PoolNode(ProportionNode):
             return Total
         except RecursionError:
             raise  RecursionNode("Un maximum de demande a été effectué. \
-                                 Une boucle entre des ProportionNode est présente")          
+                                 Une boucle entre des ProportionNode est présente")    
 
 # Factory -------------------------------------------------------------------- 
 
@@ -228,7 +243,7 @@ class GraphFactory():
         keys.sort()
         for KEY in keys:
             self._GRAPHNAME.append(KEY.upper())
-            self._GRAPHS.append(wp.WPGraph_IG(KEY))
+            self._GRAPHS.append(wp.WPGraph(KEY))
             _EDGES = self.GetData[KEY].get('Edges', {})
             _NODES = self.GetData[KEY].get('Nodes', {})
             _TOPNODES = set([int(ID) for ID in _NODES]) - \
@@ -276,4 +291,4 @@ class GraphFactory():
     
     @GetData.setter
     def GetData(self, input):
-        raise ConstError("Data from graphs can't be changed outside Miro")  
+        raise ConstError("Data from graphs can't be changed outside Miro")   
