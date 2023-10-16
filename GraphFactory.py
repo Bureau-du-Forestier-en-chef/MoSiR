@@ -68,6 +68,7 @@ class IndustrialNode(metaclass = ABCMeta): # aller voir la doc ABC
         Returns:
             float: Une quantité de carbone
         '''
+        print('Test')
         pass
     
     def __hash__(self): 
@@ -131,16 +132,19 @@ class DecayNode(ProportionNode):
     def __init__(self, NAME: str, HalfLife: int):
         super().__init__(NAME)
         self._HalfLife = HalfLife
+        self.__CarbonCache = {}
         
     @property
     def HalfLife(self):
         return self._HalfLife
-    
+
     @HalfLife.setter # À voir si ça vaut la peine de la protéger
     def HalfLife(self, Value):
        self._HalfLife = Value
     
     def GetCarbon(self, Graph: wp.WPGraph, Time: int, Cumulative: bool = True) -> float:
+        if Time in self.__CarbonCache:
+            return self.__CarbonCache[Time]
         Total = 0
         for Year in range(Time + 1): 
             if Year != Time:   
@@ -148,6 +152,7 @@ class DecayNode(ProportionNode):
                 Output_annual = (Annual - (Annual * ((0.5) ** ((Time - Year)/self.HalfLife)))) - \
                     (Annual - (Annual * ((0.5) ** ((Time - Year - 1)/self.HalfLife))))
                 Total += Output_annual
+        self.__CarbonCache[Time] = Total
         return Total
     
     def CountCarbon(self, Graph: wp.WPGraph, Time: int, Cumulative: bool = True) -> float:

@@ -11,46 +11,44 @@ class EdgeError(Exception):
         super().__init__(message)
 
 # Test indépendant du import -------------------------------------------------
+""" 
+Test_01 = gf.WPGraph("Test Graph")
 
-# Test_01 = gf.WPGraph("Test Graph")
-# 
-# A = gf.TopNode('A', [0], [10])  
-# B = gf.ProportionNode('B')
-# C = gf.DecayNode('C', 3)
-# D = gf.DecayNode('D', 3)
-# E = gf.RecyclingNode('E')
-# F = gf.PoolNode('F')
-# 
-# Test_01.AddNode(A)
-# Test_01.AddNode(B)
-# Test_01.AddNode(C)
-# Test_01.AddNode(D)
-# Test_01.AddNode(E)
-# Test_01.AddNode(F)
-# 
-# Test_01.AddEdge(A, B, Proportions = [1])
-# Test_01.AddEdge(B, C, Proportions = [1])
-# Test_01.AddEdge(C, D, Proportions = [0.5])
-# Test_01.AddEdge(C, E, Proportions = [0.5])
-# Test_01.AddEdge(E, B, Proportions = [1])
-# Test_01.AddEdge(D, F, Proportions = [1])
-# 
-# A.CountCarbon(Test_01, 0) == C.CountCarbon(Test_01, 0)
-# B.GetCarbon(Test_01, 0)
-# C.CountCarbon(Test_01, 0)
+A = gf.TopNode('A', [0], [10])  
+B = gf.ProportionNode('B')
+C = gf.DecayNode('C', 3)
+D = gf.DecayNode('D', 3)
+E = gf.RecyclingNode('E')
+F = gf.PoolNode('F')
+A.GetCarbon(Test_01, 1)
+Test_01.AddNode(A)
+Test_01.AddNode(B)
+Test_01.AddNode(C)
+Test_01.AddNode(D)
+Test_01.AddNode(E)
+Test_01.AddNode(F)
  
-# total = 0
-# for i in test1.nodes():
-#     if type(i) == PoolNode:
-#         total += i.CountCarbon(test1, 16)
-#     if type(i) == DecayNode:
-#         total += i.CountCarbon(test1, 16)
-#     if type(i) == RecyclingNode:
-#         total += i.GetCarbon(test1, 17)
-#     print(total)
-#
+Test_01.AddEdge(A, B, Proportions = [1])
+Test_01.AddEdge(B, C, Proportions = [1])
+Test_01.AddEdge(C, D, Proportions = [0.5])
+Test_01.AddEdge(C, E, Proportions = [0.5])
+Test_01.AddEdge(E, B, Proportions = [1])
+Test_01.AddEdge(D, F, Proportions = [1])
 
-
+A.CountCarbon(Test_01, 0) == C.CountCarbon(Test_01, 0)
+B.GetCarbon(Test_01, 0)
+C.CountCarbon(Test_01, 0)
+ 
+total = 0
+for i in test1.nodes():
+    if type(i) == PoolNode:
+        total += i.CountCarbon(test1, 16)
+    if type(i) == DecayNode:
+        total += i.CountCarbon(test1, 16)
+    if type(i) == RecyclingNode:
+        total += i.GetCarbon(test1, 17)
+    print(total) 
+    """
 
 
 # Test de l'import -----------------------------------------------------------
@@ -100,7 +98,7 @@ print('Test 2 / 3')
 for Name in Test_02.GetGraphName:
     Graph = Test_02.GetGraph(Name)
     Input = 0
-    for Time in range(10): # Ajuster le temps des simulations
+    for Time in range(150): # Ajuster le temps des simulations
         InSystem = 0
         for Node in Graph.Nodes():
             if type(Node) == gf.TopNode:
@@ -117,8 +115,9 @@ for Name in Test_02.GetGraphName:
             raise QuantityError(f"Graph : {Graph.GetName} La quantité total \
                 en input ({Input}) au temps {Time} n'est pas égale au total \
                 présent dans le système ({InSystem})")
-  
+                
 print('Test 3 / 3')  
+
 
 #total = 0
 #for i in test3._GRAPHS[0].nodes():
