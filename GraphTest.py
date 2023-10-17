@@ -141,10 +141,17 @@ for Name in Test_03.GetGraphName:
         D1[Time] = D2  
         print(Time)
             
-with open('.\data1.json', 'w') as f:
+with open('.\data2.json', 'w') as f:
     json.dump(D1, f)
 
 print('Json exported')
+
+with open(".\data1.json", 'r') as f:
+    data1 = json.load(f)
+with open(".\data2.json", 'r') as f:
+    data2 = json.load(f)
+
+data1 == data2
 #df1 = pd.DataFrame(D1.items(), columns = ['Name', 'Quantity'])
 #df2 = pd.DataFrame(D2.items(), columns = ['Name', 'Quantity2'])
 #df3 = df1.merge(df2, on = 'Name', how = 'left')
