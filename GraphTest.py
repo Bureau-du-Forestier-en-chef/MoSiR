@@ -1,6 +1,7 @@
+import pandas as pd
 import GraphFactory as gf
 import warnings
-import igraph as ig
+import json
 
 class QuantityError(Exception):
     def __init__(self, message: str):            
@@ -103,7 +104,7 @@ print('Test 2 / 3')
 for Name in Test_02.GetGraphName:
     Graph = Test_02.GetGraph(Name)
     Input = 0
-    for Time in range(150): # Ajuster le temps des simulations
+    for Time in range(16): # Ajuster le temps des simulations
         InSystem = 0
         for Node in Graph.Nodes():
             if type(Node) == gf.TopNode:
@@ -122,6 +123,38 @@ for Name in Test_02.GetGraphName:
                 présent dans le système ({InSystem})")
                 
 print('Test 3 / 3')  
+
+# Slow versus fast results ---------------------------------------------------
+
+Test_03 = gf.GraphFactory('T:/Donnees/Usagers/LANGA3/MoSiR/Graphs_03.json')
+
+# Total input versus in system 
+for Name in Test_03.GetGraphName:
+    Graph = Test_03.GetGraph(Name)
+    D1 = {}
+    for Time in range(16): # Ajuster le temps des simulations
+        D2 = {}
+        for Node1 in Graph.Nodes():
+            if type(Node1) != gf.ProportionNode:
+                C1 = Node1.CountCarbon(Graph, Time)
+                D2[Node1.NAME] = C1  
+        D1[Time] = D2  
+        print(Time)
+            
+with open('.\data1.json', 'w') as f:
+    json.dump(D1, f)
+
+print('Json exported')
+#df1 = pd.DataFrame(D1.items(), columns = ['Name', 'Quantity'])
+#df2 = pd.DataFrame(D2.items(), columns = ['Name', 'Quantity2'])
+#df3 = df1.merge(df2, on = 'Name', how = 'left')
+#with pd.option_context('display.max_rows', None,
+#                       'display.max_columns', None,
+#                       'display.precision', 4,
+#                       ):
+#    print(df3)
+
+
 
 
 #total = 0
