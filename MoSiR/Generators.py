@@ -183,11 +183,13 @@ class MiroGenerator(Generator):
         TAGLOCATION = self.__GetEdgeValues()
         FORKS = self.__GetNodesFork()
         NewEdges = {}
+        TagUsed = set()
         ValidLocations = FORKS.union(set(self.__Nodes__.keys()))
         for EdgeId,EdgeItems in self.__Edges__.items():
             if EdgeItems["To"] in TAGLOCATION:
                 if EdgeItems["From"] in TAGLOCATION:
                     raise(Exceptions.MiroError("Edge id "+str(EdgeId)+" from a tag "+str(EdgeItems),EdgeId))
+                TagUsed.add(EdgeItems["To"])
                 NewValues = TAGLOCATION[EdgeItems["To"]]
                 EdgeItems["Values"] = NewValues
                 GotAtarget = False
@@ -201,6 +203,11 @@ class MiroGenerator(Generator):
                 NewEdges[EdgeId] = EdgeItems
             elif(all(Item in ValidLocations for Item in (EdgeItems["To"],EdgeItems["From"]))):
                 NewEdges[EdgeId] = EdgeItems
+        if len(TagUsed) < len(TAGLOCATION):
+            for tagid in TAGLOCATION.keys():
+                if tagid not in TagUsed:
+                    Message = "Tag id "+str(tagid)+" not used"
+                    raise(Exceptions.MiroError(Message,tagid))
         Removed = len(self.__Edges__) - len(NewEdges)
         self.__Edges__ = NewEdges
         for EdgeId,EdgeItems in self.__Edges__.items():
