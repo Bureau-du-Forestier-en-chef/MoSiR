@@ -57,21 +57,26 @@ Test_02 = gf.GraphFactory('T:/Donnees/Usagers/LANGA3/MoSiR/Graphs_03.json')
 MOSIR_TOLERENCE = 0.0001
 
 # First node et last node
+Test_02.GetGraphName
 
-Graphs_keys = list(Test_02.GetData.keys())
+Test_02.GetGraph('PRODUITSDUBOIS_V2')
 
-for KEY in Graphs_keys:
-    NODES = Test_02.GetData[KEY].get('Nodes', {})
-    EDGES = Test_02.GetData[KEY].get('Edges', {})
-    _TOPNODES = set([int(ID) for ID in NODES]) - \
+for i in Test_02.GetData.get('Produitsdubois_V2'):
+    print(i)
+
+for GraphName in Test_02.GetData:
+    GRAPH = Test_02.GetData.get(GraphName)
+    NODES = GRAPH.get('Nodes', {})
+    EDGES = GRAPH.get('Edges', {})
+    TOPNODES = set([int(ID) for ID in NODES]) - \
                 set([data['To'] for keys, data in EDGES.items()])
-    if len(_TOPNODES) > 1:
+    if len(TOPNODES) > 1:
         warnings.warn(f"Attention, plus d'une TopNode présente.\
             Les inputs vont être acheminés à ces deux nodes: \
-            {_TOPNODES}")  
-    _LASTNODES = set([int(ID) for ID in NODES]) - \
+            {TOPNODES}")  
+    LASTNODES = set([int(ID) for ID in NODES]) - \
                 set([data['From'] for keys, data in EDGES.items()])
-    if len(_LASTNODES) == 0:
+    if len(LASTNODES) == 0:
         warnings.warn(f"Attention, aucune PoolNode présente. La quantité \
             de carbone présente dans le système sera calculé seulement sur \
             des nodes de demi-vie ou de recyclage")
