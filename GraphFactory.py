@@ -132,7 +132,7 @@ class DecayNode(ProportionNode):
     def __init__(self, NAME: str, HalfLife: int):
         super().__init__(NAME)
         self._HalfLife = HalfLife
-        self.__CarbonCache = {}
+        self.__PastCarbon = {}
         
     @property
     def HalfLife(self):
@@ -143,8 +143,8 @@ class DecayNode(ProportionNode):
        self._HalfLife = Value
     
     def GetCarbon(self, Graph: wp.WPGraph, Time: int, Cumulative: bool = True) -> float:
-        if Time in self.__CarbonCache:
-            return self.__CarbonCache[Time]
+        if Time in self.__PastCarbon:
+            return self.__PastCarbon[Time]
         Total = 0
         for Year in range(Time + 1): 
             if Year != Time:   
@@ -152,7 +152,7 @@ class DecayNode(ProportionNode):
                 Output_annual = (Annual - (Annual * ((0.5) ** ((Time - Year)/self.HalfLife)))) - \
                     (Annual - (Annual * ((0.5) ** ((Time - Year - 1)/self.HalfLife))))
                 Total += Output_annual
-        self.__CarbonCache[Time] = Total
+        self.__PastCarbon[Time] = Total
         return Total
     
     def CountCarbon(self, Graph: wp.WPGraph, Time: int, Cumulative: bool = True) -> float:
