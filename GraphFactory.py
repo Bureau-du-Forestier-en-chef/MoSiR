@@ -233,10 +233,13 @@ class PoolNode(ProportionNode):
         
         '''
         try:
-            Total = 0
-            for Year in range(Time + 1):
-                Total += super().GetCarbon(Graph, Year, Cumulative)  
-            return Total
+            if Cumulative == True:
+                Total = 0
+                for Year in range(Time + 1):
+                    Total += super().GetCarbon(Graph, Year, Cumulative)  
+                return Total
+            else:
+                return super().GetCarbon(Graph, Time, Cumulative)
         except RecursionError:
             raise  RecursionNode("Un maximum de demande a été effectué. \
                                  Une boucle entre des ProportionNode est présente")    
@@ -267,7 +270,7 @@ class GraphFactory():
             node_map = {}
             for node_id, node_data in _NODES.items():
                 if int(node_id) in _TOPNODES:    
-                    new_node =  TopNode(node_data['Name'], [0], [10])  # Reste à mettre le input
+                    new_node =  TopNode(node_data['Name'], [0, 5], [50, 100])  # Reste à mettre le input
                 elif int(node_id) in _LASTNODES:
                     new_node = PoolNode(node_data['Name'])
                 elif node_data["Half-life"] > 0:

@@ -54,7 +54,7 @@ for i in test1.nodes():
 
 # Test de l'import -----------------------------------------------------------
 print('Test 0 / 3')
-Test_02 = gf.GraphFactory('T:/Donnees/Usagers/LANGA3/MoSiR/Graphs_04.json')
+Test_02 = gf.GraphFactory('T:/Donnees/Usagers/LANGA3/MoSiR/Graphs_03_test.json')
 MOSIR_TOLERENCE = 0.0001
 
 # First node et last node
@@ -97,7 +97,7 @@ print('Test 2 / 3')
 for Name in Test_02.GetGraphName:
     Graph = Test_02.GetGraph(Name)
     Input = 0
-    for Time in range(16): # Ajuster le temps des simulations
+    for Time in range(150): # Ajuster le temps des simulations
         InSystem = 0
         for Node in Graph.Nodes():
             if type(Node) == gf.TopNode:
@@ -116,14 +116,25 @@ for Name in Test_02.GetGraphName:
                 présent dans le système ({InSystem})")
                 
 print('Test 3 / 3')  
-
-for Name in Test_02.GetGraphName:
-    Graph = Test_02.GetGraph(Name)
-    for Time in range(16): # Ajuster le temps des simulations
-        for Node1 in Graph.Nodes():
-            if Node.NAME in ['CO2 emissions', 'CH4 emissions', 'N20 emissions']:
-                C1 = Node1.CountCarbon(Graph, Time)
-                print(f'T{Time}: {Node.NAME} = {C1}')
+#Time = []
+#CO2 = []
+#CH4 = []
+#N2O = []
+#for Name in Test_02.GetGraphName:
+#    Graph = Test_02.GetGraph(Name)
+#    for Time in range(16): # Ajuster le temps des simulations
+#        for Node in Graph.Nodes():
+#            if Node.NAME == "N2O emission":
+#                C = Node.CountCarbon(Graph, Time, Cumulative = False)
+#                N2O.append(C)
+#            if Node.NAME == "CH4 emission":
+#                C = Node.CountCarbon(Graph, Time, Cumulative = False)
+#                CH4.append(C)
+#            if Node.NAME == "CO2 emission":
+#                C = 
+#                CO2[Node.CountCarbon(Graph, Time, Cumulative = False)]
+#
+#N2O
 
 # Slow versus fast results ---------------------------------------------------
 """ 
