@@ -116,25 +116,47 @@ for Name in Test_02.GetGraphName:
                 présent dans le système ({InSystem})")
                 
 print('Test 3 / 3')  
-#Time = []
-#CO2 = []
-#CH4 = []
-#N2O = []
-#for Name in Test_02.GetGraphName:
-#    Graph = Test_02.GetGraph(Name)
-#    for Time in range(16): # Ajuster le temps des simulations
-#        for Node in Graph.Nodes():
-#            if Node.NAME == "N2O emission":
-#                C = Node.CountCarbon(Graph, Time, Cumulative = False)
-#                N2O.append(C)
-#            if Node.NAME == "CH4 emission":
-#                C = Node.CountCarbon(Graph, Time, Cumulative = False)
-#                CH4.append(C)
-#            if Node.NAME == "CO2 emission":
-#                C = 
-#                CO2[Node.CountCarbon(Graph, Time, Cumulative = False)]
-#
-#N2O
+
+# Dataframe
+data = {'Time': [],
+        'Node': [],
+        'Value': []}
+df = pd.DataFrame(data)
+for Name in Test_02.GetGraphName:
+    Graph = Test_02.GetGraph(Name)
+    for Time in range(16): # Ajuster le temps des simulations
+        for Node in Graph.Nodes():
+            C = Node.GetCarbon(Graph, Time)
+            if C != 0:
+                N = Node.NAME
+                T = Time
+                new = {'Time': T, 'Node': N, 'Value': C}
+                new_df = pd.DataFrame([new])
+                df = pd.concat([df, new_df], ignore_index = True)
+
+df.to_csv('Output_verification.csv', index = False, sep = ';')
+
+# Emissions
+data = {'Time': [],
+        'Node': [],
+        'Value': []}
+df = pd.DataFrame(data)
+for Name in Test_02.GetGraphName:
+    Graph = Test_02.GetGraph(Name)
+    for Time in range(16): # Ajuster le temps des simulations
+        for Node in Graph.Nodes():
+            if Node.NAME in ['CH4 emissions', 'CO2 emissions', 'N2O emissions']:
+                C = Node.CountCarbon(Graph, Time, Cumulative = False)
+                if C != 0:
+                    N = Node.NAME
+                    T = Time
+                    new = {'Time': T, 'Node': N, 'Value': C}
+                    new_df = pd.DataFrame([new])
+                    df = pd.concat([df, new_df], ignore_index = True)
+
+df.to_csv('Output_emissions.csv', index = False, sep = ';')
+
+
 
 # Slow versus fast results ---------------------------------------------------
 """ 
