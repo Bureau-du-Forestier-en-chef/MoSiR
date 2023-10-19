@@ -12,13 +12,13 @@ Unit : ["XXX"] ("kgC" or "tC")},
 
 "Carbon_Inputs" : {
 
-"Node_nameX": {
-Year A : [Quantity Q1],
-Year B : [Quantity Q2]},
+"Node_nameP": {
+Year A : [Quantity P1],
+Year B : [Quantity P2]},
 
 "Node_nameZ": {
-Year A : [Quantity W1],
-Year B : [Quantity W2]},
+Year A : [Quantity Z1],
+Year B : [Quantity Z2]},
 
 "Node_nameXXX": {
 Year A : [Quantity X1],
