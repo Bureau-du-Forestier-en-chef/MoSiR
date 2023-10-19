@@ -1,29 +1,31 @@
 # Fichier import
 -----------------------------------------------------
 # Documentation
+
+L'année 0 existe
+Format de inputs
+     Year : Quantity
+     Unit in "kgC" or "tC"
 -----------------------------------------------------
 
-{
-"Period_simulated": {
-Length : [XXX] (years)},
+CarbonInputs = {
+    "Unit": "kgC", 
 
-"Unit_Inputs": {
-Unit : ["XXX"] ("kgC" or "tC")},
+    "Roundwood for GCGM": {
+        0 : 10,
+        1 : 8,
+        2 : 12,
+        3 : 0},
 
-"Carbon_Inputs" : {
+    "Importation": {
+        0 : 5,
+        1 : 0,
+        2 : 0,
+        3 : 0},
 
-"Node_nameP": {
-Year A : [Quantity P1],
-Year B : [Quantity P2]},
-
-"Node_nameZ": {
-Year A : [Quantity Z1],
-Year B : [Quantity Z2]},
-
-"Node_nameXXX": {
-Year A : [Quantity X1],
-Year B : [Quantity X2],
-Year C : [Quantity X3]}
-}
-
+    "Node_name": {
+        0 : 0,
+        1 : 0,
+        2 : 34,
+        3 : 0}
 }
