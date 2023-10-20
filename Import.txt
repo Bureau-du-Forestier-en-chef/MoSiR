@@ -1,10 +1,10 @@
 # Documentation --------------------------------------------------------------
-Keyword important: Unit, CarbonInputs
-L'année 0 existe
-Format de inputs
-     Year : Quantity
-     Units in "kgC" or "tC"
-
+# Keyword important: Unit, CarbonInputs
+# L'année 0 existe
+# Format de inputs
+#     Year : Quantity
+#     Units in "kgC" or "tC"
+#
 # User entries ---------------------------------------------------------------
 
 Unit: kgc 
@@ -33,3 +33,5 @@ kgc
 tC
 Unit kgc
 Unit tc
+Unit # tc
+Unit \n tc
