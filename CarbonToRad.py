@@ -31,6 +31,8 @@ exemple : 1 * 10, 1 * 20 + 5 * 10, 1 * 100 + 5 * 20, et ainsi de suite
 6 
 8 great
 
+Tester une diff entre class et fct
+
 '''
 a = [1, 5]
 b = [10, 20, 30]
@@ -67,18 +69,12 @@ class RadFormatting():
         return getattr(self, f'_{Name}'.upper())
     
     def CalculateRF(GasName: str):
-        
-    
 
 Fc = ExcelFormatting('T:/Donnees/Usagers/LANGA3/MoSiR/FacteurRadiatif.xlsx')
 Fc.GetColumn('Year')
 
 def InputFormatting(Time: list[int], Values: list[float]):
     pass
-    
-    
-    
-
 
 A = [1, 2, 3, 4, 5]
 Temps = [1, 3, 4, 5]

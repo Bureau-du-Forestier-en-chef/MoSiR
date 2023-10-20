@@ -10,6 +10,10 @@ class QuantityError(Exception):
 class EdgeError(Exception):
     def __init__(self, message: str):            
         super().__init__(message)
+        
+class ConstError(Exception):
+    def __init__(self, message: str):    
+        super().__init__(message)
 
 # Test indépendant du import -------------------------------------------------
 """ 
@@ -53,8 +57,7 @@ for i in test1.nodes():
 
 
 # Test de l'import -----------------------------------------------------------
-print('Test 0 / 3')
-Test_02 = gf.GraphFactory('T:/Donnees/Usagers/LANGA3/MoSiR/Graphs_03_test.json')
+Test_02 = gf.GraphFactory('T:/Donnees/Usagers/LANGA3/MoSiR/Graphs_04.json')
 MOSIR_TOLERENCE = 0.0001
 
 # First node et last node
@@ -73,9 +76,7 @@ for GraphName in Test_02.GetData:
     if len(LASTNODES) == 0:
         warnings.warn(f"Attention, aucune PoolNode présente. La quantité \
             de carbone présente dans le système sera calculé seulement sur \
-            des nodes de demi-vie ou de recyclage")
-
-print('Test 1 / 3')    
+            des nodes de demi-vie ou de recyclage")   
    
 # Total des Edges 
 for Name in Test_02.GetGraphName:
@@ -90,9 +91,25 @@ for Name in Test_02.GetGraphName:
             raise EdgeError(f"La somme des edges sortant de {Node.NAME} n'est pas égale à 100%") 
         elif Total < MOSIR_TOLERENCE:
             warnings.warn(f'La somme des edges sortant de la node {Node.NAME} est de 0')
+            
+# Test de overflow
+for GraphName in Test_02.GetData:
+    GRAPH = Test_02.GetData.get(GraphName)
+    NODES = GRAPH.get('Nodes', {})
+    EDGES = GRAPH.get('Edges', {})
+    for NodeId in NODES:
+        Overflow = []
+        for key, values in EDGES.items():
+            if values.get('To') == int(NodeId):
+                Overflow.append(values.get('Overflow'))
+        if all(i == Overflow[0] for i in Overflow) == False:
+            raise EdgeError(f"La node {NODES[str(NodeId)].get('Name')} reçoit \
+                des edges avec et sans overflow")
 
-print('Test 2 / 3')
-
+# "EternalStock": 1.0, "Oxydation": 0.0, "Export": 0.0, 
+        
+3458764565184960178 
+NODES['3458764565184960178'].get('Name')      
 # Total input versus in system 
 for Name in Test_02.GetGraphName:
     Graph = Test_02.GetGraph(Name)
@@ -114,10 +131,29 @@ for Name in Test_02.GetGraphName:
             raise QuantityError(f"Graph : {Graph.GetName} La quantité total \
                 en input ({Input}) au temps {Time} n'est pas égale au total \
                 présent dans le système ({InSystem})")
-                
-print('Test 3 / 3')  
 
-# Dataframe
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Prod de résultats ----------------------------------------------------------
+
+# Dataframe all nodes > 0
 data = {'Time': [],
         'Node': [],
         'Value': []}
@@ -136,61 +172,67 @@ for Name in Test_02.GetGraphName:
 
 df.to_csv('Output_verification.csv', index = False, sep = ';')
 
-# Emissions
+# Emissions nodes
 data = {'Time': [],
-        'Node': [],
-        'Value': []}
+        'CH4 emissions': [],
+        'CO2 emissions': [],
+        'N2O emissions': []}
 df = pd.DataFrame(data)
 for Name in Test_02.GetGraphName:
     Graph = Test_02.GetGraph(Name)
-    for Time in range(16): # Ajuster le temps des simulations
+    for Time in range(16): 
         for Node in Graph.Nodes():
-            if Node.NAME in ['CH4 emissions', 'CO2 emissions', 'N2O emissions']:
-                C = Node.CountCarbon(Graph, Time, Cumulative = False)
-                if C != 0:
-                    N = Node.NAME
-                    T = Time
-                    new = {'Time': T, 'Node': N, 'Value': C}
-                    new_df = pd.DataFrame([new])
-                    df = pd.concat([df, new_df], ignore_index = True)
+            if Node.NAME == 'CH4 emissions':
+                CH4 = Node.CountCarbon(Graph, Time, Cumulative = False)
+            elif Node.NAME == 'CO2 emissions':
+                CO2 = Node.CountCarbon(Graph, Time, Cumulative = False)
+            elif Node.NAME == 'N2O emissions':
+                N2O = Node.CountCarbon(Graph, Time, Cumulative = False)
+            new_line = pd.DataFrame([{'Time': Time, 
+                                     'CH4 emissions': CH4,
+                                     'CO2 emissions': CO2, 
+                                     'N2O emissions': N2O}])
+            df = pd.concat([df, new_line], ignore_index = True)
 
 df.to_csv('Output_emissions.csv', index = False, sep = ';')
 
 
 
-# Slow versus fast results ---------------------------------------------------
-""" 
-Test_03 = gf.GraphFactory('T:/Donnees/Usagers/LANGA3/MoSiR/Graphs_03.json')
+#NODES['3458764565184959408'].items()
+#NODES['3458764565184959408'].get('Half-life')
+#
+#for GraphName in Test_02.GetData:
+#    Graph_data = Test_02.GetData[GraphName]
+#    Graph = Test_02.GetGraph(Name.upper())
+#    NODES =  Graph_data.get('Nodes', {})
+#    EDGES =  Graph_data.get('Edges', {})
+#    LASTNODES = set([int(ID) for ID in NODES]) - \
+#                set([data['From'] for keys, data in EDGES.items()])
+#    LASTNODES_DICT = {key: NODES[str(key)] for key in LASTNODES}
+#    for Time in range(16):
+#        for Node in Graph.Nodes():
+#            if 'CH4' in Node.NAME:
+#                print(Node.NAME)
 
-# Total input versus in system 
-for Name in Test_03.GetGraphName:
-    Graph = Test_03.GetGraph(Name)
-    D1 = {}
+
+
+# N2O checkup
+
+for Name in Test_02.GetGraphName:
+    Graph = Test_02.GetGraph(Name)
     for Time in range(16): # Ajuster le temps des simulations
-        D2 = {}
-        for Node1 in Graph.Nodes():
-            if type(Node1) != gf.ProportionNode:
-                C1 = Node1.CountCarbon(Graph, Time)
-                D2[Node1.NAME] = C1  
-        D1[Time] = D2  
-        print(Time)
-            
-with open('.\data2.json', 'w') as f:
-    json.dump(D1, f)
+        for Node in Graph.Nodes():
+            if Node.NAME in ['Land application', 'Biomethanisation, combustion']:
+                print(f'Time {Time}, {Node.NAME} = {Node.GetCarbon(Graph, Time)}')
+                #C = Node.CountCarbon(Graph, Time, Cumulative = False)
+                #if C != 0:
+                #    N = Node.NAME
+                #    T = Time
+                #    new = {'Time': T, 'Node': N, 'Value': C}
+                #    new_df = pd.DataFrame([new])
+                #    df = pd.concat([df, new_df], ignore_index = True)
 
-print('Json exported')
 
-with open(".\data1.json", 'r') as f:
-    data1 = json.load(f)
-with open(".\data2.json", 'r') as f:
-    data2 = json.load(f)
-
-data1 == data2
- """
- 
- #df1 = pd.DataFrame(D1.items(), columns = ['Name', 'Quantity'])
-#df2 = pd.DataFrame(D2.items(), columns = ['Name', 'Quantity2'])
-#df3 = df1.merge(df2, on = 'Name', how = 'left')
 #with pd.option_context('display.max_rows', None,
 #                       'display.max_columns', None,
 #                       'display.precision', 4,
@@ -199,23 +241,6 @@ data1 == data2
 
 
 
-
-#total = 0
-#for i in test3._GRAPHS[0].nodes():
-#    if type(i) == PoolNode:
-#        total += i.CountCarbon(test3._GRAPHS[0], 10)
-#    elif type(i) == DecayNode:
-#        total += i.CountCarbon(test3._GRAPHS[0], 10)
-#    print(total)
-
-#nx.draw(test2._GRAPHS[0]._GRAPH)
-#with open('C:/Users/langa3/Documents/Script/Panier_produit/Graphs.json', "r") as files:
-#    data = json.load(files)
-#Pb = data.get('Produitsdubois_V2', {})
-#nodes = Pb.get('Nodes', {})
-#edges = Pb.get('Edges', {})
-#
-#edges
 #
 #for edge_id, edge_data in edges.items():
 #    From = edge_data['From']
@@ -230,7 +255,8 @@ data1 == data2
 #    print(f'Connection entre {nom_from} à {nom_to}')
 
 # ----------------------------------------------------------------------------
-""" Test_02 = ('T:/Donnees/Usagers/LANGA3/MoSiR/Graphs_03.json')
+"""
+Test_02 = ('T:/Donnees/Usagers/LANGA3/MoSiR/Graphs_03.json')
 
 import json
 J = open('T:/Donnees/Usagers/LANGA3/MoSiR/Graphs_03.json')
@@ -286,19 +312,14 @@ dictio = G.to_dict_dict()
 
 G.predecessors()
 
-
-
-
 help(G.Full)
 G.Full(len(G.vs.indices))
 
-
 for i in G.vs:
     print(i)
-
 
 liste = {1: 'a', 2: 'b', 3: "ce"}
 
 for i, j in enumerate(liste):
     print(i)
-     """
+"""

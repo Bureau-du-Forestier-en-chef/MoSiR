@@ -34,6 +34,10 @@ class RecursionNode(RecursionError):
 
 # Node class -----------------------------------------------------------------
 
+# Introduire interface de cashing
+# class cashing
+
+
 class WPGraph():
     pass
 
@@ -61,7 +65,7 @@ class IndustrialNode(metaclass = ABCMeta): # aller voir la doc ABC
         la quantité de carbone totale se retrouvant dans un noeud spécifique.
         
         Args: 
-            Graph : Le nx.DiGraph qui a servit à construire le réseau
+            Graph : Le Graph qui a servit à construire le réseau
             Time (int): Le temps en année
             Cumulative (bool): To be implemented
             

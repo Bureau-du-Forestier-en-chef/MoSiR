@@ -1,0 +1,37 @@
+# Documentation --------------------------------------------------------------
+# Keyword important: Unit, CarbonInputs
+# L'année 0 existe
+# Format de inputs
+#     Year : Quantity
+#     Units in "kgC" or "tC"
+#
+# User entries ---------------------------------------------------------------
+
+Unit: kgc 
+CarbonInputs = {
+    "Roundwood for GCGM": {
+        0 : 10,
+        1 : 8,
+        2 : 12,
+        3 : 0},
+
+    "Importation": {
+        0 : 5,
+        1 : 0,
+        2 : 0,
+        3 : 0},
+
+    "Node_name": {
+        0 : 0,
+        1 : 0,
+        2 : 34,
+        3 : 0}
+}
+
+Test de texte
+kgc
+tC
+Unit kgc
+Unit tc
+Unit # tc
+Unit \n tc
