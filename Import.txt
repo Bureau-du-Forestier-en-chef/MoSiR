@@ -7,7 +7,7 @@
 #
 # User entries ---------------------------------------------------------------
 
-Unit: Tonne 
+Unit: kgc 
 CarbonInputs = {
     "Roundwood for GCGM": {
         0 : 10,

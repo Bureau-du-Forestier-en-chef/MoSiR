@@ -1,8 +1,9 @@
 import pandas as pd
+import json
 
-# Diviser le import
-
-class EditImport():
+# Txt ------------------------------------------------------------------------
+""" 
+class EditTxtImport():
     def __init__(self, directory):
         self._DIR = directory
         self._INPUT = []
@@ -37,9 +38,30 @@ class EditImport():
         assert Unit in ['kgc', 'tc']
         return Unit
     
-Test01 = EditImport('Import.txt')               
+Test01 = EditTxtImport('Import.txt')               
 Test01.GetUnit()
-Test01._UNIT
+Test01.GetInput()
+"""
+# Json -----------------------------------------------------------------------
 
-for i in Test01._UNIT:
-    print(i)
+class ImportData():
+    def __init__(self, directory):
+        with open(directory, "r") as f: 
+            self._DATA = json.load(f)
+            
+    def GetUnit(self):
+        return self._DATA['Unit']
+    
+    def GetData(self):
+        return self._DATA['Input']
+    
+    def GetNodeInput(self, NodeName):
+        Input = self.GetData()[NodeName]
+        Time = []
+        Quantities = []
+        for time, value in Input.items():
+            if value == 0:
+                continue
+            Time.append(int(time)) 
+            Quantities.append(value)
+        return Time, Quantities

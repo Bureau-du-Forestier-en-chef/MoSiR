@@ -35,13 +35,14 @@ class RecursionNode(RecursionError):
 # Node class -----------------------------------------------------------------
 
 # Introduire interface de cashing
-# class cashing
-
+class Caching():
+     pass
 
 class WPGraph():
     pass
 
 class IndustrialNode(metaclass = ABCMeta): # aller voir la doc ABC
+    cache = Caching() # lire sur membre statique
     def __init__(self, LOCALNAME: str):
         self._NAME = LOCALNAME
     
@@ -97,10 +98,28 @@ class IndustrialNode(metaclass = ABCMeta): # aller voir la doc ABC
         return self.NAME <= Other.NAME
         
 class TopNode(IndustrialNode):
-    def __init__(self, NAME: str,  Time: list[int], Quantities: list[float]):
+    # On essai d'enlever les inputs
+    # (self, NAME: str,  Time: list[int], Quantities: list[float])
+    def __init__(self, NAME: str):
         super().__init__(NAME)
-        self._Time = Time
-        self._Quantities = Quantities
+        self._Time = []
+        self._Quantities = []
+        
+    @property           
+    def Time(self):
+        return self._Time
+    
+    @Time.setter
+    def Time(self, InputValue: list[int]):
+        self._Time = [InputValue]
+        
+    @property
+    def Quantities(self):
+        return self._Quantities
+
+    @Quantities.setter
+    def Quantities(self, InputValue: list[float]):
+        self._Quantities = [InputValue]
         
     def _GetQuantityTime(self, When: int) -> float:
         try: 
@@ -274,7 +293,7 @@ class GraphFactory():
             node_map = {}
             for node_id, node_data in _NODES.items():
                 if int(node_id) in _TOPNODES:    
-                    new_node =  TopNode(node_data['Name'], [0, 5], [50, 100])  # Reste à mettre le input
+                    new_node =  TopNode(node_data['Name'])
                 elif int(node_id) in _LASTNODES:
                     new_node = PoolNode(node_data['Name'])
                 elif node_data["Half-life"] > 0:

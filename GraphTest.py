@@ -107,9 +107,7 @@ for GraphName in Test_02.GetData:
                 des edges avec et sans overflow")
 
 # "EternalStock": 1.0, "Oxydation": 0.0, "Export": 0.0, 
-        
-3458764565184960178 
-NODES['3458764565184960178'].get('Name')      
+   
 # Total input versus in system 
 for Name in Test_02.GetGraphName:
     Graph = Test_02.GetGraph(Name)
@@ -124,7 +122,7 @@ for Name in Test_02.GetGraphName:
             elif type(Node) == gf.PoolNode or type(Node) == gf.DecayNode or \
                 type(Node) == gf.RecyclingNode:
                 InSystem += Node.CountCarbon(Graph, Time)
-        if Input > InSystem - 0.0000001 and Input < InSystem + 0.0000001 :
+        if Input > InSystem - MOSIR_TOLERENCE and Input < InSystem + MOSIR_TOLERENCE :
             print(f'Time {Time} checked')
             continue
         else:
