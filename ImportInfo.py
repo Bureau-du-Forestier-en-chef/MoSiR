@@ -55,6 +55,9 @@ class ImportData():
     def GetData(self):
         return self._DATA['Input']
     
+    def GetNodesName(self):
+        return [i for i in self.GetData()]
+    
     def GetNodeInput(self, NodeName):
         Input = self.GetData()[NodeName]
         Time = []

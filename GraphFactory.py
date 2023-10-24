@@ -111,7 +111,7 @@ class TopNode(IndustrialNode):
     
     @Time.setter
     def Time(self, InputValue: list[int]):
-        self._Time = [InputValue]
+        self._Time = InputValue
         
     @property
     def Quantities(self):
@@ -119,7 +119,7 @@ class TopNode(IndustrialNode):
 
     @Quantities.setter
     def Quantities(self, InputValue: list[float]):
-        self._Quantities = [InputValue]
+        self._Quantities = InputValue
         
     def _GetQuantityTime(self, When: int) -> float:
         try: 
@@ -133,7 +133,7 @@ class TopNode(IndustrialNode):
     
     def CountCarbon(self, Graph: wp.WPGraph, Time: int, Cumulative: bool = True) -> float:
         return self._GetQuantityTime(Time)
-        
+    
 class ProportionNode(IndustrialNode):
     def __init__(self, NAME: str):
         super().__init__(NAME)

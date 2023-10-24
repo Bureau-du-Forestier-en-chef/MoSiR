@@ -168,7 +168,7 @@ for Name in Test_02.GetGraphName:
                 new_df = pd.DataFrame([new])
                 df = pd.concat([df, new_df], ignore_index = True)
 
-df.to_csv('Output_verification.csv', index = False, sep = ';')
+#df.to_csv('Output_verification.csv', index = False, sep = ';')
 
 # Emissions nodes
 data = {'Time': [],
@@ -192,7 +192,7 @@ for Name in Test_02.GetGraphName:
                                  'N2O emissions': N2O}])
         df = pd.concat([df, new_line], ignore_index = True)
 
-df.to_csv('Output_emissions.csv', index = False, sep = ';')
+#df.to_csv('Output_emissions.csv', index = False, sep = ';')
 
 
 
