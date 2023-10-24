@@ -186,11 +186,11 @@ for Name in Test_02.GetGraphName:
                 CO2 = Node.CountCarbon(Graph, Time, Cumulative = False)
             elif Node.NAME == 'N2O emissions':
                 N2O = Node.CountCarbon(Graph, Time, Cumulative = False)
-            new_line = pd.DataFrame([{'Time': Time, 
-                                     'CH4 emissions': CH4,
-                                     'CO2 emissions': CO2, 
-                                     'N2O emissions': N2O}])
-            df = pd.concat([df, new_line], ignore_index = True)
+        new_line = pd.DataFrame([{'Time': Time, 
+                                 'CH4 emissions': CH4,
+                                 'CO2 emissions': CO2, 
+                                 'N2O emissions': N2O}])
+        df = pd.concat([df, new_line], ignore_index = True)
 
 df.to_csv('Output_emissions.csv', index = False, sep = ';')
 
