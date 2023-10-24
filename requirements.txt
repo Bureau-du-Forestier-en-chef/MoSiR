@@ -2,3 +2,4 @@ Flask
 pyvis
 Requests
 networkx
+python_dotenv

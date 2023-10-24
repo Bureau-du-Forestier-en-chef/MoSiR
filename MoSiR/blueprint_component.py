@@ -43,7 +43,15 @@ class Component(ABC,Blueprint):
         locations = []
         for element in os.listdir(graphs_folder):
             if os.path.isfile(os.path.join(graphs_folder,element)) and element.endswith(".json"):
-                locations.append(os.path.join(graphs_folder,element))
+                json_file = utilities.Jsonparser.read(os.path.join(graphs_folder,element))
+                graphnames = list(json_file.keys())
+                graphfile = False
+                for graph_name in graphnames:
+                    if "Nodes" in json_file[graph_name] and "Edges" in json_file[graph_name]:
+                        graphfile  = True
+                        break
+                if graphfile:
+                    locations.append(os.path.join(graphs_folder,element))
         return locations
     def read_graphs_json()->[Generator]:
         graphs_folder = Component._get_uploads_folder()
