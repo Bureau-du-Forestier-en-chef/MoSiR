@@ -1,4 +1,5 @@
 {"Unit" : "kgc",
+"PRG" : {"CH4" : 28, "N2O": 298},
 "Inputs": {
     "Roundwood from GCBM": {
         "0" : 10,

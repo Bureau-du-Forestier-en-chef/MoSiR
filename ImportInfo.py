@@ -1,6 +1,43 @@
 import pandas as pd
 import json
 
+# Json -----------------------------------------------------------------------
+
+class ImportData():
+    def __init__(self, directory):
+        with open(directory, "r") as f: 
+            self._DATA = json.load(f)
+            
+    def GetUnit(self):
+        return self._DATA['Unit']
+    
+    def GetData(self):
+        return self._DATA['Inputs']
+    
+    def GetNodesName(self):
+        return [i for i in self.GetData()]
+    
+    def GetNodeInput(self, NodeName):
+        Input = self.GetData()[NodeName]
+        Time = []
+        Quantities = []
+        for time, value in Input.items():
+            if value == 0:
+                continue
+            Time.append(int(time)) 
+            Quantities.append(value)
+        return Time, Quantities
+
+def AddImport(Graph, Import):
+    for Name in Graph.GetGraphName:
+        G = Graph.GetGraph(Name)
+        for Node in G.Nodes():
+            if Node.NAME in Import.GetNodesName():
+                Time = Import.GetNodeInput(Node.NAME)[0]
+                Quantities = Import.GetNodeInput(Node.NAME)[1]
+                Node.Time = Time
+                Node.Quantities = Quantities
+
 # Txt ------------------------------------------------------------------------
 """ 
 class EditTxtImport():
@@ -42,29 +79,3 @@ Test01 = EditTxtImport('Import.txt')
 Test01.GetUnit()
 Test01.GetInput()
 """
-# Json -----------------------------------------------------------------------
-
-class ImportData():
-    def __init__(self, directory):
-        with open(directory, "r") as f: 
-            self._DATA = json.load(f)
-            
-    def GetUnit(self):
-        return self._DATA['Unit']
-    
-    def GetData(self):
-        return self._DATA['Input']
-    
-    def GetNodesName(self):
-        return [i for i in self.GetData()]
-    
-    def GetNodeInput(self, NodeName):
-        Input = self.GetData()[NodeName]
-        Time = []
-        Quantities = []
-        for time, value in Input.items():
-            if value == 0:
-                continue
-            Time.append(int(time)) 
-            Quantities.append(value)
-        return Time, Quantities

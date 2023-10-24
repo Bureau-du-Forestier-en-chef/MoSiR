@@ -130,25 +130,6 @@ for Name in Test_02.GetGraphName:
                 en input ({Input}) au temps {Time} n'est pas égale au total \
                 présent dans le système ({InSystem})")
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # Prod de résultats ----------------------------------------------------------
 
 # Dataframe all nodes > 0
@@ -195,25 +176,6 @@ for Name in Test_02.GetGraphName:
 #df.to_csv('Output_emissions.csv', index = False, sep = ';')
 
 
-
-#NODES['3458764565184959408'].items()
-#NODES['3458764565184959408'].get('Half-life')
-#
-#for GraphName in Test_02.GetData:
-#    Graph_data = Test_02.GetData[GraphName]
-#    Graph = Test_02.GetGraph(Name.upper())
-#    NODES =  Graph_data.get('Nodes', {})
-#    EDGES =  Graph_data.get('Edges', {})
-#    LASTNODES = set([int(ID) for ID in NODES]) - \
-#                set([data['From'] for keys, data in EDGES.items()])
-#    LASTNODES_DICT = {key: NODES[str(key)] for key in LASTNODES}
-#    for Time in range(16):
-#        for Node in Graph.Nodes():
-#            if 'CH4' in Node.NAME:
-#                print(Node.NAME)
-
-
-
 # N2O checkup
 
 for Name in Test_02.GetGraphName:
@@ -254,35 +216,6 @@ for Name in Test_02.GetGraphName:
 
 # ----------------------------------------------------------------------------
 """
-Test_02 = ('T:/Donnees/Usagers/LANGA3/MoSiR/Graphs_03.json')
-
-import json
-J = open('T:/Donnees/Usagers/LANGA3/MoSiR/Graphs_03.json')
-data = json.load(J)
-data
-PB = data.get('Produitsdubois_V2')
-
-Nodes = PB.get('Nodes')
-Edges = PB.get('Edges')
-
-
-node_map = {}
-id_list = []
-for node_id, node_data in Nodes.items():
-    new_node = 'test'
-    node_map[int(node_id)] = new_node
-    id_list.append(node_id)     
-       
-node_map.get(int(id_list[2]))
-
-
-
-for i, j in enumerate(node_map):
-    print(i, j)
-    
-node_map[3458764565184960178]
-
-
 G = ig.Graph(directed = True)
 
 a = TopNode('P1', [0], [10])

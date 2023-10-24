@@ -6,8 +6,8 @@ from IPython.core.ultratb import ColorTB # Couleur powershell
 
 sys.excepthook = ColorTB()
 
-
 # Fichier pour générer une table dummy
+""" 
 df = {
     'Time': np.repeat(np.arange(1, 151), 3),
     'Species': np.array(['A', 'B', 'C'] * 150),
@@ -17,29 +17,8 @@ df = {
 df = pd.DataFrame(df)
 df.to_csv('C:/Users/langa3/Documents/Script/Panier_produit/dummy_table.csv', 
           index = False, sep = ';')
+"""
 
-# Test convolve -----------------------------------------------
-
-'''
-Insane la fonction, passe le premier vecteur en ordre d'occurance au deuxième,
-exemple : 1 * 10, 1 * 20 + 5 * 10, 1 * 100 + 5 * 20, et ainsi de suite
-
-# Emissions en ordre chronologique = [1, 5]
-# Facteur radiatif = [10, 20, 100, 1000]
-2 you
-4 more
-6 
-8 great
-
-Tester une diff entre class et fct
-
-'''
-a = [1, 5]
-b = [10, 20, 30]
-
-np.convolve(a, b)
-    
-    
 class ConstError(Exception):
     def __init__(self, message: str):    
         super().__init__(message)
@@ -65,27 +44,32 @@ class RadFormatting():
     def GetData(self):
         raise ConstError("Original data can't be changed")
     
+    @property
+    def GetColumnName(self):
+        return self._COLUMN
+    
+    @GetColumnName.setter
+    def GetColumnName(self):
+        raise ConstError("Original data can't be changed")
+    
     def GetColumn(self, Name: str) -> list[int]:
         return getattr(self, f'_{Name}'.upper())
     
-    def CalculateRF(GasName: str):
-
-Fc = ExcelFormatting('T:/Donnees/Usagers/LANGA3/MoSiR/FacteurRadiatif.xlsx')
-Fc.GetColumn('Year')
-
-def InputFormatting(Time: list[int], Values: list[float]):
-    pass
-
-A = [1, 2, 3, 4, 5]
-Temps = [1, 3, 4, 5]
-C = [15, 2, 43, 34]
-
-C_result = [0] * len(A)
-
-for i, annee in enumerate(A):
-    if annee in Temps:
-        index = Temps.index(annee)
-        C_result[i] = C[index]
+    def CalculateRF(self, GasName: str, Input: list[float], Duration: int) -> list[float]:
+        """
+        Les inputs doivent être des émissions en ordre chronologique. La liste
+        d'émissions doit être des années qui se suivent, sans bon. Par exemple:
+        [Émission année 1, Émissions année 2, Émissions année 3, etc.].
         
-for ID, VALUE in enumerate([2, 34, 23, 43]):
-    print(ID, VALUE)
+        Ce qui ne fonctionne pas :
+        [Émission année 1, Émission année 3, Émissions année 4, etc].
+        
+        Si aucune émission n'est signalée à une année, une zéro devrait
+        être présent.
+        """
+        GasRF = self.GetColumn(GasName)[0:Duration]
+        Emissions = np.convolve(Input, GasRF)[0:Duration]
+        return Emissions
+
+Fc = RadFormatting('T:/Donnees/Usagers/LANGA3/MoSiR/FacteurRadiatif.xlsx')
+

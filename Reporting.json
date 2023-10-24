@@ -1,0 +1,53 @@
+{
+    "Time": 150,
+    "Output File extension" : ".csv",
+    
+    "output_substitution":{
+       "Nodes_name" : ["Half-life[35]Other Sawnwood, storage", 
+                        "Half-life[35]Engineered wood, storage",
+                        "Half-life[25]Structural Panels, storage",
+                        "Half-life[25]Non-structural Panels, storage",
+                        "Half-life[35]Otherwood, storage"],
+       "Type" : "Flux in",
+       "Cumulative" : "True",
+       "Summarize" : "Per_Node",
+       "Unit" : "tC"},
+       
+   "output_GES":{
+       "Nodes_name" : ["CH4 emissions", 
+                        "N2O emissions", 
+                        "CO2 emissions"],
+       "Type" : "Flux in",
+       "Cumulative" : "False",
+       "Summarize" : "Per_Node",
+       "Unit" : "w/m2"},
+       
+   "output_stock_products":{
+       "Nodes_name" : ["Half-life[2]Papers, storage", 
+                        "Half-life[2]Cardboards, storage", 
+                        "Half-life[2]Others P&P, storage", 
+                        "Half-life[35]Other Sawnwood, storage", 
+                        "Half-life[35]Engineered wood, storage", 
+                        "Half-life[25]Structural Panels, storage", 
+                        "Half-life[25]Non-structural Panels, storage", 
+                        "Half-life[35]Otherwood, storage"],
+       "Type" : "Stock",
+       "Cumulative" : "True",
+       "Summarize" : "Per_Node",
+       "Unit" : "tC"},
+       
+   "output_stock_endlife":{
+       "Nodes_name" : ["Half-life[11.6]Site 1, Stockage, Landfilled industrial P&P",
+                        "Half-life[11.6]Site 2, Stockage, Landfilled, MSW P&P",
+                        "Half-life[23.1]Site 2, Stockage Landfilled, MSW Sawnwood",
+                        "Half-life[23.1]Site 1, Stockage, Landfilled, industrial Sawnwood",
+                        "Half-life[23.1]Site 2, A, Landfilled MSW Panels",
+                        "Half-life[23.1]Site 1, Stockage, Landfilled, industrial Panels",
+                        "Half-life[23.1]Site 2, Stockage, Landfilled, MSW Otherwood",
+                        "Half-life[23.1]Site 1, Stockage, industrial Otherwood"],
+       "Type" : "Stock",
+       "Cumulative" : "True",
+       "Summarize" : "Per_Node",
+       "Unit" : "tC"}
+}
+   

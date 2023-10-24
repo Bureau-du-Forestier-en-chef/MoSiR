@@ -1,5 +1,3 @@
-# Last update : 2023-10-05 (GL)
-
 """ 
 Pour faire un profile manuel :
     cProfile.run('addition(5, 3)')
@@ -98,8 +96,6 @@ class IndustrialNode(metaclass = ABCMeta): # aller voir la doc ABC
         return self.NAME <= Other.NAME
         
 class TopNode(IndustrialNode):
-    # On essai d'enlever les inputs
-    # (self, NAME: str,  Time: list[int], Quantities: list[float])
     def __init__(self, NAME: str):
         super().__init__(NAME)
         self._Time = []
@@ -138,9 +134,6 @@ class ProportionNode(IndustrialNode):
     def __init__(self, NAME: str):
         super().__init__(NAME)
         self.__PastCarbon = {}
-        
-    #  À y revenir
-    #def _GutsofGetCarbon(self, Proportion: list[float], Values: list[float]) -> float:
     
     def GetCarbon(self, Graph: wp.WPGraph, Time: int, Cumulative: bool = True) -> float:
         if Time in self.__PastCarbon:
