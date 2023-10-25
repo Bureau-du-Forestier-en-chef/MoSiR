@@ -1,6 +1,7 @@
 {
     "Time": 150,
-    "Output File extension" : ".csv",
+    "Output file extension" : ".csv",
+    "PRG" : {"CH4" : 28, "N2O": 298},
     
     "output_substitution":{
        "Nodes_name" : ["Half-life[35]Other Sawnwood, storage", 

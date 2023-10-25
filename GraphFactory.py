@@ -28,19 +28,22 @@ class ConstError(Exception):
 class RecursionNode(RecursionError):
     def __init__(self, message: str):
         super().__init__(message)
-# Lire sur maximum recusion depth exceeded
+        
 
 # Node class -----------------------------------------------------------------
 
 # Introduire interface de cashing
-class Caching():
-     pass
-
+#class Caching():
+#    def __init__(self):
+#        self._GetFluxOutCache = {}
+#        self._Open = False
+#   def get
+#   def set 
+ 
 class WPGraph():
     pass
 
 class IndustrialNode(metaclass = ABCMeta): # aller voir la doc ABC
-    cache = Caching() # lire sur membre statique
     def __init__(self, LOCALNAME: str):
         self._NAME = LOCALNAME
     
@@ -56,12 +59,10 @@ class IndustrialNode(metaclass = ABCMeta): # aller voir la doc ABC
        raise ConstError("Node name can't be changed")
     
     @abstractmethod
-    def GetCarbon(self, Graph: wp.WPGraph, Time: int, Cumulative: bool = True) -> float:
-        ''' Get Carbon Documentation
+    def GetFluxOut(self, Graph: wp.WPGraph, Time: int, Cumulative: bool = False) -> float:
+        ''' GetFluxOut Documentation
         
-        Cette fonction sert à retracer le flux de carbone parcourant le réseau
-        de noeuds. Cette information est utilisé par CountCarbon qui calcule
-        la quantité de carbone totale se retrouvant dans un noeud spécifique.
+        Cette fonction sert à retracer le flux de carbone sortant d'un noeud. 
         
         Args: 
             Graph : Le Graph qui a servit à construire le réseau
@@ -71,7 +72,22 @@ class IndustrialNode(metaclass = ABCMeta): # aller voir la doc ABC
         Returns:
             float: Une quantité de carbone
         '''
-        print('Test')
+        pass
+    
+    @abstractmethod
+    def GetFluxIn(self, Graph: wp.WPGraph, Time: int, Cumulative: bool = False) -> float:
+        ''' GetFluxIn Documentation
+        
+        Cette fonction sert à retracer le flux de carbone entrant d'un noeud. 
+        
+        Args: 
+            Graph : Le Graph qui a servit à construire le réseau
+            Time (int): Le temps en année
+            Cumulative (bool): To be implemented
+            
+        Returns:
+            float: Une quantité de carbone
+        '''
         pass
     
     def __hash__(self): 
@@ -124,29 +140,51 @@ class TopNode(IndustrialNode):
         except ValueError:
             return 0
     
-    def GetCarbon(self, Graph: wp.WPGraph, Time: int, Cumulative: bool = True) -> float:
+    def GetFluxOut(self, Graph: wp.WPGraph, Time: int, Cumulative: bool = False) -> float:
         return self._GetQuantityTime(Time)
     
-    def CountCarbon(self, Graph: wp.WPGraph, Time: int, Cumulative: bool = True) -> float:
+    def GetFluxIn(self, Graph: wp.WPGraph, Time: int, Cumulative: bool = False) -> float:
         return self._GetQuantityTime(Time)
+    
+    def CountCarbon(self, Graph: wp.WPGraph, Time: int, Cumulative: bool = False) -> float:
+        return print('Aucun carbone ne réside dans ce noeud, seulement des flux le traverse')
     
 class ProportionNode(IndustrialNode):
     def __init__(self, NAME: str):
         super().__init__(NAME)
-        self.__PastCarbon = {}
+        #self.__PastCarbon = {}
     
-    def GetCarbon(self, Graph: wp.WPGraph, Time: int, Cumulative: bool = True) -> float:
-        if Time in self.__PastCarbon:
-            return self.__PastCarbon[Time]
+    def GetFluxOut(self, Graph: wp.WPGraph, Time: int, Cumulative: bool = False) -> float:
         Total = 0
-        for Parent in Graph.GetPredecessors(self):
-            ProportionParent = self._GetValueTime(Graph.GetEdgeProportions(Parent, self), Time)
-            if ProportionParent == 0:
-                continue
-            ParentCarbon = Parent.GetCarbon(Graph, Time, Cumulative) # Récursivité
-            Total += ProportionParent * ParentCarbon
-        self.__PastCarbon[Time] = Total
-        return Total
+        if Cumulative == False:
+            #if Time in self.__PastCarbon:
+            #    return self.__PastCarbon[Time]
+            for Parent in Graph.GetPredecessors(self):
+                ProportionParent = self._GetValueTime(Graph.GetEdgeProportions(Parent, self), Time)
+                if ProportionParent == 0:
+                    continue
+                ParentCarbon = Parent.GetFluxOut(Graph, Time, Cumulative)
+                Total += ProportionParent * ParentCarbon
+            #self.__PastCarbon[Time] = Total
+            return Total
+        else:
+            for Timestep in range(Time + 1):
+                #if Timestep in self.__PastCarbon:
+                #    Total += self.__PastCarbon[Timestep]
+                #    continue
+                for Parent in Graph.GetPredecessors(self):
+                    ProportionParent = self._GetValueTime(Graph.GetEdgeProportions(Parent, self), Timestep)
+                    if ProportionParent == 0:
+                        continue
+                    ParentCarbon = Parent.GetFluxOut(Graph, Timestep, Cumulative = False)
+                    Total += ProportionParent * ParentCarbon
+            return Total
+        
+    def GetFluxIn(self, Graph: WPGraph, Time: int, Cumulative: bool = False) -> float:
+        return self.GetFluxOut(Graph, Time, Cumulative)
+    
+    def CountCarbon(self, Graph: wp.WPGraph, Time: int, Cumulative: bool = False) -> int:
+        return print('Aucun carbone ne réside dans ce noeud, seulement des flux le traverse')
 
 class DecayNode(ProportionNode):
     def __init__(self, NAME: str, HalfLife: int):
@@ -162,25 +200,44 @@ class DecayNode(ProportionNode):
     def HalfLife(self, Value):
        self._HalfLife = Value
     
-    def GetCarbon(self, Graph: wp.WPGraph, Time: int, Cumulative: bool = True) -> float:
-        if Time in self.__PastCarbon:
-            return self.__PastCarbon[Time]
+    def GetFluxOut(self, Graph: wp.WPGraph, Time: int, Cumulative: bool = False) -> float:
+        #if Time in self.__PastCarbon:
+        #    return self.__PastCarbon[Time]
         Total = 0
-        for Year in range(Time + 1): 
-            if Year != Time:   
-                Annual = super().GetCarbon(Graph, Year, Cumulative)
-                Output_annual = (Annual - (Annual * ((0.5) ** ((Time - Year)/self.HalfLife)))) - \
-                    (Annual - (Annual * ((0.5) ** ((Time - Year - 1)/self.HalfLife))))
-                Total += Output_annual
-        self.__PastCarbon[Time] = Total
-        return Total
+        if Cumulative == False:
+            for Year in range(Time + 1): 
+                if Year != Time:   
+                    Annual = super().GetFluxOut(Graph, Year, Cumulative)
+                    Output_annual = (Annual * ((0.5) ** ((Time - Year - 1)/self.HalfLife))) - \
+                        (Annual * ((0.5) ** ((Time - Year)/self.HalfLife)))
+                    Total += Output_annual
+           # self.__PastCarbon[Time] = Total
+            return Total
+        else: 
+            for Year in range(Time + 1): 
+                if Year != Time:   
+                    Annual = super().GetFluxOut(Graph, Year, Cumulative = False)
+                    Output_annual = Annual - (Annual * ((0.5) ** ((Time - Year)/self.HalfLife)))
+                    Total += Output_annual
+            return Total
+        
+    def GetFluxIn(self, Graph: wp.WPGraph, Time: int, Cumulative: bool = False) -> float:
+        Total = 0
+        if Cumulative == False:  
+            Annual = super().GetFluxOut(Graph, Time, Cumulative)
+            return Annual
+        else: 
+            for Year in range(Time + 1): 
+                Annual = super().GetFluxOut(Graph, Year, Cumulative = False)
+                Total += Annual
+            return Total 
     
-    def CountCarbon(self, Graph: wp.WPGraph, Time: int, Cumulative: bool = True) -> float:
+    def CountCarbon(self, Graph: wp.WPGraph, Time: int, Cumulative: bool = False) -> float:
         ''' CountCarbon Documentation
 
         La fonction CountCarbon sert à faire le cumulatif des flux annuels 
         de 0 jusqu'à l'année demandé pour un noeud en particulier grâce à la
-        fonction GetCarbon. En d'autres mots, la fonction CountCarbon sert
+        fonction GetFluxOut. En d'autres mots, la fonction CountCarbon sert
         à calculer les stocks présent dans un noeud grâce à l'ensemble
         des flux en provenance des nodes parents depuis le début.
 
@@ -197,7 +254,7 @@ class DecayNode(ProportionNode):
         try:
             Total = 0
             for Year in range(Time + 1):    
-                Annual = super().GetCarbon(Graph, Year, Cumulative)
+                Annual = super().GetFluxOut(Graph, Year, Cumulative)
                 Restant = Annual * ((0.5) ** ((Time - Year)/self.HalfLife))
                 Total += Restant
             return Total
@@ -211,30 +268,30 @@ class RecyclingNode(ProportionNode):
         super().__init__(NAME)
         self.__PastCarbon = {}
     
-    def GetCarbon(self, Graph: wp.WPGraph, Time: int, Cumulative: bool = True) -> float:
+    def GetFluxOut(self, Graph: wp.WPGraph, Time: int, Cumulative: bool = False) -> float:
         if Time in self.__PastCarbon:
             return self.__PastCarbon[Time]
         Total = 0
         for Year in range(Time + 1): 
             if Year + 1 == Time:
-                Total += super().GetCarbon(Graph, Year, Cumulative)
+                Total += super().GetFluxOut(Graph, Year, Cumulative)
         self.__PastCarbon[Time] = Total
         return Total
     
-    def CountCarbon(self, Graph: wp.WPGraph, Time: int, Cumulative: bool = True) -> float:
-        Total = super().GetCarbon(Graph, Time, Cumulative)
+    def CountCarbon(self, Graph: wp.WPGraph, Time: int, Cumulative: bool = False) -> float:
+        Total = super().GetFluxOut(Graph, Time, Cumulative)
         return Total
 
 class PoolNode(ProportionNode):
     def __init__(self, NAME):
         super().__init__(NAME)
         
-    def CountCarbon(self, Graph: wp.WPGraph, Time: int, Cumulative: bool = True) -> float:
+    def CountCarbon(self, Graph: wp.WPGraph, Time: int, Cumulative: bool = False) -> float:
         ''' CountCarbon Documentation
         
         La fonction CountCarbon sert à faire le cumulatif des flux annuels 
         de 0 jusqu'à l'année demandé pour un noeud en particulier grâce à la
-        fonction GetCarbon. En d'autres mots, la fonction CountCarbon sert
+        fonction GetFluxOut. En d'autres mots, la fonction CountCarbon sert
         à calculer les stocks présent dans un noeud grâce à l'ensemble
         des flux en provenance des nodes parents depuis le début.
         
@@ -252,10 +309,10 @@ class PoolNode(ProportionNode):
             if Cumulative == True:
                 Total = 0
                 for Year in range(Time + 1):
-                    Total += super().GetCarbon(Graph, Year, Cumulative)  
+                    Total += super().GetFluxOut(Graph, Year, Cumulative)  
                 return Total
             else:
-                return super().GetCarbon(Graph, Time, Cumulative)
+                return super().GetFluxOut(Graph, Time, Cumulative)
         except RecursionError:
             raise  RecursionNode("Un maximum de demande a été effectué. \
                                  Une boucle entre des ProportionNode est présente")    

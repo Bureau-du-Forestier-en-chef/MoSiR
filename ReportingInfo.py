@@ -16,8 +16,3 @@ class ReportData():
     
     def GetOutputData(self, OutputName: str):
         return self._DATA[OutputName]
-    
-R = ReportData('D:\MoSiR\Reporting.json')
-
-for output in R.GetOutputName():
-    R.GetOutputData(output)

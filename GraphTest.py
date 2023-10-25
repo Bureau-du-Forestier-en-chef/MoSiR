@@ -1,7 +1,12 @@
 import pandas as pd
 import GraphFactory as gf
+import WPGraph as wp
+import ImportInfo
 import warnings
 import json
+
+import importlib
+importlib.reload(gf)
 
 class QuantityError(Exception):
     def __init__(self, message: str):            
@@ -16,16 +21,16 @@ class ConstError(Exception):
         super().__init__(message)
 
 # Test indépendant du import -------------------------------------------------
-""" 
-Test_01 = gf.WPGraph("Test Graph")
+ 
+Test_01 = wp.WPGraph('test')
 
-A = gf.TopNode('A', [0], [10])  
+A = gf.TopNode('A')  
 B = gf.ProportionNode('B')
-C = gf.DecayNode('C', 3)
-D = gf.DecayNode('D', 3)
+C = gf.DecayNode('C', 10)
+D = gf.DecayNode('D', 10)
 E = gf.RecyclingNode('E')
 F = gf.PoolNode('F')
-A.GetCarbon(Test_01, 1)
+
 Test_01.AddNode(A)
 Test_01.AddNode(B)
 Test_01.AddNode(C)
@@ -35,15 +40,22 @@ Test_01.AddNode(F)
  
 Test_01.AddEdge(A, B, Proportions = [1])
 Test_01.AddEdge(B, C, Proportions = [1])
-Test_01.AddEdge(C, D, Proportions = [0.5])
+Test_01.AddEdge(C, D, Proportions = [1])
 Test_01.AddEdge(C, E, Proportions = [0.5])
 Test_01.AddEdge(E, B, Proportions = [1])
 Test_01.AddEdge(D, F, Proportions = [1])
 
-A.CountCarbon(Test_01, 0) == C.CountCarbon(Test_01, 0)
-B.GetCarbon(Test_01, 0)
-C.CountCarbon(Test_01, 0)
- 
+A.Time = [0, 1, 2, 3, 4]
+A.Quantities = [10, 0, 0, 0, 0]
+
+A.CountCarbon(Test_01, 1)
+B.GetFluxIn(Test_01, 0, Cumulative= False)
+C.GetFluxOut(Test_01, 4, Cumulative= False)
+D.GetFluxIn(Test_01, 5, Cumulative= False)
+
+10 - (10 * ((0.5) ** ((2)/5)))
+(10 * ((0.5) ** ((0)/5))) - (10 * ((0.5) ** ((1)/5)))
+
 total = 0
 for i in test1.nodes():
     if type(i) == PoolNode:
@@ -53,7 +65,7 @@ for i in test1.nodes():
     if type(i) == RecyclingNode:
         total += i.GetCarbon(test1, 17)
     print(total) 
-    """
+    
 
 
 # Test de l'import -----------------------------------------------------------
@@ -120,7 +132,7 @@ for Name in Test_02.GetGraphName:
             elif Node.NAME == 'N2O emissions':
                 continue
             elif type(Node) == gf.PoolNode or type(Node) == gf.DecayNode or \
-                type(Node) == gf.RecyclingNode:
+                type(Node) == gf.RecyclingNode or type(Node) == gf.ProportionNode:
                 InSystem += Node.CountCarbon(Graph, Time)
         if Input > InSystem - MOSIR_TOLERENCE and Input < InSystem + MOSIR_TOLERENCE :
             print(f'Time {Time} checked')
