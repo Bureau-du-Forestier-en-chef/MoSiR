@@ -4,6 +4,10 @@ import ReportingInfo as rp
 import pandas as pd
 import json
 
+class InvalidOption(Exception):
+    def __init__(self, message: str):    
+        super().__init__(message)
+
 GraphFileDirectory = 'T:/Donnees/Usagers/LANGA3/MoSiR/Graphs_04.json'
 ImportFileDirectory = 'D:/MoSiR/Import.json'
 ReportFileDirectory = 'D:/MoSiR/Reporting.json'
@@ -16,32 +20,53 @@ Report = rp.ReportData(ReportFileDirectory)
 ip.AddImport(Graph, Import)
 
 # Reporting ------------------------------------------------------------------
+Report.GetData()['Time']
+Report.GetOutputData('output_substitution')
 
 for output_name in Report.GetOutputName():
     Data = Report.GetOutputData(output_name)
-    Time = Data['Time']
     Nodes_name = Data['Nodes_name']
     Type = Data['Type']
     Cumulative = bool(Data['Cumulative'])
     Summarize = Data['Summarize']
     Unit = Data['Unit']
-    Output_file_ext = Data['Output_file_ext']
-   
+    
     for Name in Graph.GetGraphName:
         G = Graph.GetGraph(Name)
-        for Time in range(16): 
+        if Type == 'Flux in':
             for Node in G.Nodes():
-                if Node.NAME == 'CH4 emissions':
-                    CH4 = Node.CountCarbon(G, Time, Cumulative = False)
-                elif Node.NAME == 'CO2 emissions':
-                    CO2 = Node.CountCarbon(G, Time, Cumulative = False)
-                elif Node.NAME == 'N2O emissions':
-                    N2O = Node.CountCarbon(G, Time, Cumulative = False)
-            new_line = pd.DataFrame([{'Time': Time, 
-                                     'CH4 emissions': CH4,
-                                     'CO2 emissions': CO2, 
-                                     'N2O emissions': N2O}])
-            df = pd.concat([df, new_line], ignore_index = True)
+                if Node.NAME in Nodes_name:
+                    pass
+                    #df.loc[i, ['A']] = 
+                    #df.loc[i, ['B']] = 
+                    #df.loc[i, ['C']] = 
+                    #df.loc[i, ['D']] = 
+                    #df.loc[i, ['E']] = 
+        elif Type == 'Flux out':
+            for Node in G.Nodes():
+                if Node.NAME in Nodes_name:
+                    pass
+        elif Type == 'Stock':
+            for Node in G.Nodes():
+                if Node.NAME in Nodes_name:
+                    pass
+        else:
+            raise InvalidOption(f"L'entrée <Type> ('{Type}') dans le \
+                reporting file n'est pas un choix valide. Choix \
+                possibles: 'Flux in', 'Flux out' ou 'Stock'.")
+                
+             
+
+
+for Node in G.Nodes():
+    if Node.NAME in Nodes_name:
+new_line = pd.DataFrame([{'Time': Time, 
+                         'CH4 emissions': CH4,
+                         'CO2 emissions': CO2, 
+                         'N2O emissions': N2O}])
+df = pd.concat([df, new_line], ignore_index = True)
+        
+        
     df = {'Time': [],
         'CH4 emissions': [],
         'CO2 emissions': [],

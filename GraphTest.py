@@ -21,53 +21,38 @@ class ConstError(Exception):
         super().__init__(message)
 
 # Test indépendant du import -------------------------------------------------
- 
+"""  
 Test_01 = wp.WPGraph('test')
 
 A = gf.TopNode('A')  
 B = gf.ProportionNode('B')
 C = gf.DecayNode('C', 10)
-D = gf.DecayNode('D', 10)
-E = gf.RecyclingNode('E')
-F = gf.PoolNode('F')
+D = gf.PoolNode('D')
+#E = gf.RecyclingNode('E')
+#F = gf.PoolNode('F')
 
 Test_01.AddNode(A)
 Test_01.AddNode(B)
 Test_01.AddNode(C)
 Test_01.AddNode(D)
-Test_01.AddNode(E)
-Test_01.AddNode(F)
+#Test_01.AddNode(E)
+#Test_01.AddNode(F)
  
 Test_01.AddEdge(A, B, Proportions = [1])
 Test_01.AddEdge(B, C, Proportions = [1])
 Test_01.AddEdge(C, D, Proportions = [1])
-Test_01.AddEdge(C, E, Proportions = [0.5])
-Test_01.AddEdge(E, B, Proportions = [1])
-Test_01.AddEdge(D, F, Proportions = [1])
+#Test_01.AddEdge(C, E, Proportions = [1])
+#Test_01.AddEdge(E, B, Proportions = [1])
+#Test_01.AddEdge(D, F, Proportions = [1])
 
 A.Time = [0, 1, 2, 3, 4]
 A.Quantities = [10, 0, 0, 0, 0]
 
-A.CountCarbon(Test_01, 1)
+A.GetFluxIn(Test_01, 0)
 B.GetFluxIn(Test_01, 0, Cumulative= False)
-C.GetFluxOut(Test_01, 4, Cumulative= False)
-D.GetFluxIn(Test_01, 5, Cumulative= False)
-
-10 - (10 * ((0.5) ** ((2)/5)))
-(10 * ((0.5) ** ((0)/5))) - (10 * ((0.5) ** ((1)/5)))
-
-total = 0
-for i in test1.nodes():
-    if type(i) == PoolNode:
-        total += i.CountCarbon(test1, 16)
-    if type(i) == DecayNode:
-        total += i.CountCarbon(test1, 16)
-    if type(i) == RecyclingNode:
-        total += i.GetCarbon(test1, 17)
-    print(total) 
-    
-
-
+C.GetFluxOut(Test_01, 3, Cumulative= True)
+D.CountCarbon(Test_01, 4, Cumulative= True)
+"""
 # Test de l'import -----------------------------------------------------------
 Test_02 = gf.GraphFactory('T:/Donnees/Usagers/LANGA3/MoSiR/Graphs_04.json')
 MOSIR_TOLERENCE = 0.0001

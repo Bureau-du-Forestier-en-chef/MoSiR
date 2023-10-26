@@ -254,7 +254,7 @@ class DecayNode(ProportionNode):
         try:
             Total = 0
             for Year in range(Time + 1):    
-                Annual = super().GetFluxOut(Graph, Year, Cumulative)
+                Annual = super().GetFluxOut(Graph, Year, Cumulative = False)
                 Restant = Annual * ((0.5) ** ((Time - Year)/self.HalfLife))
                 Total += Restant
             return Total
@@ -269,14 +269,30 @@ class RecyclingNode(ProportionNode):
         self.__PastCarbon = {}
     
     def GetFluxOut(self, Graph: wp.WPGraph, Time: int, Cumulative: bool = False) -> float:
-        if Time in self.__PastCarbon:
-            return self.__PastCarbon[Time]
+        #if Time in self.__PastCarbon:
+        #    return self.__PastCarbon[Time]
         Total = 0
-        for Year in range(Time + 1): 
-            if Year + 1 == Time:
-                Total += super().GetFluxOut(Graph, Year, Cumulative)
-        self.__PastCarbon[Time] = Total
-        return Total
+        if Cumulative == False:
+            for Year in range(Time + 1): 
+                if Year + 1 == Time:
+                    Total += super().GetFluxOut(Graph, Year, Cumulative)
+            #self.__PastCarbon[Time] = Total
+            return Total
+        else:
+            for Year in range(Time):
+                Total += super().GetFluxOut(Graph, Year, Cumulative = False)
+            return Total
+    
+    def GetFluxIn(self, Graph: WPGraph, Time: int, Cumulative: bool = False) -> float:
+        Total = 0
+        if Cumulative == False:
+            Total += super().GetFluxOut(Graph, Time, Cumulative)
+            #self.__PastCarbon[Time] = Total
+            return Total
+        else:
+            for Year in range(Time + 1):
+                Total += super().GetFluxOut(Graph, Year, Cumulative = False)
+            return Total
     
     def CountCarbon(self, Graph: wp.WPGraph, Time: int, Cumulative: bool = False) -> float:
         Total = super().GetFluxOut(Graph, Time, Cumulative)
@@ -286,15 +302,22 @@ class PoolNode(ProportionNode):
     def __init__(self, NAME):
         super().__init__(NAME)
         
+    def GetFluxIn(self, Graph: WPGraph, Time: int, Cumulative: bool = False) -> float:
+        Total = 0
+        if Cumulative == False:  
+            Annual = super().GetFluxOut(Graph, Time, Cumulative)
+            return Annual
+        else: 
+            for Year in range(Time + 1): 
+                Annual = super().GetFluxOut(Graph, Year, Cumulative = False)
+                Total += Annual
+            return Total    
+    
+    def GetFluxOut(self, Graph: WPGraph, Time: int, Cumulative: bool = False) -> float:
+        warnings.warn(f'Aucun carbone sortant de la node {self.NAME}')
+      
     def CountCarbon(self, Graph: wp.WPGraph, Time: int, Cumulative: bool = False) -> float:
-        ''' CountCarbon Documentation
-        
-        La fonction CountCarbon sert à faire le cumulatif des flux annuels 
-        de 0 jusqu'à l'année demandé pour un noeud en particulier grâce à la
-        fonction GetFluxOut. En d'autres mots, la fonction CountCarbon sert
-        à calculer les stocks présent dans un noeud grâce à l'ensemble
-        des flux en provenance des nodes parents depuis le début.
-        
+        ''' CountCarbon Documentation   
         Args: 
             Graph (nx.DiGraph): le DiGraph utilisé pour construire le réseau
             Time (int): Le temps en année
@@ -303,16 +326,10 @@ class PoolNode(ProportionNode):
         Returns: 
             float: Le cumulatif des fluxs, donc le stock de carbone présent
             dans une noeud (self) à un temps donnée (Time)
-        
         '''
         try:
-            if Cumulative == True:
-                Total = 0
-                for Year in range(Time + 1):
-                    Total += super().GetFluxOut(Graph, Year, Cumulative)  
-                return Total
-            else:
-                return super().GetFluxOut(Graph, Time, Cumulative)
+            warnings.warn('Le résultat est le même que le cumulatif des flux in')
+            return self.GetFluxIn(Graph, Time, Cumulative = True)
         except RecursionError:
             raise  RecursionNode("Un maximum de demande a été effectué. \
                                  Une boucle entre des ProportionNode est présente")    
