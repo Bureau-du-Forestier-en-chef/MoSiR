@@ -6,7 +6,7 @@ MoSiR, acronyme de Modèle de Simulation en Réseau, est un outil puissant initi
 
 Composant 1 - Interface Web :
 
-L'interface web de MoSiR est la passerelle entre la création et la simulation de modèles conceptuels du devenir du carbone dans les produits du bois et le calcul de l'effet climatique réel de ces derniers. Cette interface intuitive est basée sur le langage HTML, ce qui la rend facilement accessible à partir de n'importe quel navigateur internet. 
+L'interface web de MoSiR est la passerelle entre la création et la simulation de modèles conceptuels du devenir du carbone dans les produits du bois et le calcul de l'effet climatique réel des émissions issues de ces derniers. Cette interface intuitive est basée sur le langage HTML, ce qui la rend facilement accessible à partir de n'importe quel navigateur internet. 
 Une caractéristique distincte de l'interface Web de MoSiR est sa capacité à charger des tableaux Miro créés par l'utilisateur et à les convertir en fichiers JSON pouvant être lue par le calculateur de MoSiR. Le respect des normes issues de la documentation de conception de structures en réseau dans Miro (Lien vers la documentation) permet à l'interface Web de MoSiR une transition fluide vers le calculateur tout en conservant l'intégrité des  données et des propriétés de l'architecture bâtie préalablement.
 
 Composant 2 - Interpréteur et Calculateur :
