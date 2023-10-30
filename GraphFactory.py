@@ -145,7 +145,7 @@ class TopNode(IndustrialNode):
         return self._GetQuantityTime(Time)
     
     def GetStock(self, Graph: wp.WPGraph, Time: int, Cumulative: bool = False) -> float:
-        return print('Aucun carbone ne réside dans ce noeud, seulement des flux le traverse')
+        return self._GetQuantityTime(Time)
     
 class ProportionNode(IndustrialNode):
     def __init__(self, NAME: str):

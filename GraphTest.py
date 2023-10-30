@@ -58,9 +58,9 @@ def GraphTesting(Graph: gf.GraphFactory, Input: ip.ImportData,
     
     # First node et last node
     for GraphName in Graph.GetData:
-        GRAPH = Graph.GetData.get(GraphName)
-        NODES = GRAPH.get('Nodes', {})
-        EDGES = GRAPH.get('Edges', {})
+        G1 = Graph.GetData.get(GraphName)
+        NODES = G1.get('Nodes', {})
+        EDGES = G1.get('Edges', {})
         TOPNODES = set([int(ID) for ID in NODES]) - \
                     set([data['To'] for keys, data in EDGES.items()])
         if len(TOPNODES) > 1:
@@ -76,13 +76,13 @@ def GraphTesting(Graph: gf.GraphFactory, Input: ip.ImportData,
    
     # Total des Edges 
     for Name in Graph.GetGraphName:
-        Graph = Graph.GetGraph(Name)
-        for Node in Graph.Nodes():
+        G2 = Graph.GetGraph(Name)
+        for Node in G2.Nodes():
             Total = 0
-            for Successors in Graph.GetSuccessors(Node):
+            for Successors in G2.GetSuccessors(Node):
                 if Successors.NAME == 'N2O emissions':
                     continue
-                Total += Node._GetValueTime(Graph.GetEdgeProportions(Node, Successors), 0)
+                Total += Node._GetValueTime(G2.GetEdgeProportions(Node, Successors), 0)
             if Total - 1 > MOSIR_TOLERENCE or 1 - Total > MOSIR_TOLERENCE and Total != 0:
                 raise EdgeError(f"La somme des edges sortant de {Node.NAME} n'est pas égale à 100%") 
             elif Total < MOSIR_TOLERENCE:
@@ -90,9 +90,9 @@ def GraphTesting(Graph: gf.GraphFactory, Input: ip.ImportData,
 
     # Test de overflow
     for GraphName in Graph.GetData:
-        GRAPH = Graph.GetData.get(GraphName)
-        NODES = GRAPH.get('Nodes', {})
-        EDGES = GRAPH.get('Edges', {})
+        G3 = Graph.GetData.get(GraphName)
+        NODES = G3.get('Nodes', {})
+        EDGES = G3.get('Edges', {})
         for NodeId in NODES:
             Overflow = []
             for key, values in EDGES.items():
@@ -104,25 +104,25 @@ def GraphTesting(Graph: gf.GraphFactory, Input: ip.ImportData,
 
     # Total input versus in system 
     for Name in Graph.GetGraphName:
-        Graph = Graph.GetGraph(Name)
+        G4 = Graph.GetGraph(Name)
         Input = 0
         for Timestep in range(Time + 1):
             InSystem = 0
-            for Node in Graph.Nodes():
+            for Node in G4.Nodes():
                 if type(Node) == gf.TopNode:
-                    Input += Node.CountCarbon(Graph, Timestep)
+                    Input += Node.GetStock(G4, Timestep)
                 elif Node.NAME == 'N2O emissions':
                     continue
                 elif type(Node) == gf.PoolNode or type(Node) == gf.DecayNode or \
                     type(Node) == gf.RecyclingNode or type(Node) == gf.ProportionNode:
-                    InSystem += Node.CountCarbon(Graph, Timestep)
+                    InSystem += Node.GetStock(G4, Timestep)
             if Input > InSystem - MOSIR_TOLERENCE and Input < InSystem + MOSIR_TOLERENCE :
-                print(f'Time {Timestep} checked')
                 continue
             else:
-                raise QuantityError(f"Graph : {Graph.GetName} La quantité total \
+                raise QuantityError(f"Graph : {G4.GetName} La quantité total \
                     en input ({Input}) au temps {Timestep} n'est pas égale au total \
                     présent dans le système ({InSystem})")
+    print('Graph tested')
 
 # N2O checkup
 

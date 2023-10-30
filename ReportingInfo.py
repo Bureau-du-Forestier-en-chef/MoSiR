@@ -69,20 +69,20 @@ def OutputCreation(Graph: gf.GraphFactory, Import: ip.ImportData,
             G = Graph.GetGraph(Name)
             for Node in G.Nodes():
                 if Node.NAME in Nodes_name:
-                    for Time in range(10):
-                        df.loc[Time, 'Time'] = Time
+                    for Timestep in range(Time + 1):
+                        df.loc[Timestep, 'Time'] = Timestep
                         if Type == 'Flux in':
-                            result = Node.GetFluxIn(G, Time, Cumulative = Cumulative)
+                            result = Node.GetFluxIn(G, Timestep, Cumulative = Cumulative)
                             result = UnitChange(result, InputUnit, ReportUnit)
-                            df.loc[Time, Node.NAME] = result
+                            df.loc[Timestep, Node.NAME] = result
                         elif Type == 'Flux out':
-                            result = Node.GetFluxOut(G, Time, Cumulative = Cumulative)
+                            result = Node.GetFluxOut(G, Timestep, Cumulative = Cumulative)
                             result = UnitChange(result, InputUnit, ReportUnit)
-                            df.loc[Time, Node.NAME] = result
+                            df.loc[Timestep, Node.NAME] = result
                         elif Type == 'Stock':
-                            result = Node.GetStock(G, Time, Cumulative = Cumulative)
+                            result = Node.GetStock(G, Timestep, Cumulative = Cumulative)
                             result = UnitChange(result, InputUnit, ReportUnit)
-                            df.loc[Time, Node.NAME] = result
+                            df.loc[Timestep, Node.NAME] = result
                         else:
                             raise InvalidOption(f"L'entrée <Type> ('{Type}') dans le \
                                     reporting file n'est pas un choix valide. Choix \
@@ -91,5 +91,5 @@ def OutputCreation(Graph: gf.GraphFactory, Import: ip.ImportData,
             df['Combined'] = df.drop('Time', axis = 1).sum(axis = 1)
             df = df[['Time', 'Combined']]
         df['Unit'] = ReportUnit
-        df.to_csv('T:/Donnees/Usagers/LANGA3/MoSiR/Test' + output_name + Ext, 
+        df.to_csv('T:/Donnees/Usagers/LANGA3/MoSiR/MicroTest2/' + output_name + Ext, 
                   index = False, sep = ';')
