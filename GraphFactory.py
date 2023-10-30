@@ -146,7 +146,7 @@ class TopNode(IndustrialNode):
     def GetFluxIn(self, Graph: wp.WPGraph, Time: int, Cumulative: bool = False) -> float:
         return self._GetQuantityTime(Time)
     
-    def CountCarbon(self, Graph: wp.WPGraph, Time: int, Cumulative: bool = False) -> float:
+    def GetStock(self, Graph: wp.WPGraph, Time: int, Cumulative: bool = False) -> float:
         return print('Aucun carbone ne réside dans ce noeud, seulement des flux le traverse')
     
 class ProportionNode(IndustrialNode):
@@ -183,7 +183,7 @@ class ProportionNode(IndustrialNode):
     def GetFluxIn(self, Graph: WPGraph, Time: int, Cumulative: bool = False) -> float:
         return self.GetFluxOut(Graph, Time, Cumulative)
     
-    def CountCarbon(self, Graph: wp.WPGraph, Time: int, Cumulative: bool = False) -> int:
+    def GetStock(self, Graph: wp.WPGraph, Time: int, Cumulative: bool = False) -> int:
         return print('Aucun carbone ne réside dans ce noeud, seulement des flux le traverse')
 
 class DecayNode(ProportionNode):
@@ -232,12 +232,12 @@ class DecayNode(ProportionNode):
                 Total += Annual
             return Total 
     
-    def CountCarbon(self, Graph: wp.WPGraph, Time: int, Cumulative: bool = False) -> float:
-        ''' CountCarbon Documentation
+    def GetStock(self, Graph: wp.WPGraph, Time: int, Cumulative: bool = False) -> float:
+        ''' GetStock Documentation
 
-        La fonction CountCarbon sert à faire le cumulatif des flux annuels 
+        La fonction GetStock sert à faire le cumulatif des flux annuels 
         de 0 jusqu'à l'année demandé pour un noeud en particulier grâce à la
-        fonction GetFluxOut. En d'autres mots, la fonction CountCarbon sert
+        fonction GetFluxOut. En d'autres mots, la fonction GetStock sert
         à calculer les stocks présent dans un noeud grâce à l'ensemble
         des flux en provenance des nodes parents depuis le début.
 
@@ -294,7 +294,7 @@ class RecyclingNode(ProportionNode):
                 Total += super().GetFluxOut(Graph, Year, Cumulative = False)
             return Total
     
-    def CountCarbon(self, Graph: wp.WPGraph, Time: int, Cumulative: bool = False) -> float:
+    def GetStock(self, Graph: wp.WPGraph, Time: int, Cumulative: bool = False) -> float:
         Total = super().GetFluxOut(Graph, Time, Cumulative)
         return Total
 
@@ -316,8 +316,8 @@ class PoolNode(ProportionNode):
     def GetFluxOut(self, Graph: WPGraph, Time: int, Cumulative: bool = False) -> float:
         warnings.warn(f'Aucun carbone sortant de la node {self.NAME}')
       
-    def CountCarbon(self, Graph: wp.WPGraph, Time: int, Cumulative: bool = False) -> float:
-        ''' CountCarbon Documentation   
+    def GetStock(self, Graph: wp.WPGraph, Time: int, Cumulative: bool = False) -> float:
+        ''' GetStock Documentation   
         Args: 
             Graph (nx.DiGraph): le DiGraph utilisé pour construire le réseau
             Time (int): Le temps en année
