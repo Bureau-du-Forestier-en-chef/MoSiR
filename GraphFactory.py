@@ -3,11 +3,9 @@ Pour faire un profile manuel :
     cProfile.run('addition(5, 3)')
     Dans un terminal : python -m cProfile -s time myscript.py
 
-"""
-import pandas as pd
-import numpy as np
 import matplotlib.pyplot as plt
 import cProfile # Pour le run time
+"""
 import json
 import warnings # Maybe
 import WPGraph as wp
