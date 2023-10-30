@@ -30,7 +30,7 @@ class Reporting(Component):
             stash.append('</div>')
             #stash.append(target)
         stash.append('<a class="w3-button w3-dark-grey" href='+self._get_url_for("/report")+'>Exécutez<i class="fa fa-arrow-right"></i></a>')
-        return render_template("main.html",variables=stash,entries=self._entries)
+        return Component.main_renderer.render(False,stash)
     def __report(self)->Response:
         for field_name, value in request.form:
             period = int(field_name[field_name.find('('):field_name.find(')')][1:])
@@ -49,7 +49,7 @@ class Reporting(Component):
         return "Calculez"
     def get_symbol(self)->str:
         return "fa fa-bullseye fa-fw"
-    def needs_graphs(self)->bool:
-        return True
+    def can_view(self)->bool:
+        return (len(Component._get_graphs_files()) > 0 ) and  (len(Component._get_inputs_files()) > 0) and (len(Component._get_reporting_files()) > 0)
 
 reporting = Reporting()

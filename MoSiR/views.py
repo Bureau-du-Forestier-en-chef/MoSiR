@@ -19,21 +19,28 @@ class Flaskwrapper:
         self.__components = []
         Component.clear_data(".json",Component._get_uploads_folder())
         self.__add_all_endpoints()
-    def __set_main_entries(self,entries:list())->None:
-        for component in self.__components:
-            component.set_main_entries(entries)
+        Component.main_renderer.set_description(self.__get_description())
+    def __get_description(self)->[str]:
+        read_me_location = os.path.join(os.path.dirname(os.path.abspath(__file__)),"../","README.md")
+        all_text = []
+        with open(read_me_location,encoding='utf-8') as readme_stream:
+            for line in readme_stream:
+                if "## Install" in line:
+                    break
+                if "## Description" not in line:
+                    all_text.append(line)
+        return all_text
     def register(self,element:Component)-> None:
         element.add_all_endpoints()
         self.__components.append(element)
         self.__app.register_blueprint(element)
     def __main(self):
-        got_graphs = bool(Component.read_graphs_json())
         data = []
         for element in self.__components:
-            if got_graphs or not element.needs_graphs():
+            if element.can_view():
                 data.append((element.get_name(),self.__MAINURL+element.get_entry_extension(),element.get_description(),element.get_symbol()))
-        self.__set_main_entries(data)
-        return render_template("main.html",entries=data)
+        Component.main_renderer.set_entries(data)
+        return Component.main_renderer.render(True)
     def __add_endpoint(self, endpoint=None, endpoint_name=None, handler=None,methods=['GET']):
         self.__app.add_url_rule(endpoint, endpoint_name, Endpointaction(handler),methods=methods)
     def __add_all_endpoints(self)->None:

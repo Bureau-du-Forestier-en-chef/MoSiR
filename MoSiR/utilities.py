@@ -3,7 +3,7 @@ Copyright (c) 2023 Gouvernement du Québec
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 """
-import json,pkgutil
+import json,pkgutil,html
 
 
 class Jsonparser:
@@ -18,4 +18,5 @@ class Jsonparser:
 class Htmlparser:
     @staticmethod
     def get_string_from_html(Value)->str:
-        return Value.replace("<p>","").replace("</p>","")
+        out_value = Value.replace("<p>","").replace("</p>","")
+        return html.unescape(out_value)

@@ -1,4 +1,6 @@
 MoSiR/mirowrapper/inputs/MiroParserServerSecrets.json
+MoSiR/mirowrapper/mirowrapper.env
+MoSiR/visualization/templates/Temp_*.html
 MoSiR/uploads/*.json
 MoSiR/__pycache__/
 tests/__pycache__/
