@@ -36,11 +36,14 @@ class Mirowrapper(Component):
         Component.__init__(self,__class__.__name__,__name__)
         self.__BASEAPIMIRO = "https://api.miro.com/"
         self.__BASEMIRO = "https://miro.com/"
-        dotenv_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'mirowrapper.env')
+        envfile = 'mirowrapper.env'
+        dotenv_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), envfile)
         load_dotenv(dotenv_path)
         self.__CLIENTID = os.getenv("MIRO_CLIENT_ID")
         self.__CLIENTSECRET = os.getenv("MIRO_CLIENT_SECRET")
         self.__REDIRECT_URI = os.getenv("redirect_uri") 
+        if self.__CLIENTID is None or self.__CLIENTSECRET is None or self.__REDIRECT_URI is None:
+            raise(OSError("Missing "+envfile))
         self.__BoardGraphs={}
         self.__GrapGenerators=[]
         self.__Session = requests.Session()
