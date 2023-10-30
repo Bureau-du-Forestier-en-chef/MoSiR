@@ -5,7 +5,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 """
 
 from ..blueprint_component import Component
-from flask import send_file,render_template,request,redirect
+from flask import request,redirect
 import os
     
 class Upload(Component):
@@ -17,7 +17,7 @@ class Upload(Component):
         +'<input type = "file" name = "file" accept=".json"/> '
         +'<input type = "submit"/> '
         +'</form> ']
-        return render_template("main.html",variables=target,entries=self._entries)
+        return Component.main_renderer.render(False,target)
     def __isallowed_file(self,filename:str)->bool:
         return filename.endswith(".json")
     def __graphs_upload(self):

@@ -5,7 +5,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 """
 from abc import ABC
 from abc import abstractmethod
-from flask import Blueprint,Response,url_for,request
+from flask import Blueprint,Response,url_for,request,render_template
 import os
 from . import utilities
 from .generators import Dictgenerator,Generator
@@ -16,11 +16,31 @@ class Endpointaction:
     def __call__(self, **kwargs):
         return self.action(**kwargs)
     
+class Main_renderer:
+    def __init__(self):
+        self.__entries = []
+        self.__descriptions = ""
+    def set_description(self,local_descriptions : [str])->None:
+        self.__descriptions = local_descriptions
+    def set_entries(self,local_variables : [str])->None:
+        self.__entries = local_variables
+    def render(self,description: bool = False,allvariables : [str] = [])->str:
+        if not description:
+            return render_template("main.html",
+                    variables = allvariables,entries=self.__entries)
+        else:
+            return render_template("main.html",
+                    descriptions = self.__descriptions,
+                    variables = allvariables,entries=self.__entries)
+    
+    
 class Component(ABC,Blueprint):
+    main_renderer = Main_renderer()
     def __init__(self,name:str,import_name:str):
          Blueprint.__init__(self,name.lower(),import_name,url_prefix="/"+name.lower(),template_folder="templates",
                             static_folder='static')
          self._entries = []
+         self._descriptions = ""
     def _add_endpoint(self, endpoint=None, endpoint_name=None, handler=None,methods=['GET']):
         self.add_url_rule(endpoint, endpoint_name, Endpointaction(handler),methods=methods)
     def _get_json(self,response: Response) -> dict:
@@ -53,8 +73,27 @@ class Component(ABC,Blueprint):
                 if graphfile:
                     locations.append(os.path.join(graphs_folder,element))
         return locations
-    def read_graphs_json()->[Generator]:
+    def _get_inputs_files()->[str]:
         graphs_folder = Component._get_uploads_folder()
+        locations = []
+        for element in os.listdir(graphs_folder):
+            if os.path.isfile(os.path.join(graphs_folder,element)) and element.endswith(".json"):
+                json_file = utilities.Jsonparser.read(os.path.join(graphs_folder,element))
+                inputkeys = list(json_file.keys())
+                if "Unit" in inputkeys and "Inputs" in inputkeys:
+                    locations.append(os.path.join(graphs_folder,element))
+        return locations
+    def _get_reporting_files()->[str]:
+        graphs_folder = Component._get_uploads_folder()
+        locations = []
+        for element in os.listdir(graphs_folder):
+            if os.path.isfile(os.path.join(graphs_folder,element)) and element.endswith(".json"):
+                json_file = utilities.Jsonparser.read(os.path.join(graphs_folder,element))
+                inputkeys = list(json_file.keys())
+                if "Type" in inputkeys and "Outputs" in inputkeys:
+                    locations.append(os.path.join(graphs_folder,element))
+        return locations
+    def read_graphs_json()->[Generator]:
         all_graphs = []
         for element in Component._get_graphs_files():
             json_file = utilities.Jsonparser.read(element)
@@ -81,6 +120,6 @@ class Component(ABC,Blueprint):
     @abstractmethod
     def get_symbol(self):
         pass
-    def needs_graphs(self):
-        return False
+    def can_view(self):
+        return True
         

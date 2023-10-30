@@ -5,7 +5,6 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 """
 
 from ..blueprint_component import Component
-from flask import render_template,url_for
 
 
 class Stats(Component):
@@ -35,7 +34,7 @@ class Stats(Component):
                         stash.append('</div>')
             stash.append('</div>')
         stash.append("<hr>")
-        return render_template("main.html",variables=stash,entries=self._entries)
+        return Component.main_renderer.render(False,stash)
     def add_all_endpoints(self):
         self._add_endpoint(endpoint='/', endpoint_name='/', handler=self.__get_stats,methods=['GET'])
     def get_description(self):
@@ -44,7 +43,7 @@ class Stats(Component):
         return "Statistiques"
     def get_symbol(self):
         return "fa fa-bell fa-fw"
-    def needs_graphs(self):
-        return True
+    def can_view(self):
+        return len(Component._get_graphs_files()) > 0
 
 stats = Stats()

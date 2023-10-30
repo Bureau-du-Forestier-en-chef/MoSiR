@@ -27,7 +27,7 @@ class Visualization(Component):
         for name,html in Allhtmls:
             target = '<a class="w3-button w3-dark-grey" href='+html+'>'+name+'<i class="fa fa-arrow-right"></i></a>'
             allvariables.append(target)
-        return render_template("main.html",variables = allvariables,entries=self._entries)
+        return Component.main_renderer.render(False,allvariables)
     def __graphrendering(self,graphname:str):
         TARGET = "Temp_" + graphname.replace('<','').replace('>','') + "_0.html"
         return render_template(TARGET)
@@ -40,8 +40,8 @@ class Visualization(Component):
         return "Visualisez"
     def get_symbol(self):
         return "fa fa-eye fa-fw"
-    def needs_graphs(self):
-        return True
+    def can_view(self):
+        return len(Component._get_graphs_files()) > 0
     
 visualization = Visualization()
 

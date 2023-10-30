@@ -13,11 +13,11 @@ class Download(Component):
         Component.__init__(self,__class__.__name__,__name__)
     def __get_graphs(self):
         HTMLsandnames = []
-        for graphfile in Component._get_graphs_files():
+        for graphfile in Component._get_graphs_files() + Component._get_inputs_files() + Component._get_reporting_files():
             htmltarget = self._get_url_for("/graphs_download/<filename>",filename=graphfile)
             target = '<p><a class="w3-button w3-dark-grey" href='+htmltarget+'>'+"Télécharger "+os.path.basename(graphfile)+'<i class="fa fa-arrow-right"></i></a></p>'
             HTMLsandnames.append(target)
-        return render_template("main.html",variables=HTMLsandnames,entries=self._entries)
+        return Component.main_renderer.render(False,HTMLsandnames)
     def __graphs_download(self,filename:str):
         return send_file(os.path.join(Component._get_uploads_folder(),filename), as_attachment=True)
     def add_all_endpoints(self):
@@ -29,7 +29,7 @@ class Download(Component):
         return "Téléchargez"
     def get_symbol(self):
         return "fa fa-diamond fa-fw"
-    def needs_graphs(self):
-        return True
+    def can_view(self):
+        return (len(Component._get_graphs_files()) > 0 ) or  (len(Component._get_inputs_files()) > 0) or (len(Component._get_reporting_files()) > 0)
     
 download = Download()

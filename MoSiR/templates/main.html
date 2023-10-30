@@ -61,19 +61,23 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
 <!-- !PAGE CONTENT! -->
 <div class="w3-main" style="margin-left:300px;margin-top:43px;">
 
+
   <!-- Header -->
   <header class="w3-container" style="padding-top:22px">
+    {% if descriptions is defined %}
     <h5><b><i class="fa fa-dashboard"></i>Description</b></h5>
   </header>
+  <div class="w3-main">
+    <h4>MoSiR</h4>
+    {% for description in descriptions %}
+      <p>{{description}}</p>
+    {% endfor %}
+    {% endif %}
+    {% for variable in variables %}
+      {{ variable | safe }}
+    {% endfor %}
+  </div>
 
-<div class="w3-main">
-  <h4>MoSiR</h4>
-  <p>Pourquoi MoSiR?</p>
-  {% for variable in variables %}
-    {{ variable | safe }}
-  {% endfor %}
-</div>
-  
 
   <!-- Footer -->
   <footer class="w3-container w3-padding-16" margin-top: -200px>
