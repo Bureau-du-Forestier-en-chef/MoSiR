@@ -4,17 +4,15 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 """
 
-from abc import ABCMeta
-from abc import abstractmethod
-
-from . import Utilities
-from . import Exceptions
-import copy,warnings,re
+from ..generators import Generator
+from .. import utilities
+from .. import mosir_exceptions
+import copy,warnings,re,os
 
 
 class ItemBuilder:
     def __init__(self,JsonLocation:str):
-        self.__DATA = Utilities.JsonParser.Read(JsonLocation)
+        self.__DATA = utilities.Jsonparser.read(JsonLocation)
     def __GetFromRegex(self,BaseName: str,Descriptor : str)->re.Match:
         CompiledRegex = re.compile("(?:(.+)|)("+Descriptor+")([\s\t]*)(\[)([\s\t]*)(\d+\.?\d*)([\s\t]*)(\])(?:(.+)|)")
         return CompiledRegex.match(BaseName)
@@ -62,7 +60,7 @@ class ItemBuilder:
                     if not TempItem in AllValues:
                         DataHolder[Type] = 0.0
             if "data"in Item and "content" in Item["data"]:
-                Name = Utilities.HTMLParser.GetStringFromHTML(Item["data"]["content"])
+                Name = utilities.Htmlparser.get_string_from_html(Item["data"]["content"])
                 Selectedkeys = []
                 for KeyData, Data in  DataHolder.items():
                     if Data and KeyData in Name:
@@ -73,45 +71,20 @@ class ItemBuilder:
                     DataHolder["Name"] = self.__GetName(Name,Selectedkeys)
         return DataHolder
 
-class Generator(metaclass=ABCMeta):
-    def __init__(self,GraphName:str):
-        self.__GraphName= GraphName
-    def GetGraphName(self)->str:
-        return self.__GraphName
-    @abstractmethod
-    def GraphToDict(self)->dict:
-        pass
 
-class MiroGenerator(Generator):
+class Mirogenerator(Generator):
     def __init__(self,GraphName:str,ItemsData:[],ConnectorsData:[]):
         super().__init__(GraphName)
         self.__ItemsData = ItemsData
         self.__ConnectorsData = ConnectorsData
-        self.__NODEBUILDER = ItemBuilder("inputs/Node.json")
-        self.__EDGEBUILDER = ItemBuilder("inputs/Edge.json")
+        base_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),"inputs")
+        self.__NODEBUILDER = ItemBuilder(os.path.join(base_path,"Node.json"))
+        self.__EDGEBUILDER = ItemBuilder(os.path.join(base_path,"Edge.json"))
     def __LogStatus(self,message:str)->None:
-        print(message + " for Graph "+self.GetGraphName())
-    def GetGraphStats(self)->dict():
-        Alldata = {"Nodes":{"Size":len(self.__Nodes__)},"Edges":{"Size":len(self.__Edges__)}}
-        Minedgevalue = 1
-        Maxedgevalue = 0
-        for Datatype,Data in zip(["Nodes","Edges"],[self.__Nodes__.values(),self.__Edges__.values()]):
-            for NodeItems in Data:
-                for Name,Element in NodeItems.items():
-                    if Name not in ["Name","Values","From","To","X","Y"]:
-                        if Name not in Alldata[Datatype]:
-                            Alldata[Datatype][Name] = 0
-                        Alldata[Datatype][Name] += int(Element)
-                    elif (Name == "Values"):
-                        for Value in Element:
-                            Minedgevalue = min(Value,Minedgevalue)
-                            Maxedgevalue = max(Value,Maxedgevalue)
-        Alldata["Edges"]["Min"] = Minedgevalue
-        Alldata["Edges"]["Max"] = Maxedgevalue
-        return Alldata
+        print(message + " for Graph "+self.get_graph_name())
     def GetNodeNames(self)->[str]:
         Names = []
-        for NodeItems in self.__Edges__.values():
+        for NodeItems in self._edges.values():
             Names.apennd(NodeItems["Name"])
         Names.sort()
         return Names
@@ -121,7 +94,7 @@ class MiroGenerator(Generator):
         FromNodeId = int(Connector["startItem"]["id"])
         ToNodeId = int(Connector["endItem"]["id"])
         if FromNodeId == ToNodeId:
-            raise(Exceptions.MiroError("Edge id "+str(EdgeID)+" has the same source and target node "+str(FromNodeId),EdgeID))
+            raise(mosir_exceptions.Miroerror("Edge id "+str(EdgeID)+" has the same source and target node "+str(FromNodeId),EdgeID))
         Holder = {"From":FromNodeId,"To":ToNodeId,"Values":[1.0]}
         OtherData = self.__EDGEBUILDER.GetDescription(Connector)
         Holder.update(OtherData)
@@ -141,33 +114,33 @@ class MiroGenerator(Generator):
     def __BuildNodes(self)->None:
         self.__LogStatus("Building Nodes")
         #S'arranger pour que les box jaunes disparaise se lit directement 
-        self.__Nodes__ = {}
+        self._nodes = {}
         for Item in self.__ItemsData:
             if (self.__IsNode(Item)):
                 NodeId = int(Item["id"])
-                self.__Nodes__[NodeId] = self.__ItemToNode(Item)
+                self._nodes[NodeId] = self.__ItemToNode(Item)
                 if "position" in Item:
-                    self.__Nodes__[NodeId]["X"] = (Item["position"]["x"]/10)
-                    self.__Nodes__[NodeId]["Y"] = (Item["position"]["y"] / 10)
-        ENDMESSAGE = "Found "+str(len(self.__Nodes__))+" Potential Nodes"
+                    self._nodes[NodeId]["X"] = (Item["position"]["x"]/10)
+                    self._nodes[NodeId]["Y"] = (Item["position"]["y"] / 10)
+        ENDMESSAGE = "Found "+str(len(self._nodes))+" Potential Nodes"
         self.__LogStatus(ENDMESSAGE)
     def __BuildEdges(self)->None:
         self.__LogStatus("Building Edges")
-        self.__Edges__ = {}
+        self._edges = {}
         for Connector in self.__ConnectorsData:
             if self.__IsEdge(Connector):
                 EdgeId = int(Connector["id"])
-                self.__Edges__[EdgeId] = self.__ConnectorToEdge(EdgeId,Connector)
-        ENDMESSAGE = "Found "+str(len(self.__Edges__))+" Potential Edges"
+                self._edges[EdgeId] = self.__ConnectorToEdge(EdgeId,Connector)
+        ENDMESSAGE = "Found "+str(len(self._edges))+" Potential Edges"
         self.__LogStatus(ENDMESSAGE)
     def __GetEdgeConnectorValues(self,Item:{})->float:
         Values = []
         try:
-            WorkableString = Utilities.HTMLParser.GetStringFromHTML(Item["data"]["content"].replace("%",""))
+            WorkableString = utilities.Htmlparser.get_string_from_html(Item["data"]["content"].replace("%",""))
             Values = [float(value)/100 for value in WorkableString.split(",")]
         except:
             MESSAGE = "Cannot get edge value for edge id " + Item["id"] + " on Item "+str(Item)
-            raise(Exceptions.MiroError(MESSAGE,Item["id"]))
+            raise(mosir_exceptions.Miroerror(MESSAGE,Item["id"]))
         return Values
     def __GetEdgeValues(self)->dict():
         TagLocation = {}
@@ -184,22 +157,22 @@ class MiroGenerator(Generator):
         FORKS = self.__GetNodesFork()
         NewEdges = {}
         TagUsed = set()
-        ValidLocations = FORKS.union(set(self.__Nodes__.keys()))
-        for EdgeId,EdgeItems in self.__Edges__.items():
+        ValidLocations = FORKS.union(set(self._nodes.keys()))
+        for EdgeId,EdgeItems in self._edges.items():
             if EdgeItems["To"] in TAGLOCATION:
                 if EdgeItems["From"] in TAGLOCATION:
-                    raise(Exceptions.MiroError("Edge id "+str(EdgeId)+" from a tag "+str(EdgeItems),EdgeId))
+                    raise(mosir_exceptions.Miroerror("Edge id "+str(EdgeId)+" from a tag "+str(EdgeItems),EdgeId))
                 TagUsed.add(EdgeItems["To"])
                 NewValues = TAGLOCATION[EdgeItems["To"]]
                 EdgeItems["Values"] = NewValues
                 GotAtarget = False
-                for SubEdgeId,SubEdgeItems in self.__Edges__.items():
+                for SubEdgeId,SubEdgeItems in self._edges.items():
                     if SubEdgeItems["From"] == EdgeItems["To"]:
                         EdgeItems["To"] = SubEdgeItems["To"]
                         GotAtarget = True
                         break
                 if not GotAtarget:
-                    raise(Exceptions.MiroError("Tag ID "+str(EdgeItems["To"])+" has no out edge",EdgeItems["To"]))
+                    raise(mosir_exceptions.Miroerror("Tag ID "+str(EdgeItems["To"])+" has no out edge",EdgeItems["To"]))
                 NewEdges[EdgeId] = EdgeItems
             elif(all(Item in ValidLocations for Item in (EdgeItems["To"],EdgeItems["From"]))):
                 NewEdges[EdgeId] = EdgeItems
@@ -207,12 +180,12 @@ class MiroGenerator(Generator):
             for tagid in TAGLOCATION.keys():
                 if tagid not in TagUsed:
                     Message = "Tag id "+str(tagid)+" not used"
-                    raise(Exceptions.MiroError(Message,tagid))
-        Removed = len(self.__Edges__) - len(NewEdges)
-        self.__Edges__ = NewEdges
-        for EdgeId,EdgeItems in self.__Edges__.items():
+                    raise(mosir_exceptions.Miroerror(Message,tagid))
+        Removed = len(self._edges) - len(NewEdges)
+        self._edges = NewEdges
+        for EdgeId,EdgeItems in self._edges.items():
             if EdgeItems["From"] in TAGLOCATION or EdgeItems["To"] in TAGLOCATION:
-                 raise(Exceptions.MiroError("Edge id "+str(EdgeId)+" still with Tag "+str(EdgeItems),EdgeId))
+                 raise(mosir_exceptions.Miroerror("Edge id "+str(EdgeId)+" still with Tag "+str(EdgeItems),EdgeId))
         ENDMESSAGE = "Removed "+str(Removed)+" Edges after simplification"
         self.__LogStatus(ENDMESSAGE)
     def __GetNodesFork(self)->set:
@@ -259,26 +232,26 @@ class MiroGenerator(Generator):
         MaxedgeId = self.__GetMaxId() + 1
         EdgesToRemove = set()
         NewEdges = {}
-        for EdgeId,EdgeItems in self.__Edges__.items():
+        for EdgeId,EdgeItems in self._edges.items():
             if EdgeItems["To"] in FORKS:
                 #Now get the edges getting out of this fork
-                for SubEdgeId,SubEdgeItems in self.__Edges__.items():
+                for SubEdgeId,SubEdgeItems in self._edges.items():
                     if SubEdgeItems["From"] == EdgeItems["To"]:
                         NewEdges[MaxedgeId] = self.__GetEdgeFromForkData(EdgeItems,SubEdgeItems)
                         EdgesToRemove.add(SubEdgeId)
                         MaxedgeId+=1
                         #Create new edge each time
                 EdgesToRemove.add(EdgeId)
-        for EdgeId,EdgeItems in self.__Edges__.items():
+        for EdgeId,EdgeItems in self._edges.items():
             if EdgeId not in EdgesToRemove:
                 NewEdges[EdgeId] = EdgeItems
-        self.__Edges__ = NewEdges
-        for EdgeId,EdgeItems in self.__Edges__.items():
+        self._edges = NewEdges
+        for EdgeId,EdgeItems in self._edges.items():
             self.__ValidateEdge(EdgeId,EdgeItems)
-        ENDMESSAGE = "After Edges fork simplification got "+str(len(self.__Edges__))+" Edges"
+        ENDMESSAGE = "After Edges fork simplification got "+str(len(self._edges))+" Edges"
         self.__LogStatus(ENDMESSAGE)
     def __ValidateEdge(self,EdgeId:int,EdgeItems:{})->None:
-        if EdgeItems["From"] not in self.__Nodes__ or EdgeItems["To"] not in self.__Nodes__:
+        if EdgeItems["From"] not in self._nodes or EdgeItems["To"] not in self._nodes:
             TOID = EdgeItems["To"]
             FROMID = EdgeItems["From"]
             ToITEM = None
@@ -295,26 +268,26 @@ class MiroGenerator(Generator):
                 if ConnectorId == EdgeId:
                     Connectordata = Connector
             Message = "Edge "+str(EdgeId)+" Does not have a valid source node " + str(EdgeItems)
-            if EdgeItems["To"] in self.__Nodes__:
-                BUTTARGET = self.__Nodes__[EdgeItems["To"]]["Name"]
+            if EdgeItems["To"] in self._nodes:
+                BUTTARGET = self._nodes[EdgeItems["To"]]["Name"]
                 Message += " targeting " + BUTTARGET
-            if EdgeItems["To"] not in self.__Nodes__:
+            if EdgeItems["To"] not in self._nodes:
                 Message = "Edge "+str(EdgeId)+" Does not have a valid target node " + str(EdgeItems)
-                if EdgeItems["From"] in self.__Nodes__:
-                    BUTSOURCE = self.__Nodes__[EdgeItems["From"]]["Name"]
+                if EdgeItems["From"] in self._nodes:
+                    BUTSOURCE = self._nodes[EdgeItems["From"]]["Name"]
                     Message += " Sourced on " + BUTSOURCE
             #Take a look with this https://miro.com/app/board/uXjVMvp8bjE=/?moveToWidget=3458764561316365196&cot=14
             Message += " FROM " + str(FromITEM) +" ID("+str(FROMID)+")" + " TO " + str( ToITEM ) +" ID("+str(TOID)+") FOR Connector "+str(Connectordata)
-            raise(Exceptions.MiroError(Message,EdgeId))
+            raise(mosir_exceptions.Miroerror(Message,EdgeId))
     def __CleanNodes(self):
         ConnectedNodes = set()
         Tonodes = set()
-        for EdgeItems in self.__Edges__.values():
+        for EdgeItems in self._edges.values():
             ConnectedNodes.add(EdgeItems["From"])
             ConnectedNodes.add(EdgeItems["To"])
             Tonodes.add(EdgeItems["To"])
         NodestoKeep = {}
-        for NodeId,NodeItems in self.__Nodes__.items():
+        for NodeId,NodeItems in self._nodes.items():
             if NodeId in  ConnectedNodes:
                 NodestoKeep[NodeId] = NodeItems
                 if NodeId not in Tonodes:
@@ -323,14 +296,12 @@ class MiroGenerator(Generator):
             else:
                 MESSAGE = "Node named "+NodeItems["Name"]+" is not linked to graph and will be ignored"
                 warnings.warn(MESSAGE)
-        self.__Nodes__ = NodestoKeep
+        self._nodes = NodestoKeep
     def Build(self):
         self.__BuildNodes()
         self.__BuildEdges()
         self.__SimplifyEdges()
         self.__SimplifyEdgesForks()
         self.__CleanNodes()
-    def GraphToDict(self)->dict:
-        return {"Nodes":self.__Nodes__,"Edges":self.__Edges__}
    
             

@@ -4,16 +4,16 @@
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Sélection des produits du bois</title>
-        <link rel="stylesheet" href="../static/css/style.css" />
+        <link rel="stylesheet" href="{{ url_for('.static', filename='css/style.css') }}" />
         <!-- <link rel="stylesheet" href="../static/css/mirotone/styles.css" /> --> 
         <script src="https://miro.com/app/static/sdk/v2/miro.js"></script>
     </head>
     <body>
         <div class="grid container">
             <div class="cs1 ce12">
-                <img src="/static/image/cover-post-remote-new.svg" alt="" />
+                <img src="{{ url_for('.static', filename='image/cover-post-remote-new.svg') }}" alt="" />
             </div>
-            <form class="cs1 ce12" method="POST" action="{{ url_for('/WPSelected') }}">
+            <form class="cs1 ce12" method="POST" action="{{ url_for('mirowrapper./wp_selected') }}">
                 <div class="form-group">
                     <div class="cs1 ce12">
                         <h1>Sélectionnez les tableaux à exporter</h1>

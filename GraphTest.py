@@ -132,4 +132,110 @@ def GraphTesting(Graph: gf.GraphFactory, Input: ip.ImportData,
 #        for Node in Graph.Nodes():
 #            if Node.NAME in ['Land application', 'Biomethanisation, combustion']:
 #                print(f'Time {Time}, {Node.NAME} = {Node.GetCarbon(Graph, Time)}')
+                #C = Node.CountCarbon(Graph, Time, Cumulative = False)
+                #if C != 0:
+                #    N = Node.NAME
+                #    T = Time
+                #    new = {'Time': T, 'Node': N, 'Value': C}
+                #    new_df = pd.DataFrame([new])
+                #    df = pd.concat([df, new_df], ignore_index = True)
+
+
+#with pd.option_context('display.max_rows', None,
+#                       'display.max_columns', None,
+#                       'display.precision', 4,
+#                       ):
+#    print(df3)
+
+
+
+#
+#for edge_id, edge_data in edges.items():
+#    From = edge_data['From']
+#    To = edge_data['To']
+#    nom_from = None
+#    nom_to = None
+#    for node_id, node_data in nodes.items():
+#        if int(node_id) == From:
+#            nom_from = node_data['Name']
+#        elif int(node_id) == To:
+#            nom_to = node_data['Name']
+#    print(f'Connection entre {nom_from} à {nom_to}')
+
+# ----------------------------------------------------------------------------
+"""
+Test_02 = ('T:/Donnees/Usagers/LANGA3/MoSiR/Graphs_03.json')
+
+import json
+J = open('T:/Donnees/Usagers/LANGA3/MoSiR/Graphs_03.json')
+data = json.load(J)
+data
+PB = data.get('Produitsdubois_V2')
+
+Nodes = PB.get('Nodes')
+Edges = PB.get('Edges')
+
+
+node_map = {}
+id_list = []
+for node_id, node_data in Nodes.items():
+    new_node = 'test'
+    node_map[int(node_id)] = new_node
+    id_list.append(node_id)     
+       
+node_map.get(int(id_list[2]))
+
+
+
+for i, j in enumerate(node_map):
+    print(i, j)
+    
+node_map[3458764565184960178]
+
+
+G = ig.Graph(directed = True)
+
+a = TopNode('P1', [0], [10])
+b = ProportionNode('P2')
+c = ProportionNode('P3')
+d = ProportionNode('P4')
+
+G.add_vertex(a, Nom = 'Test1')
+G.add_vertex(b, Nom = 'Test2')
+G.add_vertex(c, Nom = 'Test3')
+G.add_vertex(d, Nom = 'Test4')
+
+G.add_edge(0, 1, Proportion = 0.1)
+G.add_edge(0, 2, Proportion = 0.2)
+G.add_edge(1, 3, Proportion = 0.3)
+G.add_edge(2, 3, Proportion = 0.4)
+
+G.to_dict_dict()
+G.get_vertex_dataframe()
+G.es.select(3)['Proportion']
+G.vs.select(1)['Name']
+G.es[G.get_eid(0, 1)]['Proportion']
+
+dictio = G.to_dict_dict()
+
+G.predecessors()
+
+help(G.Full)
+G.Full(len(G.vs.indices))
+
+for i in G.vs:
+    print(i)
+
+liste = {1: 'a', 2: 'b', 3: "ce"}
+
+for i, j in enumerate(liste):
+    print(i)
+"""
+
+#for Name in Test_02.GetGraphName:
+#    Graph = Test_02.GetGraph(Name)
+#    for Time in range(16): # Ajuster le temps des simulations
+#        for Node in Graph.Nodes():
+#            if Node.NAME in ['Land application', 'Biomethanisation, combustion']:
+#                print(f'Time {Time}, {Node.NAME} = {Node.GetCarbon(Graph, Time)}')
 #
