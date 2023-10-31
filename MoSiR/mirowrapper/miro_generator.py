@@ -203,9 +203,9 @@ class Mirogenerator(Generator):
         for Valid in range(0,NEWSIZE):
             FirstValue = FirstList[-1]
             SecondValue = SecondList[-1]
-            if len(FirstList) < Valid:
+            if len(FirstList) > Valid:
                 FirstValue = FirstList[Valid]
-            if len(SecondList) < Valid:
+            if len(SecondList) > Valid:
                 SecondValue = SecondList[Valid]
             NewList.append(FirstValue*SecondValue)
         return NewList
