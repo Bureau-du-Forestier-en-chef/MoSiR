@@ -92,4 +92,4 @@ def OutputCreation(Graph: gf.GraphFactory, Import: ip.ImportData,
             df = df[['Time', 'Combined']]
         df['Unit'] = ReportUnit
         df.to_csv('T:/Donnees/Usagers/LANGA3/MoSiR/MicroTest2/' + output_name + Ext, 
-                  index = False, sep = ';')
+                  index = False, sep = ',')
