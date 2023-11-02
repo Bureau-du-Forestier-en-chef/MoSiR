@@ -1,2 +1,3 @@
 - Écrire dans le reporting cumulatif en true ou false en miniscule
 - Si tu veux du radiatif dans le reporting, tu dois avoir le nom du gas dans la node
+- Aucune année manquante lors du calcul du radiatif, doit avoir 0 si l'année X n'a pas d'émissions
