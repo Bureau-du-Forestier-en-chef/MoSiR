@@ -1,7 +1,7 @@
 import pandas as pd
+import json
 import GraphFactory as gf
 import ImportInfo as ip
-import json
 
 class InvalidOption(Exception):
     def __init__(self, message: str):    
@@ -57,9 +57,9 @@ def OutputCreation(Graph: gf.GraphFactory, Import: ip.ImportData,
         Report: La classe ReportData 
         Directory: Le dossier dans lequel les outputs seront enregistrés
     """
-    if '\\' in Directory:
-        raise SyntaxError("Dans le output directory, il est nécessaire d'utiliser des\
-            frontslash (/) et non des backslash (\) ")
+    #if '\\' in Directory:
+    #    raise SyntaxError("Dans le output directory, il est nécessaire d'utiliser des\
+    #        frontslash (/) et non des backslash (\) ")
         
     Time = Report.GetOutputData('Time')
     Ext = Report.GetOutputData('Output file extension')
@@ -114,4 +114,5 @@ def OutputCreation(Graph: gf.GraphFactory, Import: ip.ImportData,
         elif Directory[-1] != '/':
             df.to_csv(Directory + '/' + output_name + Ext, 
                       index = False, sep = ',')
-            
+
+test = pd.DataFrame({'A' : [1, 2, 3], 'B': [4, 5, 6]})

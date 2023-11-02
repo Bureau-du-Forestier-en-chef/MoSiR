@@ -1,6 +1,6 @@
-import GraphFactory as gf
-import ImportInfo as ip
-import ReportingInfo as rp
+import MoSiR.GraphFactory as gf
+import MoSiR.ImportInfo as ip
+import MoSiR.ReportingInfo as rp
 import warnings
 
 class QuantityError(Exception):

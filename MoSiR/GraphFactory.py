@@ -6,15 +6,18 @@ Pour faire un profile manuel :
 import matplotlib.pyplot as plt
 import cProfile # Pour le run time
 """
-import json
-import warnings # Maybe
-import WPGraph as wp
-from abc import ABCMeta, abstractmethod
 
 import sys
 from IPython.core.ultratb import ColorTB # Couleur powershell
-
 sys.excepthook = ColorTB()
+
+import json
+import warnings # Maybe
+from abc import ABCMeta, abstractmethod
+
+sys.path.append("../MoSiR")
+import MoSiR.WPGraph as wp
+
 
 # Exception handling ---------------------------------------------------------
 

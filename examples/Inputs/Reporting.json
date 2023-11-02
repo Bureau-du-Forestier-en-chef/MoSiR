@@ -1,0 +1,25 @@
+{
+    "Time": 20,
+    "Output file extension" : ".csv",
+    "PRG" : {"CH4" : 28, "N2O": 298},
+    "Output": {
+        "Graph": {
+            "Annual flux":{
+                "Nodes_name" : ["CH4 emissions",
+                                "CO2 emissions"],
+                "Type" : "Flux in",
+                "Cumulative" : false,
+                "Summarize" : "Per_Node",
+                "Unit" : "kgc"},
+            
+            "Cumulative flux":{
+                "Nodes_name" : ["CH4 emissions",  
+                                "CO2 emissions"],
+                "Type" : "Flux in",
+                "Cumulative" : true,
+                "Summarize" : "Per_Node",
+                "Unit" : "kgc"}
+            }
+        }
+}
+   

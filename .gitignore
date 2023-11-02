@@ -8,3 +8,4 @@ build/
 MoSiR.egg-info/
 __pycache__/
 dist/
+MoSiR/examples/Output
