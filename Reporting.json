@@ -10,16 +10,16 @@
                             "Non-structural Panels, storage",
                             "Otherwood, storage"],
             "Type" : "Flux in",
-            "Cumulative" : "True",
+            "Cumulative" : true,
             "Summarize" : "Per_Node",
             "Unit" : "tC"},
         
         "output_GES":{
             "Nodes_name" : ["CH4 emissions", 
-                             "N2O emissions", 
-                             "CO2 emissions"],
+                            "N2O emissions", 
+                            "CO2 emissions"],
             "Type" : "Flux in",
-            "Cumulative" : "False",
+            "Cumulative" : false,
             "Summarize" : "Per_Node",
             "Unit" : "w/m2"},
 
@@ -33,7 +33,7 @@
                             "Non-structural Panels, storage", 
                             "Otherwood, storage"],
             "Type" : "Stock",
-            "Cumulative" : "True",
+            "Cumulative" : true,
             "Summarize" : "Per_Node",
             "Unit" : "tC"},
        
@@ -47,7 +47,7 @@
                             "Site 2, Stockage, Landfilled, MSW Otherwood",
                             "Site 1, Stockage, industrial Otherwood"],
             "Type" : "Stock",
-            "Cumulative" : "True",
+            "Cumulative" : true,
             "Summarize" : "Per_Node",
             "Unit" : "tC"}
         }

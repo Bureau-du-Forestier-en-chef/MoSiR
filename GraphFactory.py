@@ -182,7 +182,7 @@ class ProportionNode(IndustrialNode):
         return self.GetFluxOut(Graph, Time, Cumulative)
     
     def GetStock(self, Graph: wp.WPGraph, Time: int, Cumulative: bool = False) -> int:
-        return print('Aucun carbone ne réside dans ce noeud, seulement des flux le traverse')
+        return print('Aucun carbone ne réside dans ce noeud ({self.NAME}), seulement des flux le traverse')
 
 class DecayNode(ProportionNode):
     def __init__(self, NAME: str, HalfLife: int):
@@ -312,7 +312,7 @@ class PoolNode(ProportionNode):
             return Total    
     
     def GetFluxOut(self, Graph: WPGraph, Time: int, Cumulative: bool = False) -> float:
-        warnings.warn(f'Aucun carbone sortant de la node {self.NAME}')
+        warnings.warn(f'Aucun carbone sortant de la node {self.NAME}', stacklevel = 2)
       
     def GetStock(self, Graph: wp.WPGraph, Time: int, Cumulative: bool = False) -> float:
         ''' GetStock Documentation   
@@ -326,7 +326,7 @@ class PoolNode(ProportionNode):
             dans une noeud (self) à un temps donnée (Time)
         '''
         try:
-            warnings.warn('Le résultat est le même que le cumulatif des flux in')
+            warnings.warn('Le résultat est le même que le cumulatif des flux in', stacklevel = 2)
             return self.GetFluxIn(Graph, Time, Cumulative = True)
         except RecursionError:
             raise  RecursionNode("Un maximum de demande a été effectué. \

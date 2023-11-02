@@ -16,7 +16,8 @@ class ConstError(Exception):
         super().__init__(message)
 
 # Test indépendant du import -------------------------------------------------
-"""  
+""" 
+import WPGraph as wp
 Test_01 = wp.WPGraph('test')
 
 A = gf.TopNode('A')  
@@ -46,8 +47,8 @@ A.Quantities = [10, 0, 0, 0, 0]
 A.GetFluxIn(Test_01, 0)
 B.GetFluxIn(Test_01, 0, Cumulative= False)
 C.GetFluxOut(Test_01, 3, Cumulative= True)
-D.CountCarbon(Test_01, 4, Cumulative= True)
-"""
+D.GetFluxIn(Test_01, 4, Cumulative= True)
+ """
 # Test de l'import -----------------------------------------------------------
 Test_02 = gf.GraphFactory('T:/Donnees/Usagers/LANGA3/MoSiR/Graphs_04.json')
 
@@ -66,13 +67,13 @@ def GraphTesting(Graph: gf.GraphFactory, Input: ip.ImportData,
         if len(TOPNODES) > 1:
             warnings.warn(f"Attention, plus d'une TopNode présente.\
                 Les inputs vont être acheminés à ces deux nodes: \
-                {TOPNODES}")  
+                {TOPNODES}", stacklevel = 2)  
         LASTNODES = set([int(ID) for ID in NODES]) - \
                     set([data['From'] for keys, data in EDGES.items()])
         if len(LASTNODES) == 0:
             warnings.warn(f"Attention, aucune PoolNode présente. La quantité \
                 de carbone présente dans le système sera calculé seulement sur \
-                des nodes de demi-vie ou de recyclage")   
+                des nodes de demi-vie ou de recyclage", stacklevel = 2)   
    
     # Total des Edges 
     for Name in Graph.GetGraphName:
@@ -86,7 +87,8 @@ def GraphTesting(Graph: gf.GraphFactory, Input: ip.ImportData,
             if Total - 1 > MOSIR_TOLERENCE or 1 - Total > MOSIR_TOLERENCE and Total != 0:
                 raise EdgeError(f"La somme des edges sortant de {Node.NAME} n'est pas égale à 100%") 
             elif Total < MOSIR_TOLERENCE:
-                warnings.warn(f'La somme des edges sortant de la node {Node.NAME} est de 0')
+                warnings.warn(f'La somme des edges sortant de la node {Node.NAME} est de 0',
+                              stacklevel = 2)
 
     # Test de overflow
     for GraphName in Graph.GetData:
@@ -111,10 +113,10 @@ def GraphTesting(Graph: gf.GraphFactory, Input: ip.ImportData,
             for Node in G4.Nodes():
                 if type(Node) == gf.TopNode:
                     Input += Node.GetStock(G4, Timestep)
-                elif Node.NAME == 'N2O emissions':
+                elif Node.NAME == 'N2O emissions': # Updater pour général
                     continue
                 elif type(Node) == gf.PoolNode or type(Node) == gf.DecayNode or \
-                    type(Node) == gf.RecyclingNode or type(Node) == gf.ProportionNode:
+                    type(Node) == gf.RecyclingNode:
                     InSystem += Node.GetStock(G4, Timestep)
             if Input > InSystem - MOSIR_TOLERENCE and Input < InSystem + MOSIR_TOLERENCE :
                 continue

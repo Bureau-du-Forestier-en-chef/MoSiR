@@ -47,7 +47,20 @@ def UnitChange(Number: float, From: str, To: str) -> float:
                             (kgC ou tC)") 
         
 def OutputCreation(Graph: gf.GraphFactory, Import: ip.ImportData, 
-                   Report: ReportData):
+                   Report: ReportData, Directory: str):
+    """
+    Fonction pour créer des outputs des résultats des calculs
+    
+    Args:
+        Graph: La classe graph factory de GraphFactory.py
+        Import: La classe ImportData du fichier d'import
+        Report: La classe ReportData 
+        Directory: Le dossier dans lequel les outputs seront enregistrés
+    """
+    if '\\' in Directory:
+        raise SyntaxError("Dans le output directory, il est nécessaire d'utiliser des\
+            frontslash (/) et non des backslash (\) ")
+        
     Time = Report.GetOutputData('Time')
     Ext = Report.GetOutputData('Output file extension')
     PRG = Report.GetOutputData('PRG')
@@ -58,10 +71,14 @@ def OutputCreation(Graph: gf.GraphFactory, Import: ip.ImportData,
         Data = Output[output_name]
         Nodes_name = Data['Nodes_name']
         Type = Data['Type']
-        Cumulative = bool(Data['Cumulative'])
         Summarize = Data['Summarize']
         ReportUnit = Data['Unit'].lower()
-
+        if type(Data['Cumulative']) == bool:
+            Cumu = Data['Cumulative']
+        else: 
+            raise InvalidOption(f"Cumulative ({Data['Cumulative']}) dans le fichier \
+                                de reporting doit être un booléen, donc soit 'true' ou 'false'")
+        
         df = pd.DataFrame(columns = Nodes_name)
         df.insert(0, 'Time', None)
 
@@ -72,15 +89,15 @@ def OutputCreation(Graph: gf.GraphFactory, Import: ip.ImportData,
                     for Timestep in range(Time + 1):
                         df.loc[Timestep, 'Time'] = Timestep
                         if Type == 'Flux in':
-                            result = Node.GetFluxIn(G, Timestep, Cumulative = Cumulative)
+                            result = Node.GetFluxIn(G, Timestep, Cumulative = Cumu)
                             result = UnitChange(result, InputUnit, ReportUnit)
                             df.loc[Timestep, Node.NAME] = result
                         elif Type == 'Flux out':
-                            result = Node.GetFluxOut(G, Timestep, Cumulative = Cumulative)
+                            result = Node.GetFluxOut(G, Timestep, Cumulative = Cumu)
                             result = UnitChange(result, InputUnit, ReportUnit)
                             df.loc[Timestep, Node.NAME] = result
                         elif Type == 'Stock':
-                            result = Node.GetStock(G, Timestep, Cumulative = Cumulative)
+                            result = Node.GetStock(G, Timestep, Cumulative = Cumu)
                             result = UnitChange(result, InputUnit, ReportUnit)
                             df.loc[Timestep, Node.NAME] = result
                         else:
@@ -91,5 +108,10 @@ def OutputCreation(Graph: gf.GraphFactory, Import: ip.ImportData,
             df['Combined'] = df.drop('Time', axis = 1).sum(axis = 1)
             df = df[['Time', 'Combined']]
         df['Unit'] = ReportUnit
-        df.to_csv('T:/Donnees/Usagers/LANGA3/MoSiR/MicroTest2/' + output_name + Ext, 
-                  index = False, sep = ',')
+        if Directory[-1] == '/':
+            df.to_csv(Directory + output_name + Ext, 
+                      index = False, sep = ',')
+        elif Directory[-1] != '/':
+            df.to_csv(Directory + '/' + output_name + Ext, 
+                      index = False, sep = ',')
+            
