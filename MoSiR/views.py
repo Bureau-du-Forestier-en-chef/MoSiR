@@ -3,8 +3,8 @@ Copyright (c) 2023 Gouvernement du Québec
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 """
-import os,webbrowser
-from flask import Flask,render_template
+import os,webbrowser,logging
+from flask import Flask
 from .blueprint_component import Component
 from .blueprint_component import Endpointaction
 
@@ -12,6 +12,8 @@ from .blueprint_component import Endpointaction
 class Flaskwrapper:
     def __init__(self,base_url:str,host:str,port:int):
         self.__app = Flask(__class__.__name__,root_path=os.path.dirname(os.path.abspath(__file__)))
+        self.__log = logging.getLogger('werkzeug')
+        self.__log.setLevel(logging.ERROR)
         self.__AuthorizationBrowsed = False
         self.__host = host
         self.__port = port
