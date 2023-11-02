@@ -1,7 +1,7 @@
 {
 "Unit" : "kgc",
 "Inputs": {
-    "Graph" : {
+    "Graph1" : {
         "Entree": {
             "0" : 100,
             "1" : 50}

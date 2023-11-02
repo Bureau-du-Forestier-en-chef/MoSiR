@@ -1,4 +1,4 @@
-import MoSiR.GraphFactory as gf
+import MoSiR.GraphGen as gf
 import MoSiR.ImportInfo as ip
 import MoSiR.ReportingInfo as rp
 import warnings
@@ -117,14 +117,15 @@ def GraphTesting(Graph: gf.GraphFactory, Input: ip.ImportData,
                     continue
                 elif type(Node) == gf.PoolNode or type(Node) == gf.DecayNode or \
                     type(Node) == gf.RecyclingNode:
-                    InSystem += Node.GetStock(G4, Timestep)
+                    with warnings.catch_warnings():
+                        warnings.simplefilter('ignore')
+                        InSystem += Node.GetStock(G4, Timestep)
             if Input > InSystem - MOSIR_TOLERENCE and Input < InSystem + MOSIR_TOLERENCE :
                 continue
             else:
                 raise QuantityError(f"Graph : {G4.GetName} La quantité total \
                     en input ({Input}) au temps {Timestep} n'est pas égale au total \
                     présent dans le système ({InSystem})")
-    print('Graph tested')
 
 # N2O checkup
 

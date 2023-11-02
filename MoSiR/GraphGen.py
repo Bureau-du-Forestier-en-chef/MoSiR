@@ -16,7 +16,7 @@ import warnings # Maybe
 from abc import ABCMeta, abstractmethod
 
 sys.path.append("../MoSiR")
-import MoSiR.WPGraph as wp
+import MoSiR.NetworkxGraph as wp
 
 
 # Exception handling ---------------------------------------------------------
@@ -60,7 +60,7 @@ class IndustrialNode(metaclass = ABCMeta): # aller voir la doc ABC
        raise ConstError("Node name can't be changed")
     
     @abstractmethod
-    def GetFluxOut(self, Graph: wp.WPGraph, Time: int, Cumulative: bool = False) -> float:
+    def GetFluxOut(self, Graph: WPGraph, Time: int, Cumulative: bool = False) -> float:
         ''' GetFluxOut Documentation
         
         Cette fonction sert à retracer le flux de carbone sortant d'un noeud. 
@@ -76,7 +76,7 @@ class IndustrialNode(metaclass = ABCMeta): # aller voir la doc ABC
         pass
     
     @abstractmethod
-    def GetFluxIn(self, Graph: wp.WPGraph, Time: int, Cumulative: bool = False) -> float:
+    def GetFluxIn(self, Graph: WPGraph, Time: int, Cumulative: bool = False) -> float:
         ''' GetFluxIn Documentation
         
         Cette fonction sert à retracer le flux de carbone entrant d'un noeud. 
@@ -141,13 +141,13 @@ class TopNode(IndustrialNode):
         except ValueError:
             return 0
     
-    def GetFluxOut(self, Graph: wp.WPGraph, Time: int, Cumulative: bool = False) -> float:
+    def GetFluxOut(self, Graph: WPGraph, Time: int, Cumulative: bool = False) -> float:
         return self._GetQuantityTime(Time)
     
-    def GetFluxIn(self, Graph: wp.WPGraph, Time: int, Cumulative: bool = False) -> float:
+    def GetFluxIn(self, Graph: WPGraph, Time: int, Cumulative: bool = False) -> float:
         return self._GetQuantityTime(Time)
     
-    def GetStock(self, Graph: wp.WPGraph, Time: int, Cumulative: bool = False) -> float:
+    def GetStock(self, Graph: WPGraph, Time: int, Cumulative: bool = False) -> float:
         return self._GetQuantityTime(Time)
     
 class ProportionNode(IndustrialNode):
@@ -155,7 +155,7 @@ class ProportionNode(IndustrialNode):
         super().__init__(NAME)
         #self.__PastCarbon = {}
     
-    def GetFluxOut(self, Graph: wp.WPGraph, Time: int, Cumulative: bool = False) -> float:
+    def GetFluxOut(self, Graph: WPGraph, Time: int, Cumulative: bool = False) -> float:
         Total = 0
         if Cumulative == False:
             #if Time in self.__PastCarbon:
@@ -184,7 +184,7 @@ class ProportionNode(IndustrialNode):
     def GetFluxIn(self, Graph: WPGraph, Time: int, Cumulative: bool = False) -> float:
         return self.GetFluxOut(Graph, Time, Cumulative)
     
-    def GetStock(self, Graph: wp.WPGraph, Time: int, Cumulative: bool = False) -> int:
+    def GetStock(self, Graph: WPGraph, Time: int, Cumulative: bool = False) -> int:
         return print('Aucun carbone ne réside dans ce noeud ({self.NAME}), seulement des flux le traverse')
 
 class DecayNode(ProportionNode):
@@ -201,7 +201,7 @@ class DecayNode(ProportionNode):
     def HalfLife(self, Value):
        self._HalfLife = Value
     
-    def GetFluxOut(self, Graph: wp.WPGraph, Time: int, Cumulative: bool = False) -> float:
+    def GetFluxOut(self, Graph: WPGraph, Time: int, Cumulative: bool = False) -> float:
         #if Time in self.__PastCarbon:
         #    return self.__PastCarbon[Time]
         Total = 0
@@ -222,7 +222,7 @@ class DecayNode(ProportionNode):
                     Total += Output_annual
             return Total
         
-    def GetFluxIn(self, Graph: wp.WPGraph, Time: int, Cumulative: bool = False) -> float:
+    def GetFluxIn(self, Graph: WPGraph, Time: int, Cumulative: bool = False) -> float:
         Total = 0
         if Cumulative == False:  
             Annual = super().GetFluxOut(Graph, Time, Cumulative)
@@ -233,7 +233,7 @@ class DecayNode(ProportionNode):
                 Total += Annual
             return Total 
     
-    def GetStock(self, Graph: wp.WPGraph, Time: int, Cumulative: bool = False) -> float:
+    def GetStock(self, Graph: WPGraph, Time: int, Cumulative: bool = False) -> float:
         ''' GetStock Documentation
 
         La fonction GetStock sert à faire le cumulatif des flux annuels 
@@ -269,7 +269,7 @@ class RecyclingNode(ProportionNode):
         super().__init__(NAME)
         self.__PastCarbon = {}
     
-    def GetFluxOut(self, Graph: wp.WPGraph, Time: int, Cumulative: bool = False) -> float:
+    def GetFluxOut(self, Graph: WPGraph, Time: int, Cumulative: bool = False) -> float:
         #if Time in self.__PastCarbon:
         #    return self.__PastCarbon[Time]
         Total = 0
@@ -295,7 +295,7 @@ class RecyclingNode(ProportionNode):
                 Total += super().GetFluxOut(Graph, Year, Cumulative = False)
             return Total
     
-    def GetStock(self, Graph: wp.WPGraph, Time: int, Cumulative: bool = False) -> float:
+    def GetStock(self, Graph: WPGraph, Time: int, Cumulative: bool = False) -> float:
         Total = super().GetFluxOut(Graph, Time, Cumulative)
         return Total
 
@@ -317,7 +317,7 @@ class PoolNode(ProportionNode):
     def GetFluxOut(self, Graph: WPGraph, Time: int, Cumulative: bool = False) -> float:
         warnings.warn(f'Aucun carbone sortant de la node {self.NAME}', stacklevel = 2)
       
-    def GetStock(self, Graph: wp.WPGraph, Time: int, Cumulative: bool = False) -> float:
+    def GetStock(self, Graph: WPGraph, Time: int, Cumulative: bool = False) -> float:
         ''' GetStock Documentation   
         Args: 
             Graph (nx.DiGraph): le DiGraph utilisé pour construire le réseau
@@ -387,7 +387,7 @@ class GraphFactory():
     def GetGraphName(self, input):
         raise ConstError("Graph name can't be changed outside Miro")
     
-    def GetGraph(self, Name) -> wp.WPGraph:
+    def GetGraph(self, Name) -> WPGraph:
         Names = self.GetGraphName
         Index = Names.index(Name)
         return self._GRAPHS[Index]

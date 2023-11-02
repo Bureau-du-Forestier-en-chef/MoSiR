@@ -3,7 +3,7 @@
     "Output file extension" : ".csv",
     "PRG" : {"CH4" : 28, "N2O": 298},
     "Output": {
-        "Graph": {
+        "Graph1": {
             "Annual flux":{
                 "Nodes_name" : ["CH4 emissions",
                                 "CO2 emissions"],

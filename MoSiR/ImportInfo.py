@@ -1,4 +1,3 @@
-import pandas as pd
 import json
 
 # Json -----------------------------------------------------------------------
@@ -11,14 +10,14 @@ class ImportData():
     def GetUnit(self):
         return self._DATA['Unit']
     
-    def GetData(self):
-        return self._DATA['Inputs']
+    def GetData(self, GraphName: str):
+        return self._DATA['Inputs']['GraphName']
     
-    def GetNodesName(self):
-        return [i for i in self.GetData()]
+    def GetNodesName(self, GraphName: str):
+        return [i for i in self.GetData(GraphName)]
     
-    def GetNodeInput(self, NodeName):
-        Input = self.GetData()[NodeName]
+    def GetNodeInput(self, GraphName: str, NodeName):
+        Input = self.GetData(GraphName)[NodeName]
         Time = []
         Quantities = []
         for time, value in Input.items():
@@ -29,12 +28,12 @@ class ImportData():
         return Time, Quantities
 
 def AddImport(Graph, Import):
-    for Name in Graph.GetGraphName:
-        G = Graph.GetGraph(Name)
+    for GraphName in Graph.GetGraphName:
+        G = Graph.GetGraph(GraphName)
         for Node in G.Nodes():
-            if Node.NAME in Import.GetNodesName():
-                Time = Import.GetNodeInput(Node.NAME)[0]
-                Quantities = Import.GetNodeInput(Node.NAME)[1]
+            if Node.NAME in Import.GetNodesName(GraphName):
+                Time = Import.GetNodeInput(GraphName, Node.NAME)[0]
+                Quantities = Import.GetNodeInput(GraphName, Node.NAME)[1]
                 Node.Time = Time
                 Node.Quantities = Quantities
 

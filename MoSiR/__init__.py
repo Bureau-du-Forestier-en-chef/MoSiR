@@ -7,8 +7,8 @@ from .utilities import Jsonparser as Jsonparser
 from .utilities import Htmlparser as Htmlparser
 from .blueprint_component import Component as Component
 from .views import Flaskwrapper as Flaskwrapper
-from .GraphFactory import GraphFactory as GraphFactory
-from .WPGraph import WPGraph as WPGraph
-from .GraphTest import GraphTest as GraphTest
-from .ImportInfo import ImportInfo as ImportInfo
-from .ReportingInfo import ReportingInfo as ReportingInfo
+from . import GraphGen as GraphGen
+from . import NetworkxGraph as NetworkxGraph
+from . import GraphTest as GraphTest
+from . import ImportInfo as ImportInfo
+from . import ReportingInfo as ReportingInfo

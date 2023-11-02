@@ -1,7 +1,7 @@
 import pandas as pd
 import json
-import GraphFactory as gf
-import ImportInfo as ip
+import MoSiR.GraphGen as gf
+import MoSiR.ImportInfo as ip
 
 class InvalidOption(Exception):
     def __init__(self, message: str):    
@@ -67,23 +67,24 @@ def OutputCreation(Graph: gf.GraphFactory, Import: ip.ImportData,
     Output = Report.GetOutputData('Output')
     InputUnit = Import.GetUnit().lower()
     
-    for output_name in Output:
-        Data = Output[output_name]
-        Nodes_name = Data['Nodes_name']
-        Type = Data['Type']
-        Summarize = Data['Summarize']
-        ReportUnit = Data['Unit'].lower()
-        if type(Data['Cumulative']) == bool:
-            Cumu = Data['Cumulative']
-        else: 
-            raise InvalidOption(f"Cumulative ({Data['Cumulative']}) dans le fichier \
-                                de reporting doit être un booléen, donc soit 'true' ou 'false'")
-        
-        df = pd.DataFrame(columns = Nodes_name)
-        df.insert(0, 'Time', None)
+    for GraphName in Output:
+        Info = Output[GraphName]
+        for output_name in Info:
+            Data = Info[output_name]
+            Nodes_name = Data['Nodes_name']
+            Type = Data['Type']
+            Summarize = Data['Summarize']
+            ReportUnit = Data['Unit'].lower()
+            if type(Data['Cumulative']) == bool:
+                Cumu = Data['Cumulative']
+            else: 
+                raise InvalidOption(f"Cumulative ({Data['Cumulative']}) dans le fichier \
+                                    de reporting doit être un booléen, donc soit 'true' ou 'false'")
 
-        for Name in Graph.GetGraphName:
-            G = Graph.GetGraph(Name)
+            df = pd.DataFrame(columns = Nodes_name)
+            df.insert(0, 'Time', None)
+
+            G = Graph.GetGraph(GraphName)
             for Node in G.Nodes():
                 if Node.NAME in Nodes_name:
                     for Timestep in range(Time + 1):
@@ -102,17 +103,15 @@ def OutputCreation(Graph: gf.GraphFactory, Import: ip.ImportData,
                             df.loc[Timestep, Node.NAME] = result
                         else:
                             raise InvalidOption(f"L'entrée <Type> ('{Type}') dans le \
-                                    reporting file n'est pas un choix valide. Choix \
-                                    possibles: 'Flux in', 'Flux out' ou 'Stock'.")
+                                reporting file n'est pas un choix valide. Choix \
+                                possibles: 'Flux in', 'Flux out' ou 'Stock'.")
         if Summarize == 'Combined':
             df['Combined'] = df.drop('Time', axis = 1).sum(axis = 1)
             df = df[['Time', 'Combined']]
         df['Unit'] = ReportUnit
         if Directory[-1] == '/':
-            df.to_csv(Directory + output_name + Ext, 
+            df.to_csv(Directory + GraphName + '_' + output_name + Ext, 
                       index = False, sep = ',')
         elif Directory[-1] != '/':
-            df.to_csv(Directory + '/' + output_name + Ext, 
+            df.to_csv(Directory + '/' + GraphName + '_' + output_name + Ext, 
                       index = False, sep = ',')
-
-test = pd.DataFrame({'A' : [1, 2, 3], 'B': [4, 5, 6]})
