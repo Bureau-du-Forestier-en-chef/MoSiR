@@ -7,7 +7,7 @@ from MoSiR import ImportInfo as ip
 from MoSiR import ReportingInfo as rp
 from MoSiR import GraphTest as gt
 
-""" parser = ap.ArgumentParser(
+parser = ap.ArgumentParser(
     description = 'Process input and output for the MoSiR calculator')
 
 parser.add_argument('--GraphFileDirectory', '-G',
@@ -31,12 +31,12 @@ args = parser.parse_args()
 
 Graph = gf.GraphFactory(args.G)
 Import = ip.ImportData(args.I)
-Report = rp.ReportData(args.R) """
+Report = rp.ReportData(args.R) 
 
 # Alternate
-Graph = gf.GraphFactory('D:/MoSiR/examples/Inputs/Graph.json')
-Import = ip.ImportData('D:/MoSiR/examples/Inputs/Import.json')
-Report = rp.ReportData('D:/MoSiR/examples/Inputs/Reporting.json')
+# Graph = gf.GraphFactory('D:/MoSiR/examples/Inputs/Graph.json')
+# Import = ip.ImportData('D:/MoSiR/examples/Inputs/Import.json')
+# Report = rp.ReportData('D:/MoSiR/examples/Inputs/Reporting.json')
 
 # Add imports to graph
 ip.AddImport(Graph, Import)
@@ -45,6 +45,6 @@ ip.AddImport(Graph, Import)
 gt.GraphTesting(Graph, Import, Report)
         
 # Reporting
-rp.OutputCreation(Graph, Import, Report, 'D:/MoSiR/examples/Output')
+rp.OutputCreation(Graph, Import, Report, args.O)
 
 # Python 2.7, child process ou subprocess

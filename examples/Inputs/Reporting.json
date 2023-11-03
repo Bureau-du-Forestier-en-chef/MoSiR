@@ -3,8 +3,8 @@
     "Output file extension" : ".csv",
     "PRG" : {"CH4" : 28, "N2O": 298},
     "Output": {
-        "Graph1": {
-            "Annual flux":{
+        "MicroTest_1": {
+            "Annual_flux":{
                 "Nodes_name" : ["CH4 emissions",
                                 "CO2 emissions"],
                 "Type" : "Flux in",
@@ -12,7 +12,7 @@
                 "Summarize" : "Per_Node",
                 "Unit" : "kgc"},
             
-            "Cumulative flux":{
+            "Cumulative_flux":{
                 "Nodes_name" : ["CH4 emissions",  
                                 "CO2 emissions"],
                 "Type" : "Flux in",

@@ -349,7 +349,7 @@ class GraphFactory():
         keys = list(self.GetData.keys())
         keys.sort()
         for KEY in keys:
-            self._GRAPHNAME.append(KEY.upper())
+            self._GRAPHNAME.append(KEY)
             self._GRAPHS.append(wp.WPGraph(KEY))
             _EDGES = self.GetData[KEY].get('Edges', {})
             _NODES = self.GetData[KEY].get('Nodes', {})

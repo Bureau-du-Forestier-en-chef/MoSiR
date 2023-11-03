@@ -105,13 +105,13 @@ def OutputCreation(Graph: gf.GraphFactory, Import: ip.ImportData,
                             raise InvalidOption(f"L'entrée <Type> ('{Type}') dans le \
                                 reporting file n'est pas un choix valide. Choix \
                                 possibles: 'Flux in', 'Flux out' ou 'Stock'.")
-        if Summarize == 'Combined':
-            df['Combined'] = df.drop('Time', axis = 1).sum(axis = 1)
-            df = df[['Time', 'Combined']]
-        df['Unit'] = ReportUnit
-        if Directory[-1] == '/':
-            df.to_csv(Directory + GraphName + '_' + output_name + Ext, 
-                      index = False, sep = ',')
-        elif Directory[-1] != '/':
-            df.to_csv(Directory + '/' + GraphName + '_' + output_name + Ext, 
-                      index = False, sep = ',')
+            if Summarize == 'Combined':
+                df['Combined'] = df.drop('Time', axis = 1).sum(axis = 1)
+                df = df[['Time', 'Combined']]
+            df['Unit'] = ReportUnit
+            if Directory[-1] == '/':
+                df.to_csv(Directory + GraphName + '_' + output_name + Ext, 
+                          index = False, sep = ',')
+            elif Directory[-1] != '/':
+                df.to_csv(Directory + '/' + GraphName + '_' + output_name + Ext, 
+                          index = False, sep = ',')

@@ -11,7 +11,7 @@ class ImportData():
         return self._DATA['Unit']
     
     def GetData(self, GraphName: str):
-        return self._DATA['Inputs']['GraphName']
+        return self._DATA['Inputs'][GraphName]
     
     def GetNodesName(self, GraphName: str):
         return [i for i in self.GetData(GraphName)]
