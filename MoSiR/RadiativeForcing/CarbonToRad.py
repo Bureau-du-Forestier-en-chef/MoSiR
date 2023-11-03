@@ -1,75 +1,96 @@
 import numpy as np
 import pandas as pd
-
-import sys
-from IPython.core.ultratb import ColorTB # Couleur powershell
-
-sys.excepthook = ColorTB()
-
-# Fichier pour générer une table dummy
-""" 
-df = {
-    'Time': np.repeat(np.arange(1, 151), 3),
-    'Species': np.array(['A', 'B', 'C'] * 150),
-    'Tonne_C': np.random.uniform(20, 60, 450)
-}
-
-df = pd.DataFrame(df)
-df.to_csv('C:/Users/langa3/Documents/Script/Panier_produit/dummy_table.csv', 
-          index = False, sep = ';')
-"""
+import warnings
 
 class ConstError(Exception):
     def __init__(self, message: str):    
         super().__init__(message)
 
-class RadFormatting(): 
-    '''
-    Cette class sert à transformer les inputs provenant du fichier excel 
-    de facteur du forçage radiatif en format utilisable dans python pour
-    la fonction np.convolve
-    '''
-    def __init__(self, directory: str):
-        self._DIRECTORY = directory
-        self._DATA = pd.read_excel(directory).sort_values(by = 'Year')
-        self._COLUMN = [i for i in self.GetData]
-        for column in self.GetData:
-            setattr(self, f'_{column}'.upper(), self.GetData[column].tolist())
-            
-    @property       
-    def GetData(self):
-        return self._DATA    
-    
-    @GetData.setter
-    def GetData(self):
-        raise ConstError("Original data can't be changed")
-    
-    @property
-    def GetColumnName(self):
-        return self._COLUMN
-    
-    @GetColumnName.setter
-    def GetColumnName(self):
-        raise ConstError("Original data can't be changed")
-    
-    def GetColumn(self, Name: str) -> list[int]:
-        return getattr(self, f'_{Name}'.upper())
-    
-    def CalculateRF(self, GasName: str, Input: list[float], Duration: int) -> list[float]:
-        """
-        Les inputs doivent être des émissions en ordre chronologique. La liste
-        d'émissions doit être des années qui se suivent, sans bon. Par exemple:
-        [Émission année 1, Émissions année 2, Émissions année 3, etc.].
+class TimeStepError(Exception):
+    def __init__(self, message: str):    
+        super().__init__(message)
         
-        Ce qui ne fonctionne pas :
-        [Émission année 1, Émission année 3, Émissions année 4, etc].
+class InvalidOption(Exception):
+    def __init__(self, message: str):    
+        super().__init__(message)
         
-        Si aucune émission n'est signalée à une année, une zéro devrait
-        être présent.
-        """
-        GasRF = self.GetColumn(GasName)[0:Duration]
-        Emissions = np.convolve(Input, GasRF)[0:Duration]
-        return Emissions
+def RadConvolve(Colonne: pd.Series, gaz: str, RF: pd.DataFrame, Cumulative: bool = False):
+    masse = {
+        'CO2': 3.6667,
+        'CO': 2.6666,
+        'CH4': 1.3333}
+    if gaz == 'N2O':
+        result = list(Colonne)
+    elif gaz in masse:
+        result = list(Colonne * masse[gaz])
+    else:
+        raise InvalidOption(f"{gaz} n'est pas dans les options de gaz \
+            pour un calcul en radiatif")
+        
+    FC = list(RF[gaz])[0:len(Colonne)]
+    rad = np.convolve(result, FC)[0:len(Colonne)]
+    if Cumulative == True:
+        return rad.cumsum()
+    elif Cumulative == False:
+        return rad 
 
-Fc = RadFormatting('T:/Donnees/Usagers/LANGA3/MoSiR/FacteurRadiatif.xlsx')
+def RadFormatting(Dataframe: pd.DataFrame, Cumulative: bool = False):
+    """Prend des inputs en kgC d'un dataframe et les transforme en radiatif
 
+    Args:
+        Dataframe (pd.DataFrame): Un dataframe d'émissions où chaque gas
+            correspond à une colonne. Devrait avoir une colonne de temps 
+            également pour faire une vérification
+        Cumulative (bool, optional): Defaults to False.
+
+    Raises:
+        TimeStepError: Si des années sont manquantes dans la listes d'inputs.
+        Par exemple si une année est omise lorsque les émissions sont de 0.
+        Filet de sécurité, ne devrait pas arriver.
+    """
+    RF = pd.read_excel('MoSiR/RadiativeForcing/Dynco2_Base.xlsx').sort_values(by = 'Year')
+    for col in Dataframe:
+        if col.lower() in ['time', 'timestep', 'temps', 
+                           'year', 'years', 'année', 'années']:
+            start = Dataframe[col].min()
+            finish = Dataframe[col].max()
+            longueur = range(start, finish + 1)
+            if not (set(Dataframe[col]) == set(longueur)):
+                raise TimeStepError('La colonne {col} représentant le temps \
+                    dans le dataframe a des entrées manquantes')
+        elif 'CO2' in col:
+            Dataframe[col] = RadConvolve(Dataframe[col], 'CO2', RF, Cumulative =  Cumulative)
+        elif 'CH4' in col:
+            Dataframe[col] = RadConvolve(Dataframe[col], 'CH4', RF, Cumulative =  Cumulative)
+        elif 'CO' in col and 'CO2' not in col:
+            Dataframe[col] = RadConvolve(Dataframe[col], 'CO', RF, Cumulative =  Cumulative)   
+        elif 'N2O' in col:
+            Dataframe[col] = RadConvolve(Dataframe[col], 'N2O', RF, Cumulative =  Cumulative)
+        else:
+            Dataframe[col] = 0
+            warnings.warn(f"Il n'y a pas de gas reconnu dans {col}, \
+                          le résultat sera donc de 0", stacklevel = 2)
+
+
+# Test de validation du RF  
+Time = list(range(1, 2001))
+CO2 = [1/3.6667] + [0] * (len(Time) - 1)          
+CH4 = [1/1.3333] + [0] * (len(Time) - 1)          
+N2O = [1] + [0] * (len(Time) - 1)          
+CO = [1/2.6666] + [0] * (len(Time) - 1)   
+       
+test = pd.DataFrame({
+    'Year': Time,
+    'CO2': CO2,
+    'CH4': CH4,
+    'N2O': N2O,
+    'CO': CO,
+    })
+
+RF = pd.read_excel('MoSiR/RadiativeForcing/Dynco2_Base.xlsx').\
+    sort_values(by = 'Year').drop('Unit', axis = 1)
+
+RadFormatting(test, Cumulative= False)
+
+assert all(test == RF)
+print("Done")

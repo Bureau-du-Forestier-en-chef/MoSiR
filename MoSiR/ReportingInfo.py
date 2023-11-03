@@ -1,7 +1,9 @@
 import pandas as pd
+import warnings
 import json
 import MoSiR.GraphGen as gf
 import MoSiR.ImportInfo as ip
+import MoSiR.RadiativeForcing.CarbonToRad as cr
 
 class InvalidOption(Exception):
     def __init__(self, message: str):    
@@ -76,7 +78,13 @@ def OutputCreation(Graph: gf.GraphFactory, Import: ip.ImportData,
             Summarize = Data['Summarize']
             ReportUnit = Data['Unit'].lower()
             if type(Data['Cumulative']) == bool:
-                Cumu = Data['Cumulative']
+                if ReportUnit == 'w/m2':
+                    Cumu = False
+                elif ReportUnit in ['kgc', 'tc', 'tco2eq']:
+                    Cumu = Data['Cumulative']
+                else:
+                    raise InvalidOption(f"Unit ({Data['Unit']}) dans le fichier \
+                                    de reporting n'est pas une option valide")
             else: 
                 raise InvalidOption(f"Cumulative ({Data['Cumulative']}) dans le fichier \
                                     de reporting doit être un booléen, donc soit 'true' ou 'false'")
@@ -105,6 +113,27 @@ def OutputCreation(Graph: gf.GraphFactory, Import: ip.ImportData,
                             raise InvalidOption(f"L'entrée <Type> ('{Type}') dans le \
                                 reporting file n'est pas un choix valide. Choix \
                                 possibles: 'Flux in', 'Flux out' ou 'Stock'.")
+            if ReportUnit == 'tco2eq':
+                for col in df:
+                    if col.lower() in ['time', 'timestep', 'temps', 
+                                       'year', 'years', 'année', 'années']:
+                        continue
+                    elif 'CO2' in col:
+                        df[col] = df[col] * 3.6667
+                    elif 'CH4' in col:
+                        df[col] = df[col] * 1.3333 * PRG['CH4']
+                    elif 'N2O' in col:
+                        df[col] = df[col] * PRG['N2O']
+                    elif 'CO' in col and 'CO2' not in col:
+                        df[col] = df[col] * 2.3333
+                    else:
+                        df[col] = 0
+                        warnings.warn(f"Il n'y a pas de gas reconnu dans {col}, \
+                                      le résultat sera donc de 0", stacklevel = 2)
+            elif ReportUnit == 'w/m2':
+                C = Data['Cumulative']
+                cr.RadFormatting(df, Cumulative = C)
+                
             if Summarize == 'Combined':
                 df['Combined'] = df.drop('Time', axis = 1).sum(axis = 1)
                 df = df[['Time', 'Combined']]
