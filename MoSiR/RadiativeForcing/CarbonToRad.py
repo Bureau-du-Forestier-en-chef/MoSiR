@@ -91,4 +91,4 @@ RF = pd.read_excel('MoSiR/RadiativeForcing/Dynco2_Base.xlsx').\
 
 RadFormatting(test, RF, Cumulative= False)
 
-assert all(test == RF)
+assert test == RF
