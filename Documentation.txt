@@ -8,6 +8,9 @@ Idées en vrac :
     pour le import et le report
 - Dans le nom d'une node, CO2, CH4 ou autre doit être en majuscule pour être reconnu comme un gas.
     Sinon, des noms comme "co2 emissions" "Co2" ne sont pas reconnu. 
+- Si une dernière node est en même temps une node avec du decay, il va y avoir du carbone de
+    perdu si aucune node enfant en dessous d'elle ne peut récupérer le carbon qui sort
+- Une decay node ne peut pas être en premier, il est nécessaire de faire un intermédiaire 
 
 
 

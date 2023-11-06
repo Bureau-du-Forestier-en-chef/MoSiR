@@ -132,7 +132,11 @@ def OutputCreation(Graph: gf.GraphFactory, Import: ip.ImportData,
                                       le résultat sera donc de 0", stacklevel = 2)
             elif ReportUnit == 'w/m2':
                 C = Data['Cumulative']
-                cr.RadFormatting(df, Cumulative = C)
+                RF = pd.read_excel('MoSiR/RadiativeForcing/Dynco2_Base.xlsx').sort_values(by = 'Year').\
+                        to_dict(orient = 'list')
+                df_2 = df.to_dict(orient = 'list')
+                cr.RadFormatting(df_2, RF, Cumulative = C)
+                df = pd.DataFrame(df_2)
                 
             if Summarize == 'Combined':
                 df['Combined'] = df.drop('Time', axis = 1).sum(axis = 1)
