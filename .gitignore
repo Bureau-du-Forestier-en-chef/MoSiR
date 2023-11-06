@@ -9,3 +9,4 @@ MoSiR.egg-info/
 __pycache__/
 dist/
 examples/Output
+tests/Microtests

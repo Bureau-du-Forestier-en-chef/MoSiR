@@ -30,7 +30,7 @@ def RadConvolve(Colonne: list, gaz: str, RF: dict, Cumulative: bool = False):
     FC = RF[gaz][0:len(Colonne)]
     rad = list(np.convolve(result, FC)[0:len(Colonne)])
     if Cumulative == True:
-        return rad.cumsum()
+        return np.cumsum(rad)
     elif Cumulative == False:
         return rad 
 

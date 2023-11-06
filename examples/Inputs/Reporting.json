@@ -12,6 +12,22 @@
                 "Summarize" : "Per_Node",
                 "Unit" : "kgc"},
             
+            "Annual_rad":{
+                    "Nodes_name" : ["CH4 emissions",
+                                    "CO2 emissions"],
+                    "Type" : "Flux in",
+                    "Cumulative" : false,
+                    "Summarize" : "Per_Node",
+                    "Unit" : "w/m2"},
+            
+            "Cumu_rad":{
+                        "Nodes_name" : ["CH4 emissions",
+                                        "CO2 emissions"],
+                        "Type" : "Flux in",
+                        "Cumulative" : true,
+                        "Summarize" : "Per_Node",
+                        "Unit" : "w/m2"},
+            
             "Cumulative_flux":{
                 "Nodes_name" : ["CH4 emissions",  
                                 "CO2 emissions"],
