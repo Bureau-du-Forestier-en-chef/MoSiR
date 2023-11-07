@@ -1,4 +1,5 @@
 MoSiR/mirowrapper/inputs/MiroParserServerSecrets.json
+MoSiR/inputs/MiroParserServerSecrets.json
 MoSiR/mirowrapper/mirowrapper.env
 MoSiR/visualization/templates/Temp_*.html
 MoSiR/uploads/*.json
