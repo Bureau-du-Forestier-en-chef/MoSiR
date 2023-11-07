@@ -6,6 +6,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 from ..blueprint_component import Component
 from flask import render_template,Response,redirect,request
+import os,json
 
 
 class Reporting(Component):
@@ -20,28 +21,60 @@ class Reporting(Component):
         for generator in Component.read_graphs_json():
             #For each graph allow an inputs of a list of numbers
             stash.append('<h5>'+generator.get_graph_name()+'</h5>')
-            stash.append('<div class="w3-row-padding w3-margin-bottom">')
-            stash.append('<form action="action_to_perform_after_submission" method = "POST">')
-            for period in range(1,self.__NUMBER_OF_PERIODS+1):
-                field_name = "f"+str(period)
-                entry_name = str(period)
-                stash.append('<div class="w3-col" style="width:'+width+'">'+entry_name+'<input type = "number" name = '+field_name+' value="0"/></div>')
-            stash.append('<class="w3-button w3-dark-grey" input type = "submit" value = "submit" /></div>')
+            stash.append('<div class="w3-half w3-margin-bottom">')
+            stash.append('<form action="'+self._get_url_for("/report")+'" id="cinputsform" method = "POST">')
+            #Unit selection...
+            stash.append('<div>')
+            stash.append('<label for="units">Unitées</label>')
+            stash.append('<select name="units" id="units">')
+            for unit in self.__get_units():
+                stash.append('<option value="'+unit+'">'+unit+'</option>')
+            stash.append('</select>')
             stash.append('</div>')
-            #stash.append(target)
-        stash.append('<a class="w3-button w3-dark-grey" href='+self._get_url_for("/report")+'>Exécutez<i class="fa fa-arrow-right"></i></a>')
+            stash.append('<table class="w3-table-all" style="width: 15em" id=cinputs><tr><th>Noeud</th><th>Période</th><th>Quantitée</th></tr>')
+            stash.append('</table>')
+            stash.append('<td>')
+            stash.append('<select name="Noeud" title="Noeud" id="Node" style="width: 5em">')
+            for node in generator.get_node_names():
+                stash.append('<option value="'+node+'">'+node+'</option>')
+            stash.append('</td>')
+            stash.append('<td> <input type = "number" name="Période~'+generator.get_graph_name()+'" title="Période" style="width: 5em" min ="1" id="Period"/></td>')
+            stash.append('<td> <input type = "number" name="Quantitée" title="Quantitée" style="width: 5em" min ="0" id="Quantity"/></td>')
+            stash.append('<button class="w3-button w3-dark-grey" type = "button" onclick="addcinputs()">Ajouter une période <j class="fa fa-plus-circle"></j></button>')
+        stash.append('<div>')
+        stash.append('<button class="w3-button w3-dark-grey" input type = "submit" value = "submit">Exécutez <i class="fa fa-arrow-right"></i></button>')
+        stash.append('</div>')
+        stash.append('</form>')
+        stash.append('</div>')
         return Component.main_renderer.render(False,stash)
+    def __get_units(self):
+        return ['kgc','tC']
+    def __get_graphs_inputs(self)->str:
+        data = {"Inputs":{}}
+        for field_name, value in request.form.items():
+            if field_name == 'units':
+                data["Unit"] = value
+            elif('Quantity' in field_name):
+                splitted = field_name.split('~')
+                the_value = float(value)
+                graph = splitted[3]
+                node = splitted[2]
+                period = splitted[1]
+                if graph not in data["Inputs"]:
+                    data["Inputs"][graph] = {}
+                if node not in data["Inputs"][graph]:
+                    data["Inputs"][graph][node] = {}
+                data["Inputs"][graph][node][period] = the_value
+        location = os.path.join(Component._get_uploads_folder(),"inputs.json")
+        with open(location, "w") as outfile:
+            json.dump(data,outfile)
+        return location
     def __report(self)->Response:
-        for field_name, value in request.form:
-            period = int(field_name[field_name.find('('):field_name.find(')')][1:])
-            value = float(value[value.find('('):value.find(')')])
-        #for graphname,inputs in self.__request:
-        #    print("Calculating_graph")
-            #calculate 
-            #save results some where
-        #return render_template("main.html",variables=None,entries=self._entries)
+        inputs_json = self.__get_graphs_inputs()
+        stash = []
+        return Component.main_renderer.render(False,stash)
     def add_all_endpoints(self)->None:
-        self._add_endpoint(endpoint='/', endpoint_name='/', handler=self.__get_inputs,methods=['GET'])
+        self._add_endpoint(endpoint='/', endpoint_name='/', handler=self.__get_inputs,methods=['GET','POST'])
         self._add_endpoint(endpoint='/report', endpoint_name='/report', handler=self.__report,methods=['GET','POST'])
     def get_description(self)->str:
         return "Calculez les émissions générées"
@@ -50,6 +83,6 @@ class Reporting(Component):
     def get_symbol(self)->str:
         return "fa fa-bullseye fa-fw"
     def can_view(self)->bool:
-        return (len(Component._get_graphs_files()) > 0 ) and  (len(Component._get_inputs_files()) > 0) and (len(Component._get_reporting_files()) > 0)
+        return (len(Component._get_graphs_files()) > 0 ) #and  (len(Component._get_inputs_files()) > 0) and (len(Component._get_reporting_files()) > 0)
 
 reporting = Reporting()

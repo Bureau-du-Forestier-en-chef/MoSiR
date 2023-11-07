@@ -15,7 +15,7 @@ class Download(Component):
         HTMLsandnames = []
         for graphfile in Component._get_graphs_files() + Component._get_inputs_files() + Component._get_reporting_files():
             htmltarget = self._get_url_for("/graphs_download/<filename>",filename=graphfile)
-            target = '<p><a class="w3-button w3-dark-grey" href='+htmltarget+'>'+"Télécharger "+os.path.basename(graphfile)+'<i class="fa fa-arrow-right"></i></a></p>'
+            target = '<p><a class="w3-button w3-dark-grey" href='+htmltarget+'>'+"Télécharger "+os.path.basename(graphfile)+' <i class="fa fa-arrow-right"></i></a></p>'
             HTMLsandnames.append(target)
         return Component.main_renderer.render(False,HTMLsandnames)
     def __graphs_download(self,filename:str):

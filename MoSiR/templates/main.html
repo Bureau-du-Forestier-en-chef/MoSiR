@@ -66,13 +66,13 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
   <header class="w3-container" style="padding-top:22px">
     {% if descriptions is defined %}
     <h5><b><i class="fa fa-dashboard"></i>Description</b></h5>
+    {% endif %}
   </header>
-  <div class="w3-main">
+  <div class="w3-container">
     <h4>MoSiR</h4>
     {% for description in descriptions %}
       <p>{{description}}</p>
     {% endfor %}
-    {% endif %}
     {% for variable in variables %}
       {{ variable | safe }}
     {% endfor %}
@@ -113,6 +113,55 @@ function w3_open() {
 function w3_close() {
   mySidebar.style.display = "none";
   overlayBg.style.display = "none";
+}
+
+function isInteger(value) {
+    return /^\d+$/.test(value);
+}
+
+//Adding period inputs
+function addcinputs() {
+  var table = document.getElementById("cinputs");
+  var period = document.getElementById('Period').value;
+  var graph_name = document.getElementById('Period').name.split("~").slice(1).join(' ');
+  var quantity = document.getElementById('Quantity').value;
+  var element = document.getElementById('Node');
+  var node = element.options[element.selectedIndex].text;
+  if (isInteger(period) && parseFloat(quantity) && node)
+    {
+    var row = table.insertRow(-1);
+    var cell1 = row.insertCell(0);
+    var cell2 = row.insertCell(1);
+    var cell3 = row.insertCell(2);
+    var nodeinput = document.createElement("input");
+    nodeinput.type = "text";
+    nodeinput.title = 'Node~'+period+'~'+node+'~'+graph_name;
+    nodeinput.id = 'Node~'+period+'~'+node+'~'+graph_name;
+    nodeinput.name = 'Node~'+period+'~'+node+'~'+graph_name;
+    nodeinput.value = node;
+    nodeinput.style="width: 5em"
+    nodeinput.readOnly = true
+    cell1.appendChild(nodeinput);
+    var periodinput = document.createElement("input");
+    periodinput.type = "number";
+    periodinput.title = 'Period~'+period+'~'+node+'~'+graph_name;
+    periodinput.id = 'Period~'+period+'~'+node+'~'+graph_name;
+    periodinput.name = 'Period~'+period+'~'+node+'~'+graph_name;
+    periodinput.value = period;
+    periodinput.style="width: 5em"
+    periodinput.readOnly = true
+    cell2.appendChild(periodinput);
+    var quantityinput = document.createElement("input");
+    quantityinput.type = "number";
+    quantityinput.title = 'Quantity~'+period+'~'+node+'~'+graph_name;
+    quantityinput.id = 'Quantity~'+period+'~'+node+'~'+graph_name;
+    quantityinput.name = 'Quantity~'+period+'~'+node+'~'+graph_name;
+    quantityinput.value = quantity;
+    quantityinput.style="width: 5em"
+    quantityinput.readOnly = true
+    cell3.appendChild(quantityinput);
+    }
+  
 }
 </script>
 
