@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 import MoSiR.GraphGen as gf
 import MoSiR.ImportInfo as ip
 import MoSiR.ReportingInfo as rp

@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 """ 
 Pour faire un profile manuel :
     cProfile.run('addition(5, 3)')
@@ -18,7 +19,6 @@ from abc import ABCMeta, abstractmethod
 sys.path.append("../MoSiR")
 import MoSiR.NetworkxGraph as wp
 
-
 # Exception handling ---------------------------------------------------------
 
 class ConstError(Exception):
@@ -30,16 +30,43 @@ class RecursionNode(RecursionError):
     def __init__(self, message: str):
         super().__init__(message)
         
+# Introduire interface de cashing
+class Caching():
+    _Open = False
+    def __init__(self):
+        self._GetFluxOutCache = {}
+    
+    @property
+    def IsOpen(self):
+        return self._Open
+    
+    @IsOpen.setter
+    def IsOpen(self):
+        raise ConstError("Cache can only be triggered on and off \
+            inside the program script")
+        
+    @property    
+    def FluxOutCache(self):
+        if self.IsOpen is True:
+            return self._GetFluxOutCache
+    
+    @FluxOutCache.setter
+    def FluxOutCache(self):
+        raise ConstError("Cache must be modify with SetFluxOutCache")
+
+    def SetFluxOutCache(self, Timestep: int, Value: float):
+        if self.IsOpen is True:
+            self._GetFluxOutCache[Timestep] = Value 
+            
+    def GetFluxOutCache(self, Timestep: int):
+        if self.IsOpen is True:
+            return self._GetFluxOutCache[Timestep]
+    
+    def ResetFluxOutCache(self):
+        if self.IsOpen is True:
+            self._GetFluxOutCache = {}
 
 # Node class -----------------------------------------------------------------
-
-# Introduire interface de cashing
-#class Caching():
-#    def __init__(self):
-#        self._GetFluxOutCache = {}
-#        self._Open = False
-#   def get
-#   def set 
  
 class WPGraph():
     pass
@@ -47,6 +74,16 @@ class WPGraph():
 class IndustrialNode(metaclass = ABCMeta): # aller voir la doc ABC
     def __init__(self, LOCALNAME: str):
         self._NAME = LOCALNAME
+        self._PastCarbon = Caching()
+        
+    @property
+    def PastCarbon(self):
+        if self.PastCarbon.IsOpen is True:
+            return self._PastCarbon
+        
+    @PastCarbon.setter
+    def PastCarbon(self):
+        raise ConstError('Cache must be reset and set by designed functions')
     
     def _GetValueTime(self, Values: list[float], Time: int) -> float:
         return Values[min(Time, len(Values) - 1)]
@@ -153,26 +190,26 @@ class TopNode(IndustrialNode):
 class ProportionNode(IndustrialNode):
     def __init__(self, NAME: str):
         super().__init__(NAME)
-        #self.__PastCarbon = {}
+        self._PastCarbon = Caching()
     
     def GetFluxOut(self, Graph: WPGraph, Time: int, Cumulative: bool = False) -> float:
         Total = 0
         if Cumulative == False:
-            #if Time in self.__PastCarbon:
-            #    return self.__PastCarbon[Time]
+            if self.PastCarbon.IsOpen is True:
+                return self.PastCarbon.GetFluxOutCache(Time)
             for Parent in Graph.GetPredecessors(self):
                 ProportionParent = self._GetValueTime(Graph.GetEdgeProportions(Parent, self), Time)
                 if ProportionParent == 0:
                     continue
                 ParentCarbon = Parent.GetFluxOut(Graph, Time, Cumulative)
                 Total += ProportionParent * ParentCarbon
-            #self.__PastCarbon[Time] = Total
+            self.PastCarbon.SetFluxOutCache(Time, Total)
             return Total
         else:
             for Timestep in range(Time + 1):
-                #if Timestep in self.__PastCarbon:
-                #    Total += self.__PastCarbon[Timestep]
-                #    continue
+                if Timestep in self.PastCarbon.FluxOutCache:
+                    Total += self.PastCarbon.GetFluxOutCache(Timestep)
+                    continue
                 for Parent in Graph.GetPredecessors(self):
                     ProportionParent = self._GetValueTime(Graph.GetEdgeProportions(Parent, self), Timestep)
                     if ProportionParent == 0:
