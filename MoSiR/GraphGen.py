@@ -32,7 +32,7 @@ class RecursionNode(RecursionError):
         
 # Introduire interface de cashing
 class Caching():
-    _Open = False
+    _Open = True
     def __init__(self):
         self._GetFluxOutCache = {}
     
@@ -65,7 +65,7 @@ class Caching():
     def ResetFluxOutCache(self):
         if self.IsOpen is True:
             self._GetFluxOutCache = {}
-
+            
 # Node class -----------------------------------------------------------------
  
 class WPGraph():
@@ -75,16 +75,15 @@ class IndustrialNode(metaclass = ABCMeta): # aller voir la doc ABC
     def __init__(self, LOCALNAME: str):
         self._NAME = LOCALNAME
         self._PastCarbon = Caching()
-        
+    
     @property
     def PastCarbon(self):
-        if self.PastCarbon.IsOpen is True:
-            return self._PastCarbon
-        
-    @PastCarbon.setter
-    def PastCarbon(self):
-        raise ConstError('Cache must be reset and set by designed functions')
+        return self._PastCarbon
     
+    @PastCarbon.setter
+    def PastCarbon(self, input):
+        raise ConstError('Use setter instead')
+        
     def _GetValueTime(self, Values: list[float], Time: int) -> float:
         return Values[min(Time, len(Values) - 1)]
     
@@ -195,7 +194,7 @@ class ProportionNode(IndustrialNode):
     def GetFluxOut(self, Graph: WPGraph, Time: int, Cumulative: bool = False) -> float:
         Total = 0
         if Cumulative == False:
-            if self.PastCarbon.IsOpen is True:
+            if self.PastCarbon.IsOpen is True and Time in self.PastCarbon.FluxOutCache:
                 return self.PastCarbon.GetFluxOutCache(Time)
             for Parent in Graph.GetPredecessors(self):
                 ProportionParent = self._GetValueTime(Graph.GetEdgeProportions(Parent, self), Time)
@@ -207,7 +206,7 @@ class ProportionNode(IndustrialNode):
             return Total
         else:
             for Timestep in range(Time + 1):
-                if Timestep in self.PastCarbon.FluxOutCache:
+                if self.PastCarbon.IsOpen is True and Timestep in self.PastCarbon.FluxOutCache:
                     Total += self.PastCarbon.GetFluxOutCache(Timestep)
                     continue
                 for Parent in Graph.GetPredecessors(self):
