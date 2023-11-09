@@ -23,7 +23,7 @@ class Upload(Component):
     def __graphs_upload(self):
         if request.method == 'POST':
             file = request.files['file']
-            file.save(os.path.join(Component._get_uploads_folder(),file.filename))
+            file.save(os.path.join(self._get_uploads_folder(),file.filename))
             return redirect(self.get_exit_html())
     def add_all_endpoints(self):
         self._add_endpoint(endpoint='/', endpoint_name='/', handler=self.__get_graphs,methods=['GET','POST'])

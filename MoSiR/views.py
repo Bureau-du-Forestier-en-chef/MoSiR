@@ -5,21 +5,24 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 """
 import os,webbrowser,logging
 from flask import Flask
+from flask_cors import CORS
 from .blueprint_component import Component
 from .blueprint_component import Endpointaction
 
 
 class Flaskwrapper:
-    def __init__(self,base_url:str,host:str,port:int):
+    def __init__(self,base_url:str,host:str,port:int,log:bool = False):
         self.__app = Flask(__class__.__name__,root_path=os.path.dirname(os.path.abspath(__file__)))
-        self.__log = logging.getLogger('werkzeug')
-        self.__log.setLevel(logging.ERROR)
+        CORS(self.__app)
+        if not log:
+            self.__log = logging.getLogger('werkzeug')
+            self.__log.setLevel(logging.ERROR)
         self.__AuthorizationBrowsed = False
         self.__host = host
         self.__port = port
         self.__MAINURL = base_url +":"+str(port)
         self.__components = []
-        Component.clear_data(".json",Component._get_uploads_folder())
+        Component.clear_users_data(os.path.join(os.path.dirname(os.path.abspath(__file__)),"uploads"))
         self.__add_all_endpoints()
         Component.main_renderer.set_description(self.__get_description())
     def __get_description(self)->[str]:

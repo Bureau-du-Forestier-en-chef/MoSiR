@@ -12,7 +12,7 @@ class Stats(Component):
         Component.__init__(self,__class__.__name__,__name__)
     def __get_stats(self):
         stash = ["<hr>"]
-        for generator in Component.read_graphs_json():
+        for generator in self.read_graphs_json():
             stash.append('<h5>'+generator.get_graph_name()+'</h5>')
             stash.append('<div class="w3-container">')
             stats = generator.get_graph_stats()
@@ -44,6 +44,6 @@ class Stats(Component):
     def get_symbol(self):
         return "fa fa-bell fa-fw"
     def can_view(self):
-        return len(Component._get_graphs_files()) > 0
+        return len(self._get_graphs_files()) > 0
 
 stats = Stats()

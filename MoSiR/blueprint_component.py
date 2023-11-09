@@ -9,6 +9,7 @@ from flask import Blueprint,Response,url_for,request,render_template
 import os
 from . import utilities
 from .generators import Dictgenerator,Generator
+import shutil
 
 class Endpointaction:
     def __init__(self, action):
@@ -50,16 +51,29 @@ class Component(ABC,Blueprint):
             raise ConnectionError(response.status_code, response.text)
     def _get_url_for(self,url:str,**kwargs):
         return request.host_url[:-1] + url_for(self.name+"."+url,**kwargs)
-    def _get_uploads_folder():
-        return os.path.join(os.path.dirname(os.path.abspath(__file__)),"uploads")
+    def get_user_ip(self):
+        if request.headers.getlist("X-Forwarded-For"):
+            ip = request.headers.getlist("X-Forwarded-For")[0]
+        else:
+            ip = request.remote_addr
+        return ip
+    def _get_uploads_folder(self):
+        target = os.path.join(os.path.dirname(os.path.abspath(__file__)),"uploads",str(self.get_user_ip()))
+        if not os.path.isdir(target):
+            os.mkdir(target)
+        return target
     def _write_graphs_json(self,GraphsDict:dict(),GRAPHSNAMES:[str])->None:
-        utilities.Jsonparser.write(os.path.join(Component._get_uploads_folder(),GRAPHSNAMES),GraphsDict)
+        utilities.Jsonparser.write(os.path.join(self._get_uploads_folder(),GRAPHSNAMES),GraphsDict)
     def clear_data(extension:str,folder:str):
         for element in os.listdir(folder):
             if element.endswith(extension):
                  os.remove(os.path.join(folder,element))
-    def _get_graphs_files()->[str]:
-        graphs_folder = Component._get_uploads_folder()
+    def clear_users_data(folder):
+        for element in os.listdir(folder):
+            if os.path.isdir(os.path.join(folder,element)):
+                shutil.rmtree(os.path.join(folder,element),ignore_errors=True)
+    def _get_graphs_files(self)->[str]:
+        graphs_folder = self._get_uploads_folder()
         locations = []
         for element in os.listdir(graphs_folder):
             if os.path.isfile(os.path.join(graphs_folder,element)) and element.endswith(".json"):
@@ -67,14 +81,14 @@ class Component(ABC,Blueprint):
                 graphnames = list(json_file.keys())
                 graphfile = False
                 for graph_name in graphnames:
-                    if "Nodes" in json_file[graph_name] and "Edges" in json_file[graph_name]:
+                    if isinstance(json_file[graph_name],dict) and "Nodes" in json_file[graph_name] and "Edges" in json_file[graph_name]:
                         graphfile  = True
                         break
                 if graphfile:
                     locations.append(os.path.join(graphs_folder,element))
         return locations
-    def _get_inputs_files()->[str]:
-        graphs_folder = Component._get_uploads_folder()
+    def _get_inputs_files(self)->[str]:
+        graphs_folder = self._get_uploads_folder()
         locations = []
         for element in os.listdir(graphs_folder):
             if os.path.isfile(os.path.join(graphs_folder,element)) and element.endswith(".json"):
@@ -83,19 +97,31 @@ class Component(ABC,Blueprint):
                 if "Unit" in inputkeys and "Inputs" in inputkeys:
                     locations.append(os.path.join(graphs_folder,element))
         return locations
-    def _get_reporting_files()->[str]:
-        graphs_folder = Component._get_uploads_folder()
+    def _get_reporting_files(self)->[str]:
+        graphs_folder = self._get_uploads_folder()
         locations = []
         for element in os.listdir(graphs_folder):
             if os.path.isfile(os.path.join(graphs_folder,element)) and element.endswith(".json"):
                 json_file = utilities.Jsonparser.read(os.path.join(graphs_folder,element))
                 inputkeys = list(json_file.keys())
-                if "Type" in inputkeys and "Outputs" in inputkeys:
+                if "Output file extension" in inputkeys and "Output" in inputkeys and "Time" in inputkeys and "PRG" in inputkeys:
                     locations.append(os.path.join(graphs_folder,element))
         return locations
-    def read_graphs_json()->[Generator]:
+    def _get_results_files(self)->[str]:
+        graphs_folder = self._get_uploads_folder()
+        all_extensions = []
+        all_files = []
+        for reporting_file in self._get_reporting_files():
+            json_file = utilities.Jsonparser.read(os.path.join(graphs_folder,reporting_file))
+            all_extensions.append(json_file["Output file extension" ])
+        for element in os.listdir(graphs_folder):
+            for exention in all_extensions:
+                if os.path.isfile(os.path.join(graphs_folder,element)) and element.endswith(exention):
+                    all_files.append(os.path.join(graphs_folder,element))
+        return all_files
+    def read_graphs_json(self)->[Generator]:
         all_graphs = []
-        for element in Component._get_graphs_files():
+        for element in self._get_graphs_files():
             json_file = utilities.Jsonparser.read(element)
             graphnames = list(json_file.keys())
             graphnames.sort()

@@ -4,9 +4,11 @@
 <title>MoSiR</title>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dropdown.css') }}" />
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<script src='https://cdn.plot.ly/plotly-2.27.0.min.js'></script>
 <style>
 html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
 </style>
@@ -120,49 +122,101 @@ function isInteger(value) {
 }
 
 //Adding period inputs
-function addcinputs() {
-  var table = document.getElementById("cinputs");
-  var period = document.getElementById('Period').value;
-  var graph_name = document.getElementById('Period').name.split("~").slice(1).join(' ');
-  var quantity = document.getElementById('Quantity').value;
-  var element = document.getElementById('Node');
+function addcinputs(graph_name) {
+  var table = document.getElementById("cinputs_"+graph_name);
+  var period = document.getElementById('Period_'+graph_name).value;
+  var quantity = document.getElementById('Quantity_'+graph_name).value;
+  var element = document.getElementById('Node_'+graph_name);
   var node = element.options[element.selectedIndex].text;
   if (isInteger(period) && parseFloat(quantity) && node)
     {
-    var row = table.insertRow(-1);
-    var cell1 = row.insertCell(0);
-    var cell2 = row.insertCell(1);
-    var cell3 = row.insertCell(2);
-    var nodeinput = document.createElement("input");
-    nodeinput.type = "text";
-    nodeinput.title = 'Node~'+period+'~'+node+'~'+graph_name;
-    nodeinput.id = 'Node~'+period+'~'+node+'~'+graph_name;
-    nodeinput.name = 'Node~'+period+'~'+node+'~'+graph_name;
-    nodeinput.value = node;
-    nodeinput.style="width: 5em"
-    nodeinput.readOnly = true
-    cell1.appendChild(nodeinput);
-    var periodinput = document.createElement("input");
-    periodinput.type = "number";
-    periodinput.title = 'Period~'+period+'~'+node+'~'+graph_name;
-    periodinput.id = 'Period~'+period+'~'+node+'~'+graph_name;
-    periodinput.name = 'Period~'+period+'~'+node+'~'+graph_name;
-    periodinput.value = period;
-    periodinput.style="width: 5em"
-    periodinput.readOnly = true
-    cell2.appendChild(periodinput);
-    var quantityinput = document.createElement("input");
-    quantityinput.type = "number";
-    quantityinput.title = 'Quantity~'+period+'~'+node+'~'+graph_name;
-    quantityinput.id = 'Quantity~'+period+'~'+node+'~'+graph_name;
-    quantityinput.name = 'Quantity~'+period+'~'+node+'~'+graph_name;
-    quantityinput.value = quantity;
-    quantityinput.style="width: 5em"
-    quantityinput.readOnly = true
-    cell3.appendChild(quantityinput);
+    var key = graph_name+'~'+node+'~'+period
+    var row = table.insertRow(table.rows.length-1);
+    var all_data = [node,period,quantity];
+    var types = ["text","number","number"];
+    //var titles = ["Noeud","Période","Quantitée"]
+    var keys = ["Node","Period","Quantity"]
+    for (let i = 0; i < all_data.length; i++) 
+      {
+      var newcell = row.insertCell(i);
+      var data = document.createElement("input");
+      data.type = types[i];
+      data.title = all_data[i];
+      data.id = keys[i]+'~'+key;
+      data.name = keys[i]+'~'+key;
+      data.value = all_data[i];
+      data.readOnly = true
+      newcell.appendChild(data);
+      }
+    }
+  }
+
+
+//Adding anoutputs
+function addcoutputs(graph_name) {
+  var table = document.getElementById("coutputs_"+graph_name);
+  var output_name = document.getElementById('Output_'+graph_name).value;
+
+  var element_output_type = document.getElementById('out_type_'+graph_name);
+  var output_type = element_output_type.options[element_output_type.selectedIndex].text;
+
+  var element_cumulative_type = document.getElementById('cumulative_'+graph_name);
+  var cumulative = element_cumulative_type.options[element_cumulative_type.selectedIndex].text;
+
+  var element_sum_type = document.getElementById('sum_'+graph_name);
+  var sum = element_sum_type.options[element_sum_type.selectedIndex].text;
+
+  var element_out_unit_type = document.getElementById('out_unit_'+graph_name);
+  var out_unit = element_out_unit_type.options[element_out_unit_type.selectedIndex].text;
+
+
+
+  var ul = document.getElementById('drop_list_ul_'+graph_name);
+  var li = ul.getElementsByTagName('li');
+  var all_selected = [];
+  for(var i=0; i<li.length; i++)
+        {
+        if(li[i].firstChild.checked && !all_selected.includes(li[i].innerText))
+            {
+            all_selected.push(li[i].innerText)
+            }
+        }
+  var all_nodes = all_selected.join(",");
+  if (output_name && output_type && cumulative && sum && out_unit && all_nodes)
+    {
+    var key = graph_name+output_name +'~'+output_type+'~'+cumulative+'~'+sum+'~'+out_unit+'~'+all_nodes
+    var row = table.insertRow(table.rows.length-1);
+    var all_data = [output_name,all_nodes,output_type,cumulative,sum,out_unit];
+    var types = ["text","text","text","text","text","text"];
+    //var titles = ["Sortie","Noeuds","Type","Cumulatif","Sommation","Unité"]
+    var keys = ["Output","Nodes_name","Type","Cumulative","Summarize","Unit"]
+    for (let i = 0; i < all_data.length; i++) 
+      {
+      var newcell = row.insertCell(i);
+      var data = document.createElement("input");
+      data.type = types[i];
+      data.title = all_data[i];
+      data.id = keys[i]+'~'+key;
+      data.name = keys[i]+'~'+key;
+      data.value = all_data[i];
+      data.readOnly = true
+      newcell.appendChild(data);
+      }
+    }
+  }
+
+    function dropdown(graphname) 
+    {
+    var checkList = document.getElementById('drop_list_'+graphname);
+    checkList.getElementsByClassName('anchor')[0].onclick = function(evt) 
+      {
+        if (checkList.classList.contains('visible'))
+          checkList.classList.remove('visible');
+        else
+          checkList.classList.add('visible');
+      }
     }
   
-}
 </script>
 
 </body>

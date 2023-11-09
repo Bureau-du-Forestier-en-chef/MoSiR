@@ -19,7 +19,8 @@ if __name__ == '__main__':
     base_url = "http://localhost"
     port = 3000
     host = '0.0.0.0'
-    server = Flaskwrapper(base_url,host,port)
+    log = True
+    server = Flaskwrapper(base_url,host,port,log)
     server.register(mirowrapper)
     server.register(visualization)
     server.register(download)
