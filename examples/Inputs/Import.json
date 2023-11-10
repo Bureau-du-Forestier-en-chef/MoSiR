@@ -1,0 +1,10 @@
+{
+"Unit" : "kgc",
+"Inputs": {
+    "MicroTest_1" : {
+        "Entree": {
+            "0" : 100,
+            "1" : 0}
+        }
+    }
+}

@@ -9,14 +9,10 @@
 
 #"output_name":
 #	{
-#	time : [Start of the reporting (year x of the simulation), End of the reporting (year y of the simulation)]
-#	nodes_names : ["Name of node A","Name of node B", etc.]
-#	type : ["XXXX"]  ("Flux" or "Stock")	
-#	flux_type : ["XXXX","XXXX"] ("In", "Out", "Off" if type = "Stock")
-#	calculation : ["XXXX","XXXX"] ("Per_Node", "Combined")
-#	calculation_type : ["XXXX","XXXX"] ("Annual", "Cumulative")
-#	carbon_type : ["XXXX","XXXX"] ("tC", "tCO2eq", "w/m2")
-#	output_file : [".XXXX","XXXX"] (".csv", ".xlsx", ".txt")
+#	Nodes_names : ["Name of node A","Name of node B", etc.]
+#	Type : "XX"  ("Flux in", "Flux out", "Stock")
+#	Summarize : "XX" ("Per_Node", "Combined")
+#	Unit : "XX" ("tC", "tCO2eq", "w/m2")
 #	}
 
 -----------------------------------------------------
