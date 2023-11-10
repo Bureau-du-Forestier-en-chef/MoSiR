@@ -1,17 +1,7 @@
 # -*- coding: UTF-8 -*-
 """ 
-Pour faire un profile manuel :
-    cProfile.run('addition(5, 3)')
-    Dans un terminal : python -m cProfile -s time myscript.py
-
-import matplotlib.pyplot as plt
-import cProfile # Pour le run time
 """
-
 import sys
-from IPython.core.ultratb import ColorTB # Couleur powershell
-sys.excepthook = ColorTB()
-
 import json
 import warnings # Maybe
 from abc import ABCMeta, abstractmethod
