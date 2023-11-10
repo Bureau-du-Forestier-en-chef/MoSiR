@@ -200,9 +200,9 @@ class Reporting(Component):
                 elif(target_key == 'Type'):
                     data["Output"][graph_name][output_name]["Type"] = value
                 elif(target_key == 'Cumulative'):
-                    cumulate = "false"
+                    cumulate = False
                     if value.lower() == "vrai":
-                        cumulate = "true"
+                        cumulate = True
                     data["Output"][graph_name][output_name]["Cumulative"] = cumulate
                 elif(target_key == 'Summarize'):
                     data["Output"][graph_name][output_name]["Summarize"] = value
