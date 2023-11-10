@@ -13,3 +13,4 @@ from . import NetworkxGraph as NetworkxGraph
 from . import GraphTest as GraphTest
 from . import ImportInfo as ImportInfo
 from . import ReportingInfo as ReportingInfo
+from . import CalculatorRun as CalculatorRun

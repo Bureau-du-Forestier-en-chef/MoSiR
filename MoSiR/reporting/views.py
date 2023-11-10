@@ -8,6 +8,7 @@ from ..blueprint_component import Component
 from flask import Response,request,jsonify
 import os,csv,pathlib,shutil
 from .. import utilities
+from .. import CalculatorRun
 
 
 
@@ -105,19 +106,22 @@ class Reporting(Component):
     def __build_inputs_table(self)->[str]:
         stash = []
         stash.append('<h4>Intrants</h4>')
+        stash.append('<div class="w3-threequarter w3-margin-bottom">')
+        #Unit selection...
+        stash.append('<form action="'+self._get_url_for("/report")+'" id="cinputsform" method = "POST">')
+        stash.append('<div>')
+        stash.append('<label for="units">Unitées</label>')
+        stash.append('<select name="units" id="units">')
+        for unit in self.__get_units():
+            stash.append('<option value="'+unit+'">'+unit+'</option>')
+        stash.append('</select>')
+        stash.append('</div>')
         for generator in self.read_graphs_json():
             #For each graph allow an inputs of a list of numbers
             stash.append('<h5>'+generator.get_graph_name()+'</h5>')
-            stash.append('<div class="w3-half w3-margin-bottom">')
-            stash.append('<form action="'+self._get_url_for("/report")+'" id="cinputsform" method = "POST">')
-            #Unit selection...
-            stash.append('<div>')
-            stash.append('<label for="units">Unitées</label>')
-            stash.append('<select name="units" id="units">')
-            for unit in self.__get_units():
-                stash.append('<option value="'+unit+'">'+unit+'</option>')
-            stash.append('</select>')
-            stash.append('</div>')
+            #stash.append('<div class="w3-threequarter w3-margin-bottom">')
+            
+            
             stash.append('<table class="w3-table-all" id=cinputs_'+generator.get_graph_name()+'><tr><th>Noeud</th><th>Période</th><th>Quantitée</th></tr>')
             
             stash.append('<tr>')
@@ -196,7 +200,10 @@ class Reporting(Component):
                 elif(target_key == 'Type'):
                     data["Output"][graph_name][output_name]["Type"] = value
                 elif(target_key == 'Cumulative'):
-                    data["Output"][graph_name][output_name]["Cumulative"] = value.lower()
+                    cumulate = "false"
+                    if value.lower() == "vrai":
+                        cumulate = "true"
+                    data["Output"][graph_name][output_name]["Cumulative"] = cumulate
                 elif(target_key == 'Summarize'):
                     data["Output"][graph_name][output_name]["Summarize"] = value
                 elif(target_key == 'Unit'):
@@ -276,9 +283,9 @@ class Reporting(Component):
         return (divid,[CO2,CH4],layout)
     def __run_mosir(self,graphsjson:str,inputsjson:str,reportjson:str):
         #fake it
-        shutil.copyfile("C:/Users/CYRGU3/Downloads/MicroTest_1_Annualrad (1).csv",os.path.join(self._get_uploads_folder(),"MicroTest_1_Annualrad.csv"))
+        ##shutil.copyfile("C:/Users/CYRGU3/Downloads/MicroTest_1_Annualrad (1).csv",os.path.join(self._get_uploads_folder(),"MicroTest_1_Annualrad.csv"))
         #Run Mosir here...
-        pass
+        CalculatorRun.main(['-G', graphsjson, '-I', inputsjson,'-R',reportjson,'-O',self._get_uploads_folder()])
     def __get_histogram_json(self,report_json:str)->str:
         fileending = utilities.Jsonparser.read(report_json)['Output file extension']
         upload_folder = self._get_uploads_folder()
