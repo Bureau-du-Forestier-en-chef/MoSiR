@@ -79,11 +79,14 @@ class Htmlanimation:
             self.__GraphNetwork__.add_edge(FROMID,TOID,title =Values,value=NUMVALUE,color=Color)
         if not Gotposition:
             self.__GraphNetwork__.show_buttons(filter_=['physics'])
-    def GetNetWork(self,Time:int)->str:
+    def GetNetWork(self,Time:int,user:str)->str:
         self.__GenerateNetworkGraph(Time)
         FILENAME = self.__NAME+"_"+str(Time)+".html"
         HTMLfile = self.__GraphNetwork__.generate_html(FILENAME)
-        HTMLlocation = (os.path.join(os.path.dirname(os.path.abspath(__file__)),"templates",FILENAME))
+        target = os.path.join(os.path.dirname(os.path.abspath(__file__)),"templates",user)
+        HTMLlocation = os.path.join(target,FILENAME)
+        if not os.path.isdir(target):
+            os.mkdir(target)
         with open(HTMLlocation, "w+",encoding="utf-8") as out:
             out.write(HTMLfile)
         return FILENAME

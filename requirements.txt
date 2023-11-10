@@ -1,5 +1,7 @@
 Flask
+flask-cors
 pyvis
 Requests
 networkx
 python_dotenv
+python-igraph
