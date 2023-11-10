@@ -30,7 +30,7 @@ class RecursionNode(RecursionError):
     def __init__(self, message: str):
         super().__init__(message)
         
-# Introduire interface de cashing
+# Caching --------------------------------------------------------------------
 class Caching():
     _Open = True
     def __init__(self):
@@ -206,15 +206,13 @@ class ProportionNode(IndustrialNode):
             return Total
         else:
             for Timestep in range(Time + 1):
-                if self.PastCarbon.IsOpen is True and Timestep in self.PastCarbon.FluxOutCache:
-                    Total += self.PastCarbon.GetFluxOutCache(Timestep)
-                    continue
                 for Parent in Graph.GetPredecessors(self):
                     ProportionParent = self._GetValueTime(Graph.GetEdgeProportions(Parent, self), Timestep)
                     if ProportionParent == 0:
                         continue
                     ParentCarbon = Parent.GetFluxOut(Graph, Timestep, Cumulative = False)
-                    Total += ProportionParent * ParentCarbon
+                    Carbon += ProportionParent * ParentCarbon
+                    Total += Carbon
             return Total
         
     def GetFluxIn(self, Graph: WPGraph, Time: int, Cumulative: bool = False) -> float:
@@ -227,7 +225,7 @@ class DecayNode(ProportionNode):
     def __init__(self, NAME: str, HalfLife: int):
         super().__init__(NAME)
         self._HalfLife = HalfLife
-        self.__PastCarbon = {}
+        self._PastCarbon = Caching()
         
     @property
     def HalfLife(self):
@@ -238,23 +236,27 @@ class DecayNode(ProportionNode):
        self._HalfLife = Value
     
     def GetFluxOut(self, Graph: WPGraph, Time: int, Cumulative: bool = False) -> float:
-        #if Time in self.__PastCarbon:
-        #    return self.__PastCarbon[Time]
         Total = 0
         if Cumulative == False:
-            for Year in range(Time + 1): 
-                if Year != Time:   
-                    Annual = super().GetFluxOut(Graph, Year, Cumulative)
-                    Output_annual = (Annual * ((0.5) ** ((Time - Year - 1)/self.HalfLife))) - \
-                        (Annual * ((0.5) ** ((Time - Year)/self.HalfLife)))
+            if self.PastCarbon.IsOpen is True and Time in self.PastCarbon.FluxOutCache:
+                return self.PastCarbon.GetFluxOutCache(Time)
+            for Timestep in range(Time + 1): 
+                if self.PastCarbon.IsOpen is True and Timestep in self.PastCarbon.FluxOutCache:
+                    Total += self.PastCarbon.GetFluxOutCache(Timestep)
+                    continue
+                if Timestep != Time:  
+                    Annual = super().GetFluxOut(Graph, Timestep, Cumulative)
+                    Output_annual = (Annual * ((0.5) ** ((Time - Timestep - 1)/self.HalfLife))) - \
+                        (Annual * ((0.5) ** ((Time - Timestep)/self.HalfLife)))
+                    self.PastCarbon.SetFluxOutCache(Timestep, Output_annual)
                     Total += Output_annual
-           # self.__PastCarbon[Time] = Total
+            self.PastCarbon.SetFluxOutCache(Time, Total)
             return Total
         else: 
-            for Year in range(Time + 1): 
-                if Year != Time:   
-                    Annual = super().GetFluxOut(Graph, Year, Cumulative = False)
-                    Output_annual = Annual - (Annual * ((0.5) ** ((Time - Year)/self.HalfLife)))
+            for Timestep in range(Time + 1):
+                if Timestep != Time:   
+                    Annual = super().GetFluxOut(Graph, Timestep, Cumulative = False)
+                    Output_annual = Annual - (Annual * ((0.5) ** ((Time - Timestep)/self.HalfLife)))
                     Total += Output_annual
             return Total
         
@@ -303,17 +305,17 @@ class DecayNode(ProportionNode):
 class RecyclingNode(ProportionNode):
     def __init__(self, NAME: str):
         super().__init__(NAME)
-        self.__PastCarbon = {}
+        self._PastCarbon = Caching()
     
     def GetFluxOut(self, Graph: WPGraph, Time: int, Cumulative: bool = False) -> float:
-        #if Time in self.__PastCarbon:
-        #    return self.__PastCarbon[Time]
         Total = 0
         if Cumulative == False:
+            if self.PastCarbon.IsOpen is True and Time in self.PastCarbon.FluxOutCache:
+                return self.PastCarbon.GetFluxOutCache(Time)
             for Year in range(Time + 1): 
                 if Year + 1 == Time:
                     Total += super().GetFluxOut(Graph, Year, Cumulative)
-            #self.__PastCarbon[Time] = Total
+            self.PastCarbon.SetFluxOutCache(Time, Total)
             return Total
         else:
             for Year in range(Time):
@@ -324,7 +326,6 @@ class RecyclingNode(ProportionNode):
         Total = 0
         if Cumulative == False:
             Total += super().GetFluxOut(Graph, Time, Cumulative)
-            #self.__PastCarbon[Time] = Total
             return Total
         else:
             for Year in range(Time + 1):
