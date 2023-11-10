@@ -15,6 +15,12 @@ class Generator(metaclass=ABCMeta):
         return self.__GraphName
     def to_dict(self)->dict:
         return {"Nodes":self._nodes,"Edges":self._edges}
+    def get_node_names(self)->[str]:
+        all_names = []
+        for items in self._nodes.values():
+            all_names.append(items["Name"])
+        all_names.sort()
+        return all_names
     def get_graph_stats(self)->dict():
         Alldata = {"Nodes":{"Size":len(self._nodes)},"Edges":{"Size":len(self._edges)}}
         Minedgevalue = 1
