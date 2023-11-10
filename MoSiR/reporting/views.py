@@ -81,7 +81,7 @@ class Reporting(Component):
         return stash 
     def __build_report_header(self)->[str]:
         stash = []
-        stash.append('<div class="w3-threequarter w3-margin-bottom">')
+        #stash.append('<div class="w3-threequarter w3-margin-bottom">')
         stash.append('<h4>Rapport</h4>')
         stash.append('<div>')
         stash.append('<label for="Time">Horizon de simulation</label>')
@@ -133,7 +133,7 @@ class Reporting(Component):
             stash.append('</th>')
             stash.append('</tr>')
             stash.append('</table>')
-        stash.append('</div>')
+        #stash.append('</div>')
         return stash
     def __get_sum(self)->[str]:
         return ["Per_node", "Combined"]
@@ -194,13 +194,13 @@ class Reporting(Component):
                 elif(target_key == 'Nodes_name'):
                     data["Output"][graph_name][output_name]["Nodes_name"] = value.split(",")
                 elif(target_key == 'Type'):
-                    data["Output"][graph_name][output_name]["Nodes_name"] = value
+                    data["Output"][graph_name][output_name]["Type"] = value
                 elif(target_key == 'Cumulative'):
                     data["Output"][graph_name][output_name]["Cumulative"] = value.lower()
                 elif(target_key == 'Summarize'):
                     data["Output"][graph_name][output_name]["Summarize"] = value
                 elif(target_key == 'Unit'):
-                    data["Output"][graph_name][output_name]["unit"] = value
+                    data["Output"][graph_name][output_name]["Unit"] = value
         location = os.path.join(self._get_uploads_folder(),"report.json")
         utilities.Jsonparser.write(location,data)
         return location

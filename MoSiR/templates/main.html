@@ -184,7 +184,7 @@ function addcoutputs(graph_name) {
   var all_nodes = all_selected.join(",");
   if (output_name && output_type && cumulative && sum && out_unit && all_nodes)
     {
-    var key = graph_name+output_name +'~'+output_type+'~'+cumulative+'~'+sum+'~'+out_unit+'~'+all_nodes
+    var key = graph_name+'~'+output_name +'~'+output_type+'~'+cumulative+'~'+sum+'~'+out_unit+'~'+all_nodes
     var row = table.insertRow(table.rows.length-1);
     var all_data = [output_name,all_nodes,output_type,cumulative,sum,out_unit];
     var types = ["text","text","text","text","text","text"];
