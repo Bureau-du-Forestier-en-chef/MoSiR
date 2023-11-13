@@ -8,3 +8,4 @@ python-igraph
 werkzeug
 pandas
 openpyxl
+seaborn

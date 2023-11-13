@@ -6,7 +6,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 from ..blueprint_component import Component
 from flask import Response,request,jsonify
-import os,csv,pathlib,shutil
+import os,csv,pathlib,seaborn
 from .. import utilities
 from .. import CalculatorRun
 
@@ -244,9 +244,7 @@ class Reporting(Component):
         #https://plotly.com/javascript/bar-charts/
         #https://stackoverflow.com/questions/42499535/passing-a-json-object-from-flask-to-javascript
         filename = pathlib.Path(location).stem
-        CO2= {'x':[],'y':[],"name":'CO2','marker' : {'color':'rgb(255, 214, 255)'},'type':'bar'}
-        CH4 = {'x':[],'y':[],"name":'CH4','marker' : {'color':'rgb(187, 208, 255)'},'type':'bar'}
-        base = {'x':[],'y':[],"name":'base','marker' : {'color':'rgb(187, 208, 255)'},'type':'bar'}
+        
         all_data = []
         divid = filename
         layout = {'title': filename,
@@ -276,8 +274,11 @@ class Reporting(Component):
                     'bargroupgap': 0.1}
         with open(location, newline='') as csvfile:
             reader = csv.DictReader(csvfile)
+            pallet = seaborn.color_palette("pastel",n_colors=len(reader.fieldnames[1:-1]))
+            fid = 0 
             for name in reader.fieldnames[1:-1]:
-                all_data.append({'x':[],'y':[],"name":name,'marker' : {'color':'rgb(187, 208, 255)'},'type':'bar'})
+                all_data.append({'x':[],'y':[],"name":name,'marker' : {'color':'rgb('+str(pallet[fid][0])+','+str(pallet[fid][1])+','+str(pallet[fid][2])+')'},'type':'bar'})
+                fid += 1
             for row in reader:
                 fid = 0
                 for name in reader.fieldnames[1:-1]:
