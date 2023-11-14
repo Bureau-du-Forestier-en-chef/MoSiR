@@ -22,19 +22,18 @@ class RecursionNode(RecursionError):
         
 # Caching --------------------------------------------------------------------
 class Caching():
-    _Open = False
+    Open = True
     def __init__(self):
         self._GetFluxOutCache = {}
     
-    @property
-    def IsOpen(self):
-        return self._Open
+    @staticmethod
+    def IsOpen():
+        return Caching.Open
     
-    @IsOpen.setter
-    def IsOpen(self):
-        raise ConstError("Cache can only be triggered on and off \
-            inside the program script")
-        
+    @staticmethod
+    def SetIsOpen(Input: bool):
+        Caching.Open = Input
+    
     @property    
     def FluxOutCache(self):
         if self.IsOpen is True:
@@ -45,11 +44,11 @@ class Caching():
         raise ConstError("Cache must be modify with SetFluxOutCache")
 
     def SetFluxOutCache(self, Timestep: int, Value: float):
-        if self.IsOpen is True:
+        if self.IsOpen() is True:
             self._GetFluxOutCache[Timestep] = Value 
             
     def GetFluxOutCache(self, Timestep: int):
-        if self.IsOpen is True:
+        if self.IsOpen() is True:
             return self._GetFluxOutCache[Timestep]
     
     def ResetFluxOutCache(self):
@@ -64,15 +63,6 @@ class WPGraph():
 class IndustrialNode(metaclass = ABCMeta): # aller voir la doc ABC
     def __init__(self, LOCALNAME: str):
         self._NAME = LOCALNAME
-        self._PastCarbon = Caching()
-    
-    @property
-    def PastCarbon(self):
-        return self._PastCarbon
-    
-    @PastCarbon.setter
-    def PastCarbon(self, input):
-        raise ConstError('Use setter instead')
         
     def _GetValueTime(self, Values: list[float], Time: int) -> float:
         return Values[min(Time, len(Values) - 1)]
@@ -179,12 +169,20 @@ class TopNode(IndustrialNode):
 class ProportionNode(IndustrialNode):
     def __init__(self, NAME: str):
         super().__init__(NAME)
-        self._PastCarbon = Caching()
+        self.__PastCarbon = Caching()
+    
+    @property
+    def PastCarbon(self):
+        return self.__PastCarbon
+    
+    @PastCarbon.setter
+    def PastCarbon(self, input):
+        raise ConstError('Use setter instead')
     
     def GetFluxOut(self, Graph: WPGraph, Time: int, Cumulative: bool = False) -> float:
         Total = 0
         if Cumulative == False:
-            if self.PastCarbon.IsOpen is True and Time in self.PastCarbon.FluxOutCache:
+            if Time in self.PastCarbon.FluxOutCache:
                 return self.PastCarbon.GetFluxOutCache(Time)
             for Parent in Graph.GetPredecessors(self):
                 ProportionParent = self._GetValueTime(Graph.GetEdgeProportions(Parent, self), Time)
@@ -215,7 +213,7 @@ class DecayNode(ProportionNode):
     def __init__(self, NAME: str, HalfLife: int):
         super().__init__(NAME)
         self._HalfLife = HalfLife
-        self._PastCarbon = Caching()
+        self.__DecayPastCarbon = Caching()
         
     @property
     def HalfLife(self):
@@ -228,10 +226,10 @@ class DecayNode(ProportionNode):
     def GetFluxOut(self, Graph: WPGraph, Time: int, Cumulative: bool = False) -> float:
         Total = 0
         if Cumulative == False:
-            if self.PastCarbon.IsOpen is True and Time in self.PastCarbon.FluxOutCache:
+            if self.PastCarbon.IsReadable is True and Time in self.PastCarbon.FluxOutCache:
                 return self.PastCarbon.GetFluxOutCache(Time)
             for Timestep in range(Time + 1): 
-                if self.PastCarbon.IsOpen is True and Timestep in self.PastCarbon.FluxOutCache:
+                if self.PastCarbon.IsReadable is True and Timestep in self.PastCarbon.FluxOutCache:
                     Total += self.PastCarbon.GetFluxOutCache(Timestep)
                     continue
                 if Timestep != Time:  
@@ -282,7 +280,7 @@ class DecayNode(ProportionNode):
         '''
         try:
             Total = 0
-            for Year in range(Time + 1):    
+            for Year in range(Time + 1): 
                 Annual = super().GetFluxOut(Graph, Year, Cumulative = False)
                 Restant = Annual * ((0.5) ** ((Time - Year)/self.HalfLife))
                 Total += Restant
@@ -295,12 +293,11 @@ class DecayNode(ProportionNode):
 class RecyclingNode(ProportionNode):
     def __init__(self, NAME: str):
         super().__init__(NAME)
-        self._PastCarbon = Caching()
     
     def GetFluxOut(self, Graph: WPGraph, Time: int, Cumulative: bool = False) -> float:
         Total = 0
         if Cumulative == False:
-            if self.PastCarbon.IsOpen is True and Time in self.PastCarbon.FluxOutCache:
+            if self.PastCarbon.IsReadable is True and Time in self.PastCarbon.FluxOutCache:
                 return self.PastCarbon.GetFluxOutCache(Time)
             for Year in range(Time + 1): 
                 if Year + 1 == Time:

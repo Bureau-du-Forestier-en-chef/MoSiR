@@ -17,8 +17,8 @@ class ConstError(Exception):
         super().__init__(message)
 
 # Test indépendant du import -------------------------------------------------
-""" 
-import WPGraph as wp
+""" import MoSiR.NetworkxGraph as wp
+
 Test_01 = wp.WPGraph('test')
 
 A = gf.TopNode('A')  
@@ -27,6 +27,13 @@ C = gf.DecayNode('C', 10)
 D = gf.PoolNode('D')
 #E = gf.RecyclingNode('E')
 #F = gf.PoolNode('F')
+
+A.PastCarbon.IsReadable
+B.PastCarbon.IsWritable = False
+B.PastCarbon.IsWritable
+
+A.PastCarbon.IsWritable
+A.PastCarbon._Write
 
 Test_01.AddNode(A)
 Test_01.AddNode(B)
@@ -51,7 +58,6 @@ C.GetFluxOut(Test_01, 3, Cumulative= True)
 D.GetFluxIn(Test_01, 4, Cumulative= True)
  """
 # Test de l'import -----------------------------------------------------------
-Test_02 = gf.GraphFactory('T:/Donnees/Usagers/LANGA3/MoSiR/Graphs_04.json')
 
 def GraphTesting(Graph: gf.GraphFactory, Input: ip.ImportData,
                  Report: rp.ReportData):

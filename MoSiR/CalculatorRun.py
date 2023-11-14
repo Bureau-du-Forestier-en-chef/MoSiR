@@ -34,7 +34,7 @@ def main(raw_args=None):
     Graph = gf.GraphFactory(args.G)
     Import = ip.ImportData(args.I)
     Report = rp.ReportData(args.R) 
-
+ 
     # Alternate
     #Graph = gf.GraphFactory('D:/MoSiR/examples/Inputs/Graph.json')
     #Import = ip.ImportData('D:/MoSiR/examples/Inputs/Import.json')
