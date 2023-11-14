@@ -2,7 +2,7 @@
 import argparse as ap
 import sys
 
-#sys.path.append("../MoSiR")
+sys.path.append("../MoSiR")
 from MoSiR import GraphGen as gf
 from MoSiR import ImportInfo as ip
 from MoSiR import ReportingInfo as rp
@@ -33,8 +33,8 @@ def main(raw_args=None):
 
     Graph = gf.GraphFactory(args.G)
     Import = ip.ImportData(args.I)
-    Report = rp.ReportData(args.R) 
-
+    Report = rp.ReportData(args.R)
+ 
     # Alternate
     #Graph = gf.GraphFactory('D:/MoSiR/examples/Inputs/Graph.json')
     #Import = ip.ImportData('D:/MoSiR/examples/Inputs/Import.json')
@@ -42,10 +42,9 @@ def main(raw_args=None):
     #
     # Add imports to graph
     ip.AddImport(Graph, Import)
-
     # Testing
     gt.GraphTesting(Graph, Import, Report)
-            
+
     # Reporting
     rp.OutputCreation(Graph, Import, Report, args.O)
 
