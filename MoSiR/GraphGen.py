@@ -280,25 +280,13 @@ class DecayNode(ProportionNode):
 class RecyclingNode(ProportionNode):
     def __init__(self, NAME: str):
         super().__init__(NAME)
-        self.__rn_cache = caching()
-
-    @property
-    def rn_past_carbon(self):
-        return self.__rn_cache
-    
-    @rn_past_carbon.setter
-    def rn_past_carbon(self, input):
-        raise ConstError('Use setter instead') 
     
     def GetFluxOut(self, Graph: WPGraph, Time: int, Cumulative: bool = False) -> float:
         Total = 0
         if Cumulative == False:
-            if Time in self.rn_past_carbon.flux_cache:
-                return self.rn_past_carbon.get_flux_cache(Time)
             for Year in range(Time + 1): 
                 if Year + 1 == Time:
                     Total += super().GetFluxOut(Graph, Year, Cumulative)
-            self.rn_past_carbon.set_flux_cache(Time, Total)
             return Total
         else:
             for Year in range(Time):
