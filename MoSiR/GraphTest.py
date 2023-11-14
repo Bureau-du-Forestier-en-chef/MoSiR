@@ -28,12 +28,8 @@ D = gf.PoolNode('D')
 #E = gf.RecyclingNode('E')
 #F = gf.PoolNode('F')
 
-A.PastCarbon.IsReadable
-B.PastCarbon.IsWritable = False
-B.PastCarbon.IsWritable
-
-A.PastCarbon.IsWritable
-A.PastCarbon._Write
+B.PastCarbon.SetIsOpen(False)
+C.PastCarbon.IsOpen()
 
 Test_01.AddNode(A)
 Test_01.AddNode(B)
@@ -55,8 +51,8 @@ A.Quantities = [10, 0, 0, 0, 0]
 A.GetFluxIn(Test_01, 0)
 B.GetFluxIn(Test_01, 0, Cumulative= False)
 C.GetFluxOut(Test_01, 3, Cumulative= True)
-D.GetFluxIn(Test_01, 4, Cumulative= True)
- """
+D.GetFluxIn(Test_01, 4, Cumulative= True) """
+
 # Test de l'import -----------------------------------------------------------
 
 def GraphTesting(Graph: gf.GraphFactory, Input: ip.ImportData,
