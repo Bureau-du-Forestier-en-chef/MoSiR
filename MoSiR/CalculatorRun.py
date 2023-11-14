@@ -8,7 +8,7 @@ from MoSiR import ImportInfo as ip
 from MoSiR import ReportingInfo as rp
 from MoSiR import GraphTest as gt
 
-def main(raw_args=None):
+""" def main(raw_args=None):
     parser = ap.ArgumentParser(
         description = 'Process input and output for the MoSiR calculator')
 
@@ -33,22 +33,22 @@ def main(raw_args=None):
 
     Graph = gf.GraphFactory(args.G)
     Import = ip.ImportData(args.I)
-    Report = rp.ReportData(args.R)
+    Report = rp.ReportData(args.R) """
  
     # Alternate
-    #Graph = gf.GraphFactory('D:/MoSiR/examples/Inputs/Graph.json')
-    #Import = ip.ImportData('D:/MoSiR/examples/Inputs/Import.json')
-    #Report = rp.ReportData('D:/MoSiR/examples/Inputs/Reporting.json')
+Graph = gf.GraphFactory('D:/MoSiR/examples/Inputs/Graph.json')
+Import = ip.ImportData('D:/MoSiR/examples/Inputs/Import.json')
+Report = rp.ReportData('D:/MoSiR/examples/Inputs/Reporting.json')
     #
     # Add imports to graph
-    ip.AddImport(Graph, Import)
+ip.AddImport(Graph, Import)
     # Testing
-    gt.GraphTesting(Graph, Import, Report)
+gt.GraphTesting(Graph, Import, Report)
 
     # Reporting
-    rp.OutputCreation(Graph, Import, Report, args.O)
+rp.OutputCreation(Graph, Import, Report, 'D:/MoSiR/examples/Inputs')
 
     # Python 2.7, child process ou subprocess
 
-if __name__ == "__main__":
-    main()
+#if __name__ == "__main__":
+#    main()

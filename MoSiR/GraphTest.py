@@ -58,11 +58,11 @@ D.GetFluxIn(Test_01, 4, Cumulative= True) """
 def GraphTesting(Graph: gf.GraphFactory, Input: ip.ImportData,
                  Report: rp.ReportData):
     MOSIR_TOLERENCE = 0.0001
-    Time = Report.GetOutputData('Time')
+    Time = Report.get_output_data('Time')
     
     # First node et last node
-    for GraphName in Graph.GetData:
-        G1 = Graph.GetData.get(GraphName)
+    for GraphName in Graph.get_data:
+        G1 = Graph.get_data.get(GraphName)
         NODES = G1.get('Nodes', {})
         EDGES = G1.get('Edges', {})
         TOPNODES = set([int(ID) for ID in NODES]) - \
@@ -79,8 +79,8 @@ def GraphTesting(Graph: gf.GraphFactory, Input: ip.ImportData,
                 des nodes de demi-vie ou de recyclage", stacklevel = 2)   
    
     # Total des Edges 
-    for Name in Graph.GetGraphName:
-        G2 = Graph.GetGraph(Name)
+    for Name in Graph.get_graph_name:
+        G2 = Graph.get_graph(Name)
         for Node in G2.Nodes():
             Total = 0
             for Successors in G2.GetSuccessors(Node):
@@ -94,8 +94,8 @@ def GraphTesting(Graph: gf.GraphFactory, Input: ip.ImportData,
                               stacklevel = 2)
 
     # Test de overflow
-    for GraphName in Graph.GetData:
-        G3 = Graph.GetData.get(GraphName)
+    for GraphName in Graph.get_data:
+        G3 = Graph.get_data.get(GraphName)
         NODES = G3.get('Nodes', {})
         EDGES = G3.get('Edges', {})
         for NodeId in NODES:
@@ -108,8 +108,8 @@ def GraphTesting(Graph: gf.GraphFactory, Input: ip.ImportData,
                     des edges avec et sans overflow")
 
     # Total input versus in system 
-    for Name in Graph.GetGraphName:
-        G4 = Graph.GetGraph(Name)
+    for Name in Graph.get_graph_name:
+        G4 = Graph.get_graph(Name)
         Input = 0
         for Timestep in range(Time + 1):
             InSystem = 0
@@ -126,14 +126,14 @@ def GraphTesting(Graph: gf.GraphFactory, Input: ip.ImportData,
             if Input > InSystem - MOSIR_TOLERENCE and Input < InSystem + MOSIR_TOLERENCE :
                 continue
             else:
-                raise QuantityError(f"Graph : {G4.GetName} La quantité total \
+                raise QuantityError(f"Graph : {G4.get_name} La quantité total \
                     en input ({Input}) au temps {Timestep} n'est pas égale au total \
                     présent dans le système ({InSystem})")
 
 # N2O checkup
 
-#for Name in Test_02.GetGraphName:
-#    Graph = Test_02.GetGraph(Name)
+#for Name in Test_02.get_graph_name:
+#    Graph = Test_02.get_graph(Name)
 #    for Time in range(16): # Ajuster le temps des simulations
 #        for Node in Graph.Nodes():
 #            if Node.NAME in ['Land application', 'Biomethanisation, combustion']:
@@ -238,8 +238,8 @@ for i, j in enumerate(liste):
     print(i)
 """
 
-#for Name in Test_02.GetGraphName:
-#    Graph = Test_02.GetGraph(Name)
+#for Name in Test_02.get_graph_name:
+#    Graph = Test_02.get_graph(Name)
 #    for Time in range(16): # Ajuster le temps des simulations
 #        for Node in Graph.Nodes():
 #            if Node.NAME in ['Land application', 'Biomethanisation, combustion']:

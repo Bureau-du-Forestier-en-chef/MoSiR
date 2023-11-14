@@ -17,45 +17,45 @@ class ReportData():
         with open(directory, "r") as f: 
             self._DATA = json.load(f)
             
-    def GetData(self):
+    def get_data(self):
         return self._DATA
             
-    def GetOutputName(self):
-        return [i for i in self.GetData()]
+    def get_output_name(self):
+        return [i for i in self.get_data()]
     
-    def GetOutputData(self, OutputName: str):
-        return self._DATA[OutputName]
+    def get_output_data(self, output_name: str):
+        return self._DATA[output_name]
 
-def UnitChange(Number: float, From: str, To: str) -> float:
-    F = From.lower()
-    T = To.lower()
+def UnitChange(number: float, from_unit: str, to_unit: str) -> float:
+    F = from_unit.lower()
+    T = to_unit.lower()
     if F == 'kgc':
         if T in ['tc', 'tco2eq']:
-            return Number/1000
+            return number/1000
         elif T in ['kgc', 'w/m2']:
-            return Number
+            return number
         else: 
-            raise InvalidOption(f"{To} n'est pas une option d'unité d'output \
+            raise InvalidOption(f"{to_unit} n'est pas une option d'unité d'output \
                 (tC, kgC, tCO2eq ou w/m2)")
     elif F == 'tc':
         if T in ['kgc', 'w/m2']:
-            return Number * 1000
+            return number * 1000
         elif T in ['tc', 'tco2eq']:
-            return Number
+            return number
         else: 
-            raise InvalidOption(f"{To} n'est pas une option d'unité d'output \
+            raise InvalidOption(f"{to_unit} n'est pas une option d'unité d'output \
                 (tC, kgC, tCO2eq ou w/m2)")
     else:
-        raise InvalidOption(f"{From} n'est pas une option d'unité d'input \
+        raise InvalidOption(f"{from_unit} n'est pas une option d'unité d'input \
                             (kgC ou tC)") 
         
-def OutputCreation(Graph: gf.GraphFactory, Import: ip.ImportData, 
-                   Report: ReportData, Directory: str):
+def OutputCreation(graph: gf.GraphFactory, import_data: ip.ImportData, 
+                   report_data: ReportData, directory: str):
     """
     Fonction pour créer des outputs des résultats des calculs
     
     Args:
-        Graph: La classe graph factory de GraphFactory.py
+        graph: La classe graph factory de graphFactory.py
         Import: La classe ImportData du fichier d'import
         Report: La classe ReportData 
         Directory: Le dossier dans lequel les outputs seront enregistrés
@@ -64,18 +64,18 @@ def OutputCreation(Graph: gf.GraphFactory, Import: ip.ImportData,
     #    raise SyntaxError("Dans le output directory, il est nécessaire d'utiliser des\
     #        frontslash (/) et non des backslash (\) ")
         
-    Time = Report.GetOutputData('Time')
-    Ext = Report.GetOutputData('Output file extension')
-    PRG = Report.GetOutputData('PRG')
-    Output = Report.GetOutputData('Output')
-    InputUnit = Import.GetUnit().lower()
+    time = report_data.get_output_data('Time')
+    ext = report_data.get_output_data('Output file extension')
+    PRG = report_data.get_output_data('PRG')
+    output = report_data.get_output_data('Output')
+    input_unit = import_data.GetUnit().lower()
     
-    for GraphName in Output:
-        Info = Output[GraphName]
-        for output_name in Info:
-            Data = Info[output_name]
-            Nodes_name = Data['Nodes_name']
-            Type = Data['Type']
+    for graph_name in output:
+        info = output[graph_name]
+        for output_name in info:
+            data = info[output_name]
+            nodes_name = data['Nodes_name']
+            Type = data['Type']
             Summarize = Data['Summarize']
             ReportUnit = Data['Unit'].lower()
             if type(Data['Cumulative']) == bool:
@@ -93,7 +93,7 @@ def OutputCreation(Graph: gf.GraphFactory, Import: ip.ImportData,
             df = pd.DataFrame(columns = Nodes_name)
             df.insert(0, 'Time', None)
 
-            G = Graph.GetGraph(GraphName)
+            G = graph.Getgraph(graphName)
             for Node in G.Nodes():
                 if Node.NAME in Nodes_name:
                     for Timestep in range(Time + 1):
@@ -144,8 +144,8 @@ def OutputCreation(Graph: gf.GraphFactory, Import: ip.ImportData,
                 df = df[['Time', 'Combined']]
             df['Unit'] = ReportUnit
             if Directory[-1] == '/':
-                df.to_csv(Directory + GraphName + '_' + output_name + Ext, 
+                df.to_csv(Directory + graphName + '_' + output_name + Ext, 
                           index = False, sep = ',')
             elif Directory[-1] != '/':
-                df.to_csv(Directory + '/' + GraphName + '_' + output_name + Ext, 
+                df.to_csv(Directory + '/' + graphName + '_' + output_name + Ext, 
                           index = False, sep = ',')

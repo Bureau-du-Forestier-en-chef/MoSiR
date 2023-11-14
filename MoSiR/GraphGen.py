@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-""" Test6
+"""
 """
 import sys
 import json
@@ -21,22 +21,22 @@ class RecursionNode(RecursionError):
         super().__init__(message)
        
 # Caching --------------------------------------------------------------------
-class caching():
+class Caching():
     cache_open = True
     def __init__(self):
         self.__flux_cache = {}
     
     @staticmethod
     def is_open():
-        return caching.cache_open
+        return Caching.cache_open
     
     @staticmethod
     def set_is_open(value_input: bool):
-        caching.cache_open = value_input
+        Caching.cache_open = value_input
     
     @property    
     def flux_cache(self):
-        if caching.is_open() is True:
+        if Caching.is_open() is True:
             return self.__flux_cache
     
     @flux_cache.setter
@@ -44,15 +44,15 @@ class caching():
         raise ConstError("Cache must be modify with set_flux_cache")
 
     def set_flux_cache(self, timestep: int, value: float):
-        if caching.is_open() is True:
+        if Caching.is_open() is True:
             self.__flux_cache[timestep] = value 
             
     def get_flux_cache(self, timestep: int):
-        if caching.is_open() is True:
+        if Caching.is_open() is True:
             return self.__flux_cache[timestep]
     
     def reset_flux_cache(self):
-        if caching.is_open() is True:
+        if Caching.is_open() is True:
             self.__flux_cache = {}
             
 # Node class -----------------------------------------------------------------
@@ -64,8 +64,8 @@ class IndustrialNode(metaclass = ABCMeta): # aller voir la doc ABC
     def __init__(self, LOCALNAME: str):
         self._NAME = LOCALNAME
         
-    def _GetValueTime(self, Values: list[float], Time: int) -> float:
-        return Values[min(Time, len(Values) - 1)]
+    def _get_value_time(self, values: list[float], time: int) -> float:
+        return values[min(time, len(values) - 1)]
     
     @property
     def NAME(self):
@@ -76,132 +76,115 @@ class IndustrialNode(metaclass = ABCMeta): # aller voir la doc ABC
        raise ConstError("Node name can't be changed")
     
     @abstractmethod
-    def GetFluxOut(self, Graph: WPGraph, Time: int, Cumulative: bool = False) -> float:
-        ''' GetFluxOut Documentation
-        
-        Cette fonction sert à retracer le flux de carbone sortant d'un noeud. 
-        
-        Args: 
-            Graph : Le Graph qui a servit à construire le réseau
-            Time (int): Le temps en année
-            Cumulative (bool): To be implemented
-            
-        Returns:
-            float: Une quantité de carbone
+    def get_flux_out(self, graph: WPGraph, time: int, cumulative: bool = False) -> float:
+        ''' 
+            To do
         '''
         pass
     
     @abstractmethod
-    def GetFluxIn(self, Graph: WPGraph, Time: int, Cumulative: bool = False) -> float:
-        ''' GetFluxIn Documentation
-        
-        Cette fonction sert à retracer le flux de carbone entrant d'un noeud. 
-        
-        Args: 
-            Graph : Le Graph qui a servit à construire le réseau
-            Time (int): Le temps en année
-            Cumulative (bool): To be implemented
-            
-        Returns:
-            float: Une quantité de carbone
+    def get_flux_in(self, graph: WPGraph, time: int, cumulative: bool = False) -> float:
+        ''' 
+            To do
         '''
         pass
     
     def __hash__(self): 
         return hash(self.NAME)
     
-    def __eq__(self, Other):
-        return self.NAME == Other.NAME   
+    def __eq__(self, other):
+        return self.NAME == other.NAME   
     
-    def __ne__(self, Other):
-        return not self.__eq__(Other)
+    def __ne__(self, other):
+        return not self.__eq__(other)
     
-    def __gt__(self, Other):
-        return self.NAME > Other.NAME
+    def __gt__(self, other):
+        return self.NAME > other.NAME
     
-    def __ge__(self, Other):
-        return self.NAME >= Other.NAME
+    def __ge__(self, other):
+        return self.NAME >= other.NAME
     
-    def __lt__(self, Other):
-        return self.NAME < Other.NAME
+    def __lt__(self, other):
+        return self.NAME < other.NAME
       
-    def __le__(self, Other):
-        return self.NAME <= Other.NAME
+    def __le__(self, other):
+        return self.NAME <= other.NAME
         
 class TopNode(IndustrialNode):
     def __init__(self, NAME: str):
         super().__init__(NAME)
-        self._Time = []
-        self._Quantities = []
+        self._time = []
+        self._quantities = []
         
     @property           
-    def Time(self):
-        return self._Time
+    def time(self):
+        return self._time
     
-    @Time.setter
-    def Time(self, InputValue: list[int]):
-        self._Time = InputValue
+    @time.setter
+    def time(self, input_value: list[int]):
+        self._time = input_value
         
     @property
-    def Quantities(self):
-        return self._Quantities
+    def quantities(self):
+        return self._quantities
 
-    @Quantities.setter
-    def Quantities(self, InputValue: list[float]):
-        self._Quantities = InputValue
+    @quantities.setter
+    def quantities(self, input_value: list[float]):
+        self._quantities = input_value
         
-    def _GetQuantityTime(self, When: int) -> float:
+    def _get_quantity_time(self, when: int) -> float:
         try: 
-            index = self._Time.index(When)
-            return self._Quantities[index]
+            index = self._time.index(when)
+            return self._quantities[index]
         except ValueError:
             return 0
     
-    def GetFluxOut(self, Graph: WPGraph, Time: int, Cumulative: bool = False) -> float:
-        return self._GetQuantityTime(Time)
+    def get_flux_out(self, graph: WPGraph, time: int, cumulative: bool = False) -> float:
+        return self._get_quantity_time(time)
     
-    def GetFluxIn(self, Graph: WPGraph, Time: int, Cumulative: bool = False) -> float:
-        return self._GetQuantityTime(Time)
+    def get_flux_in(self, graph: WPGraph, time: int, cumulative: bool = False) -> float:
+        return self._get_quantity_time(time)
     
-    def GetStock(self, Graph: WPGraph, Time: int, Cumulative: bool = False) -> float:
-        return self._GetQuantityTime(Time)
+    def get_stock(self, graph: WPGraph, time: int, cumulative: bool = False) -> float:
+        return self._get_quantity_time(time)
     
 class ProportionNode(IndustrialNode):
     def __init__(self, NAME: str):
         super().__init__(NAME)
-        self.__cache = caching()
+        self.__cache = Caching()
     
     def past_carbon(self):
         return self.__cache
     
-    def GetFluxOut(self, Graph: WPGraph, Time: int, Cumulative: bool = False) -> float:
-        Total = 0
-        if Cumulative == False:
-            if Time in self.past_carbon().flux_cache:
-                return self.past_carbon().get_flux_cache(Time)
-            for Parent in Graph.GetPredecessors(self):
-                ProportionParent = self._GetValueTime(Graph.GetEdgeProportions(Parent, self), Time)
-                if ProportionParent == 0:
-                    continue
-                ParentCarbon = Parent.GetFluxOut(Graph, Time, Cumulative)
-                Total += ProportionParent * ParentCarbon
-            self.past_carbon().set_flux_cache(Time, Total)
-            return Total
-        else:
-            for Timestep in range(Time + 1):
-                for Parent in Graph.GetPredecessors(self):
-                    ProportionParent = self._GetValueTime(Graph.GetEdgeProportions(Parent, self), Timestep)
-                    if ProportionParent == 0:
-                        continue
-                    ParentCarbon = Parent.GetFluxOut(Graph, Timestep, Cumulative = False)
-                    Carbon += ProportionParent * ParentCarbon
-                    Total += Carbon
-            return Total
+    def get_flux_out(self, graph: WPGraph, time: int, cumulative: bool = False) -> float:
+        if time in self.past_carbon().flux_cache:
+            return self.past_carbon().get_flux_cache(time)
+        flux_out = self.get_flux_in(graph, time, cumulative)
+        self.past_carbon().set_flux_cache(time, flux_out)
+        return flux_out
         
-    def GetFluxIn(self, Graph: WPGraph, Time: int, Cumulative: bool = False) -> float:
-        return self.GetFluxOut(Graph, Time, Cumulative)
-    
-    def GetStock(self, Graph: WPGraph, Time: int, Cumulative: bool = False) -> int:
+    def get_flux_in(self, graph: WPGraph, time: int, cumulative: bool = False) -> float:
+        total = 0
+        if cumulative == False:
+            for parent in graph.GetPredecessors(self):
+                proportion_parent = self._get_value_time(graph.get_edge_proportions(parent, self), time)
+                if proportion_parent == 0:
+                    continue
+                parent_carbon = parent.get_flux_out(graph, time, cumulative)
+                total += proportion_parent * parent_carbon
+            return total
+        else:
+            for timestep in range(time + 1):
+                for parent in graph.GetPredecessors(self):
+                    proportion_parent = self._get_value_time(graph.get_edge_proportions(parent, self), timestep)
+                    if proportion_parent == 0:
+                        continue
+                    parent_carbon = parent.get_flux_out(graph, timestep, cumulative = False)
+                    carbon += proportion_parent * parent_carbon
+                    total += carbon
+            return total
+
+    def get_stock(self, graph: WPGraph, time: int, cumulative: bool = False) -> int:
         return print('Aucun carbone ne réside dans ce noeud ({self.NAME}), seulement des flux le traverse')
 
 class DecayNode(ProportionNode):
@@ -217,61 +200,61 @@ class DecayNode(ProportionNode):
     def HalfLife(self, Value):
        self._HalfLife = Value
     
-    def GetFluxOut(self, Graph: WPGraph, Time: int, Cumulative: bool = False) -> float:
-        Total = 0
-        if Cumulative == False:
-            for Timestep in range(Time + 1): 
-                if Timestep != Time:  
-                    Annual = super().GetFluxOut(Graph, Timestep, Cumulative)
-                    Output_annual = (Annual * ((0.5) ** ((Time - Timestep - 1)/self.HalfLife))) - \
-                        (Annual * ((0.5) ** ((Time - Timestep)/self.HalfLife)))
-                    Total += Output_annual
-            return Total
+    def get_flux_out(self, graph: WPGraph, time: int, cumulative: bool = False) -> float:
+        total = 0
+        if cumulative == False:
+            for timestep in range(time + 1): 
+                if timestep != time:  
+                    flux_in = self.get_flux_in(graph, timestep, cumulative)
+                    output_flux_out = (flux_in * ((0.5) ** ((time - timestep - 1)/self.HalfLife))) - \
+                        (flux_in * ((0.5) ** ((time - timestep)/self.HalfLife)))
+                    total += output_flux_out
+            return total
         else: 
-            for Timestep in range(Time + 1):
-                if Timestep != Time:   
-                    Annual = super().GetFluxOut(Graph, Timestep, Cumulative = False)
-                    Output_annual = Annual - (Annual * ((0.5) ** ((Time - Timestep)/self.HalfLife)))
-                    Total += Output_annual
-            return Total
+            for timestep in range(time + 1):
+                if timestep != time:   
+                    flux_in = self.get_flux_in(graph, timestep, cumulative = False)
+                    output_flux_out = flux_in - (flux_in * ((0.5) ** ((time - timestep)/self.HalfLife)))
+                    total += output_flux_out
+            return total
         
-    def GetFluxIn(self, Graph: WPGraph, Time: int, Cumulative: bool = False) -> float:
-        Total = 0
-        if Cumulative == False:  
-            Annual = super().GetFluxOut(Graph, Time, Cumulative)
+    def get_flux_in(self, graph: WPGraph, time: int, cumulative: bool = False) -> float:
+        total = 0
+        if cumulative == False:  
+            Annual = super().get_flux_in(graph, time, cumulative)
             return Annual
         else: 
-            for Year in range(Time + 1): 
-                Annual = super().GetFluxOut(Graph, Year, Cumulative = False)
-                Total += Annual
-            return Total 
+            for Year in range(time + 1): 
+                Annual = super().get_flux_in(graph, Year, cumulative = False)
+                total += Annual
+            return total 
     
-    def GetStock(self, Graph: WPGraph, Time: int, Cumulative: bool = False) -> float:
-        ''' GetStock Documentation
+    def get_stock(self, graph: WPGraph, time: int, cumulative: bool = False) -> float:
+        ''' get_stock Documentation
 
-        La fonction GetStock sert à faire le cumulatif des flux annuels 
+        La fonction get_stock sert à faire le cumulatif des flux annuels 
         de 0 jusqu'à l'année demandé pour un noeud en particulier grâce à la
-        fonction GetFluxOut. En d'autres mots, la fonction GetStock sert
+        fonction get_flux_out. En d'autres mots, la fonction get_stock sert
         à calculer les stocks présent dans un noeud grâce à l'ensemble
         des flux en provenance des nodes parents depuis le début.
 
         Args: 
             Graph (nx.DiGraph): le DiGraph utilisé pour construire le réseau
-            Time (int): Le temps en année
-            Cumulative (bool): To be implemented
+            time (int): Le temps en année
+            cumulative (bool): To be implemented
 
         Returns: 
             float: Le cumulatif des fluxs, donc le stock de carbone présent
-            dans une noeud (self) à un temps donnée (Time)
+            dans une noeud (self) à un temps donnée (time)
 
         '''
         try:
-            Total = 0
-            for Year in range(Time + 1): 
-                Annual = super().GetFluxOut(Graph, Year, Cumulative = False)
-                Restant = Annual * ((0.5) ** ((Time - Year)/self.HalfLife))
-                Total += Restant
-            return Total
+            total = 0
+            for Year in range(time + 1): 
+                Annual = super().get_flux_out(graph, Year, cumulative = False)
+                Restant = Annual * ((0.5) ** ((time - Year)/self.HalfLife))
+                total += Restant
+            return total
         except RecursionError:
             raise  RecursionNode("Un maximum de demande a été effectué. \
                                  Une boucle entre des ProportionNode est présente")          
@@ -280,77 +263,65 @@ class DecayNode(ProportionNode):
 class RecyclingNode(ProportionNode):
     def __init__(self, NAME: str):
         super().__init__(NAME)
-        self.__rn_cache = caching()
 
-    @property
-    def rn_past_carbon(self):
-        return self.__rn_cache
-    
-    @rn_past_carbon.setter
-    def rn_past_carbon(self, input):
-        raise ConstError('Use setter instead') 
-    
-    def GetFluxOut(self, Graph: WPGraph, Time: int, Cumulative: bool = False) -> float:
-        Total = 0
-        if Cumulative == False:
-            if Time in self.rn_past_carbon.flux_cache:
-                return self.rn_past_carbon.get_flux_cache(Time)
-            for Year in range(Time + 1): 
-                if Year + 1 == Time:
-                    Total += super().GetFluxOut(Graph, Year, Cumulative)
-            self.rn_past_carbon.set_flux_cache(Time, Total)
-            return Total
+    def get_flux_out(self, graph: WPGraph, time: int, cumulative: bool = False) -> float:
+        total = 0
+        if cumulative == False:
+            for Year in range(time + 1): 
+                if Year + 1 == time:
+                    total += super().get_flux_out(graph, Year, cumulative)
+            return total
         else:
-            for Year in range(Time):
-                Total += super().GetFluxOut(Graph, Year, Cumulative = False)
-            return Total
+            for Year in range(time):
+                total += super().get_flux_out(graph, Year, cumulative = False)
+            return total
     
-    def GetFluxIn(self, Graph: WPGraph, Time: int, Cumulative: bool = False) -> float:
-        Total = 0
-        if Cumulative == False:
-            Total += super().GetFluxOut(Graph, Time, Cumulative)
-            return Total
+    def get_flux_in(self, graph: WPGraph, time: int, cumulative: bool = False) -> float:
+        total = 0
+        if cumulative == False:
+            total += super().get_flux_out(graph, time, cumulative)
+            return total
         else:
-            for Year in range(Time + 1):
-                Total += super().GetFluxOut(Graph, Year, Cumulative = False)
-            return Total
+            for Year in range(time + 1):
+                total += super().get_flux_out(graph, Year, cumulative = False)
+            return total
     
-    def GetStock(self, Graph: WPGraph, Time: int, Cumulative: bool = False) -> float:
-        Total = super().GetFluxOut(Graph, Time, Cumulative)
-        return Total
+    def get_stock(self, graph: WPGraph, time: int, cumulative: bool = False) -> float:
+        total = super().get_flux_out(graph, time, cumulative)
+        return total
 
 class PoolNode(ProportionNode):
     def __init__(self, NAME):
         super().__init__(NAME)
         
-    def GetFluxIn(self, Graph: WPGraph, Time: int, Cumulative: bool = False) -> float:
-        Total = 0
-        if Cumulative == False:  
-            Annual = super().GetFluxOut(Graph, Time, Cumulative)
+    def get_flux_in(self, graph: WPGraph, time: int, cumulative: bool = False) -> float:
+        total = 0
+        if cumulative == False:  
+            Annual = super().get_flux_out(graph, time, cumulative)
             return Annual
         else: 
-            for Year in range(Time + 1): 
-                Annual = super().GetFluxOut(Graph, Year, Cumulative = False)
-                Total += Annual
-            return Total    
+            for Year in range(time + 1): 
+                Annual = super().get_flux_out(graph, Year, cumulative = False)
+                total += Annual
+            return total    
     
-    def GetFluxOut(self, Graph: WPGraph, Time: int, Cumulative: bool = False) -> float:
+    def get_flux_out(self, graph: WPGraph, time: int, cumulative: bool = False) -> float:
         warnings.warn(f'Aucun carbone sortant de la node {self.NAME}', stacklevel = 2)
       
-    def GetStock(self, Graph: WPGraph, Time: int, Cumulative: bool = False) -> float:
-        ''' GetStock Documentation   
+    def get_stock(self, graph: WPGraph, time: int, cumulative: bool = False) -> float:
+        ''' get_stock Documentation   
         Args: 
             Graph (nx.DiGraph): le DiGraph utilisé pour construire le réseau
-            Time (int): Le temps en année
-            Cumulative (bool): To be implemented
+            time (int): Le temps en année
+            cumulative (bool): To be implemented
             
         Returns: 
             float: Le cumulatif des fluxs, donc le stock de carbone présent
-            dans une noeud (self) à un temps donnée (Time)
+            dans une noeud (self) à un temps donnée (time)
         '''
         try:
             warnings.warn('Le résultat est le même que le cumulatif des flux in', stacklevel = 2)
-            return self.GetFluxIn(Graph, Time, Cumulative = True)
+            return self.get_flux_in(graph, time, cumulative = True)
         except RecursionError:
             raise  RecursionNode("Un maximum de demande a été effectué. \
                                  Une boucle entre des ProportionNode est présente")    
@@ -365,14 +336,14 @@ class GraphFactory():
         self._GRAPHNAME = []
         self._GRAPHS = []
         
-        Graph_num = 0
-        keys = list(self.GetData.keys())
+        graph_num = 0
+        keys = list(self.get_data.keys())
         keys.sort()
         for KEY in keys:
             self._GRAPHNAME.append(KEY)
             self._GRAPHS.append(wp.WPGraph(KEY))
-            _EDGES = self.GetData[KEY].get('Edges', {})
-            _NODES = self.GetData[KEY].get('Nodes', {})
+            _EDGES = self.get_data[KEY].get('Edges', {})
+            _NODES = self.get_data[KEY].get('Nodes', {})
             _TOPNODES = set([int(ID) for ID in _NODES]) - \
                 set([data['To'] for keys, data in _EDGES.items()])
             _LASTNODES = set([int(ID) for ID in _NODES]) - \
@@ -389,33 +360,33 @@ class GraphFactory():
                 elif node_data['Recycling'] == 1: 
                     new_node = RecyclingNode(node_data['Name'])
                 else: new_node = ProportionNode(node_data['Name'])
-                self._GRAPHS[Graph_num].AddNode(new_node)
+                self._GRAPHS[graph_num].add_node(new_node)
                 node_map[int(node_id)] = new_node        
 
             for edge_id, edge_data in _EDGES.items():
                 From = node_map[edge_data['From']]
                 To = node_map[edge_data['To']]
-                self._GRAPHS[Graph_num].AddEdge(From, To, edge_data['Values'])  
-            Graph_num += 1     
+                self._GRAPHS[graph_num].add_edge(From, To, edge_data['Values'])  
+            graph_num += 1     
     
 
     @property
-    def GetGraphName(self) -> list:
+    def get_graph_name(self) -> list:
         return self._GRAPHNAME
     
-    @GetGraphName.setter
-    def GetGraphName(self, input):
+    @get_graph_name.setter
+    def get_graph_name(self, input):
         raise ConstError("Graph name can't be changed outside Miro")
     
-    def GetGraph(self, Name) -> WPGraph:
-        Names = self.GetGraphName
-        Index = Names.index(Name)
+    def get_graph(self, name) -> WPGraph:
+        Names = self.get_graph_name
+        Index = Names.index(name)
         return self._GRAPHS[Index]
         
     @property
-    def GetData(self):
+    def get_data(self):
         return self._DATA
     
-    @GetData.setter
-    def GetData(self, input):
+    @get_data.setter
+    def get_data(self, input):
         raise ConstError("Data from graphs can't be changed outside Miro")   
