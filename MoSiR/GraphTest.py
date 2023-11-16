@@ -55,7 +55,7 @@ D.GetFluxIn(Test_01, 4, Cumulative= True) """
 
 # Test de l'import -----------------------------------------------------------
 
-def graph_testing(graph: gf.GraphFactory, input: ip.ImportData,
+def graph_testing(graph: gf.GraphFactory,
                  report: rp.ReportData):
     MOSIR_TOLERENCE = 0.0001
     time = report.get_output_data('Time')
@@ -113,16 +113,16 @@ def graph_testing(graph: gf.GraphFactory, input: ip.ImportData,
         carbon_input = 0
         for timestep in range(time + 1):
             in_system = 0
-            for Node in G4.nodes():
-                if type(Node) == gf.TopNode:
-                    carbon_input += Node.get_stock(G4, timestep)
-                elif Node.NAME == 'N2O emissions': # Updater pour général
+            for node in G4.nodes():
+                if type(node) == gf.TopNode:
+                    carbon_input += node.get_stock(G4, timestep)
+                elif node.NAME == 'N2O emissions': # Updater pour général
                     continue
-                elif type(Node) == gf.PoolNode or type(Node) == gf.DecayNode or \
-                    type(Node) == gf.RecyclingNode:
+                elif type(node) == gf.PoolNode or type(node) == gf.DecayNode or \
+                    type(node) == gf.RecyclingNode:
                     with warnings.catch_warnings():
                         warnings.simplefilter('ignore')
-                        in_system += Node.get_stock(G4, timestep)
+                        in_system += node.get_stock(G4, timestep)
             if carbon_input > in_system - MOSIR_TOLERENCE and carbon_input < in_system + MOSIR_TOLERENCE :
                 continue
             else:

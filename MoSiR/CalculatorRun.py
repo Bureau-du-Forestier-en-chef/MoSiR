@@ -42,8 +42,9 @@ Report = rp.ReportData('D:/MoSiR/examples/Inputs/Reporting.json')
     #
     # Add imports to graph
 ip.add_import(Graph, Import)
+
     # Testing
-gt.graph_testing(Graph, Import, Report)
+gt.graph_testing(Graph, Report)
 
     # Reporting
 rp.output_creation(Graph, Import, Report, 'D:/MoSiR/examples/Inputs')
