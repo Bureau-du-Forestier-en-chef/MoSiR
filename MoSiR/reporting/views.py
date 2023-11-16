@@ -6,7 +6,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 from ..blueprint_component import Component
 from flask import Response,request,jsonify
-import os,csv,pathlib,shutil
+import os,csv,pathlib,seaborn
 from .. import utilities
 from .. import CalculatorRun
 
@@ -200,9 +200,9 @@ class Reporting(Component):
                 elif(target_key == 'Type'):
                     data["Output"][graph_name][output_name]["Type"] = value
                 elif(target_key == 'Cumulative'):
-                    cumulate = "false"
+                    cumulate = False
                     if value.lower() == "vrai":
-                        cumulate = "true"
+                        cumulate = True
                     data["Output"][graph_name][output_name]["Cumulative"] = cumulate
                 elif(target_key == 'Summarize'):
                     data["Output"][graph_name][output_name]["Summarize"] = value
@@ -244,8 +244,8 @@ class Reporting(Component):
         #https://plotly.com/javascript/bar-charts/
         #https://stackoverflow.com/questions/42499535/passing-a-json-object-from-flask-to-javascript
         filename = pathlib.Path(location).stem
-        CO2= {'x':[],'y':[],"name":'CO2','marker' : {'color':'rgb(255, 214, 255)'},'type':'bar'}
-        CH4 = {'x':[],'y':[],"name":'CH4','marker' : {'color':'rgb(187, 208, 255)'},'type':'bar'}
+        
+        all_data = []
         divid = filename
         layout = {'title': filename,
                     'xaxis': {'tickfont': {
@@ -274,13 +274,20 @@ class Reporting(Component):
                     'bargroupgap': 0.1}
         with open(location, newline='') as csvfile:
             reader = csv.DictReader(csvfile)
+            pallet = seaborn.color_palette("pastel",n_colors=len(reader.fieldnames[1:-1]))
+            fid = 0 
+            for name in reader.fieldnames[1:-1]:
+                all_data.append({'x':[],'y':[],"name":name,'marker' : {'color':'rgb('+str(pallet[fid][0])+','+str(pallet[fid][1])+','+str(pallet[fid][2])+')'},'type':'bar'})
+                fid += 1
             for row in reader:
-                CO2['x'].append(int(row['Time']))
-                CO2['y'].append(float(row['CO2 emissions']))
-                CH4['x'].append(int(row['Time']))
-                CH4['y'].append(float(row['CH4 emissions']))
+                fid = 0
+                for name in reader.fieldnames[1:-1]:
+                    all_data[fid]['y'].append(float(row[name]))
+                    all_data[fid]['x'].append(int(row['Time']))
+                    fid+=1
+                
                 layout['yaxis']['title'] = 'Émissions (' + row['Unit']+')'
-        return (divid,[CO2,CH4],layout)
+        return (divid,all_data,layout)
     def __run_mosir(self,graphsjson:str,inputsjson:str,reportjson:str):
         #fake it
         ##shutil.copyfile("C:/Users/CYRGU3/Downloads/MicroTest_1_Annualrad (1).csv",os.path.join(self._get_uploads_folder(),"MicroTest_1_Annualrad.csv"))

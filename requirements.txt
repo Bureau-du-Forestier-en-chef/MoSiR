@@ -5,3 +5,7 @@ Requests
 networkx
 python_dotenv
 python-igraph
+werkzeug
+pandas
+openpyxl
+seaborn
