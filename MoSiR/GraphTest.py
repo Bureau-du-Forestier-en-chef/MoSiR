@@ -1,57 +1,79 @@
 # -*- coding: UTF-8 -*-
+import sys
+import warnings
+import pandas as pd
+sys.path.append("../MoSiR")
 import MoSiR.GraphGen as gf
 import MoSiR.ImportInfo as ip
 import MoSiR.ReportingInfo as rp
-import warnings
+import MoSiR.NetworkxGraph as wp
+import MoSiR.mosir_exceptions as me
+import MoSiR.RadiativeForcing.CarbonToRad as cr
 
-class QuantityError(Exception):
-    def __init__(self, message: str):            
-        super().__init__(message) 
-        
-class EdgeError(Exception):
-    def __init__(self, message: str):            
-        super().__init__(message)
-        
-class ConstError(Exception):
-    def __init__(self, message: str):    
-        super().__init__(message)
+# Test GraphGen: calcul des nodes --------------------------------------------
+test_01 = wp.WPGraph('graph_test_01')
 
-# Test indépendant du import -------------------------------------------------
-""" import MoSiR.NetworkxGraph as wp
-
-Test_01 = wp.WPGraph('test')
-
-A = gf.TopNode('A')  
+A = gf.TopNode('A')
 B = gf.ProportionNode('B')
-C = gf.DecayNode('C', 10)
-D = gf.PoolNode('D')
-#E = gf.RecyclingNode('E')
-#F = gf.PoolNode('F')
+C = gf.DecayNode('C', 5)
+D = gf.DecayNode('D', 10)
+E = gf.RecyclingNode('E')
+F = gf.PoolNode('F')
 
-B.PastCarbon.SetIsOpen(False)
-C.PastCarbon.IsOpen()
-
-Test_01.AddNode(A)
-Test_01.AddNode(B)
-Test_01.AddNode(C)
-Test_01.AddNode(D)
-#Test_01.AddNode(E)
-#Test_01.AddNode(F)
+test_01.add_node(A)
+test_01.add_node(B)
+test_01.add_node(C)
+test_01.add_node(D)
+test_01.add_node(E)
+test_01.add_node(F)
  
-Test_01.AddEdge(A, B, Proportions = [1])
-Test_01.AddEdge(B, C, Proportions = [1])
-Test_01.AddEdge(C, D, Proportions = [1])
-#Test_01.AddEdge(C, E, Proportions = [1])
-#Test_01.AddEdge(E, B, Proportions = [1])
-#Test_01.AddEdge(D, F, Proportions = [1])
+test_01.add_edge(A, B, proportions = [1])
+test_01.add_edge(B, C, proportions = [1])
+test_01.add_edge(C, D, proportions = [0.75, 0.5, 0.5, 0.25, 1])
+test_01.add_edge(C, E, proportions = [0.25, 0.5, 0.5, 0.75, 0])
+test_01.add_edge(E, B, proportions = [1])
+test_01.add_edge(D, F, proportions = [1])
 
-A.time = [0, 1, 2, 3, 4]
-A.Quantities = [10, 0, 0, 0, 0]
+A.time = [0, 1]
+A.quantities = [10, 20]
 
-A.GetFluxIn(Test_01, 0)
-B.GetFluxIn(Test_01, 0, Cumulative= False)
-C.GetFluxOut(Test_01, 3, Cumulative= True)
-D.GetFluxIn(Test_01, 4, Cumulative= True) """
+for timestep in range(11):
+    assert A.get_flux_out(test_01, timestep)\
+        == B.get_flux_in(test_01, timestep)\
+        == B.get_flux_out(test_01, timestep)\
+        == C.get_flux_in(test_01, timestep)
+    
+    assert A.get_flux_out(test_01, timestep, cumulative = True)\
+        == B.get_flux_in(test_01, timestep, cumulative = True)\
+        == B.get_flux_out(test_01, timestep, cumulative = True)\
+        == C.get_flux_in(test_01, timestep, cumulative = True)
+
+A.get_flux_in(test_01, 0)
+B.get_flux_in(test_01, 0, cumulative = False)
+C.get_flux_out(test_01, 3, cumulative = True)
+D.get_flux_in(test_01, 4, cumulative = True) 
+
+# Test du radiatif -----------------------------------------------------------
+time = list(range(1, 2001))
+CO2 = [1/3.6667] + [0] * (len(time) - 1)         
+CH4 = [1/1.3333] + [0] * (len(time) - 1)          
+N2O = [1] + [0] * (len(time) - 1)          
+CO = [1/2.6666] + [0] * (len(time) - 1)   
+       
+test = {
+    'Year': time,
+    'CO2': CO2,
+    'CH4': CH4,
+    'N2O': N2O,
+    'CO': CO
+    }
+
+RF = pd.read_excel('MoSiR/RadiativeForcing/Dynco2_Base.xlsx').\
+    sort_values(by = 'Year').drop('Unit', axis = 1).to_dict(orient = 'list')
+
+cr.rad_formatting(test, RF, cumulative= False)
+
+assert test == RF
 
 # Test de l'import -----------------------------------------------------------
 
@@ -88,7 +110,7 @@ def graph_testing(graph: gf.GraphFactory,
                     continue
                 total += node._get_value_time(G2.get_edge_proportions(node, successors), 0)
             if total - 1 > MOSIR_TOLERENCE or 1 - total > MOSIR_TOLERENCE and total != 0:
-                raise EdgeError(f"La somme des edges sortant de {node.NAME} n'est pas égale à 100%") 
+                raise me.EdgeError(f"La somme des edges sortant de {node.NAME} n'est pas égale à 100%") 
             elif total < MOSIR_TOLERENCE:
                 warnings.warn(f'La somme des edges sortant de la node {node.NAME} est de 0',
                               stacklevel = 2)
@@ -104,7 +126,7 @@ def graph_testing(graph: gf.GraphFactory,
                 if values.get('To') == int(nodeID):
                     overflow.append(values.get('Overflow'))
             if all(i == overflow[0] for i in overflow) == False:
-                raise EdgeError(f"La node {NODES[str(nodeID)].get('Name')} reçoit \
+                raise me.EdgeError(f"La node {NODES[str(nodeID)].get('Name')} reçoit \
                     des edges avec et sans overflow")
 
     # total input versus in system 
@@ -115,7 +137,7 @@ def graph_testing(graph: gf.GraphFactory,
             in_system = 0
             for node in G4.nodes():
                 if type(node) == gf.TopNode:
-                    carbon_input += node.get_stock(G4, timestep)
+                    carbon_input += node.get_flux_out(G4, timestep)
                 elif node.NAME == 'N2O emissions': # Updater pour général
                     continue
                 elif type(node) == gf.PoolNode or type(node) == gf.DecayNode or \
@@ -126,7 +148,7 @@ def graph_testing(graph: gf.GraphFactory,
             if carbon_input > in_system - MOSIR_TOLERENCE and carbon_input < in_system + MOSIR_TOLERENCE :
                 continue
             else:
-                raise QuantityError(f"Graph : {G4.get_name} La quantité total \
+                raise me.QuantityError(f"Graph : {G4.get_name} La quantité total \
                     en input ({carbon_input}) au temps {timestep} n'est pas égale au total \
                     présent dans le système ({in_system})")
 
@@ -154,7 +176,6 @@ def graph_testing(graph: gf.GraphFactory,
 #    print(df3)
 
 
-
 #
 #for edge_id, edge_data in edges.items():
 #    From = edge_data['From']
@@ -170,34 +191,6 @@ def graph_testing(graph: gf.GraphFactory,
 
 # ----------------------------------------------------------------------------
 """
-Test_02 = ('T:/Donnees/Usagers/LANGA3/MoSiR/Graphs_03.json')
-
-import json
-J = open('T:/Donnees/Usagers/LANGA3/MoSiR/Graphs_03.json')
-data = json.load(J)
-data
-PB = data.get('Produitsdubois_V2')
-
-Nodes = PB.get('Nodes')
-Edges = PB.get('Edges')
-
-
-node_map = {}
-id_list = []
-for node_id, node_data in Nodes.items():
-    new_node = 'test'
-    node_map[int(node_id)] = new_node
-    id_list.append(node_id)     
-       
-node_map.get(int(id_list[2]))
-
-
-
-for i, j in enumerate(node_map):
-    print(i, j)
-    
-node_map[3458764565184960178]
-
 
 G = ig.Graph(directed = True)
 
@@ -237,11 +230,3 @@ liste = {1: 'a', 2: 'b', 3: "ce"}
 for i, j in enumerate(liste):
     print(i)
 """
-
-#for Name in Test_02.get_graph_name:
-#    Graph = Test_02.get_graph(Name)
-#    for time in range(16): # Ajuster le temps des simulations
-#        for Node in Graph.Nodes():
-#            if Node.NAME in ['Land application', 'Biomethanisation, combustion']:
-#                print(f'time {time}, {Node.NAME} = {Node.GetCarbon(Graph, time)}')
-#

@@ -5,10 +5,7 @@ import json
 import MoSiR.GraphGen as gf
 import MoSiR.ImportInfo as ip
 import MoSiR.RadiativeForcing.CarbonToRad as cr
-
-class InvalidOption(Exception):
-    def __init__(self, message: str):    
-        super().__init__(message)
+import MoSiR.mosir_exceptions as me
 
 # Json -----------------------------------------------------------------------
 
@@ -35,7 +32,7 @@ def unit_change(number: float, from_unit: str, to_unit: str) -> float:
         elif T in ['kgc', 'w/m2']:
             return number
         else: 
-            raise InvalidOption(f"{to_unit} n'est pas une option d'unité d'output \
+            raise me.InvalidOption(f"{to_unit} n'est pas une option d'unité d'output \
                 (tC, kgC, tCO2eq ou w/m2)")
     elif F == 'tc':
         if T in ['kgc', 'w/m2']:
@@ -43,10 +40,10 @@ def unit_change(number: float, from_unit: str, to_unit: str) -> float:
         elif T in ['tc', 'tco2eq']:
             return number
         else: 
-            raise InvalidOption(f"{to_unit} n'est pas une option d'unité d'output \
+            raise me.InvalidOption(f"{to_unit} n'est pas une option d'unité d'output \
                 (tC, kgC, tCO2eq ou w/m2)")
     else:
-        raise InvalidOption(f"{from_unit} n'est pas une option d'unité d'input \
+        raise me.InvalidOption(f"{from_unit} n'est pas une option d'unité d'input \
                             (kgC ou tC)") 
         
 def output_creation(graph: gf.GraphFactory, import_data: ip.ImportData, 
@@ -60,9 +57,6 @@ def output_creation(graph: gf.GraphFactory, import_data: ip.ImportData,
         Report: La classe ReportData 
         Directory: Le dossier dans lequel les outputs seront enregistrés
     """
-    #if '\\' in Directory:
-    #    raise SyntaxError("Dans le output directory, il est nécessaire d'utiliser des\
-    #        frontslash (/) et non des backslash (\) ")
         
     time = report_data.get_output_data('Time')
     ext = report_data.get_output_data('Output file extension')
@@ -84,10 +78,10 @@ def output_creation(graph: gf.GraphFactory, import_data: ip.ImportData,
                 elif report_unit in ['kgc', 'tc', 'tco2eq']:
                     cumu = data['Cumulative']
                 else:
-                    raise InvalidOption(f"Unit ({data['Unit']}) dans le fichier \
+                    raise me.InvalidOption(f"Unit ({data['Unit']}) dans le fichier \
                                     de reporting n'est pas une option valide")
             else: 
-                raise InvalidOption(f"Cumulative ({data['Cumulative']}) dans le fichier \
+                raise me.InvalidOption(f"Cumulative ({data['Cumulative']}) dans le fichier \
                                     de reporting doit être un booléen, donc soit 'true' ou 'false'")
 
             df = pd.DataFrame(columns = nodes_name)
@@ -111,7 +105,7 @@ def output_creation(graph: gf.GraphFactory, import_data: ip.ImportData,
                             result = unit_change(result, input_unit, report_unit)
                             df.loc[timestep, node.NAME] = result
                         else:
-                            raise InvalidOption(f"L'entrée <Type> ('{out_type}') dans le \
+                            raise me.InvalidOption(f"L'entrée <Type> ('{out_type}') dans le \
                                 reporting file n'est pas un choix valide. Choix \
                                 possibles: 'Flux in', 'Flux out' ou 'Stock'.")
             if report_unit == 'tco2eq':
@@ -136,7 +130,7 @@ def output_creation(graph: gf.GraphFactory, import_data: ip.ImportData,
                 RF = pd.read_excel('MoSiR/RadiativeForcing/Dynco2_Base.xlsx').sort_values(by = 'Year').\
                         to_dict(orient = 'list')
                 df_2 = df.to_dict(orient = 'list')
-                cr.RadFormatting(df_2, RF, cumulative = C)
+                cr.rad_formatting(df_2, RF, cumulative = C)
                 df = pd.DataFrame(df_2)
                 
             if summarize == 'Combined':

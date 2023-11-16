@@ -1,9 +1,6 @@
 import networkx as nx
 import igraph as ig
-
-class ConstError(Exception):
-    def __init__(self, message: str):    
-        super().__init__(message)
+import MoSiR.mosir_exceptions as me
 
 class WPGraph():
     def __init__(self, KEY):
@@ -35,7 +32,7 @@ class WPGraph():
     
     @get_name.setter
     def get_name(self):
-        return ConstError("Graph name can't be changed outside Miro")
+        return me.ConstError("Graph name can't be changed outside Miro")
 
 class WPGraph_IG():
     def __init__(self, KEY):
@@ -76,4 +73,4 @@ class WPGraph_IG():
     
     @get_name.setter
     def get_name(self):
-        return ConstError("Graph name can't be changed outside Miro")
+        return me.ConstError("Graph name can't be changed outside Miro")

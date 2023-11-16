@@ -18,15 +18,15 @@ class ImportData():
         return [i for i in self.get_data(GraphName)]
     
     def get_node_input(self, GraphName: str, NodeName):
-        Input = self.get_data(GraphName)[NodeName]
-        Time = []
-        Quantities = []
-        for time, value in Input.items():
+        intrant = self.get_data(GraphName)[NodeName]
+        time = []
+        quantities = []
+        for temps, value in intrant.items():
             if value == 0:
                 continue
-            Time.append(int(time)) 
-            Quantities.append(value)
-        return Time, Quantities
+            time.append(int(temps)) 
+            quantities.append(value)
+        return time, quantities
 
 def add_import(graph, import_data):
     for graph_name in graph.get_graph_name:

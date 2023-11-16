@@ -1,25 +1,11 @@
 # -*- coding: UTF-8 -*-
-"""
-"""
 import sys
 import json
 import warnings # Maybe
 from abc import ABCMeta, abstractmethod
-
-sys.path.append("../MoSiR")
+import MoSiR.mosir_exceptions as me
 import MoSiR.NetworkxGraph as wp
 
-# Exception handling ---------------------------------------------------------
-
-class ConstError(Exception):
-    def __init__(self, message: str):    
-        super().__init__(message)
-
-# gérer les recursion
-class RecursionNode(RecursionError):
-    def __init__(self, message: str):
-        super().__init__(message)
-       
 # Caching --------------------------------------------------------------------
 class Caching():
     cache_open = True
@@ -41,7 +27,7 @@ class Caching():
     
     @flux_cache.setter
     def flux_cache(self):
-        raise ConstError("Cache must be modify with set_flux_cache")
+        raise me.ConstError("Cache must be modify with set_flux_cache")
 
     def set_flux_cache(self, timestep: int, value: float):
         if Caching.is_open() is True:
@@ -73,7 +59,7 @@ class IndustrialNode(metaclass = ABCMeta): # aller voir la doc ABC
     
     @NAME.setter
     def NAME(self, input):
-       raise ConstError("Node name can't be changed")
+       raise me.ConstError("Node name can't be changed")
     
     @abstractmethod
     def get_flux_out(self, graph: WPGraph, time: int, cumulative: bool = False) -> float:
@@ -140,14 +126,26 @@ class TopNode(IndustrialNode):
             return 0
     
     def get_flux_out(self, graph: WPGraph, time: int, cumulative: bool = False) -> float:
-        return self._get_quantity_time(time)
-    
+        if cumulative == False:
+            return self._get_quantity_time(time)
+        elif cumulative == True:
+            total = 0
+            for timestep in range(time + 1):
+                annual_flux = self._get_quantity_time(timestep)
     def get_flux_in(self, graph: WPGraph, time: int, cumulative: bool = False) -> float:
-        return self._get_quantity_time(time)
-    
+        if cumulative == False:
+            return self._get_quantity_time(time)
+        elif cumulative == True:
+            total = 0
+            for timestep in range(time + 1):
+                annual_flux = self._get_quantity_time(timestep)
     def get_stock(self, graph: WPGraph, time: int, cumulative: bool = False) -> float:
-        return self._get_quantity_time(time)
-    
+        if cumulative == False:
+            return self._get_quantity_time(time)
+        elif cumulative == True:
+            total = 0
+            for timestep in range(time + 1):
+                annual_flux = self._get_quantity_time(timestep)
 class ProportionNode(IndustrialNode):
     def __init__(self, NAME: str):
         super().__init__(NAME)
@@ -200,7 +198,7 @@ class DecayNode(ProportionNode):
     def HalfLife(self):
         return self._HalfLife
 
-    @HalfLife.setter # À voir si ça vaut la peine de la protéger
+    @HalfLife.setter 
     def HalfLife(self, Value):
        self._HalfLife = Value
     
@@ -263,20 +261,26 @@ class DecayNode(ProportionNode):
                 total += Restant
             return total
         except RecursionError:
-            raise  RecursionNode("Un maximum de demande a été effectué. \
+            raise me.RecursionNode("Un maximum de demande a été effectué. \
                                  Une boucle entre des ProportionNode est présente")          
-
 
 class RecyclingNode(ProportionNode):
     def __init__(self, NAME: str):
         super().__init__(NAME)
+        self.__rn_cache = Caching()
+    
+    def past_carbon(self):
+        return self.__rn_cache
 
     def get_flux_out(self, graph: WPGraph, time: int, cumulative: bool = False) -> float:
         total = 0
         if cumulative == False:
+            if time in self.past_carbon().flux_cache:
+                return self.past_carbon().get_flux_cache(time)
             for Year in range(time + 1): 
                 if Year + 1 == time:
                     total += super().get_flux_out(graph, Year, cumulative)
+            self.past_carbon().set_flux_cache(time, total)
             return total
         else:
             for Year in range(time):
@@ -286,15 +290,15 @@ class RecyclingNode(ProportionNode):
     def get_flux_in(self, graph: WPGraph, time: int, cumulative: bool = False) -> float:
         total = 0
         if cumulative == False:
-            total += super().get_flux_out(graph, time, cumulative)
+            total += super().get_flux_in(graph, time, cumulative)
             return total
         else:
             for Year in range(time + 1):
-                total += super().get_flux_out(graph, Year, cumulative = False)
+                total += super().get_flux_in(graph, Year, cumulative = False)
             return total
     
     def get_stock(self, graph: WPGraph, time: int, cumulative: bool = False) -> float:
-        total = super().get_flux_out(graph, time, cumulative)
+        total = self.get_flux_in(graph, time, cumulative)
         return total
 
 class PoolNode(ProportionNode):
@@ -330,7 +334,7 @@ class PoolNode(ProportionNode):
             warnings.warn('Le résultat est le même que le cumulatif des flux in', stacklevel = 2)
             return self.get_flux_in(graph, time, cumulative = True)
         except RecursionError:
-            raise  RecursionNode("Un maximum de demande a été effectué. \
+            raise me.RecursionNode("Un maximum de demande a été effectué. \
                                  Une boucle entre des ProportionNode est présente")    
 
 # Factory -------------------------------------------------------------------- 
@@ -383,7 +387,7 @@ class GraphFactory():
     
     @get_graph_name.setter
     def get_graph_name(self, input):
-        raise ConstError("Graph name can't be changed outside Miro")
+        raise me.ConstError("Graph name can't be changed outside Miro")
     
     def get_graph(self, name) -> WPGraph:
         Names = self.get_graph_name
@@ -396,4 +400,4 @@ class GraphFactory():
     
     @get_data.setter
     def get_data(self, input):
-        raise ConstError("Data from graphs can't be changed outside Miro")   
+        raise me.ConstError("Data from graphs can't be changed outside Miro")   

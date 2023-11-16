@@ -11,3 +11,27 @@ class Miroerror(Exception):
     def GetItemID(self):
         return self.__ID
     
+class QuantityError(Exception):
+    def __init__(self, message: str):            
+        super().__init__(message) 
+        
+class EdgeError(Exception):
+    def __init__(self, message: str):            
+        super().__init__(message)
+        
+class ConstError(Exception):
+    def __init__(self, message: str):    
+        super().__init__(message)
+
+class RecursionNode(RecursionError):
+    def __init__(self, message: str):
+        super().__init__(message)
+
+class InvalidOption(Exception):
+    def __init__(self, message: str):    
+        super().__init__(message)
+
+class TimeStepError(Exception):
+    def __init__(self, message: str):    
+        super().__init__(message)
+        
