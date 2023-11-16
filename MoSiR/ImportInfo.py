@@ -8,17 +8,17 @@ class ImportData():
         with open(directory, "r") as f: 
             self._DATA = json.load(f)
             
-    def GetUnit(self):
+    def get_unit(self):
         return self._DATA['Unit']
     
-    def GetData(self, GraphName: str):
+    def get_data(self, GraphName: str):
         return self._DATA['Inputs'][GraphName]
     
-    def GetNodesName(self, GraphName: str):
-        return [i for i in self.GetData(GraphName)]
+    def get_nodes_name(self, GraphName: str):
+        return [i for i in self.get_data(GraphName)]
     
-    def GetNodeInput(self, GraphName: str, NodeName):
-        Input = self.GetData(GraphName)[NodeName]
+    def get_node_input(self, GraphName: str, NodeName):
+        Input = self.get_data(GraphName)[NodeName]
         Time = []
         Quantities = []
         for time, value in Input.items():
@@ -28,15 +28,15 @@ class ImportData():
             Quantities.append(value)
         return Time, Quantities
 
-def AddImport(Graph, Import):
-    for GraphName in Graph.GetGraphName:
-        G = Graph.GetGraph(GraphName)
-        for Node in G.Nodes():
-            if Node.NAME in Import.GetNodesName(GraphName):
-                Time = Import.GetNodeInput(GraphName, Node.NAME)[0]
-                Quantities = Import.GetNodeInput(GraphName, Node.NAME)[1]
-                Node.Time = Time
-                Node.Quantities = Quantities
+def add_import(graph, import_data):
+    for graph_name in graph.get_graph_name:
+        G = graph.get_graph(graph_name)
+        for node in G.nodes():
+            if node.NAME in import_data.get_nodes_name(graph_name):
+                time = import_data.get_node_input(graph_name, node.NAME)[0]
+                quantities = import_data.get_node_input(graph_name, node.NAME)[1]
+                node.time = time
+                node.quantities = quantities
 
 # Txt ------------------------------------------------------------------------
 """ 
@@ -70,12 +70,12 @@ class EditTxtImport():
                     Saved = False
     def GetInput(self):
         return eval(''.join(self._INPUT))
-    def GetUnit(self):
+    def get_unit(self):
         Unit = self._UNIT[0].strip().lower()
         assert Unit in ['kgc', 'tc']
         return Unit
     
 Test01 = EditTxtImport('Import.txt')               
-Test01.GetUnit()
+Test01.get_unit()
 Test01.GetInput()
 """

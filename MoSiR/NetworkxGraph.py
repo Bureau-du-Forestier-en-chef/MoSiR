@@ -14,11 +14,11 @@ class WPGraph():
     def add_node(self, node):
         return self._graph.add_node(node)
     
-    def add_edge(self, From, To, Proportions):
-        return self._graph.add_edge(From, To, Proportion = Proportions)
+    def add_edge(self, node_from, node_to, proportions):
+        return self._graph.add_edge(node_from, node_to, proportion = proportions)
     
-    def get_edge_proportions(self, From, To) -> list[float]:
-        return self._graph.get_edge_data(From, To)["Proportion"]
+    def get_edge_proportions(self, node_from, node_to) -> list[float]:
+        return self._graph.get_edge_data(node_from, node_to)["proportion"]
     
     def get_predecessors(self, node):
         return self._graph.predecessors(node)

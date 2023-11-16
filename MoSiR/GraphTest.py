@@ -45,7 +45,7 @@ Test_01.AddEdge(C, D, Proportions = [1])
 #Test_01.AddEdge(E, B, Proportions = [1])
 #Test_01.AddEdge(D, F, Proportions = [1])
 
-A.Time = [0, 1, 2, 3, 4]
+A.time = [0, 1, 2, 3, 4]
 A.Quantities = [10, 0, 0, 0, 0]
 
 A.GetFluxIn(Test_01, 0)
@@ -55,14 +55,14 @@ D.GetFluxIn(Test_01, 4, Cumulative= True) """
 
 # Test de l'import -----------------------------------------------------------
 
-def GraphTesting(Graph: gf.GraphFactory, Input: ip.ImportData,
-                 Report: rp.ReportData):
+def graph_testing(graph: gf.GraphFactory, input: ip.ImportData,
+                 report: rp.ReportData):
     MOSIR_TOLERENCE = 0.0001
-    Time = Report.get_output_data('Time')
+    time = report.get_output_data('Time')
     
     # First node et last node
-    for GraphName in Graph.get_data:
-        G1 = Graph.get_data.get(GraphName)
+    for graph_name in graph.get_data:
+        G1 = graph.get_data.get(graph_name)
         NODES = G1.get('Nodes', {})
         EDGES = G1.get('Edges', {})
         TOPNODES = set([int(ID) for ID in NODES]) - \
@@ -78,71 +78,71 @@ def GraphTesting(Graph: gf.GraphFactory, Input: ip.ImportData,
                 de carbone présente dans le système sera calculé seulement sur \
                 des nodes de demi-vie ou de recyclage", stacklevel = 2)   
    
-    # Total des Edges 
-    for Name in Graph.get_graph_name:
-        G2 = Graph.get_graph(Name)
-        for Node in G2.Nodes():
-            Total = 0
-            for Successors in G2.GetSuccessors(Node):
-                if Successors.NAME == 'N2O emissions':
+    # total des Edges 
+    for name in graph.get_graph_name:
+        G2 = graph.get_graph(name)
+        for node in G2.nodes():
+            total = 0
+            for successors in G2.get_successors(node):
+                if successors.NAME == 'N2O emissions':
                     continue
-                Total += Node._GetValueTime(G2.GetEdgeProportions(Node, Successors), 0)
-            if Total - 1 > MOSIR_TOLERENCE or 1 - Total > MOSIR_TOLERENCE and Total != 0:
-                raise EdgeError(f"La somme des edges sortant de {Node.NAME} n'est pas égale à 100%") 
-            elif Total < MOSIR_TOLERENCE:
-                warnings.warn(f'La somme des edges sortant de la node {Node.NAME} est de 0',
+                total += node._get_value_time(G2.get_edge_proportions(node, successors), 0)
+            if total - 1 > MOSIR_TOLERENCE or 1 - total > MOSIR_TOLERENCE and total != 0:
+                raise EdgeError(f"La somme des edges sortant de {node.NAME} n'est pas égale à 100%") 
+            elif total < MOSIR_TOLERENCE:
+                warnings.warn(f'La somme des edges sortant de la node {node.NAME} est de 0',
                               stacklevel = 2)
 
     # Test de overflow
-    for GraphName in Graph.get_data:
-        G3 = Graph.get_data.get(GraphName)
+    for graph_name in graph.get_data:
+        G3 = graph.get_data.get(graph_name)
         NODES = G3.get('Nodes', {})
         EDGES = G3.get('Edges', {})
-        for NodeId in NODES:
-            Overflow = []
+        for nodeID in NODES:
+            overflow = []
             for key, values in EDGES.items():
-                if values.get('To') == int(NodeId):
-                    Overflow.append(values.get('Overflow'))
-            if all(i == Overflow[0] for i in Overflow) == False:
-                raise EdgeError(f"La node {NODES[str(NodeId)].get('Name')} reçoit \
+                if values.get('To') == int(nodeID):
+                    overflow.append(values.get('Overflow'))
+            if all(i == overflow[0] for i in overflow) == False:
+                raise EdgeError(f"La node {NODES[str(nodeID)].get('Name')} reçoit \
                     des edges avec et sans overflow")
 
-    # Total input versus in system 
-    for Name in Graph.get_graph_name:
-        G4 = Graph.get_graph(Name)
-        Input = 0
-        for Timestep in range(Time + 1):
-            InSystem = 0
-            for Node in G4.Nodes():
+    # total input versus in system 
+    for name in graph.get_graph_name:
+        G4 = graph.get_graph(name)
+        carbon_input = 0
+        for timestep in range(time + 1):
+            in_system = 0
+            for Node in G4.nodes():
                 if type(Node) == gf.TopNode:
-                    Input += Node.GetStock(G4, Timestep)
+                    carbon_input += Node.get_stock(G4, timestep)
                 elif Node.NAME == 'N2O emissions': # Updater pour général
                     continue
                 elif type(Node) == gf.PoolNode or type(Node) == gf.DecayNode or \
                     type(Node) == gf.RecyclingNode:
                     with warnings.catch_warnings():
                         warnings.simplefilter('ignore')
-                        InSystem += Node.GetStock(G4, Timestep)
-            if Input > InSystem - MOSIR_TOLERENCE and Input < InSystem + MOSIR_TOLERENCE :
+                        in_system += Node.get_stock(G4, timestep)
+            if carbon_input > in_system - MOSIR_TOLERENCE and carbon_input < in_system + MOSIR_TOLERENCE :
                 continue
             else:
                 raise QuantityError(f"Graph : {G4.get_name} La quantité total \
-                    en input ({Input}) au temps {Timestep} n'est pas égale au total \
-                    présent dans le système ({InSystem})")
+                    en input ({carbon_input}) au temps {timestep} n'est pas égale au total \
+                    présent dans le système ({in_system})")
 
 # N2O checkup
 
 #for Name in Test_02.get_graph_name:
 #    Graph = Test_02.get_graph(Name)
-#    for Time in range(16): # Ajuster le temps des simulations
+#    for time in range(16): # Ajuster le temps des simulations
 #        for Node in Graph.Nodes():
 #            if Node.NAME in ['Land application', 'Biomethanisation, combustion']:
-#                print(f'Time {Time}, {Node.NAME} = {Node.GetCarbon(Graph, Time)}')
-                #C = Node.CountCarbon(Graph, Time, Cumulative = False)
+#                print(f'time {time}, {Node.NAME} = {Node.GetCarbon(Graph, time)}')
+                #C = Node.CountCarbon(Graph, time, Cumulative = False)
                 #if C != 0:
                 #    N = Node.NAME
-                #    T = Time
-                #    new = {'Time': T, 'Node': N, 'Value': C}
+                #    T = time
+                #    new = {'time': T, 'Node': N, 'Value': C}
                 #    new_df = pd.DataFrame([new])
                 #    df = pd.concat([df, new_df], ignore_index = True)
 
@@ -240,8 +240,8 @@ for i, j in enumerate(liste):
 
 #for Name in Test_02.get_graph_name:
 #    Graph = Test_02.get_graph(Name)
-#    for Time in range(16): # Ajuster le temps des simulations
+#    for time in range(16): # Ajuster le temps des simulations
 #        for Node in Graph.Nodes():
 #            if Node.NAME in ['Land application', 'Biomethanisation, combustion']:
-#                print(f'Time {Time}, {Node.NAME} = {Node.GetCarbon(Graph, Time)}')
+#                print(f'time {time}, {Node.NAME} = {Node.GetCarbon(Graph, time)}')
 #

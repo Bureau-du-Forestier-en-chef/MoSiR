@@ -151,10 +151,10 @@ class TopNode(IndustrialNode):
 class ProportionNode(IndustrialNode):
     def __init__(self, NAME: str):
         super().__init__(NAME)
-        self.__cache = Caching()
+        self.__pn_cache = Caching()
     
     def past_carbon(self):
-        return self.__cache
+        return self.__pn_cache
     
     def get_flux_out(self, graph: WPGraph, time: int, cumulative: bool = False) -> float:
         if time in self.past_carbon().flux_cache:
@@ -166,7 +166,7 @@ class ProportionNode(IndustrialNode):
     def get_flux_in(self, graph: WPGraph, time: int, cumulative: bool = False) -> float:
         total = 0
         if cumulative == False:
-            for parent in graph.GetPredecessors(self):
+            for parent in graph.get_predecessors(self):
                 proportion_parent = self._get_value_time(graph.get_edge_proportions(parent, self), time)
                 if proportion_parent == 0:
                     continue
@@ -175,7 +175,7 @@ class ProportionNode(IndustrialNode):
             return total
         else:
             for timestep in range(time + 1):
-                for parent in graph.GetPredecessors(self):
+                for parent in graph.get_predecessors(self):
                     proportion_parent = self._get_value_time(graph.get_edge_proportions(parent, self), timestep)
                     if proportion_parent == 0:
                         continue
@@ -191,6 +191,10 @@ class DecayNode(ProportionNode):
     def __init__(self, NAME: str, HalfLife: int):
         super().__init__(NAME)
         self._HalfLife = HalfLife
+        self.__dn_cache = Caching()
+    
+    def past_carbon(self):
+        return self.__dn_cache
         
     @property
     def HalfLife(self):
@@ -203,12 +207,15 @@ class DecayNode(ProportionNode):
     def get_flux_out(self, graph: WPGraph, time: int, cumulative: bool = False) -> float:
         total = 0
         if cumulative == False:
+            if time in self.past_carbon().flux_cache:
+                return self.past_carbon().get_flux_cache(time)
             for timestep in range(time + 1): 
                 if timestep != time:  
                     flux_in = self.get_flux_in(graph, timestep, cumulative)
                     output_flux_out = (flux_in * ((0.5) ** ((time - timestep - 1)/self.HalfLife))) - \
                         (flux_in * ((0.5) ** ((time - timestep)/self.HalfLife)))
                     total += output_flux_out
+            self.past_carbon().set_flux_cache(time, total)
             return total
         else: 
             for timestep in range(time + 1):
@@ -251,7 +258,7 @@ class DecayNode(ProportionNode):
         try:
             total = 0
             for Year in range(time + 1): 
-                Annual = super().get_flux_out(graph, Year, cumulative = False)
+                Annual = self.get_flux_in(graph, Year, cumulative = False)
                 Restant = Annual * ((0.5) ** ((time - Year)/self.HalfLife))
                 total += Restant
             return total
@@ -297,11 +304,11 @@ class PoolNode(ProportionNode):
     def get_flux_in(self, graph: WPGraph, time: int, cumulative: bool = False) -> float:
         total = 0
         if cumulative == False:  
-            Annual = super().get_flux_out(graph, time, cumulative)
+            Annual = super().get_flux_in(graph, time, cumulative)
             return Annual
         else: 
             for Year in range(time + 1): 
-                Annual = super().get_flux_out(graph, Year, cumulative = False)
+                Annual = super().get_flux_in(graph, Year, cumulative = False)
                 total += Annual
             return total    
     

@@ -41,12 +41,12 @@ Import = ip.ImportData('D:/MoSiR/examples/Inputs/Import.json')
 Report = rp.ReportData('D:/MoSiR/examples/Inputs/Reporting.json')
     #
     # Add imports to graph
-ip.AddImport(Graph, Import)
+ip.add_import(Graph, Import)
     # Testing
-gt.GraphTesting(Graph, Import, Report)
+gt.graph_testing(Graph, Import, Report)
 
     # Reporting
-rp.OutputCreation(Graph, Import, Report, 'D:/MoSiR/examples/Inputs')
+rp.output_creation(Graph, Import, Report, 'D:/MoSiR/examples/Inputs')
 
     # Python 2.7, child process ou subprocess
 

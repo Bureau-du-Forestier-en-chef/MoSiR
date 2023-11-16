@@ -26,7 +26,7 @@ class ReportData():
     def get_output_data(self, output_name: str):
         return self._DATA[output_name]
 
-def UnitChange(number: float, from_unit: str, to_unit: str) -> float:
+def unit_change(number: float, from_unit: str, to_unit: str) -> float:
     F = from_unit.lower()
     T = to_unit.lower()
     if F == 'kgc':
@@ -49,7 +49,7 @@ def UnitChange(number: float, from_unit: str, to_unit: str) -> float:
         raise InvalidOption(f"{from_unit} n'est pas une option d'unité d'input \
                             (kgC ou tC)") 
         
-def OutputCreation(graph: gf.GraphFactory, import_data: ip.ImportData, 
+def output_creation(graph: gf.GraphFactory, import_data: ip.ImportData, 
                    report_data: ReportData, directory: str):
     """
     Fonction pour créer des outputs des résultats des calculs
@@ -68,53 +68,53 @@ def OutputCreation(graph: gf.GraphFactory, import_data: ip.ImportData,
     ext = report_data.get_output_data('Output file extension')
     PRG = report_data.get_output_data('PRG')
     output = report_data.get_output_data('Output')
-    input_unit = import_data.GetUnit().lower()
+    input_unit = import_data.get_unit().lower()
     
     for graph_name in output:
         info = output[graph_name]
         for output_name in info:
             data = info[output_name]
             nodes_name = data['Nodes_name']
-            Type = data['Type']
-            Summarize = Data['Summarize']
-            ReportUnit = Data['Unit'].lower()
-            if type(Data['Cumulative']) == bool:
-                if ReportUnit == 'w/m2':
-                    Cumu = False
-                elif ReportUnit in ['kgc', 'tc', 'tco2eq']:
-                    Cumu = Data['Cumulative']
+            out_type = data['Type']
+            summarize = data['Summarize']
+            report_unit = data['Unit'].lower()
+            if type(data['Cumulative']) == bool:
+                if report_unit == 'w/m2':
+                    cumu = False
+                elif report_unit in ['kgc', 'tc', 'tco2eq']:
+                    cumu = data['Cumulative']
                 else:
-                    raise InvalidOption(f"Unit ({Data['Unit']}) dans le fichier \
+                    raise InvalidOption(f"Unit ({data['Unit']}) dans le fichier \
                                     de reporting n'est pas une option valide")
             else: 
-                raise InvalidOption(f"Cumulative ({Data['Cumulative']}) dans le fichier \
+                raise InvalidOption(f"Cumulative ({data['Cumulative']}) dans le fichier \
                                     de reporting doit être un booléen, donc soit 'true' ou 'false'")
 
-            df = pd.DataFrame(columns = Nodes_name)
+            df = pd.DataFrame(columns = nodes_name)
             df.insert(0, 'Time', None)
 
-            G = graph.Getgraph(graphName)
-            for Node in G.Nodes():
-                if Node.NAME in Nodes_name:
-                    for Timestep in range(Time + 1):
-                        df.loc[Timestep, 'Time'] = Timestep
-                        if Type == 'Flux in':
-                            result = Node.GetFluxIn(G, Timestep, Cumulative = Cumu)
-                            result = UnitChange(result, InputUnit, ReportUnit)
-                            df.loc[Timestep, Node.NAME] = result
-                        elif Type == 'Flux out':
-                            result = Node.GetFluxOut(G, Timestep, Cumulative = Cumu)
-                            result = UnitChange(result, InputUnit, ReportUnit)
-                            df.loc[Timestep, Node.NAME] = result
-                        elif Type == 'Stock':
-                            result = Node.GetStock(G, Timestep, Cumulative = Cumu)
-                            result = UnitChange(result, InputUnit, ReportUnit)
-                            df.loc[Timestep, Node.NAME] = result
+            G = graph.get_graph(graph_name)
+            for node in G.nodes():
+                if node.NAME in nodes_name:
+                    for timestep in range(time + 1):
+                        df.loc[timestep, 'Time'] = timestep
+                        if out_type == 'Flux in':
+                            result = node.get_flux_in(G, timestep, cumulative = cumu)
+                            result = unit_change(result, input_unit, report_unit)
+                            df.loc[timestep, node.NAME] = result
+                        elif out_type == 'Flux out':
+                            result = node.get_flux_out(G, timestep, cumulative = cumu)
+                            result = unit_change(result, input_unit, report_unit)
+                            df.loc[timestep, node.NAME] = result
+                        elif out_type == 'Stock':
+                            result = node.get_stock(G, timestep, cumulative = cumu)
+                            result = unit_change(result, input_unit, report_unit)
+                            df.loc[timestep, node.NAME] = result
                         else:
-                            raise InvalidOption(f"L'entrée <Type> ('{Type}') dans le \
+                            raise InvalidOption(f"L'entrée <Type> ('{out_type}') dans le \
                                 reporting file n'est pas un choix valide. Choix \
                                 possibles: 'Flux in', 'Flux out' ou 'Stock'.")
-            if ReportUnit == 'tco2eq':
+            if report_unit == 'tco2eq':
                 for col in df:
                     if col.lower() in ['time', 'timestep', 'temps', 
                                        'year', 'years', 'année', 'années']:
@@ -131,21 +131,21 @@ def OutputCreation(graph: gf.GraphFactory, import_data: ip.ImportData,
                         df[col] = 0
                         warnings.warn(f"Il n'y a pas de gas reconnu dans {col}, \
                                       le résultat sera donc de 0", stacklevel = 2)
-            elif ReportUnit == 'w/m2':
-                C = Data['Cumulative']
+            elif report_unit == 'w/m2':
+                C = data['Cumulative']
                 RF = pd.read_excel('MoSiR/RadiativeForcing/Dynco2_Base.xlsx').sort_values(by = 'Year').\
                         to_dict(orient = 'list')
                 df_2 = df.to_dict(orient = 'list')
-                cr.RadFormatting(df_2, RF, Cumulative = C)
+                cr.RadFormatting(df_2, RF, cumulative = C)
                 df = pd.DataFrame(df_2)
                 
-            if Summarize == 'Combined':
+            if summarize == 'Combined':
                 df['Combined'] = df.drop('Time', axis = 1).sum(axis = 1)
                 df = df[['Time', 'Combined']]
-            df['Unit'] = ReportUnit
-            if Directory[-1] == '/':
-                df.to_csv(Directory + graphName + '_' + output_name + Ext, 
+            df['Unit'] = report_unit
+            if directory[-1] == '/':
+                df.to_csv(directory + graph_name + '_' + output_name + ext, 
                           index = False, sep = ',')
-            elif Directory[-1] != '/':
-                df.to_csv(Directory + '/' + graphName + '_' + output_name + Ext, 
+            elif directory[-1] != '/':
+                df.to_csv(directory + '/' + graph_name + '_' + output_name + ext, 
                           index = False, sep = ',')
