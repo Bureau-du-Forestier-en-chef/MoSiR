@@ -2,9 +2,9 @@
 import sys
 import json
 import warnings # Maybe
-from abc import ABCMeta, abstractmethod
-import MoSiR.mosir_exceptions as me
 import MoSiR.NetworkxGraph as wp
+import MoSiR.mosir_exceptions as me
+from abc import ABCMeta, abstractmethod
 
 # Caching --------------------------------------------------------------------
 class Caching():
@@ -131,21 +131,21 @@ class TopNode(IndustrialNode):
         elif cumulative == True:
             total = 0
             for timestep in range(time + 1):
-                annual_flux = self._get_quantity_time(timestep)
+                total += self._get_quantity_time(timestep)
+            return total
+
     def get_flux_in(self, graph: WPGraph, time: int, cumulative: bool = False) -> float:
         if cumulative == False:
             return self._get_quantity_time(time)
         elif cumulative == True:
             total = 0
             for timestep in range(time + 1):
-                annual_flux = self._get_quantity_time(timestep)
+                total += self._get_quantity_time(timestep)
+            return total
+
     def get_stock(self, graph: WPGraph, time: int, cumulative: bool = False) -> float:
-        if cumulative == False:
-            return self._get_quantity_time(time)
-        elif cumulative == True:
-            total = 0
-            for timestep in range(time + 1):
-                annual_flux = self._get_quantity_time(timestep)
+        return print('Aucun carbone ne réside dans ce noeud ({self.NAME}), seulement des flux le traverse')
+
 class ProportionNode(IndustrialNode):
     def __init__(self, NAME: str):
         super().__init__(NAME)
@@ -155,11 +155,22 @@ class ProportionNode(IndustrialNode):
         return self.__pn_cache
     
     def get_flux_out(self, graph: WPGraph, time: int, cumulative: bool = False) -> float:
-        if time in self.past_carbon().flux_cache:
-            return self.past_carbon().get_flux_cache(time)
-        flux_out = self.get_flux_in(graph, time, cumulative)
-        self.past_carbon().set_flux_cache(time, flux_out)
-        return flux_out
+        if cumulative == False:
+            if time in self.past_carbon().flux_cache:
+                return self.past_carbon().get_flux_cache(time)
+            flux_out = self.get_flux_in(graph, time, cumulative)
+            self.past_carbon().set_flux_cache(time, flux_out)
+            return flux_out
+        if cumulative == True:
+            total = 0
+            for timestep in range(time + 1):
+                if timestep in self.past_carbon().flux_cache:
+                    total += self.past_carbon().get_flux_cache(timestep)
+                    continue
+                flux_out = self.get_flux_in(graph, timestep, cumulative)
+                self.past_carbon().set_flux_cache(timestep, flux_out)
+                total += flux_out
+            return total
         
     def get_flux_in(self, graph: WPGraph, time: int, cumulative: bool = False) -> float:
         total = 0
@@ -178,8 +189,7 @@ class ProportionNode(IndustrialNode):
                     if proportion_parent == 0:
                         continue
                     parent_carbon = parent.get_flux_out(graph, timestep, cumulative = False)
-                    carbon += proportion_parent * parent_carbon
-                    total += carbon
+                    total += proportion_parent * parent_carbon
             return total
 
     def get_stock(self, graph: WPGraph, time: int, cumulative: bool = False) -> int:

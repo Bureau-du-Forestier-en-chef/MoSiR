@@ -1,5 +1,5 @@
-import networkx as nx
 import igraph as ig
+import networkx as nx
 import MoSiR.mosir_exceptions as me
 
 class WPGraph():

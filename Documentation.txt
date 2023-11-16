@@ -11,6 +11,9 @@ Idées en vrac :
 - Si une dernière node est en même temps une node avec du decay, il va y avoir du carbone de
     perdu si aucune node enfant en dessous d'elle ne peut récupérer le carbon qui sort
 - Une decay node ne peut pas être en premier, il est nécessaire de faire un intermédiaire 
+- Une recycling node ne peut pas remonter jusqu'à la première node. La première node va ignorer cet
+    intrant. Préférable de faire un intermédiaire après la first node si jamais on veut remonter du
+    recyclage aussi haut
 
 
 

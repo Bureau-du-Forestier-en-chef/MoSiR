@@ -1,17 +1,16 @@
 # -*- coding: UTF-8 -*-
-import argparse as ap
 import sys
+import argparse as ap
 
 sys.path.append("../MoSiR")
 from MoSiR import GraphGen as gf
+from MoSiR import GraphTest as gt
 from MoSiR import ImportInfo as ip
 from MoSiR import ReportingInfo as rp
-from MoSiR import GraphTest as gt
 
-""" def main(raw_args=None):
+def main(raw_args = None):
     parser = ap.ArgumentParser(
         description = 'Process input and output for the MoSiR calculator')
-
     parser.add_argument('--GraphFileDirectory', '-G',
         dest = 'G',                
         required = True,
@@ -33,23 +32,23 @@ from MoSiR import GraphTest as gt
 
     Graph = gf.GraphFactory(args.G)
     Import = ip.ImportData(args.I)
-    Report = rp.ReportData(args.R) """
+    Report = rp.ReportData(args.R) 
  
     # Alternate
-Graph = gf.GraphFactory('D:/MoSiR/examples/Inputs/Graph.json')
-Import = ip.ImportData('D:/MoSiR/examples/Inputs/Import.json')
-Report = rp.ReportData('D:/MoSiR/examples/Inputs/Reporting.json')
+    #Graph = gf.GraphFactory('D:/MoSiR/examples/Inputs/Graph.json')
+    #Import = ip.ImportData('D:/MoSiR/examples/Inputs/Import.json')
+    #Report = rp.ReportData('D:/MoSiR/examples/Inputs/Reporting.json')
     #
     # Add imports to graph
-ip.add_import(Graph, Import)
+    ip.add_import(Graph, Import)
 
     # Testing
-gt.graph_testing(Graph, Report)
+    gt.graph_testing(Graph, Report)
 
     # Reporting
-rp.output_creation(Graph, Import, Report, 'D:/MoSiR/examples/Inputs')
+    rp.output_creation(Graph, Import, Report, args.O)
 
     # Python 2.7, child process ou subprocess
 
-#if __name__ == "__main__":
-#    main()
+if __name__ == "__main__":
+    main()

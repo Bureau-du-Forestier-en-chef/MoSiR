@@ -4,55 +4,116 @@ import warnings
 import pandas as pd
 sys.path.append("../MoSiR")
 import MoSiR.GraphGen as gf
-import MoSiR.ImportInfo as ip
 import MoSiR.ReportingInfo as rp
 import MoSiR.NetworkxGraph as wp
 import MoSiR.mosir_exceptions as me
 import MoSiR.RadiativeForcing.CarbonToRad as cr
 
+MOSIR_TOLERENCE = 0.0001
+
 # Test GraphGen: calcul des nodes --------------------------------------------
+# Test 01
 test_01 = wp.WPGraph('graph_test_01')
 
 A = gf.TopNode('A')
 B = gf.ProportionNode('B')
 C = gf.DecayNode('C', 5)
 D = gf.DecayNode('D', 10)
-E = gf.RecyclingNode('E')
-F = gf.PoolNode('F')
+E = gf.PoolNode('F')
 
 test_01.add_node(A)
 test_01.add_node(B)
 test_01.add_node(C)
 test_01.add_node(D)
 test_01.add_node(E)
-test_01.add_node(F)
  
 test_01.add_edge(A, B, proportions = [1])
 test_01.add_edge(B, C, proportions = [1])
-test_01.add_edge(C, D, proportions = [0.75, 0.5, 0.5, 0.25, 1])
-test_01.add_edge(C, E, proportions = [0.25, 0.5, 0.5, 0.75, 0])
-test_01.add_edge(E, B, proportions = [1])
-test_01.add_edge(D, F, proportions = [1])
+test_01.add_edge(C, D, proportions = [1])
+test_01.add_edge(D, E, proportions = [1])
 
-A.time = [0, 1]
-A.quantities = [10, 20]
+A.time = [0, 1, 2, 3, 4, 5]
+A.quantities = [10, 20, 30, 40, 10, 10]
 
 for timestep in range(11):
     assert A.get_flux_out(test_01, timestep)\
         == B.get_flux_in(test_01, timestep)\
         == B.get_flux_out(test_01, timestep)\
-        == C.get_flux_in(test_01, timestep)
+        == C.get_flux_in(test_01, timestep)\
     
     assert A.get_flux_out(test_01, timestep, cumulative = True)\
         == B.get_flux_in(test_01, timestep, cumulative = True)\
         == B.get_flux_out(test_01, timestep, cumulative = True)\
         == C.get_flux_in(test_01, timestep, cumulative = True)
+    
+    assert C.get_flux_out(test_01, timestep)\
+        > (D.get_flux_in(test_01, timestep)\
+           - MOSIR_TOLERENCE) and \
+           C.get_flux_out(test_01, timestep)\
+        < (D.get_flux_in(test_01, timestep)\
+           + MOSIR_TOLERENCE)
+    
+    assert C.get_flux_out(test_01, timestep, cumulative = True)\
+        > (D.get_flux_in(test_01, timestep, cumulative = True)\
+           - MOSIR_TOLERENCE) and \
+           C.get_flux_out(test_01, timestep, cumulative = True)\
+        < (D.get_flux_in(test_01, timestep, cumulative = True)\
+           + MOSIR_TOLERENCE)
+    
+    assert D.get_flux_out(test_01, timestep)\
+        > (E.get_flux_in(test_01, timestep)\
+           - MOSIR_TOLERENCE) and \
+           D.get_flux_out(test_01, timestep)\
+        < (E.get_flux_in(test_01, timestep)\
+           + MOSIR_TOLERENCE)
+    
+    assert D.get_flux_out(test_01, timestep, cumulative = True)\
+        > (E.get_flux_in(test_01, timestep, cumulative = True)\
+           - MOSIR_TOLERENCE) and \
+           D.get_flux_out(test_01, timestep, cumulative = True)\
+        < (E.get_flux_in(test_01, timestep, cumulative = True)\
+           + MOSIR_TOLERENCE)
+    
+    # Stock = cumu in - cumu out
+    assert C.get_stock(test_01, timestep)\
+        > (C.get_flux_in(test_01, timestep, cumulative = True)\
+            - C.get_flux_out(test_01, timestep, cumulative = True)\
+            - MOSIR_TOLERENCE) and \
+            C.get_stock(test_01, timestep)\
+        < (C.get_flux_in(test_01, timestep, cumulative = True)\
+            - C.get_flux_out(test_01, timestep, cumulative = True)\
+            + MOSIR_TOLERENCE)
+    
+    assert D.get_stock(test_01, timestep)\
+        > (D.get_flux_in(test_01, timestep, cumulative = True)\
+            - D.get_flux_out(test_01, timestep, cumulative = True)\
+            - MOSIR_TOLERENCE) and \
+        D.get_stock(test_01, timestep)\
+        < (D.get_flux_in(test_01, timestep, cumulative = True)\
+            - D.get_flux_out(test_01, timestep, cumulative = True)\
+            + MOSIR_TOLERENCE)
 
-A.get_flux_in(test_01, 0)
-B.get_flux_in(test_01, 0, cumulative = False)
-C.get_flux_out(test_01, 3, cumulative = True)
-D.get_flux_in(test_01, 4, cumulative = True) 
-
+# Test 02
+#test_02 = wp.WPGraph('graph_test_02')
+#
+#F = gf.TopNode('F')
+#G = gf.ProportionNode('G')
+#H = gf.RecyclingNode('H')
+#I = gf.RecyclingNode('I')
+#
+#test_02.add_node(F)
+#test_02.add_node(G)
+#test_02.add_node(H)
+#test_02.add_node(I)
+# 
+#test_02.add_edge(F, G, proportions = [1])
+#test_02.add_edge(G, H, proportions = [1])
+#test_02.add_edge(H, I, proportions = [1])
+#test_02.add_edge(I, G, proportions = [1])
+#
+#F.time = [0]
+#F.quantities = [10]
+#
 # Test du radiatif -----------------------------------------------------------
 time = list(range(1, 2001))
 CO2 = [1/3.6667] + [0] * (len(time) - 1)         
@@ -60,7 +121,7 @@ CH4 = [1/1.3333] + [0] * (len(time) - 1)
 N2O = [1] + [0] * (len(time) - 1)          
 CO = [1/2.6666] + [0] * (len(time) - 1)   
        
-test = {
+test_03 = {
     'Year': time,
     'CO2': CO2,
     'CH4': CH4,
@@ -71,12 +132,11 @@ test = {
 RF = pd.read_excel('MoSiR/RadiativeForcing/Dynco2_Base.xlsx').\
     sort_values(by = 'Year').drop('Unit', axis = 1).to_dict(orient = 'list')
 
-cr.rad_formatting(test, RF, cumulative= False)
+cr.rad_formatting(test_03, RF, cumulative = False)
 
-assert test == RF
+assert test_03 == RF
 
 # Test de l'import -----------------------------------------------------------
-
 def graph_testing(graph: gf.GraphFactory,
                  report: rp.ReportData):
     MOSIR_TOLERENCE = 0.0001
