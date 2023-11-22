@@ -12,86 +12,90 @@ import MoSiR.RadiativeForcing.CarbonToRad as cr
 MOSIR_TOLERENCE = 0.0001
 
 # Test GraphGen: calcul des nodes --------------------------------------------
-# Test 01
-test_01 = wp.WPGraph('graph_test_01')
+def test_01():
+    test_01 = wp.WPGraph('graph_test_01')
 
-A = gf.TopNode('A')
-B = gf.ProportionNode('B')
-C = gf.DecayNode('C', 5)
-D = gf.DecayNode('D', 10)
-E = gf.PoolNode('F')
+    A = gf.TopNode('A')
+    B = gf.ProportionNode('B')
+    C = gf.DecayNode('C', 5)
+    D = gf.DecayNode('D', 10)
+    E = gf.PoolNode('F')
 
-test_01.add_node(A)
-test_01.add_node(B)
-test_01.add_node(C)
-test_01.add_node(D)
-test_01.add_node(E)
+    test_01.add_node(A)
+    test_01.add_node(B)
+    test_01.add_node(C)
+    test_01.add_node(D)
+    test_01.add_node(E)
  
-test_01.add_edge(A, B, proportions = [1])
-test_01.add_edge(B, C, proportions = [1])
-test_01.add_edge(C, D, proportions = [1])
-test_01.add_edge(D, E, proportions = [1])
+    test_01.add_edge(A, B, proportions = [1])
+    test_01.add_edge(B, C, proportions = [1])
+    test_01.add_edge(C, D, proportions = [1])
+    test_01.add_edge(D, E, proportions = [1])
 
-A.time = [0, 1, 2, 3, 4, 5]
-A.quantities = [10, 20, 30, 40, 10, 10]
+    A.time = [0, 1, 2, 3, 4, 5]
+    A.quantities = [10, 20, 30, 40, 10, 10]
 
-for timestep in range(11):
-    assert A.get_flux_out(test_01, timestep)\
-        == B.get_flux_in(test_01, timestep)\
-        == B.get_flux_out(test_01, timestep)\
-        == C.get_flux_in(test_01, timestep)\
-    
-    assert A.get_flux_out(test_01, timestep, cumulative = True)\
-        == B.get_flux_in(test_01, timestep, cumulative = True)\
-        == B.get_flux_out(test_01, timestep, cumulative = True)\
-        == C.get_flux_in(test_01, timestep, cumulative = True)
-    
-    assert C.get_flux_out(test_01, timestep)\
-        > (D.get_flux_in(test_01, timestep)\
-           - MOSIR_TOLERENCE) and \
-           C.get_flux_out(test_01, timestep)\
-        < (D.get_flux_in(test_01, timestep)\
-           + MOSIR_TOLERENCE)
-    
-    assert C.get_flux_out(test_01, timestep, cumulative = True)\
-        > (D.get_flux_in(test_01, timestep, cumulative = True)\
-           - MOSIR_TOLERENCE) and \
-           C.get_flux_out(test_01, timestep, cumulative = True)\
-        < (D.get_flux_in(test_01, timestep, cumulative = True)\
-           + MOSIR_TOLERENCE)
-    
-    assert D.get_flux_out(test_01, timestep)\
-        > (E.get_flux_in(test_01, timestep)\
-           - MOSIR_TOLERENCE) and \
-           D.get_flux_out(test_01, timestep)\
-        < (E.get_flux_in(test_01, timestep)\
-           + MOSIR_TOLERENCE)
-    
-    assert D.get_flux_out(test_01, timestep, cumulative = True)\
-        > (E.get_flux_in(test_01, timestep, cumulative = True)\
-           - MOSIR_TOLERENCE) and \
-           D.get_flux_out(test_01, timestep, cumulative = True)\
-        < (E.get_flux_in(test_01, timestep, cumulative = True)\
-           + MOSIR_TOLERENCE)
-    
-    # Stock = cumu in - cumu out
-    assert C.get_stock(test_01, timestep)\
-        > (C.get_flux_in(test_01, timestep, cumulative = True)\
-            - C.get_flux_out(test_01, timestep, cumulative = True)\
-            - MOSIR_TOLERENCE) and \
-            C.get_stock(test_01, timestep)\
-        < (C.get_flux_in(test_01, timestep, cumulative = True)\
-            - C.get_flux_out(test_01, timestep, cumulative = True)\
-            + MOSIR_TOLERENCE)
-    
-    assert D.get_stock(test_01, timestep)\
-        > (D.get_flux_in(test_01, timestep, cumulative = True)\
-            - D.get_flux_out(test_01, timestep, cumulative = True)\
-            - MOSIR_TOLERENCE) and \
-        D.get_stock(test_01, timestep)\
-        < (D.get_flux_in(test_01, timestep, cumulative = True)\
-            - D.get_flux_out(test_01, timestep, cumulative = True)\
-            + MOSIR_TOLERENCE)
+    for timestep in range(11):
+        assert A.get_flux_out(test_01, timestep)\
+            == B.get_flux_in(test_01, timestep)\
+            == B.get_flux_out(test_01, timestep)\
+            == C.get_flux_in(test_01, timestep), \
+                'Flux out of A != Flux in of B'
+
+        assert A.get_flux_out(test_01, timestep, cumulative = True)\
+            == B.get_flux_in(test_01, timestep, cumulative = True)\
+            == B.get_flux_out(test_01, timestep, cumulative = True)\
+            == C.get_flux_in(test_01, timestep, cumulative = True), \
+                'Cumulative flux out of A != Flux in of B'
+
+        assert C.get_flux_out(test_01, timestep)\
+            > (D.get_flux_in(test_01, timestep)\
+               - MOSIR_TOLERENCE) and \
+               C.get_flux_out(test_01, timestep)\
+            < (D.get_flux_in(test_01, timestep)\
+               + MOSIR_TOLERENCE), 'Flux out of C != Flux in of D'
+
+        assert C.get_flux_out(test_01, timestep, cumulative = True)\
+            > (D.get_flux_in(test_01, timestep, cumulative = True)\
+               - MOSIR_TOLERENCE) and \
+               C.get_flux_out(test_01, timestep, cumulative = True)\
+            < (D.get_flux_in(test_01, timestep, cumulative = True)\
+               + MOSIR_TOLERENCE), 'Cumulative flux out of C != Flux in of D'
+
+        assert D.get_flux_out(test_01, timestep)\
+            > (E.get_flux_in(test_01, timestep)\
+               - MOSIR_TOLERENCE) and \
+               D.get_flux_out(test_01, timestep)\
+            < (E.get_flux_in(test_01, timestep)\
+               + MOSIR_TOLERENCE), 'Flux out of D != Flux in of E'
+
+        assert D.get_flux_out(test_01, timestep, cumulative = True)\
+            > (E.get_flux_in(test_01, timestep, cumulative = True)\
+               - MOSIR_TOLERENCE) and \
+               D.get_flux_out(test_01, timestep, cumulative = True)\
+            < (E.get_flux_in(test_01, timestep, cumulative = True)\
+               + MOSIR_TOLERENCE), 'Cumulative flux out of D != Flux in of E'
+
+            # Stock = cumu in - cumu out
+        assert C.get_stock(test_01, timestep)\
+            > (C.get_flux_in(test_01, timestep, cumulative = True)\
+                - C.get_flux_out(test_01, timestep, cumulative = True)\
+                - MOSIR_TOLERENCE) and \
+                C.get_stock(test_01, timestep)\
+            < (C.get_flux_in(test_01, timestep, cumulative = True)\
+                - C.get_flux_out(test_01, timestep, cumulative = True)\
+                + MOSIR_TOLERENCE), 'C stock != cumulative flux in - \
+                    flux out'
+
+        assert D.get_stock(test_01, timestep)\
+            > (D.get_flux_in(test_01, timestep, cumulative = True)\
+                - D.get_flux_out(test_01, timestep, cumulative = True)\
+                - MOSIR_TOLERENCE) and \
+            D.get_stock(test_01, timestep)\
+            < (D.get_flux_in(test_01, timestep, cumulative = True)\
+                - D.get_flux_out(test_01, timestep, cumulative = True)\
+                + MOSIR_TOLERENCE), 'D stock != cumulative flux in - \
+                    cumulative flux out'
 
 # Test 02
 #test_02 = wp.WPGraph('graph_test_02')
@@ -115,34 +119,34 @@ for timestep in range(11):
 #F.quantities = [10]
 #
 # Test du radiatif -----------------------------------------------------------
-time = list(range(1, 2001))
-CO2 = [1/3.6667] + [0] * (len(time) - 1)         
-CH4 = [1/1.3333] + [0] * (len(time) - 1)          
-N2O = [1] + [0] * (len(time) - 1)          
-CO = [1/2.6666] + [0] * (len(time) - 1)   
-       
-test_03 = {
-    'Year': time,
-    'CO2': CO2,
-    'CH4': CH4,
-    'N2O': N2O,
-    'CO': CO
+def test_03_radiatif():
+    time = list(range(1, 2001))
+    CO2 = [1/3.6667] + [0] * (len(time) - 1)         
+    CH4 = [1/1.3333] + [0] * (len(time) - 1)          
+    N2O = [1] + [0] * (len(time) - 1)          
+    CO = [1/2.6666] + [0] * (len(time) - 1)     
+    test_03 = {
+        'Year': time,
+        'CO2': CO2,
+        'CH4': CH4,
+        'N2O': N2O,
+        'CO': CO
     }
-
-RF = pd.read_excel('MoSiR/RadiativeForcing/Dynco2_Base.xlsx').\
-    sort_values(by = 'Year').drop('Unit', axis = 1).to_dict(orient = 'list')
-
-cr.rad_formatting(test_03, RF, cumulative = False)
-
-assert test_03 == RF
+    RF = pd.read_excel("./MoSiR/RadiativeForcing/Dynco2_Base.xlsx").\
+        sort_values(by = 'Year').drop('Unit', axis = 1).to_dict(orient = 'list')
+    cr.rad_formatting(test_03, RF, cumulative = False)
+    assert test_03 == RF, "Not the same RF as DynCo"
 
 # Test de l'import -----------------------------------------------------------
-def graph_testing(graph: gf.GraphFactory,
-                 report: rp.ReportData):
+def test_04_first_last_node(graph: gf.GraphFactory):
+    """Premier test pour évaluer si au moins une première et une dernière node
+    est présente. Donc s'assurer que le graph n'est pas une loop.
+
+    Args:
+        graph (gf.GraphFactory): _description_
+        report (rp.ReportData): _description_
+    """
     MOSIR_TOLERENCE = 0.0001
-    time = report.get_output_data('Time')
-    
-    # First node et last node
     for graph_name in graph.get_data:
         G1 = graph.get_data.get(graph_name)
         NODES = G1.get('Nodes', {})
@@ -159,7 +163,17 @@ def graph_testing(graph: gf.GraphFactory,
             warnings.warn(f"Attention, aucune PoolNode présente. La quantité \
                 de carbone présente dans le système sera calculé seulement sur \
                 des nodes de demi-vie ou de recyclage", stacklevel = 2)   
-   
+
+def test_05_edges_sum(graph: gf.GraphFactory):
+    """_summary_
+
+    Args:
+        graph (gf.GraphFactory): _description_
+
+    Raises:
+        me.EdgeError: _description_
+    """
+    MOSIR_TOLERENCE = 0.0001
     # total des Edges 
     for name in graph.get_graph_name:
         G2 = graph.get_graph(name)
@@ -175,6 +189,7 @@ def graph_testing(graph: gf.GraphFactory,
                 warnings.warn(f'La somme des edges sortant de la node {node.NAME} est de 0',
                               stacklevel = 2)
 
+def test_06_overflow(graph: gf.GraphFactory):
     # Test de overflow
     for graph_name in graph.get_data:
         G3 = graph.get_data.get(graph_name)
@@ -189,6 +204,10 @@ def graph_testing(graph: gf.GraphFactory,
                 raise me.EdgeError(f"La node {NODES[str(nodeID)].get('Name')} reçoit \
                     des edges avec et sans overflow")
 
+def test_07_insystem(graph: gf.GraphFactory,
+                 report: rp.ReportData):
+    MOSIR_TOLERENCE = 0.0001
+    time = report.get_output_data('Time')
     # total input versus in system 
     for name in graph.get_graph_name:
         G4 = graph.get_graph(name)
@@ -290,3 +309,7 @@ liste = {1: 'a', 2: 'b', 3: "ce"}
 for i, j in enumerate(liste):
     print(i)
 """
+
+if __name__ == "__main__":
+    test_01()
+    test_03_radiatif()
