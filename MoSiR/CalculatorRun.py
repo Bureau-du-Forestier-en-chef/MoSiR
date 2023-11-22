@@ -1,10 +1,8 @@
 # -*- coding: UTF-8 -*-
 import sys
 import argparse as ap
-
 sys.path.append("../MoSiR")
 from MoSiR import GraphGen as gf
-from MoSiR import graph_test as gt
 from MoSiR import ImportInfo as ip
 from MoSiR import ReportingInfo as rp
 
@@ -41,9 +39,6 @@ def main(raw_args = None):
     #
     # Add imports to graph
     ip.add_import(Graph, Import)
-
-    # Testing
-    gt.test_04_first_last_node(Graph)
 
     # Reporting
     rp.output_creation(Graph, Import, Report, args.O)
