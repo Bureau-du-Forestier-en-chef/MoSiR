@@ -6,29 +6,6 @@ from MoSiR import GraphGen as gf
 from MoSiR import ImportInfo as ip
 from MoSiR import ReportingInfo as rp
 
-import unittest
-class TestStringMethods(unittest.TestCase):
-
-    def test_upper(self):
-        self.assertEqual('foo'.upper(), 'FOO')
-
-    def test_isupper(self):
-        self.assertTrue('FOO'.isupper())
-        self.assertFalse('Foo'.isupper())
-
-    def test_split(self):
-        s = 'hello world'
-        self.assertEqual(s.split(), ['hello', 'world'])
-        # check that s.split fails when the separator is not a string
-        with self.assertRaises(TypeError):
-            s.split(2)
-
-def test_calis():
-    a = 1
-    b = 2
-    assert a+b == 3
-
-
 def main(raw_args = None):
     parser = ap.ArgumentParser(
         description = 'Process input and output for the MoSiR calculator')
