@@ -8,6 +8,7 @@ from flask import Flask
 from flask_cors import CORS
 from .blueprint_component import Component
 from .blueprint_component import Endpointaction
+import pkg_resources
 
 
 class Flaskwrapper:
@@ -26,10 +27,14 @@ class Flaskwrapper:
         self.__add_all_endpoints()
         Component.main_renderer.set_description(self.__get_description())
     def __get_description(self)->[str]:
-        read_me_location = os.path.join(os.path.dirname(os.path.abspath(__file__)),"../","README.md")
+        #read_me_location = os.path.join(os.path.dirname(os.path.abspath(__file__)),"README.md")
         all_text = []
-        with open(read_me_location,encoding='utf-8') as readme_stream:
-            for line in readme_stream:
+        installed_packages = pkg_resources.working_set
+        packages = sorted([i.key for i in installed_packages])
+        package_name = "MoSiR"
+        if package_name in packages:
+            pkgInfo = pkg_resources.get_distribution(package_name).get_metadata('METADATA')
+            for line in pkgInfo.split('\n'):
                 if "## Install" in line:
                     break
                 if "## Description" not in line:

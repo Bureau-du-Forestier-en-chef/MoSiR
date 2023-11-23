@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-import warnings
+import warnings,os
 
 class ConstError(Exception):
     def __init__(self, message: str):    
@@ -86,7 +86,7 @@ test = {
     'CO': CO
     }
 
-RF = pd.read_excel('MoSiR/RadiativeForcing/Dynco2_Base.xlsx').\
+RF = pd.read_excel(os.path.join(os.path.dirname(os.path.abspath(__file__)),"Dynco2_Base.xlsx")).\
     sort_values(by = 'Year').drop('Unit', axis = 1).to_dict(orient = 'list')
 
 RadFormatting(test, RF, Cumulative= False)

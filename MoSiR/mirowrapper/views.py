@@ -49,7 +49,7 @@ class Mirowrapper(Component):
         self.__Session = requests.Session()
         self.__GRAPHSNAME= 'Graphs.json'
     def __get_home(self):
-        return render_template("home.html")
+        return render_template("home.html",redirect_url = self._get_url_for(self.__REDIRECT_URI))
     def __authorization_redirect(self):
         AuthorizationCode = request.args.get("code", default="")
         URL = self.__BASEAPIMIRO+ "v1/oauth/token?" + \
@@ -91,7 +91,7 @@ class Mirowrapper(Component):
     def __board_selection(self):
         self.__BoardGraphs = self.__get_boardids()
         BOARDNAMES = self.__get_sorted_board_names()
-        return render_template("board_selection.html",Boards=BOARDNAMES)
+        return render_template("board_selection.html",Boards=BOARDNAMES,select_url = self._get_url_for("/wp_selected"))
     def __wp_selected(self):
         NewBoards = {}
         for Dictionary in request.form:

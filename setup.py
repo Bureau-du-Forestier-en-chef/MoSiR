@@ -24,7 +24,7 @@ install_reqs = parse_requirements("requirements.txt", session=PipSession())
 
 reqs = [str(ir.requirement) for ir in install_reqs]
 
-with open('README.md') as f:
+with open('README.md',encoding='utf-8') as f:
     readme = f.read()
 
 with open('LICENSES/EN/LILIQ-R11EN.txt') as f:
@@ -42,5 +42,5 @@ setup(
     license=license,
     packages=find_packages(exclude=('tests', 'docs')),
     install_requires=reqs,
-    package_data = {'MoSiR': ['mirowrapper/**','static/**','templates/*','uploads/*','visualization/*','RadiativeForcing/*']}
+    package_data = {'MoSiR': ['mirowrapper/**','static/**','templates/*','uploads/*','visualization/**','RadiativeForcing/*','./README.md']}
 )

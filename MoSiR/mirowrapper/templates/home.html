@@ -19,7 +19,7 @@
         <div class="cs1 ce12">
             <a
                 class="button button-primary"
-                href="{{ url_for('mirowrapper./redirect/authorize') }}"
+                href="{{ redirect_url }}"
                 target="_blank"
             >
                 Commencer
@@ -30,7 +30,7 @@
     <script>
         async function init() {
             miro.board.ui.on('icon:click', async () => {
-                await miro.board.ui.openPanel({url: "{{ url_for('mirowrapper./redirect/authorize') }}"});
+                await miro.board.ui.openPanel({url: "{{ redirect_url }}"});
             });
         }
 

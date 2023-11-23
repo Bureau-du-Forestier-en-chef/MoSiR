@@ -3,8 +3,10 @@ MoSiR/inputs/MiroParserServerSecrets.json
 MoSiR/mirowrapper/mirowrapper.env
 MoSiR/visualization/templates/*
 !MoSiR/visualization/templates/.gitkeep
+!MoSiR/visualization/templates/keepme.txt
 MoSiR/uploads/*
 !MoSiR/uploads/.gitkeep
+!MoSiR/uploads/keepme.txt
 MoSiR/__pycache__/
 tests/__pycache__/
 build/
