@@ -43,7 +43,7 @@ class Mirowrapper(Component):
         self.__CLIENTSECRET = os.getenv("MIRO_CLIENT_SECRET")
         self.__REDIRECT_URI = os.getenv("redirect_uri") 
         if self.__CLIENTID is None or self.__CLIENTSECRET is None or self.__REDIRECT_URI is None:
-            raise(OSError("Missing "+envfile))
+            raise(OSError("Missing "+envfile+" here "+str(dotenv_path)))
         self.__BoardGraphs={}
         self.__GrapGenerators=[]
         self.__Session = requests.Session()

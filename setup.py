@@ -42,5 +42,5 @@ setup(
     license=license,
     packages=find_packages(exclude=('tests', 'docs')),
     install_requires=reqs,
-    package_data = {'MoSiR': ['inputs/*','static/**','templates/*','uploads/*']}
+    package_data = {'MoSiR': ['mirowrapper/**','static/**','templates/*','uploads/*','visualization/*','RadiativeForcing/*']}
 )
