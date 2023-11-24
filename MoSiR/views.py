@@ -8,7 +8,8 @@ from flask import Flask
 from flask_cors import CORS
 from .blueprint_component import Component
 from .blueprint_component import Endpointaction
-import pkg_resources
+import importlib
+
 
 
 class Flaskwrapper:
@@ -26,19 +27,22 @@ class Flaskwrapper:
         Component.clear_users_data(os.path.join(os.path.dirname(os.path.abspath(__file__)),"uploads"))
         self.__add_all_endpoints()
         Component.main_renderer.set_description(self.__get_description())
-    def __get_description(self)->[str]:
-        #read_me_location = os.path.join(os.path.dirname(os.path.abspath(__file__)),"README.md")
+
+    def __get_description(self) -> [str]:
+        # read_me_location = os.path.join(os.path.dirname(os.path.abspath(__file__)),"README.md")
         all_text = []
-        installed_packages = pkg_resources.working_set
-        packages = sorted([i.key for i in installed_packages])
         package_name = "MoSiR"
-        if package_name in packages:
-            pkgInfo = pkg_resources.get_distribution(package_name).get_metadata('METADATA')
-            for line in pkgInfo.split('\n'):
-                if "## Install" in line:
-                    break
-                if "## Description" not in line:
-                    all_text.append(line)
+        mosir_package = importlib.util.find_spec(package_name)
+        if mosir_package:
+            all_data = importlib.metadata.metadata(package_name)
+            package_data = list(all_data.keys())
+            package_data.sort()
+            for data in package_data:
+                if data not in all_text:
+                    all_text.append(data)
+                for line in all_data[data].split('\n'):
+                    if line not in all_text:
+                        all_text.append(line)
         return all_text
     def register(self,element:Component)-> None:
         element.add_all_endpoints()

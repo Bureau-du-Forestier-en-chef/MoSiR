@@ -49,7 +49,7 @@ class Mirowrapper(Component):
         self.__Session = requests.Session()
         self.__GRAPHSNAME= 'Graphs.json'
     def __get_home(self):
-        return render_template("home.html",redirect_url = self._get_url_for(self.__REDIRECT_URI))
+        return render_template("home.html",redirect_url = self._get_url_for(self.__REDIRECT_URI+"/authorize"))
     def __authorization_redirect(self):
         AuthorizationCode = request.args.get("code", default="")
         URL = self.__BASEAPIMIRO+ "v1/oauth/token?" + \

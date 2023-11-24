@@ -3,8 +3,8 @@ Copyright (c) 2023 Gouvernement du Québec
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 """
-import sys
-sys.path.append("../MoSiR")
+#import sys
+#sys.path.append("../MoSiR")
 
 from MoSiR import Flaskwrapper
 from MoSiR.mirowrapper.views import mirowrapper
