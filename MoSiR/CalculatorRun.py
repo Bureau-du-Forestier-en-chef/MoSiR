@@ -29,7 +29,7 @@ def main(raw_args = None):
     args = parser.parse_args(raw_args)
 
     Graph = gf.GraphFactory(args.G)
-    Import = ip.ImportData(args.I)
+    Import = ip.ImportData(args.D)
     Report = rp.ReportData(args.R) 
  
     # Alternate
@@ -41,7 +41,7 @@ def main(raw_args = None):
     ip.add_import(Graph, Import)
 
     # Reporting
-    rp.output_creation(Graph, Import, Report, args.O)
+    rp.output_creation(Graph, Import, Report, args.E)
 
     # Python 2.7, child process ou subprocess
 
