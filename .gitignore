@@ -13,6 +13,4 @@ __pycache__/
 dist/
 examples/Output
 tests/Microtests
-run.spec
-build
-dist
+
