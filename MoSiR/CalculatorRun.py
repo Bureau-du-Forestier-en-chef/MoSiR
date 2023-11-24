@@ -1,10 +1,8 @@
 # -*- coding: UTF-8 -*-
 import sys
 import argparse as ap
-
 sys.path.append("../MoSiR")
 from MoSiR import GraphGen as gf
-from MoSiR import GraphTest as gt
 from MoSiR import ImportInfo as ip
 from MoSiR import ReportingInfo as rp
 
@@ -15,18 +13,18 @@ def main(raw_args = None):
         dest = 'G',                
         required = True,
         help = 'Localisation (racine) du fichier contenant le JSON du graph') 
-    parser.add_argument('--ImportFileDirectory', '-I',
-        dest = 'I',
+    parser.add_argument('--DataFileDirectory', '-D',
+        dest = 'D',
         required = True,
-        help = 'Localisation (racine) du fichier contenant le JSON du Import') 
+        help = 'Localisation (racine) du fichier contenant le JSON des intrants') 
     parser.add_argument('--ReportFileDirectory', '-R',
         dest = 'R',
         required = True,
         help = 'Localisation (racine) du fichier contenant le JSON du Reporting') 
-    parser.add_argument('--OutputFileDirectory', '-O',
-        dest = 'O',
+    parser.add_argument('--ExtrantFileDirectory', '-E',
+        dest = 'E',
         required = True,
-        help = 'Localisation (racine) où les fichiers en output seront enregistrés') 
+        help = 'Localisation (racine) où les extrants seront enregistrés') 
 
     args = parser.parse_args(raw_args)
 
@@ -41,9 +39,6 @@ def main(raw_args = None):
     #
     # Add imports to graph
     ip.add_import(Graph, Import)
-
-    # Testing
-    gt.graph_testing(Graph, Report)
 
     # Reporting
     rp.output_creation(Graph, Import, Report, args.O)

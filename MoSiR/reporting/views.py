@@ -292,7 +292,7 @@ class Reporting(Component):
         #fake it
         ##shutil.copyfile("C:/Users/CYRGU3/Downloads/MicroTest_1_Annualrad (1).csv",os.path.join(self._get_uploads_folder(),"MicroTest_1_Annualrad.csv"))
         #Run Mosir here...
-        CalculatorRun.main(['-G', graphsjson, '-I', inputsjson,'-R',reportjson,'-O',self._get_uploads_folder()])
+        CalculatorRun.main(['-G', graphsjson, '-D', inputsjson,'-R',reportjson,'-E',self._get_uploads_folder()])
     def __get_histogram_json(self,report_json:str)->str:
         fileending = utilities.Jsonparser.read(report_json)['Output file extension']
         upload_folder = self._get_uploads_folder()
