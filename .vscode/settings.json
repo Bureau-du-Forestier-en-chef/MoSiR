@@ -4,8 +4,11 @@
         "-s",
         "./MoSiR",
         "-p",
-        "*test.py"
+        "*_test.py"
     ],
-    "python.testing.pytestEnabled": false,
-    "python.testing.unittestEnabled": true
+    "python.testing.pytestEnabled": true,
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestArgs": [
+        "tests"
+    ]
 }
