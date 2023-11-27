@@ -286,7 +286,7 @@ class Reporting(Component):
                     all_data[fid]['x'].append(int(row['Time']))
                     fid+=1
                 
-                layout['yaxis']['title'] = 'Émissions (' + row['Unit']+')'
+                layout['yaxis']['title'] = row['Unit']
         return (divid,all_data,layout)
     def __run_mosir(self,graphsjson:str,inputsjson:str,reportjson:str):
         #fake it
