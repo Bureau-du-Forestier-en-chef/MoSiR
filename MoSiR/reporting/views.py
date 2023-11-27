@@ -223,7 +223,7 @@ class Reporting(Component):
         stash = []
         stash.append('<script>')
         stash.append('const histo_data = fetch("'+htmltarget +'").then(response => response.json()).then((data)=>{')
-        stash.append('console.log(data);')
+        #stash.append('console.log(data);')
         stash.append('for (var histo_id = 0; histo_id < data.divids.length;histo_id++)')
         stash.append('{')
         stash.append('Plotly.newPlot(data.divids[histo_id], data.data[histo_id], data.layouts[histo_id]);')

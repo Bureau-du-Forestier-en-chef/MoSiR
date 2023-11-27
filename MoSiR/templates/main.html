@@ -120,7 +120,14 @@ function w3_close() {
 function isInteger(value) {
     return /^\d+$/.test(value);
 }
-
+function fillcinputs(html_inputs) {
+  const histo_data = fetch("'+htmltarget +'").then(response => response.json()).then((data)=>{
+        for (var histo_id = 0; histo_id < data.divids.length;histo_id++)
+        {
+        Plotly.newPlot(data.divids[histo_id], data.data[histo_id], data.layouts[histo_id]);
+        }
+        });
+      }
 //Adding period inputs
 function addcinputs(graph_name) {
   var table = document.getElementById("cinputs_"+graph_name);
