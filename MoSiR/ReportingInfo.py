@@ -1,4 +1,5 @@
 # -*- coding: UTF-8 -*-
+import os
 import json
 import warnings
 import pandas as pd
@@ -127,8 +128,8 @@ def output_creation(graph: gf.GraphFactory, import_data: ip.ImportData,
                                       le résultat sera donc de 0", stacklevel = 2)
             elif report_unit == 'w/m2':
                 C = data['Cumulative']
-                RF = pd.read_excel('MoSiR/RadiativeForcing/Dynco2_Base.xlsx').sort_values(by = 'Year').\
-                        to_dict(orient = 'list')
+                RF = pd.read_excel(os.path.join(os.path.dirname(os.path.abspath(__file__)),"RadiativeForcing", "Dynco2_Base.xlsx")).\
+                    sort_values(by = 'Year').to_dict(orient = 'list')
                 df_2 = df.to_dict(orient = 'list')
                 cr.rad_formatting(df_2, RF, cumulative = C)
                 df = pd.DataFrame(df_2)

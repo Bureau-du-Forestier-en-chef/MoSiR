@@ -1,11 +1,11 @@
 # -*- coding: UTF-8 -*-
-import sys
 import os
+import sys
 import pandas as pd
 sys.path.append("../MoSiR")
 import MoSiR.GraphGen as gf
 import MoSiR.NetworkxGraph as wp
-import MoSiR.RadiativeForcing.CarbonToRad as cr
+import MoSiR.CarbonToRad as cr
 
 MOSIR_TOLERENCE = 0.0001
 
@@ -15,8 +15,8 @@ def test_01():
 
     A = gf.TopNode('A')
     B = gf.ProportionNode('B')
-    C = gf.DecayNode('C', 5)
-    D = gf.DecayNode('D', 10)
+    C = gf.DecayNode('C', 10)
+    D = gf.DecayNode('D', 50)
     E = gf.PoolNode('F')
 
     test_01.add_node(A)
@@ -30,10 +30,10 @@ def test_01():
     test_01.add_edge(C, D, proportions = [1])
     test_01.add_edge(D, E, proportions = [1])
 
-    A.time = [0, 1, 2, 3, 4, 5]
-    A.quantities = [10, 20, 30, 40, 10, 10]
+    A.time = [0, 1, 2, 3, 4, 5, 50]
+    A.quantities = [10, 20, 30, 40, 10, 10, 2000]
 
-    for timestep in range(11):
+    for timestep in range(150):
         assert A.get_flux_out(test_01, timestep)\
             == B.get_flux_in(test_01, timestep)\
             == B.get_flux_out(test_01, timestep)\
@@ -96,26 +96,37 @@ def test_01():
                     cumulative flux out'
 
 # Test 02
-#test_02 = wp.WPGraph('graph_test_02')
-#
-#F = gf.TopNode('F')
-#G = gf.ProportionNode('G')
-#H = gf.RecyclingNode('H')
-#I = gf.RecyclingNode('I')
-#
-#test_02.add_node(F)
-#test_02.add_node(G)
-#test_02.add_node(H)
-#test_02.add_node(I)
-# 
-#test_02.add_edge(F, G, proportions = [1])
-#test_02.add_edge(G, H, proportions = [1])
-#test_02.add_edge(H, I, proportions = [1])
-#test_02.add_edge(I, G, proportions = [1])
-#
-#F.time = [0]
-#F.quantities = [10]
-#
+def test_02_recycling():
+    test_02 = wp.WPGraph('graph_test_02')
+
+    F = gf.TopNode('F')
+    G = gf.ProportionNode('G')
+    H = gf.ProportionNode('H')
+    I = gf.RecyclingNode('I')
+
+    test_02.add_node(F)
+    test_02.add_node(G)
+    test_02.add_node(H)
+    test_02.add_node(I)
+    
+    test_02.add_edge(F, G, proportions = [1])
+    test_02.add_edge(G, H, proportions = [1])
+    test_02.add_edge(H, I, proportions = [1])
+    test_02.add_edge(I, G, proportions = [1])
+
+    F.time = [0]
+    F.quantities = [1]
+
+    for timestep in range(150):
+        assert(I.get_stock(test_02, timestep) \
+               == I.get_flux_in(test_02, timestep) \
+               == I.get_flux_out(test_02, timestep + 1))
+        
+    for timestep in range(1, 150):
+        assert(G.get_flux_in(test_02, timestep) \
+               == I.get_flux_out(test_02, timestep))
+
+
 # Test du radiatif -----------------------------------------------------------
 def test_03_radiatif():
     time = list(range(1, 2001))
