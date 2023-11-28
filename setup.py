@@ -20,7 +20,7 @@ except ImportError:
         # pip <= 9.0.3
         from pip.download import PipSession
 
-install_reqs = parse_requirements("requirements.txt", session=PipSession())
+install_reqs = parse_requirements("requirements.txt", session = PipSession())
 
 reqs = [str(ir.requirement) for ir in install_reqs]
 
@@ -32,15 +32,16 @@ with open('LICENSES/EN/LILIQ-R11EN.txt') as f:
 
 
 setup(
-    name='MoSiR',
-    version='0.9.0',
-    description='MoSiR',
-    long_description=readme,
-    author='',
-    author_email='',
-    url='https://github.com/Bureau-du-Forestier-en-chef/MoSiR',
-    license=license,
-    packages=find_packages(exclude=('tests', 'docs')),
-    install_requires=reqs,
-    package_data = {'MoSiR': ['mirowrapper/**','static/**','templates/*','uploads/*','visualization/**','RadiativeForcing/*','./README.md']}
+    name = 'MoSiR',
+    version = '0.9.0',
+    description = 'MoSiR',
+    long_description = readme,
+    author = 'Gabriel Landry & Guillaume Cyr',
+    author_email = 'gabriel.landry@fec.gouv.qc.ca',
+    url = 'https://github.com/Bureau-du-Forestier-en-chef/MoSiR',
+    license = license,
+    packages = find_packages(exclude = ('tests', 'docs')),
+    install_requires = reqs,
+    package_data = {'MoSiR': ['mirowrapper/**','static/**','templates/*',\
+                    'uploads/*','visualization/**','RadiativeForcing/*','./README.md']}
 )
