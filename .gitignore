@@ -15,4 +15,6 @@ __pycache__/
 dist/
 examples/Output
 tests/Microtests
+.vs 
+.vscode
 
