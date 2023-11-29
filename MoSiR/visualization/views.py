@@ -4,10 +4,11 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 """
 
-from ..blueprint_component import Component
-from flask import render_template,url_for
-from .animator import Htmlanimation
 import os
+from flask import render_template
+from .animator import Htmlanimation
+from ..blueprint_component import Component
+#from flask import url_for
     
 class Visualization(Component):
     def __init__(self):
