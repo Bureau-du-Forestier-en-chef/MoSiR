@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>MoSiR</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dropdown.css') }}" />
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<script src='https://cdn.plot.ly/plotly-2.27.0.min.js'></script>
+<style>
+html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
+</style>
+<style>
+  body {
+    background-image: url("{{ url_for('static', filename='image/MoSiR-logos_white.png') }}");
+    background-repeat: no-repeat;
+    background-position: 50% 10%; 
+    background-size: 60%;
+  }
+</style>
+</head>
+<body class="w3-light-grey">
+
+<!-- Top container -->
+<div class="w3-bar w3-top w3-black w3-large" style="z-index:4">
+  <button class="w3-bar-item w3-button w3-hide-large w3-hover-none w3-hover-text-light-grey" onclick="w3_open();"><i class="fa fa-bars"></i>  Menu</button>
+  <span class="w3-bar-item w3-right">MoSiR</span>
+</div>
+
+<!-- Sidebar/menu -->
+<nav class="w3-sidebar w3-collapse w3-white w3-animate-left" style="z-index:3;width:300px;" id="mySidebar"><br>
+  <div class="w3-container w3-row">
+    <div class="w3-col s4">
+      <img alt="Logo MoSiR" src="{{ url_for('static', filename='image/MoSiR-logos.jpeg') }}" class="w3-circle w3-margin-right" style="width:50px">
+    </div>
+  </div>
+  <hr>
+  <div class="w3-container">
+    <h5>Allez à</h5>
+  </div>
+  <div class="w3-bar-block">
+    <a href="#" class="w3-bar-item w3-button w3-padding-16 w3-hide-large w3-dark-grey w3-hover-black" onclick="w3_close()" title="close menu"><i class="fa fa-remove fa-fw"></i>  Close Menu</a>
+    {% for name,link,description,symbol in entries %}
+    <a href="{{link}}" class="w3-bar-item w3-button w3-padding w3-blue"><i class="{{symbol}}"></i>  {{name}}</a>
+    <!--<a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-eye fa-fw"></i>  Views</a>
+    <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-users fa-fw"></i>  Traffic</a>
+    <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-bullseye fa-fw"></i>  Geo</a>
+    <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-diamond fa-fw"></i>  Orders</a>
+    <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-bell fa-fw"></i>  News</a>
+    <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-bank fa-fw"></i>  General</a>
+    <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-history fa-fw"></i>  History</a>
+    <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-cog fa-fw"></i>  Settings</a><br><br>-->
+    {% endfor %}
+  </div>
+</nav>
+
+
+<!-- Overlay effect when opening sidebar on small screens -->
+<div class="w3-overlay w3-hide-large w3-animate-opacity" onclick="w3_close()" style="cursor:pointer" title="close side menu" id="myOverlay"></div>
+
+<!-- !PAGE CONTENT! -->
+<div class="w3-main" style="margin-left:300px;margin-top:43px;">
+
+
+  <!-- Header -->
+  <header class="w3-container" style="padding-top:22px">
+    {% if descriptions is defined %}
+    <h5><b><i class="fa fa-dashboard"></i>Description</b></h5>
+    {% endif %}
+  </header>
+  <div class="w3-container">
+    <h4>MoSiR</h4>
+    {% for description in descriptions %}
+      <p>{{description}}</p>
+    {% endfor %}
+    {% for variable in variables %}
+      {{ variable | safe }}
+    {% endfor %}
+  </div>
+
+
+  <!-- Footer -->
+  <footer class="w3-container w3-padding-16" margin-top: -200px>
+    <!--<h4>FOOTER</h4>-->
+    <p>Par le <a href="https://github.com/Bureau-du-Forestier-en-chef/" target="_blank">
+    <img alt="fec" src="{{ url_for('static', filename='image/fec.png') }}" class="w3-circle w3-margin-right" style="width:20px">
+    Bureau du Forestier en Chef
+    </a></p>
+  </footer>
+
+  <!-- End page content -->
+</div>
+
+<script>
+// Get the Sidebar
+var mySidebar = document.getElementById("mySidebar");
+
+// Get the DIV with overlay effect
+var overlayBg = document.getElementById("myOverlay");
+
+// Toggle between showing and hiding the sidebar, and add overlay effect
+function w3_open() {
+  if (mySidebar.style.display === 'block') {
+    mySidebar.style.display = 'none';
+    overlayBg.style.display = "none";
+  } else {
+    mySidebar.style.display = 'block';
+    overlayBg.style.display = "block";
+  }
+}
+
+// Close the sidebar with the close button
+function w3_close() {
+  mySidebar.style.display = "none";
+  overlayBg.style.display = "none";
+}
+
+function isInteger(value) {
+    return /^\d+$/.test(value);
+}
+
+//Adding period inputs
+function addcinputs(graph_name) {
+  var table = document.getElementById("cinputs_"+graph_name);
+  var period = document.getElementById('Period_'+graph_name).value;
+  var quantity = document.getElementById('Quantity_'+graph_name).value;
+  var element = document.getElementById('Node_'+graph_name);
+  var node = element.options[element.selectedIndex].text;
+  if (isInteger(period) && parseFloat(quantity) && node)
+    {
+    var key = graph_name+'~'+node+'~'+period
+    var row = table.insertRow(table.rows.length-1);
+    var all_data = [node,period,quantity];
+    var types = ["text","number","number"];
+    //var titles = ["Noeud","Période","Quantitée"]
+    var keys = ["Node","Period","Quantity"]
+    for (let i = 0; i < all_data.length; i++) 
+      {
+      var newcell = row.insertCell(i);
+      var data = document.createElement("input");
+      data.type = types[i];
+      data.title = all_data[i];
+      data.id = keys[i]+'~'+key;
+      data.name = keys[i]+'~'+key;
+      data.value = all_data[i];
+      data.readOnly = true
+      newcell.appendChild(data);
+      }
+    }
+  }
+
+
+//Adding anoutputs
+function addcoutputs(graph_name) {
+  var table = document.getElementById("coutputs_"+graph_name);
+  var output_name = document.getElementById('Output_'+graph_name).value;
+
+  var element_output_type = document.getElementById('out_type_'+graph_name);
+  var output_type = element_output_type.options[element_output_type.selectedIndex].text;
+
+  var element_cumulative_type = document.getElementById('cumulative_'+graph_name);
+  var cumulative = element_cumulative_type.options[element_cumulative_type.selectedIndex].text;
+
+  var element_sum_type = document.getElementById('sum_'+graph_name);
+  var sum = element_sum_type.options[element_sum_type.selectedIndex].text;
+
+  var element_out_unit_type = document.getElementById('out_unit_'+graph_name);
+  var out_unit = element_out_unit_type.options[element_out_unit_type.selectedIndex].text;
+
+
+
+  var ul = document.getElementById('drop_list_ul_'+graph_name);
+  var li = ul.getElementsByTagName('li');
+  var all_selected = [];
+  for(var i=0; i<li.length; i++)
+        {
+        if(li[i].firstChild.checked && !all_selected.includes(li[i].innerText))
+            {
+            all_selected.push(li[i].innerText)
+            }
+        }
+  var all_nodes = all_selected.join(",");
+  if (output_name && output_type && cumulative && sum && out_unit && all_nodes)
+    {
+    var key = graph_name+'~'+output_name +'~'+output_type+'~'+cumulative+'~'+sum+'~'+out_unit+'~'+all_nodes
+    var row = table.insertRow(table.rows.length-1);
+    var all_data = [output_name,all_nodes,output_type,cumulative,sum,out_unit];
+    var types = ["text","text","text","text","text","text"];
+    //var titles = ["Sortie","Noeuds","Type","Cumulatif","Sommation","Unité"]
+    var keys = ["Output","Nodes_name","Type","Cumulative","Summarize","Unit"]
+    for (let i = 0; i < all_data.length; i++) 
+      {
+      var newcell = row.insertCell(i);
+      var data = document.createElement("input");
+      data.type = types[i];
+      data.title = all_data[i];
+      data.id = keys[i]+'~'+key;
+      data.name = keys[i]+'~'+key;
+      data.value = all_data[i];
+      data.readOnly = true
+      newcell.appendChild(data);
+      }
+    }
+  }
+
+    function dropdown(graphname) 
+    {
+    var checkList = document.getElementById('drop_list_'+graphname);
+    checkList.getElementsByClassName('anchor')[0].onclick = function(evt) 
+      {
+        if (checkList.classList.contains('visible'))
+          checkList.classList.remove('visible');
+        else
+          checkList.classList.add('visible');
+      }
+    }
+  
+</script>
+
+</body>
+</html>
