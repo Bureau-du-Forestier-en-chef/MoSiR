@@ -120,29 +120,18 @@ function w3_close() {
 function isInteger(value) {
     return /^\d+$/.test(value);
 }
-function fillcinputs(html_inputs) {
-  const histo_data = fetch("'+htmltarget +'").then(response => response.json()).then((data)=>{
-        for (var histo_id = 0; histo_id < data.divids.length;histo_id++)
-        {
-        Plotly.newPlot(data.divids[histo_id], data.data[histo_id], data.layouts[histo_id]);
-        }
-        });
-      }
-//Adding period inputs
-function addcinputs(graph_name) {
-  var table = document.getElementById("cinputs_"+graph_name);
-  var period = document.getElementById('Period_'+graph_name).value;
-  var quantity = document.getElementById('Quantity_'+graph_name).value;
-  var element = document.getElementById('Node_'+graph_name);
-  var node = element.options[element.selectedIndex].text;
-  if (isInteger(period) && parseFloat(quantity) && node)
+
+//Append to table cinputs
+function appendcinputs(graph_name,period,quantity,node)
+  {
+    if (isInteger(period) && parseFloat(quantity) && node)
     {
+    var table = document.getElementById("cinputs_"+graph_name);
     var key = graph_name+'~'+node+'~'+period
     var row = table.insertRow(table.rows.length-1);
     var all_data = [node,period,quantity];
     var types = ["text","number","number"];
-    //var titles = ["Noeud","Période","Quantitée"]
-    var keys = ["Node","Period","Quantity"]
+    var keys = ["Node","Period","Quantity"];
     for (let i = 0; i < all_data.length; i++) 
       {
       var newcell = row.insertCell(i);
@@ -157,9 +146,95 @@ function addcinputs(graph_name) {
       }
     }
   }
+//Push a .json into the cinputs
+function fillcinputs(html_inputs) 
+  {
+    const histo_data = fetch(html_inputs).then(response => response.json()).then((data)=>{
+      for (const [graph_name, input_entry] of Object.entries(data.Inputs)) 
+        {
+        for (const [node, inputs] of Object.entries(input_entry)) 
+          {
+          for (const [period,quantity] of Object.entries(inputs))
+            {
+            appendcinputs(graph_name,period,quantity,node);
+            }
+
+          }
+        }
+        let unit_element = document.getElementById("units");
+        unit_element.value = data.Unit;
+        });
+    const element = document.getElementById(html_inputs);
+    element.remove();
+  }
+
+//Adding period inputs
+function addcinputs(graph_name) {
+  var period = document.getElementById('Period_'+graph_name).value;
+  var quantity = document.getElementById('Quantity_'+graph_name).value;
+  var element = document.getElementById('Node_'+graph_name);
+  var node = element.options[element.selectedIndex].text;
+  appendcinputs(graph_name,period,quantity,node);
+  }
+
+//Add one output to table
+function appendcoutputs(graph_name,output_name,output_type,cumulative,sum,out_unit,all_nodes)
+  {
+    if (output_name && output_type && cumulative && sum && out_unit && all_nodes)
+      {
+      var table = document.getElementById("coutputs_"+graph_name);
+      var key = graph_name+'~'+output_name +'~'+output_type+'~'+cumulative+'~'+sum+'~'+out_unit+'~'+all_nodes
+      var row = table.insertRow(table.rows.length-1);
+      var all_data = [output_name,all_nodes,output_type,cumulative,sum,out_unit];
+      var types = ["text","text","text","text","text","text"];
+      var keys = ["Output","Nodes_name","Type","Cumulative","Summarize","Unit"]
+      for (let i = 0; i < all_data.length; i++) 
+        {
+        var newcell = row.insertCell(i);
+        var data = document.createElement("input");
+        data.type = types[i];
+        data.title = all_data[i];
+        data.id = keys[i]+'~'+key;
+        data.name = keys[i]+'~'+key;
+        data.value = all_data[i];
+        data.readOnly = true
+        newcell.appendChild(data);
+        }
+      }
+
+  }
+
+//Adding outputs by json
+function fillcoutputs(html_outputs) 
+  {
+    const histo_data = fetch(html_outputs).then(response => response.json()).then((data)=>{
+      for (const [graph_name, output_entry] of Object.entries(data.Output)) 
+        {
+        for (const [output_name, output] of Object.entries(output_entry)) 
+          {
+          const output_type = output.Type;
+          const cumulative = output.Cumulative;
+          const sum = output.Summarize;
+          const out_unit = output.Unit;
+          const all_nodes = output.Nodes_name.join(",");
+          appendcoutputs(graph_name,output_name,output_type,cumulative,sum,out_unit,all_nodes);
+          }
+        }
+        let time_element = document.getElementById("Time");
+        time_element.value = data.Time;
+        let extension_element = document.getElementById("Output file extension");
+        extension_element.value = data["Output file extension"]
+        let prg_ch4 = document.getElementById("CH4");
+        prg_ch4.value = data.PRG.CH4;
+        let prg_N20 = document.getElementById("N2O");
+        prg_N20.value = data.PRG.N2O;
+        });
+    const element = document.getElementById(html_outputs);
+    element.remove();
+  }
 
 
-//Adding anoutputs
+//Adding anoutput
 function addcoutputs(graph_name) {
   var table = document.getElementById("coutputs_"+graph_name);
   var output_name = document.getElementById('Output_'+graph_name).value;
@@ -176,8 +251,6 @@ function addcoutputs(graph_name) {
   var element_out_unit_type = document.getElementById('out_unit_'+graph_name);
   var out_unit = element_out_unit_type.options[element_out_unit_type.selectedIndex].text;
 
-
-
   var ul = document.getElementById('drop_list_ul_'+graph_name);
   var li = ul.getElementsByTagName('li');
   var all_selected = [];
@@ -189,27 +262,7 @@ function addcoutputs(graph_name) {
             }
         }
   var all_nodes = all_selected.join(",");
-  if (output_name && output_type && cumulative && sum && out_unit && all_nodes)
-    {
-    var key = graph_name+'~'+output_name +'~'+output_type+'~'+cumulative+'~'+sum+'~'+out_unit+'~'+all_nodes
-    var row = table.insertRow(table.rows.length-1);
-    var all_data = [output_name,all_nodes,output_type,cumulative,sum,out_unit];
-    var types = ["text","text","text","text","text","text"];
-    //var titles = ["Sortie","Noeuds","Type","Cumulatif","Sommation","Unité"]
-    var keys = ["Output","Nodes_name","Type","Cumulative","Summarize","Unit"]
-    for (let i = 0; i < all_data.length; i++) 
-      {
-      var newcell = row.insertCell(i);
-      var data = document.createElement("input");
-      data.type = types[i];
-      data.title = all_data[i];
-      data.id = keys[i]+'~'+key;
-      data.name = keys[i]+'~'+key;
-      data.value = all_data[i];
-      data.readOnly = true
-      newcell.appendChild(data);
-      }
-    }
+  appendcoutputs(graph_name,output_name,output_type,cumulative,sum,out_unit,all_nodes);
   }
 
     function dropdown(graphname) 

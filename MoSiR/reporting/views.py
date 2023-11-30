@@ -16,7 +16,7 @@ class Reporting(Component):
     def __init__(self):
         Component.__init__(self,__class__.__name__,__name__)
     def __get_inputs(self)->Response:
-        stash = ["<h1>Graphs disponible</h1>"]
+        stash = []#["<h1>Graphs disponible</h1>"]
         stash += self.__build_inputs_table()
         stash += self.__build_report_header()
         stash += self.__build_report_outputs()
@@ -31,11 +31,11 @@ class Reporting(Component):
             stash.append('<div>')
             stash.append('<h5>'+generator.get_graph_name()+'</h5>')
             stash.append('<div>')
-            stash.append('<table class="w3-table-all" id=coutputs_'+generator.get_graph_name()+'><tr><th>Sortie</th><th>Noeuds</th><th>Type</th><th>Cumulatif</th><th>Sommation</th><th>Unité</th></tr>')
+            stash.append('<table class="w3-table-all" style="table-layout:fixed;" id=coutputs_'+generator.get_graph_name()+'><tr><th>Sortie</th><th>Noeuds</th><th>Type</th><th>Cumulatif</th><th>Sommation</th><th>Unité</th></tr>')
             #stash.append('</table>')
             #stash.append('<table class="w3-table-all" >')
             stash.append('<tr>')
-            stash.append('<th> <input type = "text" name="Sortie~'+generator.get_graph_name()+'" title="Nom de la sortie" min ="1" id="Output_'+generator.get_graph_name()+'"/></th>')
+            stash.append('<th> <input type = "text" size = 10 name="Sortie~'+generator.get_graph_name()+'" title="Nom de la sortie" min ="1" id="Output_'+generator.get_graph_name()+'"/></th>')
             stash.append('<th>')
             stash.append('<div id="drop_list_'+generator.get_graph_name()+'" class="dropdown-check-list" tabindex="100">')
             stash.append('<span class="anchor" onclick=dropdown("'+generator.get_graph_name()+'")>Noeuds</span>')
@@ -84,6 +84,7 @@ class Reporting(Component):
         stash = []
         #stash.append('<div class="w3-threequarter w3-margin-bottom">')
         stash.append('<h4>Rapport</h4>')
+        stash += self.__build_coutputs_buttons()
         stash.append('<div>')
         stash.append('<label for="Time">Horizon de simulation</label>')
         stash.append('<input type = "number" name="Time" title="Horizon de simulation" min ="1" value="1" id="Time"/>')
@@ -103,12 +104,29 @@ class Reporting(Component):
         stash.append('<input type = "number" name="N2O" title="Potentiel de réchauffement global (N20)" style="width: 5em" min="0" value ="265" id="N2O"/>')
         stash.append('</div>')
         return stash
+    def __build_cinputs_buttons(self)->[str]:
+        #Avec les files names appeller jsonprovider avec le fetch
+        stash = []
+        for input in self._get_inputs_files():
+            jsonname = pathlib.Path(input).stem
+            htmltarget = self._get_url_for("/json_provider/<filename>",filename=jsonname+'.json')
+            stash.append('<button class="w3-button w3-dark-grey" id='+htmltarget+'  type="button" onclick=fillcinputs("'+htmltarget+'")> Ajouter '+jsonname+' <i class="fa fa-arrow-right"></i></button>')
+        return stash
+    def __build_coutputs_buttons(self)->[str]:
+        #Avec les files names appeller jsonprovider avec le fetch
+        stash = []
+        for output in self._get_reporting_files():
+            jsonname = pathlib.Path(output).stem
+            htmltarget = self._get_url_for("/json_provider/<filename>",filename=jsonname+'.json')
+            stash.append('<button class="w3-button w3-dark-grey" id='+htmltarget+'  type="button" onclick=fillcoutputs("'+htmltarget+'")> Ajouter '+jsonname+' <i class="fa fa-arrow-right"></i></button>')
+        return stash
     def __build_inputs_table(self)->[str]:
         stash = []
         stash.append('<h4>Intrants</h4>')
         stash.append('<div class="w3-threequarter w3-margin-bottom">')
         #Unit selection...
         stash.append('<form action="'+self._get_url_for("/report")+'" id="cinputsform" method = "POST">')
+        stash += self.__build_cinputs_buttons()
         stash.append('<div>')
         stash.append('<label for="units">Unitées</label>')
         stash.append('<select name="units" id="units">')
