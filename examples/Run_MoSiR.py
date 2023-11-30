@@ -31,7 +31,7 @@ if __name__ == '__main__':
     log = True
     server = Flaskwrapper(base_url,host,port,log)
     server.register(mirowrapper)
-    server.register(visualization)
+    server.register(visualization) # à enlever possiblement
     server.register(download)
     server.register(upload)
     server.register(stats)
