@@ -1,4 +1,9 @@
 # -*- coding: UTF-8 -*-
+"""
+Copyright (c) 2023 Gouvernement du Québec
+SPDX-License-Identifier: LiLiQ-R-1.1
+License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
+"""
 import sys
 import json
 import warnings # Maybe
@@ -287,14 +292,14 @@ class RecyclingNode(ProportionNode):
         if cumulative == False:
             if time in self.past_carbon().flux_cache:
                 return self.past_carbon().get_flux_cache(time)
-            for Year in range(time + 1): 
-                if Year + 1 == time:
-                    total += super().get_flux_out(graph, Year, cumulative)
+            if time == 0:
+                return 0
+            total += super().get_flux_in(graph, time - 1, cumulative)
             self.past_carbon().set_flux_cache(time, total)
             return total
         else:
-            for Year in range(time):
-                total += super().get_flux_out(graph, Year, cumulative = False)
+            for timestep in range(time + 1):
+                total += self.get_flux_out(graph, timestep, cumulative = False)
             return total
     
     def get_flux_in(self, graph: WPGraph, time: int, cumulative: bool = False) -> float:

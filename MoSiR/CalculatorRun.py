@@ -1,4 +1,9 @@
 # -*- coding: UTF-8 -*-
+"""
+Copyright (c) 2023 Gouvernement du Québec
+SPDX-License-Identifier: LiLiQ-R-1.1
+License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
+"""
 import sys
 import argparse as ap
 sys.path.append("../MoSiR")
@@ -42,8 +47,6 @@ def main(raw_args = None):
 
     # Reporting
     rp.output_creation(Graph, Import, Report, args.E)
-
-    # Python 2.7, child process ou subprocess
 
 if __name__ == "__main__":
     main()

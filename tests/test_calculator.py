@@ -1,8 +1,6 @@
 # -*- coding: UTF-8 -*-
 import os
-import sys
 import pandas as pd
-sys.path.append("../MoSiR")
 import MoSiR.GraphGen as gf
 import MoSiR.NetworkxGraph as wp
 import MoSiR.CarbonToRad as cr
@@ -10,125 +8,132 @@ import MoSiR.CarbonToRad as cr
 MOSIR_TOLERENCE = 0.0001
 
 # Test GraphGen: calcul des nodes --------------------------------------------
-def test_01():
+def test_01_in_eq_out():
     test_01 = wp.WPGraph('graph_test_01')
 
-    A = gf.TopNode('A')
-    B = gf.ProportionNode('B')
-    C = gf.DecayNode('C', 10)
-    D = gf.DecayNode('D', 50)
-    E = gf.PoolNode('F')
+    A1 = gf.TopNode('A1')
+    B1 = gf.ProportionNode('B1')
+    C1 = gf.DecayNode('C1', 10)
+    D1 = gf.DecayNode('D1', 50)
+    E1 = gf.PoolNode('E1')
 
-    test_01.add_node(A)
-    test_01.add_node(B)
-    test_01.add_node(C)
-    test_01.add_node(D)
-    test_01.add_node(E)
+    test_01.add_node(A1)
+    test_01.add_node(B1)
+    test_01.add_node(C1)
+    test_01.add_node(D1)
+    test_01.add_node(E1)
  
-    test_01.add_edge(A, B, proportions = [1])
-    test_01.add_edge(B, C, proportions = [1])
-    test_01.add_edge(C, D, proportions = [1])
-    test_01.add_edge(D, E, proportions = [1])
+    test_01.add_edge(A1, B1, proportions= [1])
+    test_01.add_edge(B1, C1, proportions= [1])
+    test_01.add_edge(C1, D1, proportions= [1])
+    test_01.add_edge(D1, E1, proportions= [1])
 
-    A.time = [0, 1, 2, 3, 4, 5, 50]
-    A.quantities = [10, 20, 30, 40, 10, 10, 2000]
+    A1.time = [0, 1, 2, 3, 4, 5, 50]
+    A1.quantities = [10, 20, 30, 40, 10, 10, 2000]
 
     for timestep in range(150):
-        assert A.get_flux_out(test_01, timestep)\
-            == B.get_flux_in(test_01, timestep)\
-            == B.get_flux_out(test_01, timestep)\
-            == C.get_flux_in(test_01, timestep), \
-                'Flux out of A != Flux in of B'
+        assert A1.get_flux_out(test_01, timestep) \
+            == B1.get_flux_in(test_01, timestep) \
+            == B1.get_flux_out(test_01, timestep) \
+            == C1.get_flux_in(test_01, timestep), \
+                'Flux out of A1 != Flux in of B1'
 
-        assert A.get_flux_out(test_01, timestep, cumulative = True)\
-            == B.get_flux_in(test_01, timestep, cumulative = True)\
-            == B.get_flux_out(test_01, timestep, cumulative = True)\
-            == C.get_flux_in(test_01, timestep, cumulative = True), \
-                'Cumulative flux out of A != Flux in of B'
+        assert A1.get_flux_out(test_01, timestep, cumulative= True) \
+            == B1.get_flux_in(test_01, timestep, cumulative= True) \
+            == B1.get_flux_out(test_01, timestep, cumulative= True) \
+            == C1.get_flux_in(test_01, timestep, cumulative= True), \
+                'Cumulative flux out of A1 != Flux in of B1'
 
-        assert C.get_flux_out(test_01, timestep)\
-            > (D.get_flux_in(test_01, timestep)\
-               - MOSIR_TOLERENCE) and \
-               C.get_flux_out(test_01, timestep)\
-            < (D.get_flux_in(test_01, timestep)\
-               + MOSIR_TOLERENCE), 'Flux out of C != Flux in of D'
+        assert abs(C1.get_flux_out(test_01, timestep) \
+            - D1.get_flux_in(test_01, timestep)) \
+            < MOSIR_TOLERENCE, 'Flux out of C1 != Flux in of D1'
 
-        assert C.get_flux_out(test_01, timestep, cumulative = True)\
-            > (D.get_flux_in(test_01, timestep, cumulative = True)\
-               - MOSIR_TOLERENCE) and \
-               C.get_flux_out(test_01, timestep, cumulative = True)\
-            < (D.get_flux_in(test_01, timestep, cumulative = True)\
-               + MOSIR_TOLERENCE), 'Cumulative flux out of C != Flux in of D'
+        assert abs(C1.get_flux_out(test_01, timestep, cumulative= True) \
+            - D1.get_flux_in(test_01, timestep, cumulative= True)) \
+            < MOSIR_TOLERENCE, 'Cumulative flux out of C1 != Flux in of D1'
 
-        assert D.get_flux_out(test_01, timestep)\
-            > (E.get_flux_in(test_01, timestep)\
-               - MOSIR_TOLERENCE) and \
-               D.get_flux_out(test_01, timestep)\
-            < (E.get_flux_in(test_01, timestep)\
-               + MOSIR_TOLERENCE), 'Flux out of D != Flux in of E'
+        assert abs(D1.get_flux_out(test_01, timestep) \
+            - E1.get_flux_in(test_01, timestep) \
+            < MOSIR_TOLERENCE), 'Flux out of D1 != Flux in of E1'
 
-        assert D.get_flux_out(test_01, timestep, cumulative = True)\
-            > (E.get_flux_in(test_01, timestep, cumulative = True)\
-               - MOSIR_TOLERENCE) and \
-               D.get_flux_out(test_01, timestep, cumulative = True)\
-            < (E.get_flux_in(test_01, timestep, cumulative = True)\
-               + MOSIR_TOLERENCE), 'Cumulative flux out of D != Flux in of E'
+        assert abs(D1.get_flux_out(test_01, timestep, cumulative= True) \
+            - E1.get_flux_in(test_01, timestep, cumulative= True) \
+            < MOSIR_TOLERENCE), 'Cumulative flux out of D1 != Flux in of E1'
 
-            # Stock = cumu in - cumu out
-        assert C.get_stock(test_01, timestep)\
-            > (C.get_flux_in(test_01, timestep, cumulative = True)\
-                - C.get_flux_out(test_01, timestep, cumulative = True)\
-                - MOSIR_TOLERENCE) and \
-                C.get_stock(test_01, timestep)\
-            < (C.get_flux_in(test_01, timestep, cumulative = True)\
-                - C.get_flux_out(test_01, timestep, cumulative = True)\
-                + MOSIR_TOLERENCE), 'C stock != cumulative flux in - \
+        assert abs(C1.get_stock(test_01, timestep) \
+            - (C1.get_flux_in(test_01, timestep, cumulative= True) \
+                - C1.get_flux_out(test_01, timestep, cumulative= True))) \
+            < MOSIR_TOLERENCE, 'C1 stock != cumulative flux in - \
                     flux out'
 
-        assert D.get_stock(test_01, timestep)\
-            > (D.get_flux_in(test_01, timestep, cumulative = True)\
-                - D.get_flux_out(test_01, timestep, cumulative = True)\
-                - MOSIR_TOLERENCE) and \
-            D.get_stock(test_01, timestep)\
-            < (D.get_flux_in(test_01, timestep, cumulative = True)\
-                - D.get_flux_out(test_01, timestep, cumulative = True)\
-                + MOSIR_TOLERENCE), 'D stock != cumulative flux in - \
+        assert abs(D1.get_stock(test_01, timestep) \
+            - (D1.get_flux_in(test_01, timestep, cumulative= True) \
+                - D1.get_flux_out(test_01, timestep, cumulative= True))) \
+            < MOSIR_TOLERENCE, 'D1 stock != cumulative flux in - \
                     cumulative flux out'
+        
+        assert abs(E1.get_stock(test_01, timestep) \
+            - E1.get_flux_in(test_01, timestep, cumulative= True)) \
+            < MOSIR_TOLERENCE, 'E1 stock != cumulative flux in'
 
-# Test 02
 def test_02_recycling():
     test_02 = wp.WPGraph('graph_test_02')
 
-    F = gf.TopNode('F')
-    G = gf.ProportionNode('G')
-    H = gf.ProportionNode('H')
-    I = gf.RecyclingNode('I')
+    A2 = gf.TopNode('A2')
+    B2 = gf.ProportionNode('B2')
+    C2 = gf.ProportionNode('C2')
+    D2 = gf.RecyclingNode('D2')
 
-    test_02.add_node(F)
-    test_02.add_node(G)
-    test_02.add_node(H)
-    test_02.add_node(I)
+    test_02.add_node(A2)
+    test_02.add_node(B2)
+    test_02.add_node(C2)
+    test_02.add_node(D2)
     
-    test_02.add_edge(F, G, proportions = [1])
-    test_02.add_edge(G, H, proportions = [1])
-    test_02.add_edge(H, I, proportions = [1])
-    test_02.add_edge(I, G, proportions = [1])
+    test_02.add_edge(A2, B2, proportions= [1])
+    test_02.add_edge(B2, C2, proportions= [1])
+    test_02.add_edge(C2, D2, proportions= [1])
+    test_02.add_edge(D2, B2, proportions= [1])
 
-    F.time = [0]
-    F.quantities = [1]
+    A2.time = [0]
+    A2.quantities = [1]
 
     for timestep in range(150):
-        assert(I.get_stock(test_02, timestep) \
-               == I.get_flux_in(test_02, timestep) \
-               == I.get_flux_out(test_02, timestep + 1))
+        assert(D2.get_stock(test_02, timestep) \
+               == D2.get_flux_in(test_02, timestep) \
+               == D2.get_flux_out(test_02, timestep + 1))
         
-    for timestep in range(1, 150):
-        assert(G.get_flux_in(test_02, timestep) \
-               == I.get_flux_out(test_02, timestep))
+        assert(D2.get_flux_in(test_02, timestep, cumulative= True) \
+               == D2.get_flux_out(test_02, timestep + 1, cumulative= True))
+        
+
+def test_03_decay():
+    test_03 = wp.WPGraph('graph_test_03')
+
+    A3 = gf.TopNode('A3')
+    B3 = gf.DecayNode('B3', 75)
+    C3 = gf.PoolNode('C3')
+
+    test_03.add_node(A3)
+    test_03.add_node(B3)
+    test_03.add_node(C3)
+    
+    test_03.add_edge(A3, B3, proportions= [1])
+    test_03.add_edge(B3, C3, proportions= [1])
+
+    A3.time = [0]
+    A3.quantities = [100]
+
+    for timestep in range(150):
+        B3_stock = B3.get_stock(test_03, timestep)
+        comparatif = 100 * ((0.5) ** (timestep / 75))
+        comparatif_2 = 100 * 2 ** (-timestep / 75)
+        
+        assert abs(B3_stock - comparatif) < MOSIR_TOLERENCE
+        assert abs(B3_stock - comparatif_2) < MOSIR_TOLERENCE
 
 
 # Test du radiatif -----------------------------------------------------------
-def test_03_radiatif():
+def test_04_radiatif():
     time = list(range(1, 2001))
     CO2 = [1/3.6667] + [0] * (len(time) - 1)         
     CH4 = [1/1.3333] + [0] * (len(time) - 1)          
@@ -142,7 +147,8 @@ def test_03_radiatif():
         'CO': CO
     }
 
-    RF = pd.read_excel(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "MoSiR", "RadiativeForcing", "Dynco2_Base.xlsx")).\
+    RF = pd.read_excel(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", 
+                                    "MoSiR", "RadiativeForcing", "Dynco2_Base.xlsx")).\
         sort_values(by = 'Year').drop('Unit', axis = 1).to_dict(orient = 'list')
     cr.rad_formatting(test_03, RF, cumulative = False)
     assert test_03 == RF, "Not the same RF as DynCo"
@@ -227,5 +233,7 @@ for i, j in enumerate(liste):
 """
 
 if __name__ == "__main__":
-    test_01()
+    test_01_in_eq_out()
+    test_02_recycling()
     test_03_radiatif()
+    print("Tests passed")
