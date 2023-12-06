@@ -8,10 +8,10 @@ import os
 import json
 import warnings
 import pandas as pd
-import MoSiR.GraphGen as gf
-import MoSiR.ImportInfo as ip
-import MoSiR.mosir_exceptions as me
-import MoSiR.CarbonToRad as cr
+from MoSiR import graph_generator as gg
+from MoSiR import import_info as ip
+from MoSiR import mosir_exceptions as me
+from MoSiR import carbon_to_radiatif as cr
 
 # Json -----------------------------------------------------------------------
 
@@ -30,6 +30,8 @@ class ReportData():
         return self._DATA[output_name]
 
 def unit_change(number: float, from_unit: str, to_unit: str) -> float:
+    if number == 0:
+        return 0
     F = from_unit.lower()
     T = to_unit.lower()
     if F == 'kgc':
@@ -52,7 +54,7 @@ def unit_change(number: float, from_unit: str, to_unit: str) -> float:
         raise me.InvalidOption(f"{from_unit} n'est pas une option d'unité d'input \
                             (kgC ou tC)") 
         
-def output_creation(graph: gf.GraphFactory, import_data: ip.ImportData, 
+def output_creation(graph: gg.GraphFactory, import_data: ip.ImportData, 
                    report_data: ReportData, directory: str):
     """
     Fonction pour créer des outputs des résultats des calculs

@@ -5,7 +5,7 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 """
 import networkx as nx
-import MoSiR.mosir_exceptions as me
+from MoSiR import mosir_exceptions as me
 
 class WPGraph():
     def __init__(self, KEY):

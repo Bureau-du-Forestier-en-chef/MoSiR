@@ -4,12 +4,10 @@ Copyright (c) 2023 Gouvernement du Québec
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 """
-import sys
 import argparse as ap
-sys.path.append("../MoSiR")
-from MoSiR import GraphGen as gf
-from MoSiR import ImportInfo as ip
-from MoSiR import ReportingInfo as rp
+from MoSiR import graph_generator as gg
+from MoSiR import import_info as ip
+from MoSiR import reporting_info as rp
 
 def main(raw_args = None):
     parser = ap.ArgumentParser(
@@ -33,7 +31,7 @@ def main(raw_args = None):
 
     args = parser.parse_args(raw_args)
 
-    Graph = gf.GraphFactory(args.G)
+    Graph = gg.GraphFactory(args.G)
     Import = ip.ImportData(args.D)
     Report = rp.ReportData(args.R) 
  

@@ -17,4 +17,5 @@ examples/Output
 tests/Microtests
 .vs 
 .vscode
+.pytest_cache
 

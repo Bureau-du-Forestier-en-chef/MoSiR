@@ -4,11 +4,10 @@ Copyright (c) 2023 Gouvernement du Québec
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 """
-import sys
 import json
 import warnings # Maybe
-import MoSiR.NetworkxGraph as wp
-import MoSiR.mosir_exceptions as me
+from MoSiR import networkx_graph as wp
+from MoSiR import mosir_exceptions as me
 from abc import ABCMeta, abstractmethod
 
 # Caching --------------------------------------------------------------------
@@ -198,7 +197,7 @@ class ProportionNode(IndustrialNode):
             return total
 
     def get_stock(self, graph: WPGraph, time: int, cumulative: bool = False) -> int:
-        return print('Aucun carbone ne réside dans ce noeud ({self.NAME}), seulement des flux le traverse')
+        return 0
 
 class DecayNode(ProportionNode):
     def __init__(self, NAME: str, HalfLife: int):

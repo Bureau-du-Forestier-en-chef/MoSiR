@@ -8,10 +8,10 @@ from .utilities import Jsonparser as Jsonparser
 from .utilities import Htmlparser as Htmlparser
 from .blueprint_component import Component as Component
 from .views import Flaskwrapper as Flaskwrapper
-from . import GraphGen as GraphGen
-from . import NetworkxGraph as NetworkxGraph
-from . import ImportInfo as ImportInfo
-from . import ReportingInfo as ReportingInfo
-from . import CalculatorRun as CalculatorRun
+from . import graph_generator as graph_generator
+from . import networkx_graph as networkx_graph
+from . import import_info as import_info
+from . import reporting_info as reporting_info
+from . import mosir_calculator as mosir_calculator
 from . import mosir_exceptions as mosir_exceptions
-from . import CarbonToRad as CarbonToRad
+from . import carbon_to_radiatif as carbon_to_radiatif
