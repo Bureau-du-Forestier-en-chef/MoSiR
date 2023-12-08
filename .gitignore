@@ -18,4 +18,5 @@ tests/Microtests
 .vs 
 .vscode
 .pytest_cache
+standalone
 

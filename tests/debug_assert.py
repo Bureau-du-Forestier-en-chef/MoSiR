@@ -3,12 +3,19 @@ Copyright (c) 2023 Gouvernement du Québec
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 """
-import sys
 import warnings
-sys.path.append("../MoSiR")
-import MoSiR.GraphGen as gf
-import MoSiR.ReportingInfo as rp
-import MoSiR.mosir_exceptions as me
+import argparse as ap 
+from MoSiR import graph_generator as gg
+from MoSiR import reporting_info as rp
+from MoSiR import mosir_exceptions as me
+
+def main(raw_args = None):
+    parser = ap.ArgumentParser(
+        description = 'Process input and output for the MoSiR calculator')
+    parser.add_argument('--GraphFileDirectory', '-G',
+        dest = 'G',                
+        required = True,
+        help = 'Localisation (racine) du fichier contenant le JSON du graph') 
 
 # Test de l'import -----------------------------------------------------------
 def test_04_first_last_node(graph: gf.GraphFactory):

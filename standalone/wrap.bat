@@ -10,17 +10,17 @@ ECHO.
 ECHO 1 = Installe le package MoSiR et wrap l'application sous %CD%\app (is this really a good idea?)
 ECHO 2 = Quitte le command prompt (you should)
 ECHO.
+
 CHOICE /c 12 /m "Entrer le choix souhaité (#2 obviously) :"
 if %ErrorLevel% == 1 (
-    echo %CD%
     conda activate MoSiR
-    pip install ..\.   
-    <nul set /p "=Le wrapping de l'application va commencer, cela peut prendre environ 45 minutes avec un bon processeur. Il n'est pas encore trop tard pour fermer le command prompt."
+    pip install ..\. 
+    <nul set /p "=Le wrapping de l'application va commencer, cela peut prendre environ 45 minutes avec un bon processeur. L'installation se fera dans %CD%\app. Peser sur une touche pour continuer"
     pause >nul
     python -m nuitka ^
     --standalone ^
     --onefile ^
-    --onefile-windows-splash-screen-image=..\MoSiR\static\image\MoSiR-logos_white.png ^
+    --onefile-windows-splash-screen-image=..\MoSiR\static\image\MoSiR-logos-rogne.png ^
     --include-package-data=MoSiR ^
     --include-package-data=pyvis ^
     --windows-icon-from-ico=..\MoSiR\static\image\MoSiR-logos.png ^
@@ -28,10 +28,11 @@ if %ErrorLevel% == 1 (
     --product-name=MoSiR ^
     --product-version=0.9.1 ^
     --copyright="Gouvernement du Québec" ^
+    --output-dir=.\app ^
     ..\examples\Run_MoSiR.py
+
+    <nul set /p "=L'installation est complétée, peser sur une touche pour fermer"
+    pause >nul
 )
 
 if %ErrorLevel% == 2 exit 
-
-<nul set /p "=L'installation est complétée, peser sur une touche pour fermer"
-pause >nul
