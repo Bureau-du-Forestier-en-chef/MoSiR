@@ -290,6 +290,16 @@ class Reporting(Component):
                                                                "Unit": None}
                 elif(target_key == 'Nodes_name'):
                     data["Output"][graph_name][output_name]["Nodes_name"] = value.split(",")
+                    '''
+                    régler séparation par , 
+
+                    aller chercher directement les noeuds a partir du graph et checker si le noeuds
+                    se trouve dedans
+
+                    Faire un message d'erreur s'il y a des virgules 
+
+                    '''
+
                 elif(target_key == 'Type'):
                     data["Output"][graph_name][output_name]["Type"] = value
                 elif(target_key == 'Cumulative'):

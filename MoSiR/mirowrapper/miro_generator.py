@@ -60,7 +60,8 @@ class ItemBuilder:
                     if not TempItem in AllValues:
                         DataHolder[Type] = 0.0
             if "data"in Item and "content" in Item["data"]:
-                Name = utilities.Htmlparser.get_string_from_html(Item["data"]["content"])
+                Name = utilities.Htmlparser.get_string_from_html(Item["data"]["content"]).\
+                replace(',', '')
                 Selectedkeys = []
                 for KeyData, Data in  DataHolder.items():
                     if Data and KeyData in Name:
