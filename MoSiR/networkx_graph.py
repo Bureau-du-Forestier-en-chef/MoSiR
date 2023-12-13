@@ -39,6 +39,7 @@ class WPGraph():
     def get_name(self):
         return me.ConstError("Graph name can't be changed outside Miro")
 
+# Not usefull atm
 #import igraph
 #class WPGraph_IG():
 #    def __init__(self, KEY):

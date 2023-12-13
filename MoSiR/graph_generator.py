@@ -139,16 +139,12 @@ class TopNode(IndustrialNode):
             return total
 
     def get_flux_in(self, graph: WPGraph, time: int, cumulative: bool = False) -> float:
-        if cumulative == False:
-            return self._get_quantity_time(time)
-        elif cumulative == True:
-            total = 0
-            for timestep in range(time + 1):
-                total += self._get_quantity_time(timestep)
-            return total
+        return self.get_flux_out(graph, time, cumulative= cumulative)
 
     def get_stock(self, graph: WPGraph, time: int, cumulative: bool = False) -> float:
-        return print('Aucun carbone ne réside dans ce noeud ({self.NAME}), seulement des flux le traverse')
+        warnings.warn(f'Aucun carbone ne résident dans le noeud {self.NAME},\
+                       seulement des flux le traverse', stacklevel= 2)
+        return 0
 
 class ProportionNode(IndustrialNode):
     def __init__(self, NAME: str):
@@ -192,11 +188,13 @@ class ProportionNode(IndustrialNode):
                     proportion_parent = self._get_value_time(graph.get_edge_proportions(parent, self), timestep)
                     if proportion_parent == 0:
                         continue
-                    parent_carbon = parent.get_flux_out(graph, timestep, cumulative = False)
+                    parent_carbon = parent.get_flux_out(graph, timestep, cumulative= False)
                     total += proportion_parent * parent_carbon
             return total
 
     def get_stock(self, graph: WPGraph, time: int, cumulative: bool = False) -> int:
+        warnings.warn(f'Aucun carbone ne résident dans le noeud {self.NAME},\
+                       seulement des flux le traverse', stacklevel= 2)
         return 0
 
 class DecayNode(ProportionNode):
@@ -232,7 +230,7 @@ class DecayNode(ProportionNode):
         else: 
             for timestep in range(time + 1):
                 if timestep != time:   
-                    flux_in = self.get_flux_in(graph, timestep, cumulative = False)
+                    flux_in = self.get_flux_in(graph, timestep, cumulative= False)
                     output_flux_out = flux_in - (flux_in * ((0.5) ** ((time - timestep)/self.HalfLife)))
                     total += output_flux_out
             return total
@@ -244,7 +242,7 @@ class DecayNode(ProportionNode):
             return Annual
         else: 
             for Year in range(time + 1): 
-                Annual = super().get_flux_in(graph, Year, cumulative = False)
+                Annual = super().get_flux_in(graph, Year, cumulative= False)
                 total += Annual
             return total 
     
@@ -270,7 +268,7 @@ class DecayNode(ProportionNode):
         try:
             total = 0
             for Year in range(time + 1): 
-                Annual = self.get_flux_in(graph, Year, cumulative = False)
+                Annual = self.get_flux_in(graph, Year, cumulative= False)
                 Restant = Annual * ((0.5) ** ((time - Year)/self.HalfLife))
                 total += Restant
             return total
@@ -298,7 +296,7 @@ class RecyclingNode(ProportionNode):
             return total
         else:
             for timestep in range(time + 1):
-                total += self.get_flux_out(graph, timestep, cumulative = False)
+                total += self.get_flux_out(graph, timestep, cumulative= False)
             return total
     
     def get_flux_in(self, graph: WPGraph, time: int, cumulative: bool = False) -> float:
@@ -308,7 +306,7 @@ class RecyclingNode(ProportionNode):
             return total
         else:
             for Year in range(time + 1):
-                total += super().get_flux_in(graph, Year, cumulative = False)
+                total += super().get_flux_in(graph, Year, cumulative= False)
             return total
     
     def get_stock(self, graph: WPGraph, time: int, cumulative: bool = False) -> float:
@@ -326,12 +324,12 @@ class PoolNode(ProportionNode):
             return Annual
         else: 
             for Year in range(time + 1): 
-                Annual = super().get_flux_in(graph, Year, cumulative = False)
+                Annual = super().get_flux_in(graph, Year, cumulative= False)
                 total += Annual
             return total    
     
     def get_flux_out(self, graph: WPGraph, time: int, cumulative: bool = False) -> float:
-        warnings.warn(f'Aucun carbone sortant de la node {self.NAME}', stacklevel = 2)
+        warnings.warn(f'Aucun carbone sortant de la node {self.NAME}', stacklevel= 2)
       
     def get_stock(self, graph: WPGraph, time: int, cumulative: bool = False) -> float:
         ''' get_stock Documentation   
@@ -346,7 +344,7 @@ class PoolNode(ProportionNode):
         '''
         try:
             warnings.warn('Le résultat est le même que le cumulatif des flux in', stacklevel = 2)
-            return self.get_flux_in(graph, time, cumulative = True)
+            return self.get_flux_in(graph, time, cumulative= True)
         except RecursionError:
             raise me.RecursionNode("Un maximum de demande a été effectué. \
                                  Une boucle entre des ProportionNode est présente")    
@@ -394,7 +392,6 @@ class GraphFactory():
                 self._GRAPHS[graph_num].add_edge(From, To, edge_data['Values'])  
             graph_num += 1     
     
-
     @property
     def get_graph_name(self) -> list:
         return self._GRAPHNAME

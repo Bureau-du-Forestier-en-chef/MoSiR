@@ -3,30 +3,32 @@ Copyright (c) 2023 Gouvernement du Québec
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 """
+
 import warnings
 import argparse as ap 
-from MoSiR import graph_generator as gg
+from MoSiR import import_info as ip
 from MoSiR import reporting_info as rp
+from MoSiR import graph_generator as gg
 from MoSiR import mosir_exceptions as me
 
-def main(raw_args = None):
-    parser = ap.ArgumentParser(
-        description = 'Process input and output for the MoSiR calculator')
-    parser.add_argument('--GraphFileDirectory', '-G',
-        dest = 'G',                
-        required = True,
-        help = 'Localisation (racine) du fichier contenant le JSON du graph') 
+## 
+Graph = gg.GraphFactory('D:/MoSiR/tests/Microtests/Produitsdubois_V2/Graphs.json')
+Import = ip.ImportData('D:/MoSiR/tests/Microtests/Produitsdubois_V2/inputs.json')
+Report = rp.ReportData('D:/MoSiR/tests/Microtests/Produitsdubois_V2/report.json')
+
+ip.add_import(Graph, Import)
+rp.output_creation(Graph, Import, Report, "D:/MoSiR/tests/Microtests/Produitsdubois_V2")
+
 
 # Test de l'import -----------------------------------------------------------
-def test_04_first_last_node(graph: gf.GraphFactory):
+def test_01_debugg(graph: gg.GraphFactory):
     """Premier test pour évaluer si au moins une première et une dernière node
     est présente. Donc s'assurer que le graph n'est pas une loop.
 
     Args:
-        graph (gf.GraphFactory): _description_
+        graph (gg.GraphFactory): _description_
         report (rp.ReportData): _description_
     """
-    MOSIR_TOLERENCE = 0.0001
     for graph_name in graph.get_data:
         G1 = graph.get_data.get(graph_name)
         NODES = G1.get('Nodes', {})
@@ -44,11 +46,11 @@ def test_04_first_last_node(graph: gf.GraphFactory):
                 de carbone présente dans le système sera calculé seulement sur \
                 des nodes de demi-vie ou de recyclage", stacklevel = 2)   
 
-def test_05_edges_sum(graph: gf.GraphFactory):
+def test_02_debugg(graph: gg.GraphFactory):
     """_summary_
 
     Args:
-        graph (gf.GraphFactory): _description_
+        graph (gg.GraphFactory): _description_
 
     Raises:
         me.EdgeError: _description_
@@ -69,7 +71,7 @@ def test_05_edges_sum(graph: gf.GraphFactory):
                 warnings.warn(f'La somme des edges sortant de la node {node.NAME} est de 0',
                               stacklevel = 2)
 
-def test_06_overflow(graph: gf.GraphFactory):
+def test_03_debugg_graph(graph: gg.GraphFactory):
     # Test de overflow
     for graph_name in graph.get_data:
         G3 = graph.get_data.get(graph_name)
@@ -84,7 +86,7 @@ def test_06_overflow(graph: gf.GraphFactory):
                 raise me.EdgeError(f"La node {NODES[str(nodeID)].get('Name')} reçoit \
                     des edges avec et sans overflow")
 
-def test_07_insystem(graph: gf.GraphFactory,
+def test_04_debugg_graph(graph: gg.GraphFactory,
                  report: rp.ReportData):
     MOSIR_TOLERENCE = 0.0001
     time = report.get_output_data('Time')
@@ -95,12 +97,12 @@ def test_07_insystem(graph: gf.GraphFactory,
         for timestep in range(time + 1):
             in_system = 0
             for node in G4.nodes():
-                if type(node) == gf.TopNode:
+                if type(node) == gg.TopNode:
                     carbon_input += node.get_flux_out(G4, timestep)
                 elif node.NAME == 'N2O emissions': # Updater pour général
                     continue
-                elif type(node) == gf.PoolNode or type(node) == gf.DecayNode or \
-                    type(node) == gf.RecyclingNode:
+                elif type(node) == gg.PoolNode or type(node) == gg.DecayNode or \
+                    type(node) == gg.RecyclingNode:
                     with warnings.catch_warnings():
                         warnings.simplefilter('ignore')
                         in_system += node.get_stock(G4, timestep)
@@ -110,3 +112,12 @@ def test_07_insystem(graph: gf.GraphFactory,
                 raise me.QuantityError(f"Graph : {G4.get_name} La quantité total \
                     en input ({carbon_input}) au temps {timestep} n'est pas égale au total \
                     présent dans le système ({in_system})")
+
+# Pour launch un graph en debug
+def main(raw_args = None):
+    parser = ap.ArgumentParser(
+        description = 'Process input and output for the MoSiR calculator')
+    parser.add_argument('--GraphFileDirectory', '-G',
+        dest = 'G',                
+        required = True,
+        help = 'Localisation (racine) du fichier contenant le JSON du graph') 

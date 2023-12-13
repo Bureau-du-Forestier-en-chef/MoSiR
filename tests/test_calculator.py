@@ -14,13 +14,12 @@ from MoSiR import carbon_to_radiatif as cr
 
 MOSIR_TOLERENCE = 0.0001
 
-# Test GraphGen: calcul des nodes --------------------------------------------
 def test_01_in_eq_out():
     test_01 = wp.WPGraph('graph_test_01')
 
     A1 = gg.TopNode('A1')
     B1 = gg.ProportionNode('B1')
-    C1 = gg.DecayNode('C1', 10)
+    C1 = gg.DecayNode('C1', 75)
     D1 = gg.DecayNode('D1', 50)
     E1 = gg.PoolNode('E1')
 
