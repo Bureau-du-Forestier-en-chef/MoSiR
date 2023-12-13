@@ -4,6 +4,7 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 """
 
+import pytest
 import warnings
 import argparse as ap 
 from MoSiR import import_info as ip
@@ -12,23 +13,49 @@ from MoSiR import graph_generator as gg
 from MoSiR import mosir_exceptions as me
 
 ## 
-Graph = gg.GraphFactory('D:/MoSiR/tests/Microtests/Produitsdubois_V2/Graphs.json')
-Import = ip.ImportData('D:/MoSiR/tests/Microtests/Produitsdubois_V2/inputs.json')
-Report = rp.ReportData('D:/MoSiR/tests/Microtests/Produitsdubois_V2/report.json')
+# Graph = gg.GraphFactory('D:/MoSiR/tests/Microtests/Produitsdubois_V2/Graphs.json')
+# Import = ip.ImportData('D:/MoSiR/tests/Microtests/Produitsdubois_V2/inputs.json')
+# Report = rp.ReportData('D:/MoSiR/tests/Microtests/Produitsdubois_V2/report.json')
+#
+# ip.add_import(Graph, Import)
+# rp.output_creation(Graph, Import, Report, "D:/MoSiR/tests/Microtests/Produitsdubois_V2")
 
-ip.add_import(Graph, Import)
-rp.output_creation(Graph, Import, Report, "D:/MoSiR/tests/Microtests/Produitsdubois_V2")
+#@pytest.mark.xfail
+#def test_fail_2():
+#    assert 1 == 2
 
+# Pour launch un graph en debug
+def main(raw_args = None):
+    parser = ap.ArgumentParser(
+        description = 'Process graph for debugg')
+    parser.add_argument('--GraphFileDirectory', '-G',
+        dest = 'G',                
+        required = True,
+        help = 'Localisation (racine) du fichier contenant le JSON du graph') 
+    args = parser.parse_args(raw_args)
+
+    overflow_name = []
+    for graph_name in args.G.get_data:
+        G0 = args.G.get_data.get(graph_name)
+        NODES = G0.get('Nodes', {})
+        EDGES = G0.get('Edges', {})
+        for edges_id in EDGES:
+            overflow_id = []
+            for key, values in EDGES.items():
+                if values.get('Overflow') == 1:
+                    overflow_id.append(values.get('To'))
+        for node in NODES:
+            if node in overflow_id:
+                overflow_name.append(node.NAME)
+
+    test_graph_01(args.G)
+    test_graph_02(args.G, overflow= overflow_name)
+    test_graph_03(args.G, overflow= overflow_name)
+    test_graph_04(args.G, overflow= overflow_name)
 
 # Test de l'import -----------------------------------------------------------
-def test_01_debugg(graph: gg.GraphFactory):
-    """Premier test pour évaluer si au moins une première et une dernière node
-    est présente. Donc s'assurer que le graph n'est pas une loop.
-
-    Args:
-        graph (gg.GraphFactory): _description_
-        report (rp.ReportData): _description_
-    """
+def test_graph_01(graph: gg.GraphFactory):
+    # Présence de first et last node
     for graph_name in graph.get_data:
         G1 = graph.get_data.get(graph_name)
         NODES = G1.get('Nodes', {})
@@ -46,15 +73,7 @@ def test_01_debugg(graph: gg.GraphFactory):
                 de carbone présente dans le système sera calculé seulement sur \
                 des nodes de demi-vie ou de recyclage", stacklevel = 2)   
 
-def test_02_debugg(graph: gg.GraphFactory):
-    """_summary_
-
-    Args:
-        graph (gg.GraphFactory): _description_
-
-    Raises:
-        me.EdgeError: _description_
-    """
+def test_graph_02(graph: gg.GraphFactory, overflow: list[str]):
     MOSIR_TOLERENCE = 0.0001
     # total des Edges 
     for name in graph.get_graph_name:
@@ -62,7 +81,7 @@ def test_02_debugg(graph: gg.GraphFactory):
         for node in G2.nodes():
             total = 0
             for successors in G2.get_successors(node):
-                if successors.NAME == 'N2O emissions':
+                if successors.NAME in overflow:
                     continue
                 total += node._get_value_time(G2.get_edge_proportions(node, successors), 0)
             if total - 1 > MOSIR_TOLERENCE or 1 - total > MOSIR_TOLERENCE and total != 0:
@@ -71,7 +90,7 @@ def test_02_debugg(graph: gg.GraphFactory):
                 warnings.warn(f'La somme des edges sortant de la node {node.NAME} est de 0',
                               stacklevel = 2)
 
-def test_03_debugg_graph(graph: gg.GraphFactory):
+def test_graph_03(graph: gg.GraphFactory):
     # Test de overflow
     for graph_name in graph.get_data:
         G3 = graph.get_data.get(graph_name)
@@ -86,10 +105,10 @@ def test_03_debugg_graph(graph: gg.GraphFactory):
                 raise me.EdgeError(f"La node {NODES[str(nodeID)].get('Name')} reçoit \
                     des edges avec et sans overflow")
 
-def test_04_debugg_graph(graph: gg.GraphFactory,
-                 report: rp.ReportData):
+def test_graph_04(graph: gg.GraphFactory):
     MOSIR_TOLERENCE = 0.0001
-    time = report.get_output_data('Time')
+    time = 150
+    ip.add_import(graph, "D:/MoSiR/tests/Microtests/in_equal_out/inputs.json")
     # total input versus in system 
     for name in graph.get_graph_name:
         G4 = graph.get_graph(name)
@@ -113,11 +132,5 @@ def test_04_debugg_graph(graph: gg.GraphFactory,
                     en input ({carbon_input}) au temps {timestep} n'est pas égale au total \
                     présent dans le système ({in_system})")
 
-# Pour launch un graph en debug
-def main(raw_args = None):
-    parser = ap.ArgumentParser(
-        description = 'Process input and output for the MoSiR calculator')
-    parser.add_argument('--GraphFileDirectory', '-G',
-        dest = 'G',                
-        required = True,
-        help = 'Localisation (racine) du fichier contenant le JSON du graph') 
+if __name__ == '__main__':
+    main()

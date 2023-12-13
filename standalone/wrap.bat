@@ -20,7 +20,7 @@ if %ErrorLevel% == 1 (
     python -m nuitka ^
     --standalone ^
     --onefile ^
-    --onefile-windows-splash-screen-image=..\MoSiR\static\image\MoSiR-logos-rogne.png ^
+    --onefile-windows-splash-screen-image=D:\MoSiR_image\MoSiR-logos_white_2.png ^
     --include-package-data=MoSiR ^
     --include-package-data=pyvis ^
     --windows-icon-from-ico=..\MoSiR\static\image\MoSiR-logos.png ^

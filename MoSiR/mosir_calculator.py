@@ -35,11 +35,6 @@ def main(raw_args = None):
     Import = ip.ImportData(args.D)
     Report = rp.ReportData(args.R) 
  
-    # Alternate
-    #Graph = gf.GraphFactory('D:/MoSiR/examples/Inputs/Graph.json')
-    #Import = ip.ImportData('D:/MoSiR/examples/Inputs/Import.json')
-    #Report = rp.ReportData('D:/MoSiR/examples/Inputs/Reporting.json')
-    #
     # Add imports to graph
     ip.add_import(Graph, Import)
 
