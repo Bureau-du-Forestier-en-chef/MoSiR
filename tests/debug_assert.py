@@ -1,8 +1,12 @@
+# -*- coding: UTF-8 -*-
 """
 Copyright (c) 2023 Gouvernement du Québec
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 """
+
+import sys
+sys.path.append('../MoSiR')
 
 import pytest
 import warnings
@@ -33,25 +37,27 @@ def main(raw_args = None):
         required = True,
         help = 'Localisation (racine) du fichier contenant le JSON du graph') 
     args = parser.parse_args(raw_args)
+    graph = gg.GraphFactory(args.G)
 
     overflow_name = []
-    for graph_name in args.G.get_data:
-        G0 = args.G.get_data.get(graph_name)
+    for graph_name in graph.get_data:
+        G0 = graph.get_data.get(graph_name)
         NODES = G0.get('Nodes', {})
         EDGES = G0.get('Edges', {})
+        overflow_id = []
         for edges_id in EDGES:
-            overflow_id = []
             for key, values in EDGES.items():
-                if values.get('Overflow') == 1:
+                if values.get('Overflow') == 1 and values.get('To') not in overflow_id:
                     overflow_id.append(values.get('To'))
-        for node in NODES:
-            if node in overflow_id:
-                overflow_name.append(node.NAME)
+        for key, values in NODES.items():
+            if int(key) in overflow_id:
+                overflow_name.append(values.get('Name'))
+    
+    test_graph_01(graph)
+    test_graph_02(graph, overflow= overflow_name)
+    test_graph_03(graph)
+    test_graph_04(graph, overflow= overflow_name)
 
-    test_graph_01(args.G)
-    test_graph_02(args.G, overflow= overflow_name)
-    test_graph_03(args.G, overflow= overflow_name)
-    test_graph_04(args.G, overflow= overflow_name)
 
 # Test de l'import -----------------------------------------------------------
 def test_graph_01(graph: gg.GraphFactory):
@@ -78,17 +84,22 @@ def test_graph_02(graph: gg.GraphFactory, overflow: list[str]):
     # total des Edges 
     for name in graph.get_graph_name:
         G2 = graph.get_graph(name)
+        no_edges = []
         for node in G2.nodes():
+            if node.NAME == 'Land application':
+                pass
             total = 0
             for successors in G2.get_successors(node):
                 if successors.NAME in overflow:
                     continue
                 total += node._get_value_time(G2.get_edge_proportions(node, successors), 0)
-            if total - 1 > MOSIR_TOLERENCE or 1 - total > MOSIR_TOLERENCE and total != 0:
+            if total == 0:
+                no_edges.append(node.NAME)
+            elif abs(total - 1) > MOSIR_TOLERENCE:
                 raise me.EdgeError(f"La somme des edges sortant de {node.NAME} n'est pas égale à 100%") 
-            elif total < MOSIR_TOLERENCE:
-                warnings.warn(f'La somme des edges sortant de la node {node.NAME} est de 0',
-                              stacklevel = 2)
+        if len(no_edges) > 0:   
+            warnings.warn(f'Le ou les noeuds suivants ont aucun edge sortant: {no_edges}',
+                          stacklevel = 2)
 
 def test_graph_03(graph: gg.GraphFactory):
     # Test de overflow
@@ -105,10 +116,11 @@ def test_graph_03(graph: gg.GraphFactory):
                 raise me.EdgeError(f"La node {NODES[str(nodeID)].get('Name')} reçoit \
                     des edges avec et sans overflow")
 
-def test_graph_04(graph: gg.GraphFactory):
+def test_graph_04(graph: gg.GraphFactory, overflow: list[str]):
     MOSIR_TOLERENCE = 0.0001
     time = 150
-    ip.add_import(graph, "D:/MoSiR/tests/Microtests/in_equal_out/inputs.json")
+    imp = ip.ImportData("D:/MoSiR/tests/Microtests/in_equal_out/inputs.json")
+    ip.add_import(graph, imp)
     # total input versus in system 
     for name in graph.get_graph_name:
         G4 = graph.get_graph(name)
@@ -118,7 +130,7 @@ def test_graph_04(graph: gg.GraphFactory):
             for node in G4.nodes():
                 if type(node) == gg.TopNode:
                     carbon_input += node.get_flux_out(G4, timestep)
-                elif node.NAME == 'N2O emissions': # Updater pour général
+                elif node.NAME in overflow:
                     continue
                 elif type(node) == gg.PoolNode or type(node) == gg.DecayNode or \
                     type(node) == gg.RecyclingNode:
@@ -134,3 +146,4 @@ def test_graph_04(graph: gg.GraphFactory):
 
 if __name__ == '__main__':
     main()
+    print('Tests completed')
