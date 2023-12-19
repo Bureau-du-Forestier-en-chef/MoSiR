@@ -102,20 +102,16 @@ def output_creation(graph: gg.GraphFactory, import_data: ip.ImportData,
                         df.loc[timestep, 'Time'] = timestep
                         if out_type == 'Flux in':
                             result = node.get_flux_in(G, timestep, cumulative = cumu)
-                            result = unit_change(result, input_unit, report_unit)
-                            df.loc[timestep, node.NAME] = result
                         elif out_type == 'Flux out':
                             result = node.get_flux_out(G, timestep, cumulative = cumu)
-                            result = unit_change(result, input_unit, report_unit)
-                            df.loc[timestep, node.NAME] = result
                         elif out_type == 'Stock':
                             result = node.get_stock(G, timestep, cumulative = cumu)
-                            result = unit_change(result, input_unit, report_unit)
-                            df.loc[timestep, node.NAME] = result
                         else:
                             raise me.InvalidOption(f"L'entrée <Type> ('{out_type}') dans le \
                                 reporting file n'est pas un choix valide. Choix \
                                 possibles: 'Flux in', 'Flux out' ou 'Stock'.")
+                        result = unit_change(result, input_unit, report_unit)
+                        df.loc[timestep, node.NAME] = result
             if report_unit == 'tco2eq':
                 for col in df:
                     if col.lower() in ['time', 'timestep', 'temps', 
@@ -135,7 +131,8 @@ def output_creation(graph: gg.GraphFactory, import_data: ip.ImportData,
                                       le résultat sera donc de 0", stacklevel = 2)
             elif report_unit == 'w/m2':
                 C = data['Cumulative']
-                RF = pd.read_excel(os.path.join(os.path.dirname(os.path.abspath(__file__)),"RadiativeForcing", "Dynco2_Base.xlsx")).\
+                RF = pd.read_excel(os.path.join(os.path.dirname(os.path.abspath(__file__)), \
+                                                "RadiativeForcing", "Dynco2_Base.xlsx")).\
                     sort_values(by = 'Year').to_dict(orient = 'list')
                 df_2 = df.to_dict(orient = 'list')
                 cr.rad_formatting(df_2, RF, cumulative = C)
