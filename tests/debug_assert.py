@@ -10,56 +10,50 @@ sys.path.append('../MoSiR')
 
 import pytest
 import warnings
-import argparse as ap 
 from MoSiR import import_info as ip
 from MoSiR import reporting_info as rp
 from MoSiR import graph_generator as gg
 from MoSiR import mosir_exceptions as me
+from MoSiR import networkx_graph as wp
 
-## 
-# Graph = gg.GraphFactory('D:/MoSiR/tests/Microtests/Produitsdubois_V2/Graphs.json')
-# Import = ip.ImportData('D:/MoSiR/tests/Microtests/Produitsdubois_V2/inputs.json')
-# Report = rp.ReportData('D:/MoSiR/tests/Microtests/Produitsdubois_V2/report.json')
-#
-# ip.add_import(Graph, Import)
-# rp.output_creation(Graph, Import, Report, "D:/MoSiR/tests/Microtests/Produitsdubois_V2")
+# Fonction main qui contient les tests ----------------------------------------
+def main(graph: gg.GraphFactory):
+    """Fonction main qui sera connectée au script mosir_calculator.py
 
-#@pytest.mark.xfail
-#def test_fail_2():
-#    assert 1 == 2
+    Cette fonction contient les tests qui seront effectués sur le graph
+    avant de faire le calcul. Les tests sont effectués par graph, donc
+    si plusieurs graph sont présent dans le fichier JSON, les tests seront
+    effectués pour chaque graph. Hope it works
 
-# Pour launch un graph en debug
-def main(raw_args = None):
-    parser = ap.ArgumentParser(
-        description = 'Process graph for debugg')
-    parser.add_argument('--GraphFileDirectory', '-G',
-        dest = 'G',                
-        required = True,
-        help = 'Localisation (racine) du fichier contenant le JSON du graph') 
-    args = parser.parse_args(raw_args)
-    graph = gg.GraphFactory(args.G)
+    Args:
+        graph (gg.GraphFactory): GraphFactory qui contient les graph
+        à tester
+    """
 
-    overflow_name = []
+    # On récupère les noms des nodes qui ont un overflow
+    overflow_name = {}
     for graph_name in graph.get_data:
         G0 = graph.get_data.get(graph_name)
         NODES = G0.get('Nodes', {})
         EDGES = G0.get('Edges', {})
         overflow_id = []
+        overflow_name[graph_name] = []
         for edges_id in EDGES:
             for key, values in EDGES.items():
                 if values.get('Overflow') == 1 and values.get('To') not in overflow_id:
                     overflow_id.append(values.get('To'))
         for key, values in NODES.items():
             if int(key) in overflow_id:
-                overflow_name.append(values.get('Name'))
-    
+                overflow_name[graph_name].append(values.get('Name'))
+
+    # On effectue les tests
     test_graph_01(graph)
     test_graph_02(graph, overflow= overflow_name)
     test_graph_03(graph)
     test_graph_04(graph, overflow= overflow_name)
 
-
-# Test de l'import -----------------------------------------------------------
+# Tests -----------------------------------------------------------------------
+# On test si on a bien un first et un last node
 def test_graph_01(graph: gg.GraphFactory):
     # Présence de first et last node
     for graph_name in graph.get_data:
@@ -72,6 +66,8 @@ def test_graph_01(graph: gg.GraphFactory):
             warnings.warn(f"Attention, plus d'une TopNode présente.\
                 Les inputs vont être acheminés à ces deux nodes: \
                 {TOPNODES}", stacklevel = 2)  
+        elif len(TOPNODES) == 0:
+            raise me.NodeError("Aucune TopNode présente dans le graph")
         LASTNODES = set([int(ID) for ID in NODES]) - \
                     set([data['From'] for keys, data in EDGES.items()])
         if len(LASTNODES) == 0:
@@ -79,6 +75,7 @@ def test_graph_01(graph: gg.GraphFactory):
                 de carbone présente dans le système sera calculé seulement sur \
                 des nodes de demi-vie ou de recyclage", stacklevel = 2)   
 
+# On test si la somme des edges sortant de chaque node est égale à 100%
 def test_graph_02(graph: gg.GraphFactory, overflow: list[str]):
     MOSIR_TOLERENCE = 0.0001
     # total des Edges 
@@ -86,8 +83,6 @@ def test_graph_02(graph: gg.GraphFactory, overflow: list[str]):
         G2 = graph.get_graph(name)
         no_edges = []
         for node in G2.nodes():
-            if node.NAME == 'Land application':
-                pass
             total = 0
             for successors in G2.get_successors(node):
                 if successors.NAME in overflow:
@@ -101,6 +96,7 @@ def test_graph_02(graph: gg.GraphFactory, overflow: list[str]):
             warnings.warn(f'Le ou les noeuds suivants ont aucun edge sortant: {no_edges}',
                           stacklevel = 2)
 
+# On test si une node reçoit des edges avec et sans overflow
 def test_graph_03(graph: gg.GraphFactory):
     # Test de overflow
     for graph_name in graph.get_data:
@@ -116,6 +112,7 @@ def test_graph_03(graph: gg.GraphFactory):
                 raise me.EdgeError(f"La node {NODES[str(nodeID)].get('Name')} reçoit \
                     des edges avec et sans overflow")
 
+# On test si la quantité total en input est égale à la quantité total dans le système
 def test_graph_04(graph: gg.GraphFactory, overflow: list[str]):
     MOSIR_TOLERENCE = 0.0001
     time = 150
@@ -143,6 +140,28 @@ def test_graph_04(graph: gg.GraphFactory, overflow: list[str]):
                 raise me.QuantityError(f"Graph : {G4.get_name} La quantité total \
                     en input ({carbon_input}) au temps {timestep} n'est pas égale au total \
                     présent dans le système ({in_system})")
+
+# On regarde si le graph a des edges qui forme une boucle entre des ProportionNode
+def test_graph_05(graph: gg.GraphFactory):
+    for name in graph.get_graph_name:
+        G5 = graph.get_graph(name)
+        for node in G5.nodes():
+            if type(node) == gg.ProportionNode:
+                visited = set()
+                stack = [(node, [])]
+                while stack:
+                    current_node, path = stack.pop()
+                    if current_node in visited:
+                        path_name = [node.NAME for node in path]
+                        raise me.RecursionNode(f"Une boucle possible existe entre\
+                             plusieurs ProportionNode : {path_name + [current_node.NAME]}")
+                    visited.add(current_node)
+                    successors = G5.get_successors(current_node)
+                    for successor in successors:
+                        stack.append((successor, path + [current_node]))
+
+
+# Main ------------------------------------------------------------------------
 
 if __name__ == '__main__':
     main()

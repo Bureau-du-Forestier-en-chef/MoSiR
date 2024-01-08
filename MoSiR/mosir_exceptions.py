@@ -18,6 +18,10 @@ class QuantityError(Exception):
 class EdgeError(Exception):
     def __init__(self, message: str):            
         super().__init__(message)
+
+class NodeError(Exception):
+    def __init__(self, message: str):            
+        super().__init__(message)
         
 class ConstError(Exception):
     def __init__(self, message: str):    

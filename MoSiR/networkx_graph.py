@@ -11,13 +11,23 @@ class WPGraph():
     def __init__(self, KEY):
         super().__init__()
         self._graph = nx.DiGraph()
-        self._NAME = KEY
-    
+        # Empêcher de mettre none comme nom de graph
+        if KEY is None:
+            raise me.ConstError("Graph name can't be None")
+        self._NAME = str(KEY)
+
+    # Vérifier si le graph dans self._graph a déjà un node avec le même nom
     def add_node(self, node):
+        name_to_add = node.NAME
+        existing_node_names = [n.NAME for n in self._graph.nodes()]
+        if name_to_add in existing_node_names:
+            raise me.NodeError(f"Node name '{name_to_add}' already exists")
         return self._graph.add_node(node)
     
-    def add_edge(self, node_from, node_to, proportions):
-        return self._graph.add_edge(node_from, node_to, proportion = proportions)
+    def add_edge(self, node_from, node_to, proportions: list[float]):
+        if any(x < 0 or x > 1 for x in proportions):
+            raise me.EdgeError("Proportion must be between 0 and 1")
+        return self._graph.add_edge(node_from, node_to, proportion= proportions)
     
     def get_edge_proportions(self, node_from, node_to) -> list[float]:
         return self._graph.get_edge_data(node_from, node_to)["proportion"]
@@ -36,8 +46,8 @@ class WPGraph():
         return self._NAME
     
     @get_name.setter
-    def get_name(self):
-        return me.ConstError("Graph name can't be changed outside Miro")
+    def get_name(self, value):
+        raise me.ConstError("Graph name can't be changed outside Miro")
 
 # Not usefull atm
 #import igraph

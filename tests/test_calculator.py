@@ -1,19 +1,25 @@
-# -*- coding: UTF-8 -*-
+        # -*- coding: UTF-8 -*-
 """
 Copyright (c) 2023 Gouvernement du Québec
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 """
 import os
+import json
 import pytest
 import warnings
 import pandas as pd
 from MoSiR import graph_generator as gg
 from MoSiR import networkx_graph as wp
 from MoSiR import carbon_to_radiatif as cr
+from MoSiR import mosir_exceptions as me
 
 MOSIR_TOLERENCE = 0.0001
 
+# Plusieurs tests qui vérifient les fonctions de base de MoSiR ----------------
+# À utiliser entre les différentes versions de MoSiR
+
+# Test si ce qui rentre équivaut à ce qui sort --------------------------------
 def test_01_in_eq_out():
     test_01 = wp.WPGraph('graph_test_01')
 
@@ -83,6 +89,7 @@ def test_01_in_eq_out():
                 - E1.get_flux_in(test_01, timestep, cumulative= True)) \
                 < MOSIR_TOLERENCE, 'E1 stock != cumulative flux in'
 
+# Test si le noeud de recyclage fonctionne ------------------------------------
 def test_02_recycling():
     test_02 = wp.WPGraph('graph_test_02')
 
@@ -112,7 +119,7 @@ def test_02_recycling():
         assert(D2.get_flux_in(test_02, timestep, cumulative= True) \
                == D2.get_flux_out(test_02, timestep + 1, cumulative= True))
         
-
+# Test si le noeud de decay fonctionne ----------------------------------------
 def test_03_decay():
     test_03 = wp.WPGraph('graph_test_03')
 
@@ -138,8 +145,7 @@ def test_03_decay():
         assert abs(B3_stock - comparatif) < MOSIR_TOLERENCE
         assert abs(B3_stock - comparatif_2) < MOSIR_TOLERENCE
 
-
-# Test du radiatif -----------------------------------------------------------
+# Test du radiatif ------------------------------------------------------------
 def test_04_radiatif():
     time = list(range(1, 2001))
     CO2 = [1/3.6667] + [0] * (len(time) - 1)         
@@ -160,7 +166,7 @@ def test_04_radiatif():
     cr.rad_formatting(test_03, RF, cumulative = False)
     assert test_03 == RF, "Not the same RF as DynCo"
 
-# Micro test
+# Test avec le micrograph 1 ---------------------------------------------------
 def test_05_micro1():
     test_05 = wp.WPGraph('graph_test_05')
 
@@ -223,6 +229,7 @@ def test_05_micro1():
         assert abs(Cumu_CH4[timestep] - Cumu_CH4_2[timestep]) < MOSIR_TOLERENCE
         assert abs(Cumu_CO2[timestep] - Cumu_CO2_2[timestep]) < MOSIR_TOLERENCE
 
+# Test avec le micrograph 2 ---------------------------------------------------
 def test_06_micro2():
     test_06 = wp.WPGraph('graph_test_06')
 
@@ -262,9 +269,84 @@ def test_06_micro2():
         assert abs(Annual[timestep] - Annual_2[timestep]) < MOSIR_TOLERENCE
         assert abs(Cumu[timestep] - Cumu_2[timestep]) < MOSIR_TOLERENCE
 
-@pytest.mark.xfail
-def test_fail():
-    assert 1 == 2
+# Fonction qui détecte si plusieurs noeuds ont le même nom
+def unique_node_names(graph: wp.WPGraph):
+    nodes = graph.nodes()
+    node_names = [node.NAME for node in nodes]
+    if len(node_names) != len(set(node_names)):
+        raise me.NodeError("Deux noeuds ont le même nom")
+
+# Test qui utilise la fonction unique_node_names
+def test_07_unique_node_names():
+    test_07 = wp.WPGraph('graph_test_07')
+
+    A7 = gg.TopNode('A')
+    B7 = gg.ProportionNode('B')
+    C7 = gg.DecayNode('B', 75)
+
+    test_07.add_node(A7)
+    test_07.add_node(B7)
+    with pytest.raises(me.NodeError):
+        test_07.add_node(C7)
+
+# Test pour TopNode -----------------------------------------------------------
+# Test qui vérifie qu'il est impossible d'entrer 
+    # une valeur négative dans TopNode
+def test_08_negative_values():
+    top_node = gg.TopNode('A')
+    with pytest.raises(ValueError):
+        top_node.time = [-1]
+    with pytest.raises(ValueError):
+        top_node.quantities = [-1]
+
+# Test qui échoue si une TopNode reçoit des temps ou des quantitées
+    # qui ne sont pas des listes
+def test_09_not_list():
+    top_node = gg.TopNode('A')
+    with pytest.raises(TypeError):
+        top_node.time = 1
+    with pytest.raises(TypeError):
+        top_node.quantities = 1
+
+# Vérifier qu'il est impossible d'avoir une valeur avec _get_quantity_time
+        # si les quantities et le temps ne sont pas de la même longueur
+def test_10_not_same_length():
+    top_node = gg.TopNode('A')
+    top_node.time = [0, 1, 2]
+    top_node.quantities = [1, 2]
+    with pytest.raises(ValueError):
+        top_node._get_quantity_time(1)
+
+# Vérifier qu'on ne peut pas mettre une proportion > 1 ou < 0 dans un edge
+def test_11_edge_proportion():
+    test_11 = wp.WPGraph('graph_test_11')
+
+    A11 = gg.TopNode('A11')
+    B11 = gg.ProportionNode('B11')
+    C11 = gg.PoolNode('C11')
+
+    test_11.add_node(A11)
+    test_11.add_node(B11)
+    test_11.add_node(C11)
+ 
+    test_11.add_edge(A11, B11, proportions= [1])
+    with pytest.raises(me.EdgeError):
+        test_11.add_edge(B11, C11, proportions= [1.1])
+    with pytest.raises(me.EdgeError):
+        test_11.add_edge(B11, C11, proportions= [-0.1])
+
+# Vérifier qu'on ne peut pas changer le nom d'un graph
+def test_12_graph_name():
+    test_12 = wp.WPGraph('graph_test_12')
+    with pytest.raises(me.ConstError):
+        test_12.get_name = 'graph_test_12'
+
+# Vérifier qu'on ne peut pas passer un graph sans nom dans gg.GraphFactory
+def test_13_graph_name():
+    with pytest.raises(TypeError):
+        gg.GraphFactory(None)
+
+# Vérifier que les tests passent ----------------------------------------------
 
 if __name__ == "__main__":
     test_01_in_eq_out()
@@ -273,4 +355,11 @@ if __name__ == "__main__":
     test_04_radiatif()
     test_05_micro1()
     test_06_micro2()
+    test_07_unique_node_names()
+    test_08_negative_values()
+    test_09_not_list()
+    test_10_not_same_length()
+    test_11_edge_proportion()
+    test_12_graph_name()
+    test_13_graph_name()
     print("Tests passed")

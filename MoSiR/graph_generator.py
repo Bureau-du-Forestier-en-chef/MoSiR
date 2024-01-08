@@ -52,7 +52,7 @@ class WPGraph():
 
 class IndustrialNode(metaclass = ABCMeta): # aller voir la doc ABC
     def __init__(self, LOCALNAME: str):
-        self._NAME = LOCALNAME
+        self._NAME = str(LOCALNAME)
         
     def _get_value_time(self, values: list[float], time: int) -> float:
         return values[min(time, len(values) - 1)]
@@ -112,7 +112,10 @@ class TopNode(IndustrialNode):
     
     @time.setter
     def time(self, input_value: list[int]):
-        self._time = input_value
+        if all(isinstance(t, int) and t >= 0 for t in input_value):
+            self._time = input_value
+        else:
+            raise ValueError("Input value must be a list of non-negative integers.")
         
     @property
     def quantities(self):
@@ -120,10 +123,16 @@ class TopNode(IndustrialNode):
 
     @quantities.setter
     def quantities(self, input_value: list[float]):
-        self._quantities = input_value
+        if all(isinstance(q, (float, int)) and q >= 0 for q in input_value):
+            self._quantities = input_value
+        else:  
+            raise ValueError("Input value must be a list of non-negative numbers.")
         
     def _get_quantity_time(self, when: int) -> float:
-        try: 
+        # Vérifier si time et quantities sont de même longueur
+        if len(self.time) != len(self.quantities):
+            raise ValueError("Time and quantities lists must be the same length.")
+        try:
             index = self._time.index(when)
             return self._quantities[index]
         except ValueError:
@@ -393,7 +402,7 @@ class GraphFactory():
             graph_num += 1     
     
     @property
-    def get_graph_name(self) -> list:
+    def get_graph_name(self) -> list[str]:
         return self._GRAPHNAME
     
     @get_graph_name.setter
@@ -411,4 +420,6 @@ class GraphFactory():
     
     @get_data.setter
     def get_data(self, input):
-        raise me.ConstError("Data from graphs can't be changed outside Miro")   
+        raise me.ConstError("Data from graphs can't be changed outside Miro") 
+
+   
