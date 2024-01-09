@@ -339,11 +339,7 @@ def test_13_graph_name():
     with pytest.raises(TypeError):
         gg.GraphFactory(None)
 
-# Suggérer des tests additionnels ---------------------------------------------
-# Vérifier que les noeuds sont bien des noeuds
-# Vérifier que les edges sont bien des edges
-# Vérifier que les noeuds sont bien dans le graph
-# Vérifier que les edges sont bien dans le graph
+# Vérifier que l'on reçoit un message d'avertissement si 
 
 # Vérifier que les tests passent ----------------------------------------------
 

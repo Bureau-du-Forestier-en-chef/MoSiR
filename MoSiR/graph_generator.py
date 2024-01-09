@@ -12,6 +12,23 @@ from abc import ABCMeta, abstractmethod
 
 # Caching --------------------------------------------------------------------
 class Caching():
+    """ Caching Documentation
+
+    La classe Caching sert à créer un cache pour les noeuds DecayNode et
+    RecyclingNode. Le cache est un dictionnaire qui contient les fluxs
+    sortant d'un noeud à un temps donné. Le cache est utilisé pour éviter
+    de recalculer les fluxs sortant d'un noeud à un temps donné. Celle-ci
+    se réfère au nom du noeud et au temps pour trouver le flux sortant.
+    Il est donc important d'avoir des noms uniques entre les noeuds d'un
+    même graphe.	
+
+    Raises:
+        me.ConstError: Le cache ne peut être modifié qu'avec la fonction
+        set_flux_cache
+
+    Returns:
+        Caching: Un objet de la classe Caching
+    """
     cache_open = True
     def __init__(self):
         self.__flux_cache = {}
@@ -34,10 +51,14 @@ class Caching():
         raise me.ConstError("Cache must be modify with set_flux_cache")
 
     def set_flux_cache(self, timestep: int, value: float):
+        if value < 0 or timestep < 0:
+            raise ValueError("Value and timestep must be positive numbers.")
         if Caching.is_open() is True:
             self.__flux_cache[timestep] = value 
             
     def get_flux_cache(self, timestep: int):
+        if timestep < 0:
+            raise ValueError("Timestep must be a positive number.")
         if Caching.is_open() is True:
             return self.__flux_cache[timestep]
     
@@ -51,10 +72,36 @@ class WPGraph():
     pass
 
 class IndustrialNode(metaclass = ABCMeta): # aller voir la doc ABC
+    """ IndustrialNode Documentation
+
+    Classe mère des noeuds du réseau MoSiR. Elle contient les méthodes et 
+    les attributs communs à tous les noeuds du réseau MoSiR. Aucun noeud
+    ne peut être seulement un IndustrialNode, il doit être un des enfants
+    de cette classe.
+
+    Args:
+        LOCALNAME (str): Le nom du noeud
+    """
     def __init__(self, LOCALNAME: str):
         self._NAME = str(LOCALNAME)
         
     def _get_value_time(self, values: list[float], time: int) -> float:
+        """ _get_value_time Documentation
+
+        La fonction _get_value_time sert à trouver une proportion dans à
+        un edge à un temps donné dans une liste de proportion. Si le temps
+        demandé est plus grand que la longueur de la liste, la dernière 
+        proportion de la liste est retournée. Est utilisé strictement pour
+        les proportions. Pour connaitre les quantités de carbone à un temps 
+        donné, utiliser la fonction _get_quantity_time.
+
+        Args:
+            values (list[float]): _description_
+            time (int): _description_
+
+        Returns:
+            float: _description_
+        """
         return values[min(time, len(values) - 1)]
     
     @property
@@ -67,16 +114,10 @@ class IndustrialNode(metaclass = ABCMeta): # aller voir la doc ABC
     
     @abstractmethod
     def get_flux_out(self, graph: WPGraph, time: int, cumulative: bool = False) -> float:
-        ''' 
-            To do
-        '''
         pass
     
     @abstractmethod
     def get_flux_in(self, graph: WPGraph, time: int, cumulative: bool = False) -> float:
-        ''' 
-            To do
-        '''
         pass
     
     def __hash__(self): 
@@ -101,6 +142,16 @@ class IndustrialNode(metaclass = ABCMeta): # aller voir la doc ABC
         return self.NAME <= other.NAME
         
 class TopNode(IndustrialNode):
+    """ TopNode Documentation
+
+    Classe des noeuds du réseau MoSiR qui sont des noeuds de départ. Ils
+    ne peuvent pas avoir de flux entrant, seulement des flux sortant. Ils
+    ne peuvent pas avoir de stock de carbone. Ils sont les noeuds de départ
+    du réseau MoSiR servant à importer du carbone dans le réseau. 
+
+    Args:
+        LOCALNAME (str): Le nom du noeud
+    """
     def __init__(self, NAME: str):
         super().__init__(NAME)
         self._time = []
@@ -129,6 +180,23 @@ class TopNode(IndustrialNode):
             raise ValueError("Input value must be a list of non-negative numbers.")
         
     def _get_quantity_time(self, when: int) -> float:
+        """ _get_quantity_time Documentation
+
+        La fonction _get_quantity_time sert à trouver une quantité à un temps
+        donné dans une liste de quantité. Si le temps demandé n'est pas dans
+        la liste, 0 est retourné. Est utilisé strictement pour les quantités.
+        Pour connaitre les proportions dans un edge à un temps donné, utiliser 
+        la fonction _get_value_time.
+
+        Args:
+            when (int): Le moment X où on veut connaitre la quantité de carbone
+
+        Raises:
+            ValueError: Le temps doit être un entier positif
+
+        Returns:
+            float: La quantité de carbone à un temps donné
+        """
         if when < 0:
             raise ValueError("Time must be a non-negative integer.")
         if len(self.time) != len(self.quantities):
@@ -152,11 +220,29 @@ class TopNode(IndustrialNode):
         return self.get_flux_out(graph, time, cumulative= cumulative)
 
     def get_stock(self, graph: WPGraph, time: int, cumulative: bool = False) -> float:
-        warnings.warn(f'Aucun carbone ne résident dans le noeud {self.NAME},\
-                       seulement des flux le traverse', stacklevel= 2)
+        warnings.warn(' '.join(f'Aucun carbone ne résident dans le noeud \
+            {self.NAME}, seulement des flux le traverse').split(), stacklevel= 2)
         return 0
 
 class ProportionNode(IndustrialNode):
+    """ ProportionNode Documentation
+
+    Classe des noeuds du réseau MoSiR qui sont des noeuds de transition. Ils
+    peuvent avoir des flux entrant et sortant. Ils sont les noeuds de 
+    transition du réseau MoSiR servant à transférer du carbone d'un noeud à
+    un autre. Ils sont des noeuds qui servent à proportionner des flux 
+    entrant pour les redistribuer dans les noeuds enfants. Le transfert se 
+    fait instantanément, donc il n'y a pas de stock de carbone dans ces noeuds.
+
+    Args:
+        LOCALNAME (str): Le nom du noeud
+
+    Raises:
+        ValueError: Le nom du noeud doit être une chaine de caractère
+
+    Returns:
+        ProportionNode: Un objet de la classe ProportionNode
+    """
     def __init__(self, NAME: str):
         super().__init__(NAME)
         self.__pn_cache = Caching()
@@ -203,11 +289,30 @@ class ProportionNode(IndustrialNode):
             return total
 
     def get_stock(self, graph: WPGraph, time: int, cumulative: bool = False) -> int:
-        warnings.warn(f'Aucun carbone ne résident dans le noeud {self.NAME},\
-                       seulement des flux le traverse', stacklevel= 2)
+        warnings.warn(' '.join(f'Aucun carbone ne résident dans le noeud \
+            {self.NAME}, seulement des flux le traverse').split(), stacklevel= 2)
         return 0
 
 class DecayNode(ProportionNode):
+    """ DecayNode Documentation
+
+    Classe des noeuds du réseau MoSiR qui sont des noeuds avec une dégradation
+    selon une demi-vie. Ils peuvent avoir des flux entrant et sortant. Ils
+    ne peuvent pas être des noeuds de départ ou de fin. Un flux ne peut
+    jamais sortir la même année qu'il est entré. Chaque dégradation est
+    selon le moment d'entrée du flux, indépendamment des autres flux entrant.
+
+    Args:
+        LOCALNAME (str): Le nom du noeud
+        HalfLife (int): La demi-vie du carbone dans le noeud
+    
+    Raises:
+        ValueError: Le nom du noeud doit être une chaine de caractère
+        ValueError: La demi-vie doit être un entier positif
+
+    Returns:
+        DecayNode: Un objet de la classe DecayNode
+    """
     def __init__(self, NAME: str, HalfLife: int):
         super().__init__(NAME)
         if not isinstance(HalfLife, int) or HalfLife <= 0:

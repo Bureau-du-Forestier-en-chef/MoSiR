@@ -12,8 +12,6 @@ import warnings
 from MoSiR import graph_generator as gg
 from MoSiR import mosir_exceptions as me
 
-Graph = gg.GraphFactory("D:/MoSiR/tests/Microtests/double/double_graph.json") # À enlever
-
 # Fonction main qui contient les tests ----------------------------------------
 def main(graph: gg.GraphFactory):
     """Fonction main qui sera connectée au script mosir_calculator.py
@@ -59,6 +57,7 @@ def main(graph: gg.GraphFactory):
     debugg_graph_12(graph)
     debugg_graph_13(graph)
     debugg_graph_14(graph)
+    debugg_graph_15(graph)
 
 
 # Tests -----------------------------------------------------------------------
@@ -223,25 +222,17 @@ def debugg_graph_08(graph: gg.GraphFactory):
 def debugg_graph_09(graph: gg.GraphFactory):
     for name in graph.get_graph_name:
         G9 = graph.get_graph(name)
-        if len(G9.nodes()) == 0:
-            raise me.GraphError(f"Le graph {name} ne contient aucune node")
+        if len(G9.nodes()) < 2:
+            raise me.GraphError(' '.join(f"Le graph {name} ne contient pas \
+                assez de nodes. Un minimum de 2 nodes est requis").split())
 
-# Vérifier que les gg.DecayNode ont toujours un edge qui rentre et un qui sort
+# Vérifier qu'il y a au moins un edge dans le graph
 def debugg_graph_10(graph: gg.GraphFactory):
     for name in graph.get_graph_name:
         G10 = graph.get_graph(name)
-        for node in G10.nodes():
-            if type(node) == gg.DecayNode:
-                num_successors = 0
-                num_predecessors = 0
-                for successors in G10.get_successors(node):
-                    num_successors += 1
-                for predecessors in G10.get_predecessors(node):
-                    num_predecessors += 1
-                if num_successors == 0 or num_predecessors == 0:
-                    raise me.NodeError(' '.join((f"La node {node.NAME} n'a pas \
-                        de edges entrant ou sortant. Une node de type DecayNode \
-                        ne peut pas être au début ou à la fin d'un graph").split())) 
+        if len(G10.edges()) == 0:
+            raise me.GraphError(' '.join(f"Le graph {name} ne contient pas \
+                d'edges. Un minimum de 1 edge est requis").split()) 
 
 # Véfirier que les gg.RecyclingNode ont toujours un edge qui rentre et un qui sort
 def debugg_graph_11(graph: gg.GraphFactory):
@@ -327,8 +318,20 @@ def debugg_graph_14(graph: gg.GraphFactory):
             if type(node) == gg.PoolNode:
                 is_gas_present_in_name(node.NAME)
 
-# Main ------------------------------------------------------------------------
+# Vérifier que les gg.DecayNode ont toujours un edge qui rentre et un qui sort
+def debugg_graph_15(graph: gg.GraphFactory):
+    for name in graph.get_graph_name:
+        G15 = graph.get_graph(name)
+        for node in G15.nodes():
+            if type(node) == gg.DecayNode:
+                num_successors = 0
+                num_predecessors = 0
+                for successors in G15.get_successors(node):
+                    num_successors += 1
+                for predecessors in G15.get_predecessors(node):
+                    num_predecessors += 1
+                if num_successors == 0 or num_predecessors == 0:
+                    raise me.NodeError(' '.join((f"La node {node.NAME} n'a pas \
+                        de edges entrant ou sortant. Une node de type DecayNode \
+                        ne peut pas être au début ou à la fin d'un graph").split())) 
 
-if __name__ == '__main__':
-    main(Graph)
-    print('Tests completed')

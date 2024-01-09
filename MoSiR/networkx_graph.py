@@ -30,7 +30,6 @@ class WPGraph():
         return self._graph.add_edge(node_from, node_to, proportion= proportions)
     
     def get_edge_proportions(self, node_from, node_to) -> list[float]:
-        # Vérifier si le edge existe entre les deux nodes
         if not self._graph.has_edge(node_from, node_to):
             raise me.EdgeError(f"Edge from '{node_from}' to '{node_to}' doesn't exist")
         return self._graph.get_edge_data(node_from, node_to)["proportion"]
