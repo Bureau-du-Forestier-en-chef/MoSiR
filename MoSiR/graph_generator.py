@@ -129,7 +129,8 @@ class TopNode(IndustrialNode):
             raise ValueError("Input value must be a list of non-negative numbers.")
         
     def _get_quantity_time(self, when: int) -> float:
-        # Vérifier si time et quantities sont de même longueur
+        if when < 0:
+            raise ValueError("Time must be a non-negative integer.")
         if len(self.time) != len(self.quantities):
             raise ValueError("Time and quantities lists must be the same length.")
         try:
@@ -209,6 +210,8 @@ class ProportionNode(IndustrialNode):
 class DecayNode(ProportionNode):
     def __init__(self, NAME: str, HalfLife: int):
         super().__init__(NAME)
+        if not isinstance(HalfLife, int) or HalfLife <= 0:
+            raise ValueError("Half-life must be a positive integer.")
         self._HalfLife = HalfLife
         self.__dn_cache = Caching()
     
@@ -361,6 +364,21 @@ class PoolNode(ProportionNode):
 # Factory -------------------------------------------------------------------- 
 
 class GraphFactory(): 
+    # Écrire de la documentation
+    """ GraphFactory Documentation
+
+    La classe GraphFactory sert à créer un réseau de noeud à partir d'un
+    fichier JSON. Le fichier JSON doit être construit selon les normes de
+    MoSiR. Se référer à la documentation sur le GitHub du Bureau du 
+    forestier en chef pour plus d'informations.
+
+    Args: 
+        DIR (str): Le chemin du fichier JSON contenant les graphes
+
+    Returns:
+        GraphFactory: Un objet de la classe GraphFactory
+    """
+
     def __init__(self, DIR: str):
         self._DIRECTORY = DIR
         with open(self._DIRECTORY, "r") as files: 
@@ -410,8 +428,8 @@ class GraphFactory():
         raise me.ConstError("Graph name can't be changed outside Miro")
     
     def get_graph(self, name) -> WPGraph:
-        Names = self.get_graph_name
-        Index = Names.index(name)
+        Names_list = self.get_graph_name
+        Index = Names_list.index(name)
         return self._GRAPHS[Index]
         
     @property
@@ -421,5 +439,3 @@ class GraphFactory():
     @get_data.setter
     def get_data(self, input):
         raise me.ConstError("Data from graphs can't be changed outside Miro") 
-
-   

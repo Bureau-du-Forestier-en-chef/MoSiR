@@ -5,10 +5,9 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 """
 import argparse as ap
-from MoSiR import graph_generator as gg
 from MoSiR import import_info as ip
-from MoSiR import reporting_info as rp
-from MoSiR import debug_assert as da    
+from MoSiR import reporting_info as rp   
+from MoSiR import graph_generator as gg
 
 def main(raw_args = None):
     parser = ap.ArgumentParser(
@@ -38,9 +37,6 @@ def main(raw_args = None):
  
     # Add imports to graph
     ip.add_import(Graph, Import)
-
-    # Debug assert
-    da.main(Graph)
 
     # Reporting
     rp.output_creation(Graph, Import, Report, args.E)

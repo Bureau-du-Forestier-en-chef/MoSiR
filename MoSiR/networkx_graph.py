@@ -4,6 +4,8 @@ Copyright (c) 2023 Gouvernement du Québec
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 """
+
+import warnings
 import networkx as nx
 from MoSiR import mosir_exceptions as me
 
@@ -11,12 +13,10 @@ class WPGraph():
     def __init__(self, KEY):
         super().__init__()
         self._graph = nx.DiGraph()
-        # Empêcher de mettre none comme nom de graph
         if KEY is None:
             raise me.ConstError("Graph name can't be None")
         self._NAME = str(KEY)
 
-    # Vérifier si le graph dans self._graph a déjà un node avec le même nom
     def add_node(self, node):
         name_to_add = node.NAME
         existing_node_names = [n.NAME for n in self._graph.nodes()]
@@ -30,12 +30,19 @@ class WPGraph():
         return self._graph.add_edge(node_from, node_to, proportion= proportions)
     
     def get_edge_proportions(self, node_from, node_to) -> list[float]:
+        # Vérifier si le edge existe entre les deux nodes
+        if not self._graph.has_edge(node_from, node_to):
+            raise me.EdgeError(f"Edge from '{node_from}' to '{node_to}' doesn't exist")
         return self._graph.get_edge_data(node_from, node_to)["proportion"]
     
     def get_predecessors(self, node):
+        if type(node) == gg.TopNode:
+            warnings.warn("TopNode has no predecessors")
         return self._graph.predecessors(node)
     
     def get_successors(self, node):
+        if type(node) == gg.PoolNode:
+            warnings.warn("PoolNode has no successors") 
         return self._graph.successors(node)
     
     def nodes(self):

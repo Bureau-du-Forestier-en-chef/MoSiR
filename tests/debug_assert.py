@@ -8,13 +8,11 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 import sys
 sys.path.append('../MoSiR')
 
-import pytest
 import warnings
-from MoSiR import import_info as ip
-from MoSiR import reporting_info as rp
 from MoSiR import graph_generator as gg
 from MoSiR import mosir_exceptions as me
-from MoSiR import networkx_graph as wp
+
+Graph = gg.GraphFactory("D:/MoSiR/tests/Microtests/double/double_graph.json") # À enlever
 
 # Fonction main qui contient les tests ----------------------------------------
 def main(graph: gg.GraphFactory):
@@ -47,14 +45,25 @@ def main(graph: gg.GraphFactory):
                 overflow_name[graph_name].append(values.get('Name'))
 
     # On effectue les tests
-    test_graph_01(graph)
-    test_graph_02(graph, overflow= overflow_name)
-    test_graph_03(graph)
-    test_graph_04(graph, overflow= overflow_name)
+    debugg_graph_01(graph)
+    debugg_graph_02(graph, overflow= overflow_name)
+    debugg_graph_03(graph)
+    debugg_graph_04(graph, overflow= overflow_name)
+    debugg_graph_05(graph)
+    debugg_graph_06(graph)
+    debugg_graph_07(graph)
+    debugg_graph_08(graph)
+    debugg_graph_09(graph)
+    debugg_graph_10(graph)
+    debugg_graph_11(graph)
+    debugg_graph_12(graph)
+    debugg_graph_13(graph)
+    debugg_graph_14(graph)
+
 
 # Tests -----------------------------------------------------------------------
 # On test si on a bien un first et un last node
-def test_graph_01(graph: gg.GraphFactory):
+def debugg_graph_01(graph: gg.GraphFactory):
     # Présence de first et last node
     for graph_name in graph.get_data:
         G1 = graph.get_data.get(graph_name)
@@ -63,41 +72,43 @@ def test_graph_01(graph: gg.GraphFactory):
         TOPNODES = set([int(ID) for ID in NODES]) - \
                     set([data['To'] for keys, data in EDGES.items()])
         if len(TOPNODES) > 1:
-            warnings.warn(f"Attention, plus d'une TopNode présente.\
+            warnings.warn(' '.join(f"Attention, plus d'une TopNode présente.\
                 Les inputs vont être acheminés à ces deux nodes: \
-                {TOPNODES}", stacklevel = 2)  
+                {TOPNODES}").split(), stacklevel = 2)  
         elif len(TOPNODES) == 0:
             raise me.NodeError("Aucune TopNode présente dans le graph")
         LASTNODES = set([int(ID) for ID in NODES]) - \
                     set([data['From'] for keys, data in EDGES.items()])
         if len(LASTNODES) == 0:
-            warnings.warn(f"Attention, aucune PoolNode présente. La quantité \
-                de carbone présente dans le système sera calculé seulement sur \
-                des nodes de demi-vie ou de recyclage", stacklevel = 2)   
+            warnings.warn(' '.join(f"Attention, aucune PoolNode présente. \
+                La quantité de carbone présente dans le système sera calculé \
+                seulement sur des nodes de demi-vie ou de recyclage").split(), 
+                stacklevel= 2)  
 
 # On test si la somme des edges sortant de chaque node est égale à 100%
-def test_graph_02(graph: gg.GraphFactory, overflow: list[str]):
+def debugg_graph_02(graph: gg.GraphFactory, overflow: dict[str, list[str]]):
     MOSIR_TOLERENCE = 0.0001
     # total des Edges 
-    for name in graph.get_graph_name:
-        G2 = graph.get_graph(name)
+    for graph_name in graph.get_graph_name:
+        G2 = graph.get_graph(graph_name)
         no_edges = []
         for node in G2.nodes():
             total = 0
             for successors in G2.get_successors(node):
-                if successors.NAME in overflow:
+                if successors.NAME in overflow[graph_name]:
                     continue
                 total += node._get_value_time(G2.get_edge_proportions(node, successors), 0)
             if total == 0:
                 no_edges.append(node.NAME)
             elif abs(total - 1) > MOSIR_TOLERENCE:
-                raise me.EdgeError(f"La somme des edges sortant de {node.NAME} n'est pas égale à 100%") 
+                raise me.EdgeError(' '.join(f"La somme des edges sortant de \
+                    {node.NAME} n'est pas égale à 100%").split()) 
         if len(no_edges) > 0:   
             warnings.warn(f'Le ou les noeuds suivants ont aucun edge sortant: {no_edges}',
-                          stacklevel = 2)
+                stacklevel = 2)
 
 # On test si une node reçoit des edges avec et sans overflow
-def test_graph_03(graph: gg.GraphFactory):
+def debugg_graph_03(graph: gg.GraphFactory):
     # Test de overflow
     for graph_name in graph.get_data:
         G3 = graph.get_data.get(graph_name)
@@ -109,19 +120,22 @@ def test_graph_03(graph: gg.GraphFactory):
                 if values.get('To') == int(nodeID):
                     overflow.append(values.get('Overflow'))
             if all(i == overflow[0] for i in overflow) == False:
-                raise me.EdgeError(f"La node {NODES[str(nodeID)].get('Name')} reçoit \
-                    des edges avec et sans overflow")
+                raise me.EdgeError(' '.join(f"La node \
+                    {NODES[str(nodeID)].get('Name')} reçoit \
+                    des edges avec et sans overflow").split())
 
 # On test si la quantité total en input est égale à la quantité total dans le système
-def test_graph_04(graph: gg.GraphFactory, overflow: list[str]):
+def debugg_graph_04(graph: gg.GraphFactory, overflow: list[str]):
     MOSIR_TOLERENCE = 0.0001
     time = 150
-    imp = ip.ImportData("D:/MoSiR/tests/Microtests/in_equal_out/inputs.json")
-    ip.add_import(graph, imp)
     # total input versus in system 
     for name in graph.get_graph_name:
         G4 = graph.get_graph(name)
         carbon_input = 0
+        for node in G4.nodes():
+            if type(node) == gg.TopNode:
+                node.time = list(range(time + 1))
+                node.quantities = [1] * (time + 1)
         for timestep in range(time + 1):
             in_system = 0
             for node in G4.nodes():
@@ -137,12 +151,13 @@ def test_graph_04(graph: gg.GraphFactory, overflow: list[str]):
             if carbon_input > in_system - MOSIR_TOLERENCE and carbon_input < in_system + MOSIR_TOLERENCE :
                 continue
             else:
-                raise me.QuantityError(f"Graph : {G4.get_name} La quantité total \
-                    en input ({carbon_input}) au temps {timestep} n'est pas égale au total \
-                    présent dans le système ({in_system})")
+                raise me.QuantityError(' '.join(f"Graph : {G4.get_name} La \
+                    quantité total en input ({carbon_input}) au temps \
+                    {timestep} n'est pas égale au total présent dans le \
+                    système ({in_system})").split())
 
 # On regarde si le graph a des edges qui forme une boucle entre des ProportionNode
-def test_graph_05(graph: gg.GraphFactory):
+def debugg_graph_05(graph: gg.GraphFactory):
     for name in graph.get_graph_name:
         G5 = graph.get_graph(name)
         for node in G5.nodes():
@@ -151,18 +166,169 @@ def test_graph_05(graph: gg.GraphFactory):
                 stack = [(node, [])]
                 while stack:
                     current_node, path = stack.pop()
-                    if current_node in visited:
+                    if current_node.NAME in visited:
                         path_name = [node.NAME for node in path]
-                        raise me.RecursionNode(f"Une boucle possible existe entre\
-                             plusieurs ProportionNode : {path_name + [current_node.NAME]}")
-                    visited.add(current_node)
+                        raise me.RecursionNode(' '.join(f"Une boucle possible \
+                            existe entre plusieurs ProportionNode : \
+                            {path_name + [current_node.NAME]}").split())
+                    visited.add(current_node.NAME)
                     successors = G5.get_successors(current_node)
                     for successor in successors:
-                        stack.append((successor, path + [current_node]))
+                        if type(successor) == gg.ProportionNode:
+                            stack.append((successor, path + [current_node]))
 
+# Vérifier si le gg.GraphFactory n'a pas deux graph avec le même nom
+def debugg_graph_06(graph: gg.GraphFactory):
+    graph_name = []
+    for name in graph.get_graph_name:
+        if name in graph_name:
+            raise me.GraphError(' '.join(f"Le graph {name} est présent plus \
+                                d'une fois dans le fichier JSON").split())
+        else:
+            graph_name.append(name)
+
+# Vérifier si des TopNode ont aucun edges sortant
+def debugg_graph_07(graph: gg.GraphFactory):
+    for name in graph.get_graph_name:
+        G7 = graph.get_graph(name)
+        no_edges = []
+        for node in G7.nodes():
+            if type(node) == gg.TopNode:
+                num_node = 0
+                for successors in G7.get_successors(node):
+                    num_node += 1
+                if num_node == 0:
+                    no_edges.append(node.NAME)
+        if len(no_edges) > 0:
+            warnings.warn(f'Le ou les noeuds suivants ont aucun edge: {no_edges}',
+                          stacklevel = 2)
+
+# Vérifier si des PoolNode ont aucun edges entrant
+def debugg_graph_08(graph: gg.GraphFactory):
+    for name in graph.get_graph_name:
+        G8 = graph.get_graph(name)
+        no_edges = []
+        for node in G8.nodes():
+            if type(node) == gg.PoolNode:
+                num_node = 0
+                for predecessors in G8.get_predecessors(node):
+                    num_node += 1
+                if num_node == 0:
+                    no_edges.append(node.NAME)
+        if len(no_edges) > 0:
+            warnings.warn(f'Le ou les noeuds suivants ont aucun edge: {no_edges}',
+                          stacklevel = 2)
+
+# Vérifier que les graphs contiennent au moins une node
+def debugg_graph_09(graph: gg.GraphFactory):
+    for name in graph.get_graph_name:
+        G9 = graph.get_graph(name)
+        if len(G9.nodes()) == 0:
+            raise me.GraphError(f"Le graph {name} ne contient aucune node")
+
+# Vérifier que les gg.DecayNode ont toujours un edge qui rentre et un qui sort
+def debugg_graph_10(graph: gg.GraphFactory):
+    for name in graph.get_graph_name:
+        G10 = graph.get_graph(name)
+        for node in G10.nodes():
+            if type(node) == gg.DecayNode:
+                num_successors = 0
+                num_predecessors = 0
+                for successors in G10.get_successors(node):
+                    num_successors += 1
+                for predecessors in G10.get_predecessors(node):
+                    num_predecessors += 1
+                if num_successors == 0 or num_predecessors == 0:
+                    raise me.NodeError(' '.join((f"La node {node.NAME} n'a pas \
+                        de edges entrant ou sortant. Une node de type DecayNode \
+                        ne peut pas être au début ou à la fin d'un graph").split())) 
+
+# Véfirier que les gg.RecyclingNode ont toujours un edge qui rentre et un qui sort
+def debugg_graph_11(graph: gg.GraphFactory):
+    for name in graph.get_graph_name:
+        G11 = graph.get_graph(name)
+        for node in G11.nodes():
+            if type(node) == gg.RecyclingNode:
+                num_successors = 0
+                num_predecessors = 0
+                for successors in G11.get_successors(node):
+                    num_successors += 1
+                for predecessors in G11.get_predecessors(node):
+                    num_predecessors += 1
+                if num_successors == 0 or num_predecessors == 0:
+                    raise me.NodeError(' '.join((f"La node {node.NAME} n'a pas \
+                        de edges entrant ou sortant. Une node de type RecyclingNode \
+                        ne peut pas être au début ou à la fin d'un graph").split()))
+
+# Vérifier si les ProportionNode ont toujours un edge qui rentre et un qui sort
+def debugg_graph_12(graph: gg.GraphFactory):
+    for name in graph.get_graph_name:
+        G12 = graph.get_graph(name)
+        for node in G12.nodes():
+            if type(node) == gg.ProportionNode:
+                num_successors = 0
+                num_predecessors = 0
+                for successors in G12.get_successors(node):
+                    num_successors += 1
+                for predecessors in G12.get_predecessors(node):
+                    num_predecessors += 1
+                if num_successors == 0 or num_predecessors == 0:
+                    raise me.NodeError(' '.join((f"La node {node.NAME} n'a pas \
+                        de edges entrant ou sortant. Une node de type ProportionNode \
+                        ne peut pas être au début ou à la fin d'un graph").split()))
+
+# Vérifier qu'aucune RecyclingNode ou DecayNode n'a un edge qui va vers une
+    # node de type TopNode
+def debugg_graph_13(graph: gg.GraphFactory):
+    for name in graph.get_graph_name:
+        G13 = graph.get_graph(name)
+        for node in G13.nodes():
+            if type(node) == gg.DecayNode or type(node) == gg.RecyclingNode:
+                for successor in G13.get_successors(node):
+                    if type(successor) == gg.TopNode:
+                        raise me.NodeError(' '.join((f"La node {node.NAME} ne \
+                            peut pas avoir un edge qui va vers une node \
+                            de type TopNode").split())) 
+
+def is_gas_present_in_name(string: str):
+    """Fonction qui regarde si une chaines de charactère contient un des gaz. Le gaz
+    doit être isolé des autres charactères par des espaces (ex: 'CO2 emission'
+    est valide et non 'CO2_emissions') et en majuscule (ex: CO2 et non co2 ou Co2)
+    Les gaz possible sont CO2, CH4, CO et N2O
+
+    Args:
+        string (str): Chaine de charactère à vérifier
+
+    Returns:
+        bool: True si un des gaz est présent en majuscule et isolé et False sinon
+    """
+    gas = ['CO2', 'CH4', 'CO', 'N2O']
+    string_split = string.split(" ")
+    for word in string_split:
+        if word.upper() in gas:
+            if word != word.upper():
+                warnings.warn(' '.join((f"{word} doit être en majuscule pour \
+                    calculer le radiatif").split()), stacklevel = 2)
+    gas_wrongly_written = ['Co2', 'co2', 'cO2', 'CO2', 'ch4', 'cH4', 'CH4', \
+                           'Ch4', 'n2o', 'N2o', 'n2O', 'N2O']
+    for gas in gas_wrongly_written:
+        if gas in string:
+            warnings.warn(' '.join((f"Un gaz semble avoir été écrit dans le nom \
+                de la node: '{gas}' dans '{string}'. Pour que le reporting \
+                en radiatif fonctionne correctement, le gaz doit être écrit \
+                en majuscule et isolé des autres charactères par des espaces \
+                (ex: 'CO2 emission' est valide et non 'CO2_emissions')").split()), 
+                stacklevel= 2)
+
+def debugg_graph_14(graph: gg.GraphFactory):
+    for name in graph.get_graph_name:
+        G14 = graph.get_graph(name)
+        for node in G14.nodes():
+            if type(node) == gg.PoolNode:
+                is_gas_present_in_name(node.NAME)
 
 # Main ------------------------------------------------------------------------
 
 if __name__ == '__main__':
-    main()
+    main(Graph)
     print('Tests completed')

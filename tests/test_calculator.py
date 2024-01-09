@@ -9,10 +9,10 @@ import json
 import pytest
 import warnings
 import pandas as pd
-from MoSiR import graph_generator as gg
 from MoSiR import networkx_graph as wp
-from MoSiR import carbon_to_radiatif as cr
+from MoSiR import graph_generator as gg
 from MoSiR import mosir_exceptions as me
+from MoSiR import carbon_to_radiatif as cr
 
 MOSIR_TOLERENCE = 0.0001
 
@@ -269,14 +269,7 @@ def test_06_micro2():
         assert abs(Annual[timestep] - Annual_2[timestep]) < MOSIR_TOLERENCE
         assert abs(Cumu[timestep] - Cumu_2[timestep]) < MOSIR_TOLERENCE
 
-# Fonction qui détecte si plusieurs noeuds ont le même nom
-def unique_node_names(graph: wp.WPGraph):
-    nodes = graph.nodes()
-    node_names = [node.NAME for node in nodes]
-    if len(node_names) != len(set(node_names)):
-        raise me.NodeError("Deux noeuds ont le même nom")
-
-# Test qui utilise la fonction unique_node_names
+# Test qui vérifie qu'il est impossible d'avoir deux noeuds avec le même nom
 def test_07_unique_node_names():
     test_07 = wp.WPGraph('graph_test_07')
 
@@ -345,6 +338,12 @@ def test_12_graph_name():
 def test_13_graph_name():
     with pytest.raises(TypeError):
         gg.GraphFactory(None)
+
+# Suggérer des tests additionnels ---------------------------------------------
+# Vérifier que les noeuds sont bien des noeuds
+# Vérifier que les edges sont bien des edges
+# Vérifier que les noeuds sont bien dans le graph
+# Vérifier que les edges sont bien dans le graph
 
 # Vérifier que les tests passent ----------------------------------------------
 
