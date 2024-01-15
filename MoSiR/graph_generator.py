@@ -431,6 +431,14 @@ class RecyclingNode(ProportionNode):
         return total
 
 class PoolNode(ProportionNode):
+    """ PoolNode Documentation
+
+    Classe des noeuds du réseau MoSiR qui sont des noeuds de fin. Ils
+    ne peuvent pas avoir de flux sortant, seulement des flux entrant.
+
+    Args:
+        ProportionNode (_type_): _description_
+    """
     def __init__(self, NAME):
         super().__init__(NAME)
         

@@ -4,10 +4,41 @@ Copyright (c) 2023 Gouvernement du Québec
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 """
+import os
 import warnings
 import numpy as np
+import pandas as pd
+import argparse as ap
 from MoSiR import mosir_exceptions as me
-        
+
+def main(raw_args = None):
+    parser = ap.ArgumentParser(
+        description = 'Process input and transform carbon emissions to \
+            radiative forcing')
+    parser.add_argument('--Input', '-I',
+        dest = 'I',                
+        required = True,
+        help = "Liste d'émissions de carbone en kgC en ordre chronologique")
+    parser.add_argument('--Gas', '-G',
+        dest = 'G',
+        required = True,
+        help = 'Nom du gaz (CO2, CO, CH4 ou N2O)')
+    parser.add_argument('--Cumulative', '-C',
+        dest = 'C',
+        required = False,
+        help = 'Si le résultat doit être cumulatif ou non') 
+    
+    args = parser.parse_args(raw_args)
+
+    colonne = args.I
+    gaz = args.G
+    RF = pd.read_excel(os.path.join(os.path.dirname(os.path.abspath(__file__)), \
+        "RadiativeForcing", "Dynco2_Base.xlsx")).sort_values(by = 'Year')\
+        .to_dict(orient = 'list')
+    cumulative = args.C
+
+    return rad_convolve(colonne, gaz, RF, cumulative)
+
 def rad_convolve(colonne: list, gaz: str, RF: dict, cumulative: bool = False) -> list:
     """Fonction servant à transformer une liste d'émissions d'un gaz (en kgC)
     en forçage radiatif (en w/m2). Change dabord les unités pour la masse 
@@ -83,3 +114,29 @@ def rad_formatting(data: dict, RF: dict, cumulative: bool = False):
             data[col] = 0
             warnings.warn(f"Il n'y a pas de gas reconnu dans {col}, \
                           le résultat sera donc de 0", stacklevel = 2)
+
+# Test de rad_convolve
+colonne = [1, 2, 3, 4, 5]
+gaz = 'CO2'
+RF = {'CO2': [1, 2, 3, 4, 5]}
+cumulative = False
+print(rad_convolve(colonne, gaz, RF, cumulative))
+
+# Test de rad_formatting
+data = {
+    'CO2': [1, 2, 3, 4, 5],
+    'CH4': [1, 2, 3, 4, 5],
+    'CO': [1, 2, 3, 4, 5],
+    'N2O': [1, 2, 3, 4, 5],
+    'temps': [1, 2, 3, 4, 5]}
+RF = {
+    'CO2': [1, 2, 3, 4, 5],
+    'CH4': [1, 2, 3, 4, 5],
+    'CO': [1, 2, 3, 4, 5],
+    'N2O': [1, 2, 3, 4, 5]}
+cumulative = False
+rad_formatting(data, RF, cumulative)
+print(data)
+
+if __name__ == "__main__":
+    main()
