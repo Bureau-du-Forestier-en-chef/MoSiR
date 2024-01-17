@@ -142,9 +142,18 @@ def output_creation(graph: gg.GraphFactory, import_data: ip.ImportData,
                 df['Combined'] = df.drop('Time', axis = 1).sum(axis = 1)
                 df = df[['Time', 'Combined']]
             df['Unit'] = report_unit
-            if directory[-1] == '/':
-                df.to_csv(directory + graph_name + '_' + output_name + ext, 
-                          index = False, sep = ',')
-            elif directory[-1] != '/':
-                df.to_csv(directory + '/' + graph_name + '_' + output_name + ext, 
-                          index = False, sep = ',')
+            if ext == '.csv':
+                if directory[-1] == '/':
+                    df.to_csv(directory + graph_name + '_' + output_name + ext, 
+                              index = False, sep = ',')
+                elif directory[-1] != '/':
+                    df.to_csv(directory + '/' + graph_name + '_' + output_name + ext, 
+                              index = False, sep = ',')
+            elif ext == '.json':
+                # write a json file
+                if directory[-1] == '/':
+                    df.to_json(directory + graph_name + '_' + output_name + ext, 
+                               orient = 'records')
+                elif directory[-1] != '/':
+                    df.to_json(directory + '/' + graph_name + '_' + output_name + ext, 
+                               orient = 'records')

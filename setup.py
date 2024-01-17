@@ -33,7 +33,7 @@ with open('LICENSES/EN/LILIQ-R11EN.txt') as f:
 
 setup(
     name = 'MoSiR',
-    version = '0.9.91',
+    version = '0.9.9',
     description = 'MoSiR',
     long_description = readme,
     author = 'Gabriel Landry & Guillaume Cyr',
@@ -43,6 +43,5 @@ setup(
     packages = find_packages(exclude = ('tests', 'docs')),
     install_requires = reqs,
     package_data = {'MoSiR': ['mirowrapper/**','static/**','templates/*',\
-        'uploads/*','visualization/**','RadiativeForcing/*', './README.md',
-        'BFECGCBM/*']}
+        'uploads/*','visualization/**','RadiativeForcing/*', 'BFECGCBM/**', './README.md']}
 )
