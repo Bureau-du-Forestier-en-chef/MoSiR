@@ -152,8 +152,8 @@ def output_creation(graph: gg.GraphFactory, import_data: ip.ImportData,
             elif ext == '.json':
                 # write a json file
                 if directory[-1] == '/':
-                    df.to_json(directory + graph_name + '_' + output_name + ext, 
-                               orient = 'records')
+                    df.to_json(directory + graph_name + ext,
+                        orient = 'records')
                 elif directory[-1] != '/':
-                    df.to_json(directory + '/' + graph_name + '_' + output_name + ext, 
-                               orient = 'records')
+                    df.to_json(directory + '/' + graph_name + ext,
+                        orient = 'records')

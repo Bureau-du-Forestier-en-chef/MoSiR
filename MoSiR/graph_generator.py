@@ -383,7 +383,7 @@ class DecayNode(ProportionNode):
 
         '''
         try:
-            total = 0
+            total = float(0)
             for Year in range(time + 1): 
                 Annual = self.get_flux_in(graph, Year, cumulative= False)
                 Restant = Annual * ((0.5) ** ((time - Year)/self.HalfLife))
@@ -402,7 +402,7 @@ class RecyclingNode(ProportionNode):
         return self.__rn_cache
 
     def get_flux_out(self, graph: WPGraph, time: int, cumulative: bool = False) -> float:
-        total = 0
+        total = float(0)
         if cumulative == False:
             if time in self.past_carbon().flux_cache:
                 return self.past_carbon().get_flux_cache(time)
@@ -519,7 +519,7 @@ class GraphFactory():
                 elif int(node_id) in _LASTNODES:
                     new_node = PoolNode(node_data['Name'])
                 elif node_data["Half-life"] > 0:
-                    new_node = DecayNode(node_data['Name'], node_data['Half-life'])
+                    new_node = DecayNode(node_data['Name'], int(node_data['Half-life']))
                 elif node_data['Recycling'] == 1: 
                     new_node = RecyclingNode(node_data['Name'])
                 else: new_node = ProportionNode(node_data['Name'])

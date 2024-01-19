@@ -7,6 +7,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 import warnings
 import networkx as nx
+from MoSiR import graph_generator as gg
 from MoSiR import mosir_exceptions as me
 
 class WPGraph():

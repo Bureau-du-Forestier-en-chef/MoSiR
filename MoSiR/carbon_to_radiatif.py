@@ -87,10 +87,12 @@ def rad_convolve(colonne: list[float], gaz: str, RF: dict, cumulative: bool = Fa
         
     FC = RF[gaz][0:len(colonne)]
     rad = list(np.convolve(result, FC)[0:len(colonne)])
+    
     if cumulative == True:
-        return np.cumsum(rad)
+        result = np.cumsum(rad)
     elif cumulative == False:
-        return rad 
+        result = rad 
+    return result
 
 def rad_formatting(data: dict, RF: dict, cumulative: bool = False):
     """Fonction qui survole un tableau et change toutes les colonnes
@@ -113,9 +115,14 @@ def rad_formatting(data: dict, RF: dict, cumulative: bool = False):
             start = min(data[col])
             finish = max(data[col])
             longueur = range(start, finish + 1)
+            # Vérifier si les années sont complètes
             if not (set(data[col]) == set(longueur)):
                 raise me.TimeStepError('La colonne {col} représentant le temps \
                     dans le dataframe a des entrées manquantes')
+            # Vérifier si les années sont en ordre
+            if not (sorted(data[col]) == list(data[col])):
+                raise me.TimeStepError('La colonne {col} représentant le temps \
+                    dans le dataframe n\'est pas en ordre')
         elif 'CO2' in col:
             data[col] = rad_convolve(data[col], 'CO2', RF, cumulative = cumulative)
         elif 'CH4' in col:
