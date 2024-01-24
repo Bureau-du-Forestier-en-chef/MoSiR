@@ -14,14 +14,17 @@ class Htmlanimation:
         self.__BASEGRAPH = Graphdict
         base_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),"inputs")
         self.__COLORS = self.__GetRenderingItems(os.path.join(base_path,"Rendering.json"))
+
     def __GetRenderingItems(self,File:str)->{}:
         return utilities.Jsonparser.read(File)
+    
     def __GetEdgeWeigth(self,EdgeData: dict(), Time : int) -> float:
         Value = int(EdgeData["Values"][-1]* 100)
         if Time < len(EdgeData["Values"]):
             Value = int(EdgeData["Values"][Time] * 100)
         return Value
-    def __GetColor(self,TypeofItem:str,NodeItem : dict()) ->str:
+    
+    def __GetColor(self, TypeofItem: str, NodeItem: dict()) -> str:
         Color = self.__COLORS[TypeofItem]["Base"]
         KeysofColor = [key for key in self.__COLORS[TypeofItem].keys() if key not in ["Base"]]
         KeysofColor.sort()
@@ -30,6 +33,7 @@ class Htmlanimation:
                 if NodeItem[ColorType]:
                     Color = self.__COLORS[TypeofItem][ColorType]
         return Color
+    
     def __GenerateNetworkGraph(self,Time:int)->None:
         self.__GraphNetwork__ = Network(select_menu=True,filter_menu=True,directed=True,cdn_resources='in_line')
         #Count the edges connection for the value of the nodes
@@ -54,7 +58,7 @@ class Htmlanimation:
                 if datakey  not in ["Name"]:
                     Values += datakey +":"+str(data) +"\n"
             TITLE = Values
-            COLOR = self.__GetColor("Node",NodeItems)
+            COLOR = self.__GetColor("Node", NodeItems)
             X = None
             Y = None
             Physics = True

@@ -34,13 +34,13 @@ class Miroerror(werkzeug.exceptions.HTTPException):
         return make_response(render_template("miro_error.html",
                                              Traces= self.__TraceBack,
                                              Description= self.description,
-                                             MiroUrl= self.__LOCATION),200)
+                                             MiroUrl= self.__LOCATION), 200)
     def get_description(self, environ):
         return  self.description
     
 class Mirowrapper(Component):
     def __init__(self):
-        Component.__init__(self,__class__.__name__,__name__)
+        Component.__init__(self, __class__.__name__, __name__)
         self.__BASEAPIMIRO = "https://api.miro.com/"
         self.__BASEMIRO = "https://miro.com/"
         envfile = 'mirowrapper.env'

@@ -11,7 +11,7 @@ from ..blueprint_component import Component
     
 class Download(Component):
     def __init__(self):
-        Component.__init__(self,__class__.__name__,__name__)
+        Component.__init__(self, __class__.__name__, __name__)
 
     def __get_graphs(self):
         HTMLsandnames = []

@@ -38,7 +38,7 @@ class Main_renderer:
                     variables = allvariables, entries= self.__entries)
     
     
-class Component(ABC,Blueprint):
+class Component(ABC, Blueprint):
     main_renderer = Main_renderer()
 
     def __init__(self, name: str, import_name: str):
