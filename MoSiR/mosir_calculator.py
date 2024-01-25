@@ -8,6 +8,7 @@ import argparse as ap
 from MoSiR import import_info as ip
 from MoSiR import reporting_info as rp   
 from MoSiR import graph_generator as gg
+from MoSiR import graph_verificator as gv
 
 def main(raw_args = None):
     parser = ap.ArgumentParser(
@@ -37,6 +38,9 @@ def main(raw_args = None):
  
     # Add imports to graph
     ip.add_import(Graph, Import)
+
+    # On vérifie le graph
+    gv.main(Graph)
 
     # Reporting
     rp.output_creation(Graph, Import, Report, args.E)

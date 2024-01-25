@@ -7,15 +7,15 @@ import json, pkgutil, html
 
 class Jsonparser:
     @staticmethod
-    def read(JsonLocation:str):
-            return json.loads(pkgutil.get_data("MoSiR",JsonLocation))
+    def read(JsonLocation: str):
+            return json.loads(pkgutil.get_data("MoSiR", JsonLocation))
     @staticmethod
-    def write(JsonLocation:str,Values : {})->None:
+    def write(JsonLocation: str, Values: {}) -> None:
          with open(JsonLocation, 'w') as JsonFile:
-            json.dump(Values,JsonFile)
+            json.dump(Values, JsonFile)
 
 class Htmlparser:
     @staticmethod
-    def get_string_from_html(Value)->str:
-        out_value = Value.replace("<p>","").replace("</p>","")
+    def get_string_from_html(Value) -> str:
+        out_value = Value.replace("<p>", "").replace("</p>","")
         return html.unescape(out_value)

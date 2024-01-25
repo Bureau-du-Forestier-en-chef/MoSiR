@@ -4,15 +4,14 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 """
 
-from ..blueprint_component import Component
-from flask import render_template, request, redirect, send_file, make_response
-from .. import utilities
-from datetime import datetime, timedelta
-import requests,os
-from .miro_generator import Mirogenerator
-from .. import mosir_exceptions
+import requests, os
 import os,werkzeug,traceback
 from dotenv import load_dotenv
+from .. import mosir_exceptions
+from datetime import datetime, timedelta
+from .miro_generator import Mirogenerator
+from ..blueprint_component import Component
+from flask import render_template, request, redirect, send_file, make_response
 
 class Miroerror(werkzeug.exceptions.HTTPException):
     code = 507
@@ -26,15 +25,19 @@ class Miroerror(werkzeug.exceptions.HTTPException):
                            + str(self.__ID) 
                            + "&cot=14")
         self.description = str(MiroException)
+
     def get_body(self, environ):
         return self.description
+    
     def get_headers(self, environ):
         return [('Content-Type', 'text/plain; charset=UTF-8')]
+    
     def get_response(self, environ):
         return make_response(render_template("miro_error.html",
                                              Traces= self.__TraceBack,
                                              Description= self.description,
                                              MiroUrl= self.__LOCATION), 200)
+    
     def get_description(self, environ):
         return  self.description
     
@@ -55,6 +58,7 @@ class Mirowrapper(Component):
         self.__GrapGenerators = []
         self.__Session = requests.Session()
         self.__GRAPHSNAME = 'Graphs.json'
+
     def __get_home(self):
         return render_template("home.html",
                                redirect_url= self._get_url_for(self.__REDIRECT_URI + "/authorize"))
@@ -150,13 +154,13 @@ class Mirowrapper(Component):
                                              + BoardId 
                                              + "/items")
     
-    def __get_board_connectors(self,BoardId:str):
+    def __get_board_connectors(self, BoardId: str):
         return self.__get_board_elementsbyid(self.__BASEAPIMIRO
                                              + "v2/boards/" 
                                              + BoardId 
                                              + "/connectors")
     
-    def __write_graphs(self,GRAPHNAMES) -> None:
+    def __write_graphs(self, GRAPHNAMES) -> None:
         GraphsDict = {}
         for Generator in self.__GrapGenerators:
             GraphsDict[Generator.get_graph_name()] = Generator.to_dict()

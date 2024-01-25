@@ -339,8 +339,6 @@ def test_13_graph_name():
     with pytest.raises(TypeError):
         gg.GraphFactory(None)
 
-# Vérifier que l'on reçoit un message d'avertissement si 
-
 # Vérifier que les tests passent ----------------------------------------------
 
 if __name__ == "__main__":

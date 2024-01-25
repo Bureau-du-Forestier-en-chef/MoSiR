@@ -174,7 +174,7 @@ class Reporting(Component):
                      +'" id="cinputsform" method = "POST">')
         stash += self.__build_cinputs_buttons()
         stash.append('<div>')
-        stash.append('<label for="units">Unitées</label>')
+        stash.append('<label for="units">Unité</label>')
         stash.append('<select name="units" id="units">')
         for unit in self.__get_units():
             stash.append('<option value="'
@@ -191,7 +191,7 @@ class Reporting(Component):
             #stash.append('<div class="w3-threequarter w3-margin-bottom">')
             stash.append('<table class="w3-table-all" id=cinputs_'
                          + generator.get_graph_name()
-                         + '><tr><th>Noeud</th><th>Période</th><th>Quantitée</th></tr>')
+                         + '><tr><th>Noeud</th><th>Période</th><th>Quantité</th></tr>')
             stash.append('<tr>')
             stash.append('<th>')
             stash.append('<select name="Noeud" title="Noeud" id="Node_'

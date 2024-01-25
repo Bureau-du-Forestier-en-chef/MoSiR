@@ -14,7 +14,7 @@ class ItemBuilder:
     def __init__(self, JsonLocation: str):
         self.__DATA = utilities.Jsonparser.read(JsonLocation)
 
-    def __GetFromRegex(self, BaseName: str, Descriptor : str) -> re.Match:
+    def __GetFromRegex(self, BaseName: str, Descriptor: str) -> re.Match:
         CompiledRegex = re.compile("(?:(.+)|)("
                                    + Descriptor
                                    + ")([\s\t]*)(\[)([\s\t]*)(\d+\.?\d*)([\s\t]*)(\])(?:(.+)|)")
@@ -39,7 +39,7 @@ class ItemBuilder:
                     Name += RESULT.group(9)
         return Name
     
-    def IsItem(self, Item:{} ,Choice: str = "Choose") -> bool:
+    def IsItem(self, Item: {}, Choice: str = "Choose") -> bool:
         if Choice in self.__DATA and self.__DATA[Choice]:
             for keys, ChooseItem in self.__DATA[Choice].items():
                 TempItem = copy.deepcopy(Item)
@@ -89,7 +89,7 @@ class Mirogenerator(Generator):
         self.__EDGEBUILDER = ItemBuilder(os.path.join(base_path, "Edge.json"))
 
     def __LogStatus(self, message: str) -> None:
-        print(message + " for Graph "+ self.get_graph_name())
+        print(message + " for Graph " + self.get_graph_name())
 
     def GetNodeNames(self) -> [str]:
         Names = []
@@ -108,7 +108,7 @@ class Mirogenerator(Generator):
             raise(mosir_exceptions.Miroerror("Edge id "
                                              + str(EdgeID)
                                              +" has the same source and target node "
-                                             + str(FromNodeId),EdgeID))
+                                             + str(FromNodeId), EdgeID))
         Holder = {"From": FromNodeId, "To": ToNodeId, "Values": [1.0]}
         OtherData = self.__EDGEBUILDER.GetDescription(Connector)
         Holder.update(OtherData)

@@ -6,7 +6,6 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 import os
 from flask import send_file
-#from flask import render_template
 from ..blueprint_component import Component
     
 class Download(Component):
@@ -17,7 +16,8 @@ class Download(Component):
         HTMLsandnames = []
         for graphfile in self._get_graphs_files() + self._get_inputs_files() \
             + self._get_reporting_files() + self._get_results_files():
-            htmltarget = self._get_url_for("/graphs_download/<filename>", filename = graphfile)
+            htmltarget = self._get_url_for("/graphs_download/<filename>", 
+                                           filename= graphfile)
             target = '<p><a class="w3-button w3-dark-grey" href=' + htmltarget \
                 + '>' + "Télécharger " + os.path.basename(graphfile) \
                 + ' <i class="fa fa-arrow-right"></i></a></p>'
@@ -25,17 +25,18 @@ class Download(Component):
         return Component.main_renderer.render(False, HTMLsandnames)
     
     def __graphs_download(self, filename: str):
-        return send_file(os.path.join(self._get_uploads_folder(), filename), as_attachment = True)
+        return send_file(os.path.join(self._get_uploads_folder(), 
+                                      filename), as_attachment= True)
     
     def add_all_endpoints(self):
-        self._add_endpoint(endpoint = '/', 
-                           endpoint_name = '/', 
-                           handler = self.__get_graphs, 
-                           methods = ['GET'])
-        self._add_endpoint(endpoint ='/graphs_download/<filename>', 
-                           endpoint_name = '/graphs_download/<filename>', 
-                           handler = self.__graphs_download, 
-                           methods = ['GET','POST'])
+        self._add_endpoint(endpoint= '/', 
+                           endpoint_name= '/', 
+                           handler= self.__get_graphs, 
+                           methods= ['GET'])
+        self._add_endpoint(endpoint='/graphs_download/<filename>', 
+                           endpoint_name= '/graphs_download/<filename>', 
+                           handler= self.__graphs_download, 
+                           methods= ['GET','POST'])
 
     def get_description(self):
         return "Téléchargez des fichiers graphs"

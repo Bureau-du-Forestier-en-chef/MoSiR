@@ -3,14 +3,9 @@ Copyright (c) 2023 Gouvernement du Québec
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 """
-'''
-from subprocess import call
 
-call("C:\Logiciels\Anaconda3\python.exe D:\MoSiR\examples\Run_MoSiR.py", shell = True)
-'''
-
-#import sys
-#sys.path.append("../MoSiR")
+import sys
+sys.path.append("../MoSiR")
 import os
 import tempfile
 from MoSiR import Flaskwrapper

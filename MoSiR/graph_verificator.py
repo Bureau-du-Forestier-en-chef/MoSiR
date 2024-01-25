@@ -5,8 +5,8 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 """
 
-import sys
-sys.path.append('../MoSiR')
+#import sys
+#sys.path.append('../MoSiR')
 
 import warnings
 from MoSiR import graph_generator as gg

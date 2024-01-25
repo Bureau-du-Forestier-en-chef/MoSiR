@@ -20,4 +20,5 @@ tests/Microtests
 .pytest_cache
 standalone
 MoSiR/BFECGCBM
-
+htmlcov/
+.coverage
