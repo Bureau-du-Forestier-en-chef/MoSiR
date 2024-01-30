@@ -25,6 +25,8 @@ class Upload(Component):
         return filename.endswith(".json")
     
     def __graphs_upload(self):
+        Component.clear_users_data(os.path.join(os.path.dirname(os.path.abspath(__file__)), 
+                                                "..", "uploads"))
         if request.method == 'POST':
             file = request.files['file']
             file.save(os.path.join(self._get_uploads_folder(), file.filename))

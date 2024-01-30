@@ -1,4 +1,4 @@
-        # -*- coding: UTF-8 -*-
+# -*- coding: UTF-8 -*-
 """
 Copyright (c) 2023 Gouvernement du Québec
 SPDX-License-Identifier: LiLiQ-R-1.1
@@ -15,7 +15,7 @@ from MoSiR import mosir_exceptions as me
 from MoSiR import carbon_to_radiatif as cr
 
 MOSIR_TOLERENCE = 0.0001
-# 
+
 # Plusieurs tests qui vérifient les fonctions de base de MoSiR ----------------
 # À utiliser entre les différentes versions de MoSiR
 

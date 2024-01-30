@@ -149,6 +149,8 @@ class Mirowrapper(Component):
         return Nodedata
     
     def __get_board_items(self, BoardId: str):
+        Component.clear_users_data(os.path.join(os.path.dirname(os.path.abspath(__file__)), 
+                                        "..", "uploads"))
         return self.__get_board_elementsbyid(self.__BASEAPIMIRO
                                              + "v2/boards/" 
                                              + BoardId 
