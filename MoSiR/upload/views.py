@@ -37,10 +37,10 @@ class Upload(Component):
                            handler= self.__graphs_upload, methods= ['GET','POST'])
     
     def get_description(self):
-        return "Téléversez des fichiers graphs"
+        return "Téléverser des fichiers graphs"
     
     def get_name(self):
-        return "Téléversez"
+        return "Téléverser"
     
     def get_symbol(self):
         return "fa fa-history fa-fw"

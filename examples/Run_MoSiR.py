@@ -4,8 +4,6 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 """
 
-import sys
-sys.path.append("../MoSiR")
 import os
 import tempfile
 from MoSiR import Flaskwrapper
@@ -16,6 +14,7 @@ from MoSiR.upload.views import upload
 from MoSiR.stats.views import stats
 from MoSiR.reporting.views import reporting
 
+# Pour l'application 
 if "NUITKA_ONEFILE_PARENT" in os.environ:
    splash_filename = os.path.join(
       tempfile.gettempdir(),

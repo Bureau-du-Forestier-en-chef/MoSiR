@@ -39,10 +39,10 @@ class Download(Component):
                            methods= ['GET','POST'])
 
     def get_description(self):
-        return "Téléchargez des fichiers graphs"
+        return "Télécharger des fichiers graphs"
     
     def get_name(self):
-        return "Téléchargez"
+        return "Télécharger"
     
     def get_symbol(self):
         return "fa fa-diamond fa-fw"

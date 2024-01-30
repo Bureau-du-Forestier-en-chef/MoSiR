@@ -221,10 +221,10 @@ class Mirowrapper(Component):
                            handler= self.__graph_generation, methods= ['GET','POST'])
         
     def get_description(self):
-        return "Générez des graphs de produits du bois à partir de Miro"
+        return "Générer des graphs de produits du bois à partir de Miro"
     
     def get_name(self):
-        return "Récupérez dans Miro"
+        return "Récupérer dans Miro"
     
     def get_symbol(self):
         return "fa fa-users fa-fw"

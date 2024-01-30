@@ -52,10 +52,10 @@ class Visualization(Component):
                            methods = ['GET'])
         
     def get_description(self):
-        return "Visualisez les graphs existant"
+        return "Visualiser les graphs existant"
     
     def get_name(self):
-        return "Visualisez"
+        return "Visualiser"
     
     def get_symbol(self):
         return "fa fa-eye fa-fw"

@@ -507,6 +507,8 @@ class GraphFactory():
             self._GRAPHS.append(wp.WPGraph(KEY))
             _EDGES = self.get_data[KEY].get('Edges', {})
             _NODES = self.get_data[KEY].get('Nodes', {})
+            if len(_NODES) < 2 or len(_EDGES) == 0:
+                raise me.GraphError("Le graph doit contenir au moins deux noeud et un edge")
             _TOPNODES = set([int(ID) for ID in _NODES]) - \
                 set([data['To'] for keys, data in _EDGES.items()])
             _LASTNODES = set([int(ID) for ID in _NODES]) - \

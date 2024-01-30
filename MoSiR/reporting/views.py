@@ -20,7 +20,7 @@ class Reporting(Component):
         stash += self.__build_report_header()
         stash += self.__build_report_outputs()
         stash.append('<button class="w3-button w3-dark-grey" input type = \
-                     "submit" value = "submit">Exécutez <i class="fa fa-arrow-right"></i></button>')
+                     "submit" value = "submit">Exécuter <i class="fa fa-arrow-right"></i></button>')
         stash.append('</div>')
         stash.append('</form>')
         stash.append('</div>')
@@ -430,10 +430,10 @@ class Reporting(Component):
                            handler= self.__json_provider, methods= ['GET','POST'])
     
     def get_description(self) -> str:
-        return "Calculez les émissions générées"
+        return "Calculer les émissions générées"
     
     def get_name(self) -> str:
-        return "Calculez"
+        return "Calculer"
     
     def get_symbol(self) -> str:
         return "fa fa-bullseye fa-fw"
