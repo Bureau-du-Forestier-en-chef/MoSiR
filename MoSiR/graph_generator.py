@@ -455,6 +455,7 @@ class PoolNode(ProportionNode):
     
     def get_flux_out(self, graph: WPGraph, time: int, cumulative: bool = False) -> float:
         warnings.warn(f'Aucun carbone sortant de la node {self.NAME}', stacklevel= 2)
+        return 0
       
     def get_stock(self, graph: WPGraph, time: int, cumulative: bool = False) -> float:
         ''' get_stock Documentation   
@@ -521,8 +522,14 @@ class GraphFactory():
                 elif int(node_id) in _LASTNODES:
                     new_node = PoolNode(node_data['Name'])
                 elif node_data["Half-life"] > 0:
+                    if int(node_id) in _LASTNODES or int(node_id) in _TOPNODES:
+                        raise me.GraphError("Un noeud avec une demi-vie ne peut \
+                             pas être un noeud de départ ou de fin.")
                     new_node = DecayNode(node_data['Name'], int(node_data['Half-life']))
                 elif node_data['Recycling'] == 1: 
+                    if int(node_id) in _LASTNODES or int(node_id) in _TOPNODES:
+                        raise me.GraphError("Un noeud avec un recyclage ne peut \
+                             pas être un noeud de départ ou de fin.")
                     new_node = RecyclingNode(node_data['Name'])
                 else: new_node = ProportionNode(node_data['Name'])
                 self._GRAPHS[graph_num].add_node(new_node)

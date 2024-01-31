@@ -28,6 +28,8 @@ class WPGraph():
     def add_edge(self, node_from, node_to, proportions: list[float]):
         if any(x < 0 or x > 1 for x in proportions):
             raise me.EdgeError("Proportion must be between 0 and 1")
+        if node_from == node_to:
+            raise me.EdgeError("Can't create an edge from a node to itself")
         return self._graph.add_edge(node_from, node_to, proportion= proportions)
     
     def get_edge_proportions(self, node_from, node_to) -> list[float]:

@@ -339,6 +339,110 @@ def test_13_graph_name():
     with pytest.raises(TypeError):
         gg.GraphFactory(None)
 
+# Vérifier que l'on peut faire un graph avec plusieurs TopNode avec
+    # des intrants différents
+
+def test_14_multiple_top():
+    test_14 = wp.WPGraph('graph_test_14')
+
+    A14 = gg.TopNode('A14')
+    B14 = gg.TopNode('B14')
+    C14 = gg.ProportionNode('C14')
+    D14 = gg.ProportionNode('D14')
+    E14 = gg.PoolNode('E14')
+
+    test_14.add_node(A14)
+    test_14.add_node(B14)
+    test_14.add_node(C14)
+    test_14.add_node(D14)
+    test_14.add_node(E14)
+ 
+    test_14.add_edge(A14, C14, proportions= [1])
+    test_14.add_edge(B14, D14, proportions= [1])
+    test_14.add_edge(C14, E14, proportions= [1])
+    test_14.add_edge(D14, E14, proportions= [1])
+
+    A14.time = [0, 1, 2, 3, 4, 5, 50]
+    A14.quantities = [10, 20, 30, 40, 10, 10, 2000]
+
+    B14.time = [0, 1, 2, 3, 4, 5, 25]
+    B14.quantities = [10, 20, 30, 40, 10, 10, 1000]
+
+    for timestep in range(150):
+        assert A14.get_flux_out(test_14, timestep) \
+            == C14.get_flux_in(test_14, timestep), \
+            'Flux out of A14 != Flux in of C14'
+
+        assert B14.get_flux_out(test_14, timestep) \
+            == D14.get_flux_in(test_14, timestep), \
+            'Flux out of B14 != Flux in of D14'
+
+        assert C14.get_flux_out(test_14, timestep) \
+            + D14.get_flux_out(test_14, timestep) \
+            == E14.get_flux_in(test_14, timestep), \
+            'Sum flux out of C14 and D14 != Flux in of E14'
+        
+        assert A14.get_flux_out(test_14, timestep, cumulative= True) \
+            == C14.get_flux_in(test_14, timestep, cumulative= True), \
+            'Cumulative flux out of A14 != Flux in of C14'
+        
+        assert B14.get_flux_out(test_14, timestep, cumulative= True) \
+            == D14.get_flux_in(test_14, timestep, cumulative= True), \
+            'Cumulative flux out of B14 != Flux in of D14'
+        
+        assert C14.get_flux_out(test_14, timestep, cumulative= True) \
+            + D14.get_flux_out(test_14, timestep, cumulative= True) \
+            == E14.get_flux_in(test_14, timestep, cumulative= True), \
+            'Sum cumulative flux out of C14 and D14 != Flux in of E14'
+        
+        assert A14.get_stock(test_14, timestep) \
+            == A14.get_flux_in(test_14, timestep, cumulative= True) \
+            - A14.get_flux_out(test_14, timestep, cumulative= True), \
+            'A14 stock != cumulative flux in - flux out'
+        
+        assert B14.get_stock(test_14, timestep) \
+            == B14.get_flux_in(test_14, timestep, cumulative= True) \
+            - B14.get_flux_out(test_14, timestep, cumulative= True), \
+            'B14 stock != cumulative flux in - cumulative flux out'
+        
+        assert C14.get_stock(test_14, timestep) \
+            == C14.get_flux_in(test_14, timestep, cumulative= True) \
+            - C14.get_flux_out(test_14, timestep, cumulative= True), \
+            'C14 stock != cumulative flux in - flux out'
+        
+        assert D14.get_stock(test_14, timestep) \
+            == D14.get_flux_in(test_14, timestep, cumulative= True) \
+            - D14.get_flux_out(test_14, timestep, cumulative= True), \
+            'D14 stock != cumulative flux in - cumulative flux out'
+        
+        assert E14.get_stock(test_14, timestep) \
+            == E14.get_flux_in(test_14, timestep, cumulative= True), \
+            'E14 stock != cumulative flux in'
+        
+# Vérifier qu'il est impossible de mettre une DecayNode avec un temps de 0
+def test_15_decay_time():
+    with pytest.raises(ValueError):
+        gg.DecayNode('A', 0)
+
+# Vérifier qu'il est impossible de mettre une DecayNode avec un temps négatif
+def test_16_decay_time():
+    with pytest.raises(ValueError):
+        gg.DecayNode('A', -1)
+
+# Vérifier qu'une node ne peut avoir un edge qui se connecte à elle-même
+def test_17_self_edge():
+    test_17 = wp.WPGraph('graph_test_17')
+
+    A17 = gg.TopNode('A17')
+    B17 = gg.ProportionNode('B17')
+    
+    test_17.add_node(A17)
+    test_17.add_node(B17)
+
+    with pytest.raises(me.EdgeError):
+        test_17.add_edge(A17, A17, proportions= [1])
+
+
 # Vérifier que les tests passent ----------------------------------------------
 
 if __name__ == "__main__":
@@ -355,4 +459,8 @@ if __name__ == "__main__":
     test_11_edge_proportion()
     test_12_graph_name()
     test_13_graph_name()
+    test_14_multiple_top()
+    test_15_decay_time()
+    test_16_decay_time()
+    test_17_self_edge()
     print("Tests passed")
