@@ -95,7 +95,7 @@ def rad_convolve(colonne: list[float], gaz: str, RF: dict, cumulative: bool = Fa
     return result
 
 def rad_formatting(data: dict, RF: dict, cumulative: bool = False):
-    """Fonction qui survole un tableau et change toutes les colonnes
+    """Fonction qui survole un dict et change toutes les colonnes
     nommées comme un gaz (CO, CO2, CH4, N2O) et transforme leur unité
     en forçage radiatif grâce à la fonction rad_convolve.
 
@@ -121,16 +121,16 @@ def rad_formatting(data: dict, RF: dict, cumulative: bool = False):
                     dans le dataframe a des entrées manquantes')
             # Vérifier si les années sont en ordre
             if not (sorted(data[col]) == list(data[col])):
-                raise me.TimeStepError('La colonne {col} représentant le temps \
-                    dans le dataframe n\'est pas en ordre')
+                raise me.TimeStepError("La colonne {col} représentant le temps \
+                    dans le dataframe n'est pas en ordre")
         elif 'CO2' in col:
-            data[col] = rad_convolve(data[col], 'CO2', RF, cumulative = cumulative)
+            data[col] = list(rad_convolve(data[col], 'CO2', RF, cumulative = cumulative))
         elif 'CH4' in col:
-            data[col] = rad_convolve(data[col], 'CH4', RF, cumulative = cumulative)
+            data[col] = list(rad_convolve(data[col], 'CH4', RF, cumulative = cumulative))
         elif 'CO' in col and 'CO2' not in col:
-            data[col] = rad_convolve(data[col], 'CO', RF, cumulative = cumulative)   
+            data[col] = list(rad_convolve(data[col], 'CO', RF, cumulative = cumulative))   
         elif 'N2O' in col:
-            data[col] = rad_convolve(data[col], 'N2O', RF, cumulative = cumulative)
+            data[col] = list(rad_convolve(data[col], 'N2O', RF, cumulative = cumulative))
         else:
             data[col] = 0
             warnings.warn(f"Il n'y a pas de gas reconnu dans {col}, \

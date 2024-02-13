@@ -92,14 +92,15 @@ def output_creation(graph: gg.GraphFactory, import_data: ip.ImportData,
                 raise me.InvalidOption(f"Cumulative ({data['Cumulative']}) dans le fichier \
                                     de reporting doit être un booléen, donc soit 'true' ou 'false'")
 
-            df = pd.DataFrame(columns = nodes_name)
-            df.insert(0, 'Time', None)
+            # Dictionnaire pour les outputs
+            dt = {node_name: [] for node_name in nodes_name}
+            dt['Time'] = [i for i in range(time + 1)]
 
+            # On produit les outputs par graph
             G = graph.get_graph(graph_name)
             for node in G.nodes():
                 if node.NAME in nodes_name:
                     for timestep in range(time + 1):
-                        df.loc[timestep, 'Time'] = timestep
                         if out_type == 'Flux in':
                             result = node.get_flux_in(G, timestep, cumulative = cumu)
                         elif out_type == 'Flux out':
@@ -111,22 +112,23 @@ def output_creation(graph: gg.GraphFactory, import_data: ip.ImportData,
                                 reporting file n'est pas un choix valide. Choix \
                                 possibles: 'Flux in', 'Flux out' ou 'Stock'.")
                         result = unit_change(result, input_unit, report_unit)
-                        df.loc[timestep, node.NAME] = result
+                        dt[node.NAME].append(result)
+            
+            # On ajuste les outputs selon le reporting
             if report_unit == 'tco2eq':
-                for col in df:
-                    if col.lower() in ['time', 'timestep', 'temps', 
-                                       'year', 'years', 'année', 'années']:
+                for col in dt:
+                    if col == 'Time':
                         continue
                     elif 'CO2' in col:
-                        df[col] = df[col] * 3.6667
+                        dt[col] = [i * 3.6667 for i in dt[col]]
                     elif 'CH4' in col:
-                        df[col] = df[col] * 1.3333 * PRG['CH4']
+                        dt[col] = [i * 1.3333 * PRG['CH4'] for i in dt[col]]
                     elif 'N2O' in col:
-                        df[col] = df[col] * PRG['N2O']
+                        dt[col] = [i * PRG['N2O'] for i in dt[col]]
                     elif 'CO' in col and 'CO2' not in col:
-                        df[col] = df[col] * 2.3333
+                        dt[col] = [i * 2.3333 for i in dt[col]]
                     else:
-                        df[col] = 0
+                        dt[col] = 0
                         warnings.warn(f"Il n'y a pas de gas reconnu dans {col}, \
                                       le résultat sera donc de 0", stacklevel = 2)
             elif report_unit == 'w/m2':
@@ -134,26 +136,38 @@ def output_creation(graph: gg.GraphFactory, import_data: ip.ImportData,
                 RF = pd.read_excel(os.path.join(os.path.dirname(os.path.abspath(__file__)), \
                                                 "RadiativeForcing", "Dynco2_Base.xlsx")).\
                     sort_values(by = 'Year').to_dict(orient = 'list')
-                df_2 = df.to_dict(orient = 'list')
-                cr.rad_formatting(df_2, RF, cumulative = C)
-                df = pd.DataFrame(df_2)
-                
+
+                # On formate les outputs en radiatif
+                cr.rad_formatting(dt, RF, cumulative = C)
+
             if summarize == 'Combined':
-                df['Combined'] = df.drop('Time', axis = 1).sum(axis = 1)
-                df = df[['Time', 'Combined']]
-            df['Unit'] = report_unit
+                dt['Combined'] = [sum(i) for i in zip(*[dt[col] for col in dt if col != 'Time'])]
+                # La boucle suivante fait la même chose que la ligne précédente
+                # dt['Combined'] = []
+                # for i in range(time + 1):
+                #     sum = 0
+                #     for col in dt:
+                #         if col == 'Time':
+                #             continue
+                #         else:
+                #             sum += dt[col][i]
+                #     dt['Combined'].append(sum)
+
+                # Nouveau dt avec seulement Time et Combined
+                dt = {k: dt[k] for k in ('Time', 'Combined')}
+
+            dt['Unit'] = report_unit
             if ext == '.csv':
                 if directory[-1] == '/':
-                    df.to_csv(directory + graph_name + '_' + output_name + ext, 
-                              index = False, sep = ',')
+                    pd.DataFrame(dt).to_csv(directory + graph_name + '_' + output_name + '_dt' + ext,
+                              index= False, sep = ',')
                 elif directory[-1] != '/':
-                    df.to_csv(directory + '/' + graph_name + '_' + output_name + ext, 
-                              index = False, sep = ',')
+                    pd.DataFrame(dt).to_csv(directory + '/' + graph_name + '_' + output_name + '_dt' + ext,
+                                index= False, sep= ',')
             elif ext == '.json':
-                # write a json file
                 if directory[-1] == '/':
-                    df.to_json(directory + graph_name + ext,
-                        orient = 'records')
+                    with open(directory + graph_name + '_' + output_name + ext, 'w') as f:
+                        json.dump(dt, f)
                 elif directory[-1] != '/':
-                    df.to_json(directory + '/' + graph_name + ext,
-                        orient = 'records')
+                    with open(directory + '/' + graph_name + '_' + output_name + ext, 'w') as f:
+                        json.dump(dt, f)

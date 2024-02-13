@@ -26,7 +26,7 @@ if %ErrorLevel% == 1 (
     --windows-icon-from-ico=..\MoSiR\static\image\MoSiR-logos.png ^
     --company-name="Bureau du Forestier en chef" ^
     --product-name=MoSiR ^
-    --product-version=0.9.1 ^
+    --product-version=1.0.0 ^
     --copyright="Gouvernement du Québec" ^
     --output-dir=.\app ^
     ..\examples\Run_MoSiR.py

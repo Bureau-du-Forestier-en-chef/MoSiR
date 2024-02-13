@@ -128,10 +128,6 @@ def debugg_graph_04(graph: gg.GraphFactory, overflow: list[str]):
     for name in graph.get_graph_name:
         G4 = graph.get_graph(name)
         carbon_input = 0
-        for node in G4.nodes():
-            if type(node) == gg.TopNode:
-                node.time = list(range(time + 1))
-                node.quantities = [1] * (time + 1)
         for timestep in range(time + 1):
             in_system = 0
             for node in G4.nodes():
