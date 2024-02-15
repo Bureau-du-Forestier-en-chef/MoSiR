@@ -395,25 +395,21 @@ def test_14_multiple_top():
             == E14.get_flux_in(test_14, timestep, cumulative= True), \
             'Sum cumulative flux out of C14 and D14 != Flux in of E14'
         
-        assert A14.get_stock(test_14, timestep) \
-            == A14.get_flux_in(test_14, timestep, cumulative= True) \
-            - A14.get_flux_out(test_14, timestep, cumulative= True), \
-            'A14 stock != cumulative flux in - flux out'
+        assert A14._get_quantity_time(timestep) \
+            == A14.get_flux_out(test_14, timestep, cumulative= False), \
+            'A14 _get_quantity_time != flux out'
         
-        assert B14.get_stock(test_14, timestep) \
-            == B14.get_flux_in(test_14, timestep, cumulative= True) \
-            - B14.get_flux_out(test_14, timestep, cumulative= True), \
-            'B14 stock != cumulative flux in - cumulative flux out'
+        assert B14._get_quantity_time(timestep) \
+            == B14.get_flux_out(test_14, timestep, cumulative= False), \
+            'B14 _get_quantity_time != flux out'
         
-        assert C14.get_stock(test_14, timestep) \
-            == C14.get_flux_in(test_14, timestep, cumulative= True) \
-            - C14.get_flux_out(test_14, timestep, cumulative= True), \
-            'C14 stock != cumulative flux in - flux out'
+        assert C14.get_flux_in(test_14, timestep, cumulative= True) \
+            == C14.get_flux_out(test_14, timestep, cumulative= True), \
+            'C14 cumulative flux in != cumulative flux out'
         
-        assert D14.get_stock(test_14, timestep) \
-            == D14.get_flux_in(test_14, timestep, cumulative= True) \
-            - D14.get_flux_out(test_14, timestep, cumulative= True), \
-            'D14 stock != cumulative flux in - cumulative flux out'
+        assert D14.get_flux_in(test_14, timestep, cumulative= True) \
+            == D14.get_flux_out(test_14, timestep, cumulative= True), \
+            'D14 cumulative flux in != cumulative flux out'
         
         assert E14.get_stock(test_14, timestep) \
             == E14.get_flux_in(test_14, timestep, cumulative= True), \
