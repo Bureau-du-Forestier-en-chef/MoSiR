@@ -6,10 +6,11 @@
   <br>
 </h1>
 
-<h4 align="center"> Bureau du forestier en chef
-  <br>
+<h4 align="center"> 
   <a href="https://forestierenchef.gouv.qc.ca"><img src="./image/BFEC.jpg" width="200"></a>
-
+  <br>
+<h4>
+  
 <p align="center">
   <a href="#key-features">Key Features</a> •
   <a href="#how-to-use">How To Use</a> •
