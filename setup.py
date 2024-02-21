@@ -33,7 +33,7 @@ with open('LICENSES/EN/LILIQ-R11EN.txt') as f:
 
 setup(
     name = 'MoSiR',
-    version = '1.0',
+    version = '1.0.0',
     description = 'MoSiR',
     long_description = readme,
     author = 'Gabriel Landry & Guillaume Cyr',
