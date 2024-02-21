@@ -2,7 +2,7 @@
   <br>
   <a href="https://github.com/Bureau-du-Forestier-en-chef"><img src="./image/MoSiR-logo-github.png" alt="Modèle de Simulation en Réseau" width="600"></a>
   <br>
-  Markdownify
+  Modèle de Simulation en Réseau
   <br>
 </h1>
 
