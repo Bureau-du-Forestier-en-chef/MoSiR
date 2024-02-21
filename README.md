@@ -36,9 +36,20 @@ The second element of MoSiR is a powerful interpreter and calculator dedicated t
 
 ## Install
 ### As a python package
+MoSiR peut être installé sous forme de package python, à l'intérieur d'un environnement python3. Pour ce faire, [pip] est nécessaire avant de procéder à l'installation. Dans une invite de commande, activer l'environnement désiré, puis entrer cette ligne de commande:
+```python
+pip install git+https://github.com/Bureau-du-Forestier-en-chef/MoSiR
+```
+Pour installer une version spécifique de MoSiR, listé sous les différents [tag], simplement ajouter à fin @tag. Par exemple :
+```python
+pip install git+https://github.com/Bureau-du-Forestier-en-chef/MoSiR@v1.0.0-lightweight
+```
 
 ### As a standalone program
 
+
+[pip]: https://pypi.org/project/pip/
+[tag]: https://github.com/Bureau-du-Forestier-en-chef/MoSiR/tags
 ## How to use
 
 Text
@@ -52,6 +63,3 @@ Text
 MoSiR is a [LiLiQ-R 1.1](https://github.com/gcyr/FMT/blob/master/LICENSES/EN/LILIQ-R11EN.pdf) licensed library.
 
 [![License](http://img.shields.io/:license-liliqR11-blue.svg?style=flat-square)](https://forge.gouv.qc.ca/licence/liliq-v1-1/#r%C3%A9ciprocit%C3%A9-liliq-r)
-
-## Tests
-python tests/test_MoSiR.py
