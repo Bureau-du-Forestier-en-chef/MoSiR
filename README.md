@@ -1,8 +1,8 @@
 <h1 align="center">
   <br>
-  <a href="https://github.com/Bureau-du-Forestier-en-chef"><img src="./image/MoSiR-logo-github.png" alt="Modèle de Simulation en Réseau" width="600"></a>
+  <a href="https://github.com/Bureau-du-Forestier-en-chef"><img src="./image/MoSiR-logo-github.png" alt="Modèle de Simulation en Réseau" width="800"></a>
   <br>
-  Markdownify
+  Modèle de Simulation en Réseau
   <br>
 </h1>
 
