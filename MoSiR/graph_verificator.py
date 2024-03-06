@@ -24,6 +24,7 @@ def main(graph: gg.GraphFactory):
     """
 
     # On récupère les noms des nodes qui ont un overflow
+    # TODO créer une deepcopy du GraphFactory
     overflow_name = {}
     for graph_name in graph.get_data:
         G0 = graph.get_data.get(graph_name)
