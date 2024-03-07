@@ -35,7 +35,7 @@ Component 2 - Interpreter and Calculator:
 The second element of MoSiR is a powerful interpreter and calculator dedicated to tracking the fate of carbon in the previously loaded network architecture. MoSiR allows for simulating and predicting the carbon fate in the network, thus providing a clear perspective on carbon flows and stocks in the system under study. The MoSiR calculator is also capable of assessing the radiative effect of carbon emissions into the atmosphere and, if desired by the user, can provide the complete radiative effect of emissions from wood products.
 
 ## Install
-### As a python package
+<details><summary><b>As a python package</b></summary>
 MoSiR peut être installé sous forme de package python, à l'intérieur d'un environnement python3. Pour ce faire, [pip] est nécessaire avant de procéder à l'installation. Dans un terminal, activer l'environnement désiré, puis entrer cette ligne de commande:
 ```python
 pip install git+https://github.com/Bureau-du-Forestier-en-chef/MoSiR
@@ -44,8 +44,16 @@ Pour installer une version spécifique de MoSiR, listé sous les différents [ta
 ```python
 pip install git+https://github.com/Bureau-du-Forestier-en-chef/MoSiR@v1.0.0-lightweight
 ```
+</details>
 ### As a standalone program
 Dans le repos MoSiR, un dossier standalone est accessible. Celui-ci contient quelques dossiers, accompagnés d'un executable (.exe). Il est possible de télécharger manuellement se dossier pour utiliser MoSiR comme un programme qui fonctionne indépendamment, sans nécessité de prérequis, tel que python.
+
+```
+git clone -n --depth=1 --filter=tree:0 https://github.com/Bureau-du-Forestier-en-chef/MoSiR
+cd MoSiR
+git sparse-checkout set --no-cone standalone/app
+git checkout
+```
 
 [pip]: https://pypi.org/project/pip/
 [tag]: https://github.com/Bureau-du-Forestier-en-chef/MoSiR/tags
