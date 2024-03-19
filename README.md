@@ -51,24 +51,22 @@ pip install git+https://github.com/Bureau-du-Forestier-en-chef/MoSiR@v1.0.0-ligh
 <details><summary><b>As a standalone application</b></summary>
   
 Dans le repos MoSiR, un dossier standalone est accessible. Celui-ci contient quelques dossiers, accompagnés d'un executable (.exe). Il est possible de télécharger manuellement ce dossier pour utiliser MoSiR comme un programme qui fonctionne indépendamment, sans nécessiter de prérequis. L'installation nécessite toutefois [git] pour cloner les fichiers sur GitHub. <br>
-1. Ouvrir une invite de commande (command prompt) <br>
-2. Localiser le dossier où vous souhaitez copier les fichiers sur votre ordinateur, par exemple D:\Documents\Application et changer le working directory de votre invite de commande pour celui-ci. <br>
-```cmd
-cd /d D:\Documents\Application
-```
-Il est également possible d'ouvrir une invite de commande directement à partir du dossier souhaité. Simplement naviguer avec votre explorateur de fichier jusqu'au dossier voulu et écrire [cmd] dans l'onglet contenant le lien vers ce dossier.
-![open_cmd](https://github.com/Landry-G/MoSiR_images/blob/main/open_cmd.gif)
+1. Ouvrir une invite de commande (command prompt)
+2. Localiser le dossier où vous souhaitez copier les fichiers sur votre ordinateur, par exemple D:\Documents\Application et changer le working directory de votre invite de commande pour celui-ci.
+   ```cmd
+   cd /d D:\Documents\Application
+   ```
+   Il est également possible d'ouvrir une invite de commande directement à partir du dossier souhaité. Simplement naviguer avec votre explorateur de fichier jusqu'au dossier voulu et écrire `cmd` dans l'onglet contenant le lien vers ce dossier. <br>
+   ![open_cmd](https://github.com/Landry-G/MoSiR_images/blob/main/open_cmd.gif)
 3. Copier ces lignes dans votre invite de commande. Un clone du dossier standalone/app sera alors copié sur votre ordinateur.
-```cmd
-git clone -n --depth=1 --filter=tree:0 https://github.com/Bureau-du-Forestier-en-chef/MoSiR
-cd MoSiR
-git sparse-checkout set --no-cone standalone/app
-git checkout
-```
-
-
-
-
+   ```cmd
+   git clone -n --depth=1 --filter=tree:0 https://github.com/Bureau-du-Forestier-en-chef/MoSiR
+   cd MoSiR
+   git sparse-checkout set --no-cone standalone/app
+   git checkout
+   ```
+4. Autre
+5. 
 </details>
 
 [pip]: https://pypi.org/project/pip/
