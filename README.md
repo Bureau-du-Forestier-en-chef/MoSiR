@@ -25,8 +25,6 @@
 ## Description
 MoSiR, acronym for Network Simulation Model (Modèle de Simulation en Réseau), is a powerful tool originally designed at the Office of the Chief Forester (BFEC) to facilitate the modeling and simulation of the carbon fate of wood products from forest harvesting. This versatile tool now consists of two essential components that work together to provide a comprehensive solution to the user. MoSiR enables the calculation of the actual climate impact of emissions associated with wood products throughout their service life and end of life by allowing the user to use complex network architectures and associated input data in an automated manner.
 
-![open_cmd](https://github.com/Landry-G/MoSiR_images/blob/main/open_cmd.gif)
-
 Component 1 - Web Interface:
 
 MoSiR's web interface serves as the gateway between the creation and simulation of conceptual models for carbon pathways in wood products and the calculation of their real climate impact. This user-friendly interface is based on HTML, making it easily accessible from any web browser.
@@ -54,20 +52,22 @@ pip install git+https://github.com/Bureau-du-Forestier-en-chef/MoSiR@v1.0.0-ligh
   
 Dans le repos MoSiR, un dossier standalone est accessible. Celui-ci contient quelques dossiers, accompagnés d'un executable (.exe). Il est possible de télécharger manuellement ce dossier pour utiliser MoSiR comme un programme qui fonctionne indépendamment, sans nécessiter de prérequis. L'installation nécessite toutefois [git] pour cloner les fichiers sur GitHub. <br>
 1. Ouvrir une invite de commande (command prompt) <br>
-2. Localiser le dossier où vous souhaitez copier les fichiers sur votre ordinateur, par exemple D:\Documents\MoSiR et changer le working directory de votre invite de commande pour celui-ci. <br>
+2. Localiser le dossier où vous souhaitez copier les fichiers sur votre ordinateur, par exemple D:\Documents\Application et changer le working directory de votre invite de commande pour celui-ci. <br>
 ```cmd
-cd /d D:\Documents\MoSiR
+cd /d D:\Documents\Application
 ```
 Il est également possible d'ouvrir une invite de commande directement à partir du dossier souhaité. Simplement naviguer avec votre explorateur de fichier jusqu'au dossier voulu et écrire [cmd] dans l'onglet contenant le lien vers ce dossier.
-
-3. copier
-
-```
+![open_cmd](https://github.com/Landry-G/MoSiR_images/blob/main/open_cmd.gif)
+3. Copier ces lignes dans votre invite de commande. Un clone du dossier standalone/app sera alors copié sur votre ordinateur.
+```cmd
 git clone -n --depth=1 --filter=tree:0 https://github.com/Bureau-du-Forestier-en-chef/MoSiR
 cd MoSiR
 git sparse-checkout set --no-cone standalone/app
 git checkout
 ```
+
+
+
 
 </details>
 
