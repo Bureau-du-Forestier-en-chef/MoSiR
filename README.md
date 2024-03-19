@@ -57,7 +57,6 @@ Dans le repos MoSiR, un dossier standalone est accessible. Celui-ci contient que
 cd /d D:\Documents\MoSiR
 ```
 Il est également possible d'ouvrir une invite de commande directement à partir du dossier souhaité. Simplement naviguer avec votre explorateur de fichier jusqu'au dossier voulu et écrire [cmd] dans l'onglet contenant le lien vers ce dossier.
-![open_cmd](https://github.com/Bureau-du-Forestier-en-chef/MoSiR/assets/65407496/dd8e5ac3-bc0a-4bf8-b06e-7d6a8342a064)
 
 3. copier
 
