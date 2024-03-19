@@ -36,6 +36,7 @@ The second element of MoSiR is a powerful interpreter and calculator dedicated t
 
 ## Install
 <details><summary><b>As a python package</b></summary>
+  
 MoSiR peut être installé sous forme de package python, à l'intérieur d'un environnement python3. Pour ce faire, [pip] est nécessaire avant de procéder à l'installation. Dans un terminal, activer l'environnement désiré, puis entrer cette ligne de commande:
 ```python
 pip install git+https://github.com/Bureau-du-Forestier-en-chef/MoSiR
@@ -44,9 +45,21 @@ Pour installer une version spécifique de MoSiR, listé sous les différents [ta
 ```python
 pip install git+https://github.com/Bureau-du-Forestier-en-chef/MoSiR@v1.0.0-lightweight
 ```
+
 </details>
-### As a standalone program
-Dans le repos MoSiR, un dossier standalone est accessible. Celui-ci contient quelques dossiers, accompagnés d'un executable (.exe). Il est possible de télécharger manuellement se dossier pour utiliser MoSiR comme un programme qui fonctionne indépendamment, sans nécessité de prérequis, tel que python.
+
+<details><summary><b>As a standalone application</b></summary>
+  
+Dans le repos MoSiR, un dossier standalone est accessible. Celui-ci contient quelques dossiers, accompagnés d'un executable (.exe). Il est possible de télécharger manuellement ce dossier pour utiliser MoSiR comme un programme qui fonctionne indépendamment, sans nécessiter de prérequis. L'installation nécessite toutefois [git] pour cloner les fichiers sur GitHub. <br>
+1. Ouvrir une invite de commande (command prompt) <br>
+2. Localiser le dossier où vous souhaitez copier les fichiers sur votre ordinateur, par exemple D:\Documents\MoSiR et changer le working directory de votre invite de commande pour celui-ci. <br>
+```cmd
+cd /d D:\Documents\MoSiR
+```
+Il est également possible d'ouvrir une invite de commande directement à partir du dossier souhaité. Simplement naviguer avec votre explorateur de fichier jusqu'au dossier voulu et écrire [cmd] dans l'onglet contenant le lien vers ce dossier.
+![open_cmd](https://github.com/Bureau-du-Forestier-en-chef/MoSiR/assets/65407496/dd8e5ac3-bc0a-4bf8-b06e-7d6a8342a064)
+
+3. copier
 
 ```
 git clone -n --depth=1 --filter=tree:0 https://github.com/Bureau-du-Forestier-en-chef/MoSiR
@@ -55,8 +68,11 @@ git sparse-checkout set --no-cone standalone/app
 git checkout
 ```
 
+</details>
+
 [pip]: https://pypi.org/project/pip/
 [tag]: https://github.com/Bureau-du-Forestier-en-chef/MoSiR/tags
+[git]: https://git-scm.com/
 ## How to use
 
 Text
