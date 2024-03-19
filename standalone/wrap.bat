@@ -29,7 +29,7 @@ if %ErrorLevel% == 1 (
     --product-version=1.0.0 ^
     --copyright="Gouvernement du Québec" ^
     --output-dir=.\app ^
-    ..\examples\Run_MoSiR.py
+    ..\run_MoSiR.py
 
     <nul set /p "=L'installation est complétée, peser sur une touche pour fermer"
     pause >nul
