@@ -37,14 +37,17 @@ The second element of MoSiR is a powerful interpreter and calculator dedicated t
 ## Install
 <details><summary><b>As a python package</b></summary>
   
-MoSiR peut être installé sous forme de package python, à l'intérieur d'un environnement python3. Pour ce faire, [pip] est nécessaire avant de procéder à l'installation. Dans un terminal, activer l'environnement désiré, puis entrer cette ligne de commande:
-```python
-pip install git+https://github.com/Bureau-du-Forestier-en-chef/MoSiR
-```
-Pour installer une version spécifique de MoSiR, listé sous les différents [tag], simplement ajouter à fin @tag. Par exemple :
-```python
-pip install git+https://github.com/Bureau-du-Forestier-en-chef/MoSiR@v1.0.0-lightweight
-```
+MoSiR peut être installé sous forme de package python, à l'intérieur d'un environnement python3. Pour ce faire, [pip] est nécessaire avant de procéder à l'installation. à
+1. Dans un terminal, activer l'environnement désiré, puis entrer cette ligne de commande:
+   ```python
+   pip install git+https://github.com/Bureau-du-Forestier-en-chef/MoSiR
+   ```
+   Pour installer une version spécifique de MoSiR, listé sous les différents [tag], simplement ajouter à fin @tag. Par exemple :
+   ```python
+   pip install git+https://github.com/Bureau-du-Forestier-en-chef/MoSiR@v1.0.0-lightweight
+   ```
+2. Ajouter un environnement Miro
+3. 
 
 </details>
 
@@ -65,7 +68,7 @@ Dans le repos MoSiR, un dossier standalone est accessible. Celui-ci contient que
    git sparse-checkout set --no-cone standalone/app
    git checkout
    ```
-4. Autre
+4. Ajouter une clé d'utilisateur Miro
 5. 
 </details>
 
