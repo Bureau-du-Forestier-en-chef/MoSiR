@@ -41,7 +41,7 @@ setup(
     url = 'https://github.com/Bureau-du-Forestier-en-chef/MoSiR',
     license = license,
     scripts = ['run_MoSiR.py'],
-    packages = find_packages(exclude = ('tests', 'docs', 'image')),
+    packages = find_packages(exclude = ('tests', 'docs', 'image', 'standalone', 'examples')),
     install_requires = reqs,
     package_data = {'MoSiR': ['mirowrapper/**','static/**','templates/*',\
         'uploads/*','visualization/**','RadiativeForcing/*', 'BFECGCBM/**', './README.md']}
