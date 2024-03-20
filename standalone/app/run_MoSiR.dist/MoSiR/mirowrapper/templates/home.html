@@ -1,0 +1,40 @@
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bienvenue</title>
+    <link rel="stylesheet" href="{{ url_for('.static', filename='css/style.css') }}" />
+    <!-- <link rel="stylesheet" href="../static/css/mirotone/styles.css" /> -->
+    <script src="https://miro.com/app/static/sdk/v2/miro.js"></script>
+</head>
+<body>
+    <div class="grid container">
+        <div class="cs1 ce12">
+            <img src="{{ url_for('.static', filename='image/welcome.png') }}" alt="" />
+        </div>
+        <div class="cs1 ce12">
+            <h1>Bienvenue dans l'exportateur <br/> de graphs de produits du bois <br/> du BFEC</h1>
+            <p>Vous pouvez exporter et visualiser des graphs des produits du bois en provenance de Miro</p>
+        </div>
+        <div class="cs1 ce12">
+            <a
+                class="button button-primary"
+                href="{{ redirect_url }}"
+                target="_blank"
+            >
+                Commencer
+            </a>
+        </div>
+    </div>
+
+    <script>
+        async function init() {
+            miro.board.ui.on('icon:click', async () => {
+                await miro.board.ui.openPanel({url: "{{ redirect_url }}"});
+            });
+        }
+
+        init();
+    </script>
+</body>
+</html>

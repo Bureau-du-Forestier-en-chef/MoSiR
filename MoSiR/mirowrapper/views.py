@@ -168,11 +168,12 @@ class Mirowrapper(Component):
             GraphsDict[Generator.get_graph_name()] = Generator.to_dict()
         self._write_graphs_json(GraphsDict,GRAPHNAMES)
 
+    # FIXME useless
     def __graphs_download(self):
         return send_file(os.path.join(self._get_uploads_folder(),
                                       self.__GRAPHSNAME), 
                                       as_attachment= True)
-    
+    # FIXME Useless
     def __graphs_menu(self):
         GraphInfo = []
         for Generator in self.__GrapGenerators:

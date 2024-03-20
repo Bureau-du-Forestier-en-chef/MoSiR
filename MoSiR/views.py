@@ -26,7 +26,7 @@ class Flaskwrapper:
         self.__add_all_endpoints()
         Component.main_renderer.set_description(self.__get_description())
 
-    def __get_description(self) -> [str]:
+    def __get_description(self) -> list[str]:
         # read_me_location = os.path.join(os.path.dirname(os.path.abspath(__file__)),"README.md")
         all_text = []
         package_name = "MoSiR"
