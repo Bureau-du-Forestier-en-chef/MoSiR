@@ -19,7 +19,6 @@ tests/Microtests
 .vscode
 .pytest_cache
 standalone/wrap.bat
-standalone/app/run_MoSiR.dist/MoSiR/mirowrapper/mirowrapper.env
 MoSiR/BFECGCBM
 htmlcov/
 .coverage
