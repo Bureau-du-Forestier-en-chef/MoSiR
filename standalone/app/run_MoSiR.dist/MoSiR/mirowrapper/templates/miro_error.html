@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="{{ url_for('.static', filename='css/style.css') }}" />
+        <title>Erreur</title>
+        <!-- <link rel="stylesheet" href="../static/css/mirotone/styles.css" /> --> 
+        <script src="https://miro.com/app/static/sdk/v2/miro.js"></script>
+    </head>
+    <body>
+            <div class="grid container">
+                <div class="cs1 ce12">
+                    <img src="{{ url_for('.static', filename='image/Illustration_Blog_BrainstormingQuestions_FY22Q4.png') }}" alt="" />
+                </div>
+                    <div class="cs1 ce12">
+                        <h1>Erreur:</h1>
+                            {% for Trace in Traces %}
+                            <p>{{ Trace}}</p>
+                            {% endfor %}
+                        <h2>{{Description}}</h2>
+                            <a
+                            class="button button-primary"
+                            href={{ MiroUrl }}
+                            target="_blank"
+                            >
+                            Voir l'item Miro
+                            </a>
+                    </div>
+        </div>         
+    </body>
+</html>
