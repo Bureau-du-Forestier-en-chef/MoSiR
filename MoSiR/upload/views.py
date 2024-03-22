@@ -4,9 +4,13 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 """
 
-from ..blueprint_component import Component
-from flask import request,redirect
 import os
+from copy import deepcopy
+import sys
+import json
+from flask import request
+from flask import redirect
+from ..blueprint_component import Component
     
 class Upload(Component):
     def __init__(self):
@@ -15,21 +19,30 @@ class Upload(Component):
         target = ['<form action = '
                   + self._get_url_for('/graphs_upload/')
                   + ' method = "POST" '
-                  +'enctype = "multipart/form-data"> '
+                  + 'enctype = "multipart/form-data"> '
                   + '<input type = "file" name = "file" accept=".json" title ="upload file"/> '
                   + '<input type = "submit"/> '
                   + '</form> ']
-        return Component.main_renderer.render(False,target)
+        return Component.main_renderer.render(False, target)
     
     def __isallowed_file(self, filename: str) -> bool:
         return filename.endswith(".json")
     
     def __graphs_upload(self):
-        Component.clear_users_data(os.path.join(os.path.dirname(os.path.abspath(__file__)), 
-                                                "..", "uploads"))
         if request.method == 'POST':
-            file = request.files['file']
-            file.save(os.path.join(self._get_uploads_folder(), file.filename))
+            content = request.files['file']
+            decode_copy = content.read().decode(sys.stdout.encoding).strip()
+            acceptable_string = decode_copy.replace("'", "\"")#.replace("\\r\\n", "")
+            content_dict = json.loads(acceptable_string)
+            # Wipe cache if it's a new graph uploaded
+            for graph_name, values in content_dict.items():  
+                if type(values) is dict and set(values.keys()) == {'Nodes', 'Edges'}:               
+                    Component.clear_users_data(os.path.join(os.path.dirname(
+                        os.path.abspath(__file__)), "..", "uploads"))
+            # Save json
+            with open(os.path.join(self._get_uploads_folder(), content.filename), "w") as f:
+                json.dump(content_dict, f)
+
             return redirect(self.get_exit_html())
         
     def add_all_endpoints(self):

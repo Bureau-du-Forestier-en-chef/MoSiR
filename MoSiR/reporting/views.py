@@ -164,7 +164,7 @@ class Reporting(Component):
                          +' <i class="fa fa-arrow-right"></i></button>')
         return stash
     
-    def __build_inputs_table(self) -> [str]:
+    def __build_inputs_table(self) -> list[str]:
         stash = []
         stash.append('<h4>Intrants</h4>')
         stash.append('<div class="w3-threequarter w3-margin-bottom">')
