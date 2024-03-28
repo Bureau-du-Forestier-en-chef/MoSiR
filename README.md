@@ -15,7 +15,7 @@
   
 <p align="center">
   <a href="#Description">Description</a> •
-  <a href="#Install">Install</a> •
+  <a href="#Installation">Installation</a> •
   <a href="#How-to-use">How To Use</a> •
   <a href="#Credits">Credits</a> •
   <a href="#License">License</a>
@@ -34,10 +34,13 @@ Component 2 - Interpreter and Calculator:
 
 The second element of MoSiR is a powerful interpreter and calculator dedicated to tracking the fate of carbon in the previously loaded network architecture. MoSiR allows for simulating and predicting the carbon fate in the network, thus providing a clear perspective on carbon flows and stocks in the system under study. The MoSiR calculator is also capable of assessing the radiative effect of carbon emissions into the atmosphere and, if desired by the user, can provide the complete radiative effect of emissions from wood products.
 
-## Install
+## Installation
+L'installation peut se faire sous deux formats: en tant que package python ou comme un logiciel indépendant. Dans les deux cas, si l'utilisateur souhaite passer par Miro pour importer ses graphiques, il est nécessaire de se créer un compte Miro et de générer une clé d'application.
+
+<b>Étape 1</b>: Installer MoSiR
 <details><summary><b>As a python package</b></summary>
   
-MoSiR peut être installé sous forme de package python, à l'intérieur d'un environnement python3. Pour ce faire, [pip] est nécessaire avant de procéder à l'installation. à
+MoSiR peut être installé sous forme de package python, à l'intérieur d'un environnement python3. Pour ce faire, [pip] est nécessaire avant de procéder à l'installation. 
 1. Dans un terminal, activer l'environnement désiré, puis entrer cette ligne de commande:
    ```python
    pip install git+https://github.com/Bureau-du-Forestier-en-chef/MoSiR
@@ -46,14 +49,12 @@ MoSiR peut être installé sous forme de package python, à l'intérieur d'un en
    ```python
    pip install git+https://github.com/Bureau-du-Forestier-en-chef/MoSiR@v1.0.0-lightweight
    ```
-2. Ajouter un environnement Miro
-3. 
 
 </details>
 
 <details><summary><b>As a standalone application</b></summary>
   
-Dans le repos MoSiR, un dossier standalone est accessible. Celui-ci contient quelques dossiers, accompagnés d'un executable (.exe). Il est possible de télécharger manuellement ce dossier pour utiliser MoSiR comme un programme qui fonctionne indépendamment, sans nécessiter de prérequis. L'installation nécessite toutefois [git] pour cloner les fichiers sur GitHub. <br>
+Dans le repos MoSiR, un dossier standalone est accessible. Celui-ci contient un dossier compressé, dans lequel se retrouve un executable (.exe). Il est possible de télécharger manuellement ce dossier pour utiliser MoSiR comme un programme qui fonctionne indépendamment, sans nécessiter de prérequis. L'installation nécessite toutefois [git] pour cloner les fichiers sur GitHub. Il est également possible de télécharger le dossier comprimé manuellement sur la plateforme GitHub. <br>
 1. Ouvrir une invite de commande (command prompt)
 2. Localiser le dossier où vous souhaitez copier les fichiers sur votre ordinateur, par exemple D:\Documents\Application et changer le working directory de votre invite de commande pour celui-ci.
    ```cmd
@@ -61,20 +62,33 @@ Dans le repos MoSiR, un dossier standalone est accessible. Celui-ci contient que
    ```
    Il est également possible d'ouvrir une invite de commande directement à partir du dossier souhaité. Simplement naviguer avec votre explorateur de fichier jusqu'au dossier voulu et écrire `cmd` dans l'onglet contenant le lien vers ce dossier. <br>
    ![open_cmd](https://github.com/Landry-G/MoSiR_images/blob/main/open_cmd.gif)
-3. Copier ces lignes dans votre invite de commande. Un clone du dossier standalone/app sera alors copié sur votre ordinateur.
+3. Copier ces lignes dans votre invite de commande. Un clone du dossier standalone sera alors copié sur votre ordinateur.
    ```cmd
    git clone -n --depth=1 --filter=tree:0 https://github.com/Bureau-du-Forestier-en-chef/MoSiR
    cd MoSiR
-   git sparse-checkout set --no-cone standalone/app
+   git sparse-checkout set --no-cone standalone
    git checkout
    ```
-4. Ajouter une clé d'utilisateur Miro
-5. 
 </details>
+
+<b>Étape 2</b>: Création d'un compte Miro et d'une clé d'application
+Cette étape est nécessaire pour importer des graphiques depuis Miro. Si votre installation est une version "lightweight" ou si vous souhaitez importer vos graphiques directement à partir d'un fichier JSON, cette étape n'est pas obligatoire pour faire fonctionner le reste du package ou de l'application MoSiR.
+
+1. Créer un compte Miro <br>
+   Avec l'adresse courriel désirée, créer d'abord un compte Miro gratuit à partir de: https://miro.com/
+2. Créer une application Miro <br>
+   A. Naviguer vers les paramètres de l'utilisateurs, puis, sélectionner "vos applications" dans le menu. <br>
+   B. Cliquer sur "Créer une nouvelle application" et entrer le nom désiré. <br>
+   ![miro_creation_1](https://github.com/Landry-G/MoSiR_images/blob/main/miro_creation_1.gif)
+   <i class='fa fa-exclamation-triangle' style='color: red;'></i> test
+   C. Naviguer vers "URL de l'application" et entrer http://localhost:3000
+   D. Dans la s
+   
 
 [pip]: https://pypi.org/project/pip/
 [tag]: https://github.com/Bureau-du-Forestier-en-chef/MoSiR/tags
 [git]: https://git-scm.com/
+
 ## How to use
 
 Text
