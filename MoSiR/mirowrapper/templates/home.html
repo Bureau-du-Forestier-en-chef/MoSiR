@@ -6,6 +6,16 @@
     <link rel="stylesheet" href="{{ url_for('.static', filename='css/style.css') }}" />
     <!-- <link rel="stylesheet" href="../static/css/mirotone/styles.css" /> -->
     <script src="https://miro.com/app/static/sdk/v2/miro.js"></script>
+    <style>
+        /* Style pour masquer la boîte modale initialement */
+        #myModal {
+            display: none;
+        }
+        /* Ajoutez ce style pour cacher les champs initialement */
+        .hidden {
+            display: none;
+        }
+    </style>
 </head>
 <body>
     <div class="grid container">
@@ -25,9 +35,65 @@
                 Commencer
             </a>
         </div>
+        <div class="cs1 ce12">
+            <a
+                class="button button-primary"
+                id="changeKeysButton"
+                href="#"
+            >
+                Changer les clés d'identification
+            </a>
+        </div>
+        <!-- Boîte de dialogue modale -->
+        <div id="myModal" class="modal">
+            <form  class="modal-content" action="/mirowrapper" method="post">
+                <span class="close">&times;</span>
+                <input type="text" id="key1" name="key1" placeholder="Client ID" class="hidden">
+                <input type="text" id="key2" name="key2" placeholder="Client secret" class="hidden">
+                <button type="submit" onclick="saveKeys()">Enregistrer</button>
+            </form>
+        </div>
+        <div class="cs1 ce12">
+            {% if key_changed %}
+            <h4>Vos clés ont bien été modifié</h4>
+            <p>Client ID: {{ CLIENT_ID }}</p>
+            <p>Client secret: {{ CLIENT_SECRET }}</p>
+            {% else %}
+            {% endif %}
+        </div>
     </div>
-
+        
     <script>
+        // Récupérer le bouton pour changer les clés
+        var changeKeysButton = document.getElementById('changeKeysButton');
+        
+        // Récupérer la boîte modale
+        var modal = document.getElementById('myModal');
+        
+        // Récupérer le bouton de fermeture
+        var closeBtn = document.getElementsByClassName('close')[0];
+
+        // Lorsque vous cliquez sur le bouton, ouvrez la boîte modale
+        changeKeysButton.onclick = function() {
+            modal.style.display = 'block';
+            // Afficher les champs pour entrer les clés
+            document.getElementById('key1').classList.remove('hidden');
+            document.getElementById('key2').classList.remove('hidden');
+        }
+
+        // Lorsque vous cliquez sur le bouton de fermeture, fermez la boîte modale
+        closeBtn.onclick = function() {
+            modal.style.display = 'none';
+        }
+
+        // Fermez la boîte modale si vous cliquez en dehors de celle-ci
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        // Bouton Commencer
         async function init() {
             miro.board.ui.on('icon:click', async () => {
                 await miro.board.ui.openPanel({url: "{{ redirect_url }}"});

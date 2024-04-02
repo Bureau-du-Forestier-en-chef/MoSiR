@@ -18,6 +18,8 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
     background-repeat: no-repeat;
     background-position: 50% 10%; 
     background-size: 60%;
+    flex-direction: column;
+    justify-content: space-between;
   }
 </style>
 </head>
@@ -33,7 +35,7 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
 <nav class="w3-sidebar w3-collapse w3-white w3-animate-left" style="z-index:3;width:300px;" id="mySidebar"><br>
   <div class="w3-container w3-row">
     <div class="w3-col s4">
-      <img alt="Logo MoSiR" src="{{ url_for('static', filename='image/MoSiR-logos.jpeg') }}" class="w3-circle w3-margin-right" style="width:50px">
+      <img alt="Logo BFEC" src="{{ url_for('static', filename='image/BFEC.jpg') }}" class="w3-margin-right" style="width:270px;">
     </div>
   </div>
   <hr>
@@ -53,25 +55,26 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
     <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-history fa-fw"></i>  History</a>
     <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-cog fa-fw"></i>  Settings</a><br><br>-->
     {% endfor %}
+    <a href="/shutdown" class="w3-bar-item w3-button w3-padding"><i class="fa fa-sign-out fa-fw"></i>  Quitter</a>
   </div>
 </nav>
-
 
 <!-- Overlay effect when opening sidebar on small screens -->
 <div class="w3-overlay w3-hide-large w3-animate-opacity" onclick="w3_close()" style="cursor:pointer" title="close side menu" id="myOverlay"></div>
 
 <!-- !PAGE CONTENT! -->
-<div class="w3-main" style="margin-left:300px;margin-top:43px;">
-
+<div class="w3-main" style="margin-left:310px;margin-top:43px;">
 
   <!-- Header -->
   <header class="w3-container" style="padding-top:22px">
     {% if descriptions is defined %}
-    <h5><b><i class="fa fa-dashboard"></i>Description</b></h5>
+    <h5><b>Bienvenue sur MoSiR</b></h5>
     {% endif %}
   </header>
+
   <div class="w3-container">
-    <h4>MoSiR</h4>
+    <img alt="Logo MoSiR" src="{{ url_for('static', filename='image/MoSiR-logo-github.png') }}" class="w3-margin-right" style="width:120px;"> 
+    <br>
     {% for description in descriptions %}
       <p>{{description}}</p>
     {% endfor %}
@@ -79,24 +82,27 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
       {{ variable | safe }}
     {% endfor %}
   </div>
-
-
+  
   <!-- Footer -->
-  <footer class="w3-container w3-padding-16" margin-top: -200px>
+  <footer class="w3-container w3-padding-16" style="position: fixed; bottom:0;">
     <!--<h4>FOOTER</h4>-->
+    <p>MoSiR utilise la license <a href="https://forge.gouv.qc.ca/licence/liliq-v1-1/#r%C3%A9ciprocit%C3%A9-liliq-r" target="_blank">
+      LiLiQ-R 1.1
+    </a></p>
+    <p>Pour la documentation complète, veuillez consulter le <a href="https://github.com/Bureau-du-Forestier-en-chef/MoSiR" target="_blank">
+      Github de MoSiR
+    </a></p>
     <p>Par le <a href="https://github.com/Bureau-du-Forestier-en-chef/" target="_blank">
     <img alt="fec" src="{{ url_for('static', filename='image/fec.png') }}" class="w3-circle w3-margin-right" style="width:20px">
-    Bureau du Forestier en Chef
+      Bureau du Forestier en Chef
     </a></p>
   </footer>
-
   <!-- End page content -->
 </div>
 
 <script>
 // Get the Sidebar
 var mySidebar = document.getElementById("mySidebar");
-
 // Get the DIV with overlay effect
 var overlayBg = document.getElementById("myOverlay");
 
@@ -146,6 +152,7 @@ function appendcinputs(graph_name,period,quantity,node)
       }
     }
   }
+
 //Push a .json into the cinputs
 function fillcinputs(html_inputs) 
   {
@@ -233,7 +240,6 @@ function fillcoutputs(html_outputs)
     element.remove();
   }
 
-
 //Adding anoutput
 function addcoutputs(graph_name) {
   var table = document.getElementById("coutputs_"+graph_name);
@@ -278,6 +284,5 @@ function addcoutputs(graph_name) {
     }
   
 </script>
-
 </body>
 </html>

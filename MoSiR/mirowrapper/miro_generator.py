@@ -91,17 +91,17 @@ class Mirogenerator(Generator):
     def __LogStatus(self, message: str) -> None:
         print(message + " for Graph " + self.get_graph_name())
 
-    def GetNodeNames(self) -> [str]:
+    def GetNodeNames(self) -> list[str]:
         Names = []
         for NodeItems in self._edges.values():
             Names.apennd(NodeItems["Name"])
         Names.sort()
         return Names
     
-    def __ItemToNode(self, Item) -> dict():
+    def __ItemToNode(self, Item) -> dict:
         return self.__NODEBUILDER.GetDescription(Item)
     
-    def __ConnectorToEdge(self, EdgeID: int, Connector) -> dict():
+    def __ConnectorToEdge(self, EdgeID: int, Connector) -> dict:
         FromNodeId = int(Connector["startItem"]["id"])
         ToNodeId = int(Connector["endItem"]["id"])
         if FromNodeId == ToNodeId:
@@ -167,7 +167,7 @@ class Mirogenerator(Generator):
             raise(mosir_exceptions.Miroerror(MESSAGE, Item["id"]))
         return Values
     
-    def __GetEdgeValues(self) -> dict():
+    def __GetEdgeValues(self) -> dict:
         TagLocation = {}
         for Item in self.__ItemsData:
             if self.__IsEdgeFork(Item):

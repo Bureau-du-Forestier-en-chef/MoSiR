@@ -336,7 +336,7 @@ def test_12_graph_name():
 
 # Vérifier qu'on ne peut pas passer un graph sans nom dans gg.GraphFactory
 def test_13_graph_name():
-    with pytest.raises(TypeError):
+    with pytest.raises(me.InvalidOption):
         gg.GraphFactory(None)
 
 # Vérifier que l'on peut faire un graph avec plusieurs TopNode avec

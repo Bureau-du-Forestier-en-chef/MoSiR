@@ -18,7 +18,9 @@ tests/Microtests
 .vs 
 .vscode
 .pytest_cache
-standalone/wrap.bat
+standalone/wrap_onefile.bat
+standalone/wrap_standalone.bat
 MoSiR/BFECGCBM
 htmlcov/
 .coverage
+README_package.md

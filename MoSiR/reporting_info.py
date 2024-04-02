@@ -93,8 +93,9 @@ def output_creation(graph: gg.GraphFactory, import_data: ip.ImportData,
                                     de reporting doit être un booléen, donc soit 'true' ou 'false'")
 
             # Dictionnaire pour les outputs
-            dt = {node_name: [] for node_name in nodes_name}
-            dt['Time'] = [i for i in range(time + 1)]
+            dt = {'Time': [i for i in range(time + 1)]}
+            dt.update({node_name: [] for node_name in nodes_name})
+
 
             # On produit les outputs par graph
             G = graph.get_graph(graph_name)
@@ -159,10 +160,10 @@ def output_creation(graph: gg.GraphFactory, import_data: ip.ImportData,
             dt['Unit'] = report_unit
             if ext == '.csv':
                 if directory[-1] == '/':
-                    pd.DataFrame(dt).to_csv(directory + graph_name + '_' + output_name + '_dt' + ext,
+                    pd.DataFrame(dt).to_csv(directory + graph_name + '_' + output_name + ext,
                               index= False, sep = ',')
                 elif directory[-1] != '/':
-                    pd.DataFrame(dt).to_csv(directory + '/' + graph_name + '_' + output_name + '_dt' + ext,
+                    pd.DataFrame(dt).to_csv(directory + '/' + graph_name + '_' + output_name + ext,
                                 index= False, sep= ',')
             elif ext == '.json':
                 if directory[-1] == '/':

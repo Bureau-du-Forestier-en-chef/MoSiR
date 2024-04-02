@@ -493,10 +493,17 @@ class GraphFactory():
         GraphFactory: Un objet de la classe GraphFactory
     """
 
-    def __init__(self, DIR: str):
+    def __init__(self, DIR: str= None, Dict: dict= None):
         self._DIRECTORY = DIR
-        with open(self._DIRECTORY, "r") as files: 
-            self._DATA = json.load(files)
+        """L'option de créer un graph grâce à un dictionnaire a été
+        ajouter pour l'analyse lors de l'importation dans l'API"""
+        if DIR is None and Dict is not None:
+            self._DATA = Dict
+        if DIR is not None and Dict is None:
+            with open(self._DIRECTORY, "r") as files: 
+                self._DATA = json.load(files)
+        if DIR is None and Dict is None:
+            raise me.InvalidOption("No dictionary or directory specified")
         self._GRAPHNAME = []
         self._GRAPHS = []
         

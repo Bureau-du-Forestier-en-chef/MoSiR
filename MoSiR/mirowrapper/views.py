@@ -65,10 +65,45 @@ class Mirowrapper(Component):
         self.__GrapGenerators = []
         self.__Session = requests.Session()
         self.__GRAPHSNAME = 'Graphs.json'
+    
 
+    #TODO faire un get set pour mes client ID
+    def __change_miro_keys(self):
+        CLIENT_ID = request.form['key1']
+        CLIENT_SECRET = request.form['key2']
+        self.__CLIENTID = request.form['key1']
+        self.__CLIENTSECRET= request.form['key2']
+        # Ouvrir le fichier en mode lecture
+        with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "mirowrapper.env"), "r") as f:
+            lignes = f.readlines()
+
+        # Modifier les lignes nécessaires
+        for i, ligne in enumerate(lignes):
+            if "MIRO_CLIENT_ID" in ligne:
+                left, right = ligne.split("=", 1)
+                right = '"' + CLIENT_ID + '"'
+                lignes[i] = left + "=" + right + "\n"
+            if "MIRO_CLIENT_SECRET" in ligne:
+                left, right = ligne.split("=", 1)
+                right = '"' + CLIENT_SECRET + '"'
+                lignes[i] = left + "=" + right
+
+        # Écrire les modifications dans le fichier
+        with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "mirowrapper.env"), "w") as f:
+            f.writelines(lignes)
+        
+        return render_template("home.html", 
+                redirect_url= self._get_url_for(self.__REDIRECT_URI + "/authorize"),
+                key_changed= True,
+                CLIENT_ID= CLIENT_ID,
+                CLIENT_SECRET= CLIENT_SECRET)
+        
     def __get_home(self):
-        return render_template("home.html",
-                               redirect_url= self._get_url_for(self.__REDIRECT_URI + "/authorize"))
+        if request.method == 'POST':
+            return self.__change_miro_keys()
+        else:    
+            return render_template("home.html",
+                redirect_url= self._get_url_for(self.__REDIRECT_URI + "/authorize"))
     
     def __authorization_redirect(self):
         AuthorizationCode = request.args.get("code", default= "")
@@ -107,13 +142,13 @@ class Mirowrapper(Component):
                + self._get_url_for(self.__REDIRECT_URI))
         return redirect(url)
     
-    def __get_boards_info(self) -> dict():
+    def __get_boards_info(self) -> dict:
         url = self.__BASEAPIMIRO + "v2/boards"
         headers = {"accept": "application/json", 'Authorization': f'Bearer {self.__AccessToken__ }'}
         BoardInfo = self._get_json(self.__Session.get(url, headers= headers))["data"]
         return BoardInfo
     
-    def __get_boardids(self) -> dict():
+    def __get_boardids(self) -> dict:
         Boards = {}
         for Info in self.__get_boards_info():
             Boards[Info["name"]] = Info["id"]
@@ -216,7 +251,7 @@ class Mirowrapper(Component):
     
     def add_all_endpoints(self):
         self._add_endpoint(endpoint= '/', endpoint_name= '/', 
-                           handler= self.__get_home, methods= ['GET'])
+                           handler= self.__get_home, methods= ['GET', 'POST'])
         self._add_endpoint(endpoint= self.__REDIRECT_URI, endpoint_name= self.__REDIRECT_URI,
                            handler= self.__authorization_redirect, methods= ['GET','POST'])
         self._add_endpoint(endpoint= self.__REDIRECT_URI + '/authorize', 
@@ -237,6 +272,6 @@ class Mirowrapper(Component):
         return "Récupérer dans Miro"
     
     def get_symbol(self):
-        return "fa fa-users fa-fw"
+        return "fa fa-cloud-download fa-fw"
     
 mirowrapper = Mirowrapper()

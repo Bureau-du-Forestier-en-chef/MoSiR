@@ -8,15 +8,14 @@ import os
 from flask import render_template
 from .animator import Htmlanimation
 from ..blueprint_component import Component
-#from flask import url_for
-    
+
 class Visualization(Component):
     def __init__(self):
-        Component.__init__(self,__class__.__name__,__name__)
+        Component.__init__(self, __class__.__name__, __name__)
         Component.clear_users_data(
             os.path.join(os.path.dirname(os.path.abspath(__file__)),"templates"))
     
-    def __generate_graphshtml(self) -> [str]:
+    def __generate_graphshtml(self) -> list[str]:
         HTMLsandnames = []
         for Generator in self.read_graphs_json():
             NEWHTML = Htmlanimation(Generator.to_dict(),
@@ -29,7 +28,7 @@ class Visualization(Component):
     
     def __graphs_selection(self):
         Allhtmls = self.__generate_graphshtml()
-        allvariables = ["<h1>Graphs disponible</h1>"]
+        allvariables = ["<h3>Graphs disponibles</h3>"]
         for name, html in Allhtmls:
             target = '<div><a class="w3-button w3-dark-grey" href=' \
                 + html + '>' + name + '<i class="fa fa-arrow-right"></i></a></div>'

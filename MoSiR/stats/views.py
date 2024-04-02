@@ -53,7 +53,7 @@ class Stats(Component):
         return "Statistiques"
     
     def get_symbol(self):
-        return "fa fa-bell fa-fw"
+        return "fa fa-pie-chart fa-fw"
     
     def can_view(self):
         return len(self._get_graphs_files()) > 0

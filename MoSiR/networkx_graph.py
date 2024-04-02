@@ -15,31 +15,33 @@ class WPGraph():
         super().__init__()
         self._graph = nx.DiGraph()
         if KEY is None:
-            raise me.ConstError("Graph name can't be None")
+            raise me.ConstError("Graph name can't be empty")
         self._NAME = str(KEY)
 
     def add_node(self, node):
         name_to_add = node.NAME
         existing_node_names = [n.NAME for n in self._graph.nodes()]
         if name_to_add in existing_node_names:
-            raise me.NodeError(f"Node name '{name_to_add}' already exists")
+            raise me.NodeError(f"At least two nodes have the same name: '{name_to_add}'.\
+                Nodes must have an unique name")
         return self._graph.add_node(node)
     
     def add_edge(self, node_from, node_to, proportions: list[float]):
         if any(x < 0 or x > 1 for x in proportions):
-            raise me.EdgeError("Proportion must be between 0 and 1")
+            raise me.EdgeError(f"Proportion must be between 0 and 1. \
+                Error between {node_from.NAME} to {node_to.NAME}")
         if node_from == node_to:
-            raise me.EdgeError("Can't create an edge from a node to itself")
+            raise me.EdgeError(f"Can't create an edge from {node_from.NAME} to itself")
         return self._graph.add_edge(node_from, node_to, proportion= proportions)
     
     def get_edge_proportions(self, node_from, node_to) -> list[float]:
         if not self._graph.has_edge(node_from, node_to):
-            raise me.EdgeError(f"Edge from '{node_from}' to '{node_to}' doesn't exist")
+            raise me.EdgeError(f"Edge from '{node_from.NAME}' to '{node_to.NAME}' doesn't exist")
         return self._graph.get_edge_data(node_from, node_to)["proportion"]
     
     def get_predecessors(self, node):
         if type(node) == gg.TopNode:
-            warnings.warn("TopNode has no predecessors")
+            warnings.warn("The TopNode has no predecessors")
         return self._graph.predecessors(node)
     
     def get_successors(self, node):
