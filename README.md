@@ -37,8 +37,8 @@ The second element of MoSiR is a powerful interpreter and calculator dedicated t
 ## Installation
 L'installation peut se faire sous deux formats: en tant que package python ou comme un logiciel indépendant. Dans les deux cas, si l'utilisateur souhaite passer par Miro pour importer ses graphiques, il est nécessaire de se créer un compte Miro et de générer une clé d'application.
 
-<b>Étape 1</b>: Installer MoSiR
-<details><summary><b>As a python package</b></summary>
+### <b>Étape 1</b>: Installer MoSiR
+<details><summary><b>As a python package</b></summary> <br>
   
 MoSiR peut être installé sous forme de package python, à l'intérieur d'un environnement python3. Pour ce faire, [pip] est nécessaire avant de procéder à l'installation. 
 1. Dans un terminal, activer l'environnement désiré, puis entrer cette ligne de commande:
@@ -52,7 +52,7 @@ MoSiR peut être installé sous forme de package python, à l'intérieur d'un en
 
 </details>
 
-<details><summary><b>As a standalone application</b></summary>
+<details><summary><b>As a standalone application</b></summary> <br>
   
 Dans le repos MoSiR, un dossier standalone est accessible. Celui-ci contient un dossier compressé, dans lequel se retrouve un executable (.exe). Il est possible de télécharger manuellement ce dossier pour utiliser MoSiR comme un programme qui fonctionne indépendamment, sans nécessiter de prérequis. L'installation nécessite toutefois [git] pour cloner les fichiers sur GitHub. Il est également possible de télécharger le dossier comprimé manuellement sur la plateforme GitHub. <br>
 1. Ouvrir une invite de commande (command prompt)
@@ -60,9 +60,11 @@ Dans le repos MoSiR, un dossier standalone est accessible. Celui-ci contient un 
    ```cmd
    cd /d D:\Documents\Application
    ```
-   Il est également possible d'ouvrir une invite de commande directement à partir du dossier souhaité. Simplement naviguer avec votre explorateur de fichier jusqu'au dossier voulu et écrire `cmd` dans l'onglet contenant le lien vers ce dossier. <br>
+   Il est également possible d'ouvrir une invite de commande directement à partir du dossier souhaité. Simplement naviguer avec votre explorateur de fichier jusqu'au dossier voulu et écrire `cmd` dans l'onglet contenant le lien vers ce dossier.
+   
    ![open_cmd](https://github.com/Landry-G/MoSiR_images/blob/main/open_cmd.gif)
-3. Copier ces lignes dans votre invite de commande. Un clone du dossier standalone sera alors copié sur votre ordinateur.
+   
+4. Copier ces lignes dans votre invite de commande. Un clone du dossier standalone sera alors copié sur votre ordinateur.
    ```cmd
    git clone -n --depth=1 --filter=tree:0 https://github.com/Bureau-du-Forestier-en-chef/MoSiR
    cd MoSiR
@@ -71,23 +73,39 @@ Dans le repos MoSiR, un dossier standalone est accessible. Celui-ci contient un 
    ```
 </details>
 
-<b>Étape 2</b>: Création d'un compte Miro et d'une clé d'application
-Cette étape est nécessaire pour importer des graphiques depuis Miro. Si votre installation est une version "lightweight" ou si vous souhaitez importer vos graphiques directement à partir d'un fichier JSON, cette étape n'est pas obligatoire pour faire fonctionner le reste du package ou de l'application MoSiR.
+:loudspeaker: Les étapes subséquentes sont nécessaires pour importer des graphiques depuis Miro. Si votre installation est une version "lightweight" ou si vous souhaitez importer vos graphiques directement à partir d'un fichier JSON, ces étapes ne sont pas obligatoires pour faire fonctionner le reste du package ou de l'application MoSiR.
 
-1. Créer un compte Miro <br>
-   Avec l'adresse courriel désirée, créer d'abord un compte Miro gratuit à partir de: https://miro.com/
-2. Créer une application Miro <br>
-   A. Naviguer vers les paramètres de l'utilisateurs, puis, sélectionner "vos applications" dans le menu. <br>
-   B. Cliquer sur "Créer une nouvelle application" et entrer le nom désiré. <br>
+### <b>Étape 2</b>: Création d'un compte Miro et d'une clé d'application <br>
+
+<details><summary><b>Procédure sur Miro</b></summary><br>
+  
+1. Avec l'adresse courriel désirée, créer d'abord un compte Miro gratuit à partir de: https://miro.com/
+2. Naviguer vers les paramètres de l'utilisateurs, puis, sélectionner "vos applications" dans le menu.
+   Cliquer sur "Créer une nouvelle application" et entrer le nom désiré.
+
    ![miro_creation_1](https://github.com/Landry-G/MoSiR_images/blob/main/miro_creation_1.gif)
-   <i class='fa fa-exclamation-triangle' style='color: red;'></i> test
-   C. Naviguer vers "URL de l'application" et entrer http://localhost:3000
-   D. Dans la s
-   
+
+   :exclamation: Attention :exclamation: Les identifiants confidentiels de votre application sont maintenant disponbiles. Ceux-ci servent à faire le pont avec Miro et vos différents tableaux. Ces clés NE DOIVENT PAS être partagé publiquement. Pour en savoir plus, consultez [la documentation de Miro].
+3. Naviguer vers "URL de l'application" et entrer http://localhost:3000
+4. Dans la section "Rediriger l'URI pour OAuth2.0, entrer ces trois addresses:
+   <pre>http://localhost:3000/redirect<br>
+   https://miro.com/app-install-completed<br>
+   http://localhost:3000/mirowrapper/redirect </pre>
+   Pour la dernière adresse, sélectionner comme option "Utiliser cet URI pour l'autorisation SDK"
+5. Cocher l'option "boards:read" dans les Autorisations
+6. Finalement, cliquer sur "Installer l'application et obtenir le jeton OAuth". L'installation est nécessaire, mais le jeton ne sera pas utilisé ultérieurement.
+
+![miro_URL](https://github.com/Landry-G/MoSiR_images/blob/main/miro_URL.gif) 
+
+Voilà ! Vos identifiants secrets sont maintenant prêt à être utilisés pour faire fonctionner l'application avec Miro.
+</details>
+
+### <b>Étape 3</b>: Appliquer les identifiants Miro dans l'installation MoSiR
 
 [pip]: https://pypi.org/project/pip/
 [tag]: https://github.com/Bureau-du-Forestier-en-chef/MoSiR/tags
 [git]: https://git-scm.com/
+[la documentation de Miro]: https://developers.miro.com/reference/overview?utm_source=your_apps
 
 ## How to use
 
