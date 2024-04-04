@@ -40,7 +40,7 @@ L'installation peut se faire sous deux formats: en tant que package python ou co
 ### <b>Étape 1</b>: Installer MoSiR
 <details><summary><b>As a python package</b></summary> <br>
   
-MoSiR peut être installé sous forme de package python, à l'intérieur d'un environnement python3. Pour ce faire, [pip] est nécessaire avant de procéder à l'installation. 
+MoSiR peut être installé sous forme de package python, à l'intérieur d'un environnement python 3. Pour ce faire, [pip] est nécessaire avant de procéder à l'installation. 
 1. Dans un terminal, activer l'environnement désiré, puis entrer cette ligne de commande:
    ```python
    pip install git+https://github.com/Bureau-du-Forestier-en-chef/MoSiR
@@ -54,9 +54,9 @@ MoSiR peut être installé sous forme de package python, à l'intérieur d'un en
 
 <details><summary><b>As a standalone application</b></summary> <br>
   
-Dans le repos MoSiR, un dossier standalone est accessible. Celui-ci contient un dossier compressé, dans lequel se retrouve un executable (.exe). Il est possible de télécharger manuellement ce dossier pour utiliser MoSiR comme un programme qui fonctionne indépendamment, sans nécessiter de prérequis. L'installation nécessite toutefois [git] pour cloner les fichiers sur GitHub. Il est également possible de télécharger le dossier comprimé manuellement sur la plateforme GitHub. <br>
+Dans le repos MoSiR, un dossier standalone est accessible. Celui-ci contient un dossier compressé, dans lequel se retrouve un executable `.exe`. Il est possible de télécharger manuellement ce dossier pour utiliser MoSiR comme un programme qui fonctionne indépendamment, sans nécessiter de prérequis. L'installation nécessite toutefois [git] pour cloner les fichiers sur GitHub. Il est également possible de télécharger le dossier comprimé manuellement sur la plateforme GitHub. <br>
 1. Ouvrir une invite de commande (command prompt)
-2. Localiser le dossier où vous souhaitez copier les fichiers sur votre ordinateur, par exemple D:\Documents\Application et changer le working directory de votre invite de commande pour celui-ci.
+2. Localiser le dossier où vous souhaitez copier les fichiers sur votre ordinateur, par exemple `D:\Documents\Application` et changer le working directory de votre invite de commande pour celui-ci.
    ```cmd
    cd /d D:\Documents\Application
    ```
@@ -73,15 +73,15 @@ Dans le repos MoSiR, un dossier standalone est accessible. Celui-ci contient un 
    ```
 </details>
 
-:loudspeaker: Les étapes subséquentes sont nécessaires pour importer des graphiques depuis Miro. Si votre installation est une version "lightweight" ou si vous souhaitez importer vos graphiques directement à partir d'un fichier JSON, ces étapes ne sont pas obligatoires pour faire fonctionner le reste du package ou de l'application MoSiR.
+:loudspeaker: Les étapes subséquentes sont nécessaires pour importer des graphiques depuis Miro. Si votre installation est une version "lightweight" ou si vous souhaitez importer vos graphiques directement à partir d'un fichier JSON, les étapes suivantes d'installation ne sont pas obligatoires pour faire fonctionner le reste du package ou de l'application MoSiR.
 
 ### <b>Étape 2</b>: Création d'un compte Miro et d'une clé d'application <br>
 
 <details><summary><b>Procédure sur Miro</b></summary><br>
   
-1. Avec l'adresse courriel désirée, créer d'abord un compte Miro gratuit à partir de: https://miro.com/
-2. Naviguer vers les paramètres de l'utilisateurs, puis, sélectionner "vos applications" dans le menu.
-   Cliquer sur "Créer une nouvelle application" et entrer le nom désiré.
+1. Avec l'adresse courriel désirée, créer d'abord un compte Miro gratuit à partir de `https://miro.com/`
+2. Naviguer vers les paramètres de l'utilisateurs, puis, sélectionner `Vos applications` dans le menu.
+   Cliquer sur `Créer une nouvelle application` et entrer le nom désiré.
 
    ![miro_creation_1](https://github.com/Landry-G/MoSiR_images/blob/main/miro_creation_1.gif)
 
@@ -91,9 +91,9 @@ Dans le repos MoSiR, un dossier standalone est accessible. Celui-ci contient un 
    <pre>http://localhost:3000/redirect<br>
    https://miro.com/app-install-completed<br>
    http://localhost:3000/mirowrapper/redirect </pre>
-   Pour la dernière adresse, sélectionner comme option "Utiliser cet URI pour l'autorisation SDK"
-5. Cocher l'option "boards:read" dans les Autorisations
-6. Finalement, cliquer sur "Installer l'application et obtenir le jeton OAuth". L'installation est nécessaire, mais le jeton ne sera pas utilisé ultérieurement.
+   Pour la dernière adresse, sélectionner comme option `Utiliser cet URI pour l'autorisation SDK`
+5. Cocher l'option `boards:read` dans les Autorisations
+6. Finalement, cliquer sur `Installer l'application et obtenir le jeton OAuth`. L'installation est nécessaire, mais le jeton ne sera pas utilisé ultérieurement.
 
 ![miro_URL](https://github.com/Landry-G/MoSiR_images/blob/main/miro_URL.gif) 
 
@@ -101,6 +101,36 @@ Voilà ! Vos identifiants secrets sont maintenant prêt à être utilisés pour 
 </details>
 
 ### <b>Étape 3</b>: Appliquer les identifiants Miro dans l'installation MoSiR
+
+Les clés d'identification Miro peuvent être modifiées de deux façons: manuellement dans les fichiers de l'installation ou grâce à l'interface web. Si vous avez téléchargé MoSiR comme package python et que vous ne souhaitez pas utiliser l'interface, ces étapes ne sont pas nécessaires pour vous.
+
+<details><summary><b>Manuellement</b></summary> <br>
+
+Si votre installation est en version standalone, les clés d'identification se retrouvent ici:
+   ```python
+   ..\MoSiR.dist\MoSiR\mirowrapper\mirowrapper.env
+   ```
+  `MoSiR.dist` est le dossier que vous avez téléchargé ou copié depuis GitHub. Le fichier `.env` peut être ouvert avec un logiciel de traitement de fichier texte comme Bloc-notes.
+
+Si votre installation est un package python, la clé se retrouve ici dans votre environnement conda. Par exemple, dans mon environnement nommé `MoSiR`, mes clés d'environnements se retrouve ici:
+   ```python
+   ..\envs\MoSiR\Lib\site-packages\MoSiR\mirowrapper\mirowrapper.env
+   ```
+
+</details>
+
+<details><summary><b>Avec l'interface</b></summary> <br>
+  
+Dans  <br>
+1. Ouvrir l'application MoSiR <br>
+   Pour l'application standalone, un fichier exécutable `MoSiR.exe` se retrouve dans le dossier d'installation. Pour une installation en package python, le script `MoSiR.py` doit être lancé depuis son environnement. Celui-ci se retrouve sous `..\envs\MoSiR\Scripts\MoSiR.py`.
+2. Sélectionner l'option `Récupérer dans Miro`
+3. Cliquer sur `Changer les clés d'identification Miro` <br>
+   Inscire le `Client ID` et le `Client secret` qui ont été générés à l'étape 2.
+   
+   ![recuperer_dans_miro](https://github.com/Landry-G/MoSiR_images/blob/main/recuperer_dans_miro.gif)
+   
+</details>
 
 [pip]: https://pypi.org/project/pip/
 [tag]: https://github.com/Bureau-du-Forestier-en-chef/MoSiR/tags
