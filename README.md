@@ -154,24 +154,18 @@ Pour fonctionner, le calculateur a besoin d'un fichier `json` pour le graphe, un
 </details>
 
 <details><summary><b>Avec l'interface</b></summary> <br>
-  
-1. Ouvrir l'application MoSiR <br>
-   Pour l'application standalone, un fichier exécutable `MoSiR.exe` se retrouve dans le dossier d'installation. Pour une installation en package python, le script `MoSiR.py` doit être lancé depuis son environnement où il est installé. Le script se retrouve sous `..\envs\MoSiR\Scripts\MoSiR.py`.
-2. Sélectionner l'option `Récupérer dans Miro`
-3. Cliquer sur `Changer les clés d'identification Miro` <br>
-   Inscire le `Client ID` et le `Client secret` qui ont été générés à l'étape 2.
-   
-   ![recuperer_dans_miro](https://github.com/Landry-G/MoSiR_images/blob/main/recuperer_dans_miro.gif)
+
+À venir
    
 </details>
 
 ## Directives
 
-Text
+À venir
 
 ## Credits
 
-Text
+À venir
 
 ## License
 
