@@ -15,11 +15,11 @@ def main(graph: gg.GraphFactory):
 
     Cette fonction contient les tests qui seront effectués sur le graph
     avant de faire le calcul. Les tests sont effectués par graph, donc
-    si plusieurs graph sont présent dans le fichier JSON, les tests seront
+    si plusieurs graphes sont présent dans le fichier JSON, les tests seront
     effectués pour chaque graph. Hope it works
 
     Args:
-        graph (gg.GraphFactory): GraphFactory qui contient les graph
+        graphe (gg.GraphFactory): GraphFactory qui contient les graph
         à tester
     """
 
@@ -56,7 +56,6 @@ def main(graph: gg.GraphFactory):
     debugg_graph_13(graph)
     debugg_graph_14(graph)
     debugg_graph_15(graph)
-
 
 # Tests -----------------------------------------------------------------------
 # On test si on a bien un first et un last node
@@ -99,7 +98,7 @@ def debugg_graph_02(graph: gg.GraphFactory, overflow: dict[str, list[str]]):
                 no_edges.append(node.NAME)
             elif abs(total - 1) > MOSIR_TOLERENCE:
                 raise me.EdgeError(' '.join((f"La somme des edges sortant de \
-                    {node.NAME} n'est pas égale à 100%").split())) 
+                    {node.NAME} n'est pas égale à 100% ({total * 100})").split())) 
         if len(no_edges) > 0:   
             warnings.warn(f'Le ou les noeuds suivants ont aucun edge sortant: {no_edges}',
                 stacklevel = 2)
@@ -146,38 +145,41 @@ def debugg_graph_04(graph: gg.GraphFactory, overflow: list[str]):
             if carbon_input > in_system - MOSIR_TOLERENCE and carbon_input < in_system + MOSIR_TOLERENCE :
                 continue
             else:
-                raise me.QuantityError(' '.join((f"Graph : {G4.get_name} La \
+                raise me.QuantityError(' '.join((f"Graphe : {G4.get_name} La \
                     quantité total en input ({carbon_input}) au temps \
                     {timestep} n'est pas égale au total présent dans le \
                     système ({in_system})").split()))
 
-# On regarde si le graph a des edges qui forme une boucle entre des ProportionNode
+# On regarde si le graphe a des edges qui forme une boucle entre des ProportionNode
 def debugg_graph_05(graph: gg.GraphFactory):
     for name in graph.get_graph_name:
         G5 = graph.get_graph(name)
         for node in G5.nodes():
             if type(node) == gg.ProportionNode:
-                visited = set()
+                #visited = set()
+                first_node = [node.NAME]
                 stack = [(node, [])]
+                loop_id = 0
                 while stack:
                     current_node, path = stack.pop()
-                    if current_node.NAME in visited:
+                    loop_id += 1
+                    if current_node.NAME in first_node and loop_id != 1:
                         path_name = [node.NAME for node in path]
                         raise me.RecursionNode(' '.join((f"Une boucle possible \
                             existe entre plusieurs ProportionNode : \
                             {path_name + [current_node.NAME]}").split()))
-                    visited.add(current_node.NAME)
+                    #visited.add(current_node.NAME)
                     successors = G5.get_successors(current_node)
                     for successor in successors:
                         if type(successor) == gg.ProportionNode:
                             stack.append((successor, path + [current_node]))
 
-# Vérifier si le gg.GraphFactory n'a pas deux graph avec le même nom
+# Vérifier si le gg.GraphFactory n'a pas deux graphe avec le même nom
 def debugg_graph_06(graph: gg.GraphFactory):
     graph_name = []
     for name in graph.get_graph_name:
         if name in graph_name:
-            raise me.GraphError(' '.join((f"Le graph {name} est présent plus \
+            raise me.GraphError(' '.join((f"Le graphe {name} est présent plus \
                                 d'une fois dans le fichier JSON").split()))
         else:
             graph_name.append(name)
@@ -214,12 +216,12 @@ def debugg_graph_08(graph: gg.GraphFactory):
             warnings.warn(f'Le ou les noeuds suivants ont aucun edge: {no_edges}',
                           stacklevel = 2)
 
-"""# Vérifier que les graphs contiennent au moins une node
+"""# Vérifier que les graphes contiennent au moins une node
 def debugg_graph_09(graph: gg.GraphFactory):
     for name in graph.get_graph_name:
         G9 = graph.get_graph(name)
         if len(G9.nodes()) < 2:
-            raise me.GraphError(' '.join((f"Le graph {name} ne contient pas \
+            raise me.GraphError(' '.join((f"Le graphe {name} ne contient pas \
                 assez de nodes. Un minimum de 2 nodes est requis").split()))
 
 # Vérifier qu'il y a au moins un edge dans le graph
@@ -227,7 +229,7 @@ def debugg_graph_10(graph: gg.GraphFactory):
     for name in graph.get_graph_name:
         G10 = graph.get_graph(name)
         if len(G10.edges()) == 0:
-            raise me.GraphError(' '.join((f"Le graph {name} ne contient pas \
+            raise me.GraphError(' '.join((f"Le graphe {name} ne contient pas \
                 d'edges. Un minimum de 1 edge est requis").split())) """
 
 # Véfirier que les gg.RecyclingNode ont toujours un edge qui rentre et un qui sort

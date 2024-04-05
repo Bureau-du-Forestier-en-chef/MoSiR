@@ -9,7 +9,6 @@ from .. import utilities
 from .. import mosir_exceptions
 import copy, warnings, re, os
 
-
 class ItemBuilder:
     def __init__(self, JsonLocation: str):
         self.__DATA = utilities.Jsonparser.read(JsonLocation)
@@ -27,7 +26,7 @@ class ItemBuilder:
         else:
             return 1.0
         
-    def __GetName(self, BaseName: str, Descriptors: []) -> str:
+    def __GetName(self, BaseName: str, Descriptors: list) -> str:
         Name = copy.deepcopy(BaseName)
         for Descriptor in Descriptors:
             RESULT = self.__GetFromRegex(Name, Descriptor)
@@ -39,7 +38,7 @@ class ItemBuilder:
                     Name += RESULT.group(9)
         return Name
     
-    def IsItem(self, Item: {}, Choice: str = "Choose") -> bool:
+    def IsItem(self, Item: dict, Choice: str = "Choose") -> bool:
         if Choice in self.__DATA and self.__DATA[Choice]:
             for keys, ChooseItem in self.__DATA[Choice].items():
                 TempItem = copy.deepcopy(Item)
@@ -52,7 +51,7 @@ class ItemBuilder:
                     return False
         return True
     
-    def GetDescription(self, Item: {}) -> {}:
+    def GetDescription(self, Item: dict) -> dict:
         DataHolder = {}
         if "Describe" in self.__DATA and self.__DATA["Describe"]:
             for Type, DescribeItem in self.__DATA["Describe"].items():
@@ -66,9 +65,9 @@ class ItemBuilder:
                             DataHolder[Type] = 0.0
                     if not TempItem in AllValues:
                         DataHolder[Type] = 0.0
-            if "data"in Item and "content" in Item["data"]:
-                Name = utilities.Htmlparser.get_string_from_html(Item["data"]["content"]).\
-                replace(',', '')
+            if "data" in Item and "content" in Item["data"]:
+                Name = utilities.Htmlparser.get_string_from_html(
+                    Item["data"]["content"]).replace(',', '')
                 Selectedkeys = []
                 for KeyData, Data in  DataHolder.items():
                     if Data and KeyData in Name:
@@ -80,7 +79,7 @@ class ItemBuilder:
         return DataHolder
 
 class Mirogenerator(Generator):
-    def __init__(self, GraphName: str, ItemsData: [], ConnectorsData: []):
+    def __init__(self, GraphName: str, ItemsData: list, ConnectorsData: list):
         super().__init__(GraphName)
         self.__ItemsData = ItemsData
         self.__ConnectorsData = ConnectorsData
@@ -91,17 +90,17 @@ class Mirogenerator(Generator):
     def __LogStatus(self, message: str) -> None:
         print(message + " for Graph " + self.get_graph_name())
 
-    def GetNodeNames(self) -> [str]:
+    def GetNodeNames(self) -> list[str]:
         Names = []
         for NodeItems in self._edges.values():
             Names.apennd(NodeItems["Name"])
         Names.sort()
         return Names
     
-    def __ItemToNode(self, Item) -> dict():
+    def __ItemToNode(self, Item) -> dict:
         return self.__NODEBUILDER.GetDescription(Item)
     
-    def __ConnectorToEdge(self, EdgeID: int, Connector) -> dict():
+    def __ConnectorToEdge(self, EdgeID: int, Connector) -> dict:
         FromNodeId = int(Connector["startItem"]["id"])
         ToNodeId = int(Connector["endItem"]["id"])
         if FromNodeId == ToNodeId:
@@ -114,22 +113,22 @@ class Mirogenerator(Generator):
         Holder.update(OtherData)
         return Holder
     
-    def __IsEdgeConnected(self, Connector: {}) -> bool:
+    def __IsEdgeConnected(self, Connector: dict) -> bool:
         return all(Item in Connector for Item in ("startItem", "endItem"))
     
-    def __IsNode(self, Item: {}) -> bool:
+    def __IsNode(self, Item: dict) -> bool:
         return self.__NODEBUILDER.IsItem(Item)
     
-    def __IsEdge(self, Connector: {}) -> bool:
+    def __IsEdge(self, Connector: dict) -> bool:
         return (self.__IsEdgeConnected(Connector) and self.__EDGEBUILDER.IsItem(Connector))
     
-    def __DoContainsValue(self, Item: {}, Value: str) -> bool:
+    def __DoContainsValue(self, Item: dict, Value: str) -> bool:
         return "content" in Item["data"] and Value in Item["data"]["content"] 
     
-    def __IsEdgeFork(self, Item: {}) -> bool:
+    def __IsEdgeFork(self, Item: dict) -> bool:
         return  self.__DoContainsValue(Item, "%") and self.__EDGEBUILDER.IsItem(Item, "ChooseValues")
     
-    def __IsNodeFork(self, Item: {}) -> bool:
+    def __IsNodeFork(self, Item: dict) -> bool:
         return self.__EDGEBUILDER.IsItem(Item, "ChooseFork")
     
     def __BuildNodes(self) -> None:
@@ -141,7 +140,7 @@ class Mirogenerator(Generator):
                 NodeId = int(Item["id"])
                 self._nodes[NodeId] = self.__ItemToNode(Item)
                 if "position" in Item:
-                    self._nodes[NodeId]["X"] = (Item["position"]["x"]/10)
+                    self._nodes[NodeId]["X"] = (Item["position"]["x"] / 10)
                     self._nodes[NodeId]["Y"] = (Item["position"]["y"] / 10)
         ENDMESSAGE = "Found "+ str(len(self._nodes)) +" Potential Nodes"
         self.__LogStatus(ENDMESSAGE)
@@ -156,18 +155,18 @@ class Mirogenerator(Generator):
         ENDMESSAGE = "Found " + str(len(self._edges)) + " Potential Edges"
         self.__LogStatus(ENDMESSAGE)
 
-    def __GetEdgeConnectorValues(self, Item: {}) -> float:
+    def __GetEdgeConnectorValues(self, Item: dict) -> float:
         Values = []
         try:
-            WorkableString = utilities.Htmlparser.get_string_from_html(Item["data"]["content"].\
-                                                                       replace("%", ""))
+            WorkableString = utilities.Htmlparser.get_string_from_html(
+                Item["data"]["content"].replace("%", ""))
             Values = [float(value)/100 for value in WorkableString.split(",")]
         except:
-            MESSAGE = "Cannot get edge value for edge id " + Item["id"] + " on Item "+str(Item)
+            MESSAGE = "Cannot get edge value for edge id " + Item["id"] + " on Item " + str(Item)
             raise(mosir_exceptions.Miroerror(MESSAGE, Item["id"]))
         return Values
     
-    def __GetEdgeValues(self) -> dict():
+    def __GetEdgeValues(self) -> dict:
         TagLocation = {}
         for Item in self.__ItemsData:
             if self.__IsEdgeFork(Item):
@@ -187,11 +186,9 @@ class Mirogenerator(Generator):
         for EdgeId, EdgeItems in self._edges.items():
             if EdgeItems["To"] in TAGLOCATION:
                 if EdgeItems["From"] in TAGLOCATION:
-                    raise(mosir_exceptions.Miroerror("Edge id "
-                                                     + str(EdgeId)
-                                                     +" from a tag "
-                                                     + str(EdgeItems), 
-                                                     EdgeId))
+                    raise(mosir_exceptions.Miroerror(
+                        "Edge id "+ str(EdgeId) +" from a tag "+ str(EdgeItems), 
+                        EdgeId))
                 TagUsed.add(EdgeItems["To"])
                 NewValues = TAGLOCATION[EdgeItems["To"]]
                 EdgeItems["Values"] = NewValues
@@ -202,10 +199,9 @@ class Mirogenerator(Generator):
                         GotAtarget = True
                         break
                 if not GotAtarget:
-                    raise(mosir_exceptions.Miroerror("Tag ID "
-                                                     + str(EdgeItems["To"])
-                                                     +" has no out edge",
-                                                     EdgeItems["To"]))
+                    raise(mosir_exceptions.Miroerror(
+                        "Tag ID " + str(EdgeItems["To"]) + " has no out edge",
+                            EdgeItems["To"]))
                 NewEdges[EdgeId] = EdgeItems
             elif(all(Item in ValidLocations for Item in (EdgeItems["To"], EdgeItems["From"]))):
                 NewEdges[EdgeId] = EdgeItems

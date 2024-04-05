@@ -33,7 +33,7 @@ class Download(Component):
                            endpoint_name= '/', 
                            handler= self.__get_graphs, 
                            methods= ['GET'])
-        self._add_endpoint(endpoint='/graphs_download/<filename>', 
+        self._add_endpoint(endpoint= '/graphs_download/<filename>', 
                            endpoint_name= '/graphs_download/<filename>', 
                            handler= self.__graphs_download, 
                            methods= ['GET','POST'])
@@ -45,7 +45,7 @@ class Download(Component):
         return "Télécharger"
     
     def get_symbol(self):
-        return "fa fa-diamond fa-fw"
+        return "fa fa-download fa-fw"
     
     def can_view(self):
         return (len(self._get_graphs_files()) > 0) \

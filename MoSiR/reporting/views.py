@@ -4,18 +4,23 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 """
 
-from ..blueprint_component import Component
-from flask import Response, request, jsonify
-import os, csv, pathlib, seaborn
+import os
+import csv
+import pathlib
+import seaborn
+from flask import jsonify
+from flask import request
+from flask import Response
 from .. import utilities
 from .. import mosir_calculator
+from ..blueprint_component import Component
 
 class Reporting(Component):
     def __init__(self):
         Component.__init__(self, __class__.__name__, __name__)
 
     def __get_inputs(self) -> Response:
-        stash = [] #["<h1>Graphs disponible</h1>"]
+        stash = [] 
         stash += self.__build_inputs_table()
         stash += self.__build_report_header()
         stash += self.__build_report_outputs()
@@ -36,8 +41,6 @@ class Reporting(Component):
                          + generator.get_graph_name()
                          + '><tr><th>Sortie</th><th>Noeuds</th><th>Type</th>\
                             <th>Cumulatif</th><th>Sommation</th><th>Unité</th></tr>')
-            #stash.append('</table>')
-            #stash.append('<table class="w3-table-all" >')
             stash.append('<tr>')
             stash.append('<th> <input type = "text" size = 10 name="Sortie~'
                          + generator.get_graph_name()
@@ -92,19 +95,16 @@ class Reporting(Component):
                          + generator.get_graph_name() 
                          + '")>Ajouter une sortie <j class="fa fa-plus-circle"></j></button>')
             stash.append('</th>')
-            #stash.append('</div>')
             stash.append('</div>')
             stash.append('</tr>')
             stash.append('</table>')
             stash.append('</div>')
         stash.append('<div>')
-        #stash.append('</table>')
         return stash 
     
     def __build_report_header(self) -> list[str]:
         stash = []
-        #stash.append('<div class="w3-threequarter w3-margin-bottom">')
-        stash.append('<h4>Rapport</h4>')
+        stash.append('<h3><b>Rapport</b></h3>')
         stash += self.__build_coutputs_buttons()
         stash.append('<div>')
         stash.append('<label for="Time">Horizon de simulation</label>')
@@ -164,9 +164,9 @@ class Reporting(Component):
                          +' <i class="fa fa-arrow-right"></i></button>')
         return stash
     
-    def __build_inputs_table(self) -> [str]:
+    def __build_inputs_table(self) -> list[str]:
         stash = []
-        stash.append('<h4>Intrants</h4>')
+        stash.append('<h3><b>Intrants</b></h3>')
         stash.append('<div class="w3-threequarter w3-margin-bottom">')
         #Unit selection...
         stash.append('<form action="'
@@ -188,7 +188,6 @@ class Reporting(Component):
         for generator in self.read_graphs_json():
             #For each graph allow an inputs of a list of numbers
             stash.append('<h5>'+ generator.get_graph_name() + '</h5>')
-            #stash.append('<div class="w3-threequarter w3-margin-bottom">')
             stash.append('<table class="w3-table-all" id=cinputs_'
                          + generator.get_graph_name()
                          + '><tr><th>Noeud</th><th>Période</th><th>Quantité</th></tr>')
@@ -219,7 +218,8 @@ class Reporting(Component):
             stash.append('</th>')
             stash.append('</tr>')
             stash.append('</table>')
-        #stash.append('</div>')
+            stash.append('<br>')
+            stash.append('<br>')
         return stash
     
     def __get_sum(self) -> list[str]:
@@ -260,7 +260,7 @@ class Reporting(Component):
                         data["Inputs"][graph][node] = {}
                     data["Inputs"][graph][node][period] = the_value
         location = os.path.join(self._get_uploads_folder(), "inputs.json")
-        utilities.Jsonparser.write(location,data)
+        utilities.Jsonparser.write(location, data)
         return location
     
     def __get_reporting(self) -> str:
@@ -310,33 +310,29 @@ class Reporting(Component):
         inputs_json = self.__get_graphs_inputs()
         report_json = self.__get_reporting()
         for graph_json in graphs_json:
-            self.__run_mosir(graph_json, inputs_json, report_json)
+            message = self.__run_mosir(graph_json, inputs_json, report_json)
         histogram_json = self.__get_histogram_json(report_json)
         jsonname = pathlib.Path(histogram_json).stem
         htmltarget = self._get_url_for("/json_provider/<filename>", filename= jsonname + '.json')
         stash = []
+        if message is not None:
+            stash.append(message)
         stash.append('<script>')
         stash.append('const histo_data = fetch("'
                      + htmltarget 
                      + '").then(response => response.json()).then((data)=>{')
-        #stash.append('console.log(data);')
         stash.append('for (var histo_id = 0; histo_id < data.divids.length;histo_id++)')
         stash.append('{')
         stash.append('Plotly.newPlot(data.divids[histo_id], data.data[histo_id], data.layouts[histo_id]);')
         stash.append('}')
         stash.append('});')
-
-        #stash.append('for (var histo_id = 0; histo_id < histo_data["divids"];histo_id++)')
-        #stash.append('{')
-        #stash.append('Plotly.newPlot(histo_data["divids"][histo_id], histo_data["data"][histo_id], histo_data["layouts"][histo_id]);')
-        #stash.append('}')
         stash.append('</script>')
         histograms = utilities.Jsonparser.read(histogram_json)
         for divid in histograms["divids"]:
             stash.append('<div id=' + divid + '></div>')
         return Component.main_renderer.render(False, stash)
     
-    def __get_result(self, location: str) -> (str, [], {}):#Return the divid,data,layout of the histogram
+    def __get_result(self, location: str) -> tuple[str, list, dict]: #Return the divid,data,layout of the histogram
         #Based on https://codepen.io/pen
         #https://plotly.com/javascript/bar-charts/
         #https://stackoverflow.com/questions/42499535/passing-a-json-object-from-flask-to-javascript
@@ -369,7 +365,7 @@ class Reporting(Component):
                     'barmode': 'group',
                     'bargap': 0.15,
                     'bargroupgap': 0.1}
-        with open(location, newline='') as csvfile:
+        with open(location, newline= '') as csvfile:
             reader = csv.DictReader(csvfile)
             pallet = seaborn.color_palette("pastel", n_colors= len(reader.fieldnames[1:-1]))
             fid = 0 
@@ -390,23 +386,24 @@ class Reporting(Component):
                     all_data[fid]['y'].append(float(row[name]))
                     all_data[fid]['x'].append(int(row['Time']))
                     fid += 1
-                
                 layout['yaxis']['title'] = row['Unit']
-        return (divid, all_data,layout)
+        return (divid, all_data, layout)
     
     def __run_mosir(self, graphsjson: str, inputsjson: str, reportjson: str):
-        #fake it
-        ##shutil.copyfile("C:/Users/CYRGU3/Downloads/MicroTest_1_Annualrad (1).csv",os.path.join(self._get_uploads_folder(),"MicroTest_1_Annualrad.csv"))
-        #Run Mosir here...
-        mosir_calculator.main(['-G', graphsjson, '-D', inputsjson, '-R', reportjson, '-E', self._get_uploads_folder()])
+        try:
+            mosir_calculator.main(['-G', graphsjson, '-D', inputsjson, '-R', reportjson, '-E', self._get_uploads_folder()])
+        except Exception as e:
+            return f"<h4><i class='fa fa-exclamation-triangle' \
+                style='color: red;'></i> Error in calculator:\
+                </h4><br><h5><span style='color: red;'>{e}</span></h5>"
 
     def __get_histogram_json(self, report_json: str) -> str:
         fileending = utilities.Jsonparser.read(report_json)['Output file extension']
         upload_folder = self._get_uploads_folder()
         all_histograms = {'data':[],'layouts':[],'divids':[]}
         for element in os.listdir(upload_folder):
-            if os.path.isfile(os.path.join(upload_folder,element)) and element.endswith(fileending):
-                divid,data,layout = self.__get_result(os.path.join(upload_folder, element))
+            if os.path.isfile(os.path.join(upload_folder, element)) and element.endswith(fileending):
+                divid, data, layout = self.__get_result(os.path.join(upload_folder, element))
                 all_histograms['divids'].append(divid)
                 all_histograms['data'].append(data)
                 all_histograms['layouts'].append(layout)
@@ -415,19 +412,22 @@ class Reporting(Component):
         return histogram_json
     
     def __json_provider(self, filename: str):
-        target_json = os.path.join(self._get_uploads_folder(),filename)
-        #response =jsonify(category="success",data=utilities.Jsonparser.read(target_json),status=200)
-        #response.headers.add('Access-Control-Allow-Origin', '*')
+        target_json = os.path.join(self._get_uploads_folder(), filename)
         return jsonify(utilities.Jsonparser.read(target_json))
     
     def add_all_endpoints(self) -> None:
-        self._add_endpoint(endpoint= '/', endpoint_name= '/', 
-                           handler= self.__get_inputs, methods= ['GET','POST'])
-        self._add_endpoint(endpoint= '/report', endpoint_name= '/report', 
-                           handler= self.__report,methods= ['GET','POST'])
+        self._add_endpoint(endpoint= '/', 
+                           endpoint_name= '/', 
+                           handler= self.__get_inputs, 
+                           methods= ['GET','POST'])
+        self._add_endpoint(endpoint= '/report', 
+                           endpoint_name= '/report', 
+                           handler= self.__report,
+                           methods= ['GET','POST'])
         self._add_endpoint(endpoint= '/json_provider/<filename>', 
                            endpoint_name= '/json_provider/<filename>',
-                           handler= self.__json_provider, methods= ['GET','POST'])
+                           handler= self.__json_provider, 
+                           methods= ['GET','POST'])
     
     def get_description(self) -> str:
         return "Calculer les émissions générées"
@@ -436,9 +436,9 @@ class Reporting(Component):
         return "Calculer"
     
     def get_symbol(self) -> str:
-        return "fa fa-bullseye fa-fw"
+        return "fa fa-bar-chart fa-fw"
     
     def can_view(self) -> bool:
-        return (len(self._get_graphs_files()) > 0 ) #and  (len(Component._get_inputs_files()) > 0) and (len(Component._get_reporting_files()) > 0)
+        return (len(self._get_graphs_files()) > 0 )
 
 reporting = Reporting()

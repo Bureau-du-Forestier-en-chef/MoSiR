@@ -1,11 +1,11 @@
 {
 "Edge":{
-    "Base" : "#1a1a1a",
-    "Overflow" : "#17df23"
+    "Base" : "#8A817C",
+    "Overflow" : "#FFCCC9"
 	},
 "Node" :{
-    "Base" : "#9ed0f8",
-    "Export": "#da0063",
-    "Recycling" : "#8fd14f"
+    "Base" : "#F6E8EA",
+    "Half-life": "#51E5FF",
+    "Recycling" : "#79B473"
     }
 }

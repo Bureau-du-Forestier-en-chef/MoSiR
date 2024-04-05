@@ -74,7 +74,7 @@ class Component(ABC, Blueprint):
             os.mkdir(target)
         return target
     
-    def _write_graphs_json(self, GraphsDict: dict(), GRAPHSNAMES: list[str]) -> None:
+    def _write_graphs_json(self, GraphsDict: dict, GRAPHSNAMES: list[str]) -> None:
         utilities.Jsonparser.write(os.path.join(self._get_uploads_folder(), GRAPHSNAMES), GraphsDict)
 
     def clear_data(extension: str, folder: str) -> None:
@@ -156,7 +156,7 @@ class Component(ABC, Blueprint):
     def get_exit_html(self) -> str:
         return request.host_url
     
-    def set_main_entries(self, entries: list()):
+    def set_main_entries(self, entries: list):
         self._entries = entries
 
     @abstractmethod

@@ -4,18 +4,27 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 """
 
-import requests, os
-import os,werkzeug,traceback
+import os
+import requests
+import werkzeug
+import traceback
+from flask import request
+from flask import redirect
+from flask import send_file
+from flask import make_response
+from flask import render_template
+from datetime import datetime
+from datetime import timedelta
 from dotenv import load_dotenv
-from .. import mosir_exceptions
-from datetime import datetime, timedelta
+from MoSiR import graph_generator as gg
+from MoSiR import mosir_exceptions as me
+from MoSiR import graph_verificator as gv
 from .miro_generator import Mirogenerator
 from ..blueprint_component import Component
-from flask import render_template, request, redirect, send_file, make_response
 
 class Miroerror(werkzeug.exceptions.HTTPException):
     code = 507
-    def __init__(self, MiroException: mosir_exceptions.Miroerror, Board: str):
+    def __init__(self, MiroException: me.Miroerror, Board: str):
         self.__TraceBack = traceback.format_tb(MiroException.__traceback__)
         self.__ID = MiroException.GetItemID()
         self.__BOARD = Board
@@ -58,10 +67,45 @@ class Mirowrapper(Component):
         self.__GrapGenerators = []
         self.__Session = requests.Session()
         self.__GRAPHSNAME = 'Graphs.json'
+    
 
+    #TODO faire un get set pour mes client ID
+    def __change_miro_keys(self):
+        CLIENT_ID = request.form['key1']
+        CLIENT_SECRET = request.form['key2']
+        self.__CLIENTID = request.form['key1']
+        self.__CLIENTSECRET= request.form['key2']
+        # Ouvrir le fichier en mode lecture
+        with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "mirowrapper.env"), "r") as f:
+            lignes = f.readlines()
+
+        # Modifier les lignes nécessaires
+        for i, ligne in enumerate(lignes):
+            if "MIRO_CLIENT_ID" in ligne:
+                left, right = ligne.split("=", 1)
+                right = '"' + CLIENT_ID + '"'
+                lignes[i] = left + "=" + right + "\n"
+            if "MIRO_CLIENT_SECRET" in ligne:
+                left, right = ligne.split("=", 1)
+                right = '"' + CLIENT_SECRET + '"'
+                lignes[i] = left + "=" + right
+
+        # Écrire les modifications dans le fichier
+        with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "mirowrapper.env"), "w") as f:
+            f.writelines(lignes)
+        
+        return render_template("home.html", 
+                redirect_url= self._get_url_for(self.__REDIRECT_URI + "/authorize"),
+                key_changed= True,
+                CLIENT_ID= CLIENT_ID,
+                CLIENT_SECRET= CLIENT_SECRET)
+        
     def __get_home(self):
-        return render_template("home.html",
-                               redirect_url= self._get_url_for(self.__REDIRECT_URI + "/authorize"))
+        if request.method == 'POST':
+            return self.__change_miro_keys()
+        else:    
+            return render_template("home.html",
+                redirect_url= self._get_url_for(self.__REDIRECT_URI + "/authorize"))
     
     def __authorization_redirect(self):
         AuthorizationCode = request.args.get("code", default= "")
@@ -100,13 +144,13 @@ class Mirowrapper(Component):
                + self._get_url_for(self.__REDIRECT_URI))
         return redirect(url)
     
-    def __get_boards_info(self) -> dict():
+    def __get_boards_info(self) -> dict:
         url = self.__BASEAPIMIRO + "v2/boards"
         headers = {"accept": "application/json", 'Authorization': f'Bearer {self.__AccessToken__ }'}
         BoardInfo = self._get_json(self.__Session.get(url, headers= headers))["data"]
         return BoardInfo
     
-    def __get_boardids(self) -> dict():
+    def __get_boardids(self) -> dict:
         Boards = {}
         for Info in self.__get_boards_info():
             Boards[Info["name"]] = Info["id"]
@@ -166,7 +210,16 @@ class Mirowrapper(Component):
         GraphsDict = {}
         for Generator in self.__GrapGenerators:
             GraphsDict[Generator.get_graph_name()] = Generator.to_dict()
-        self._write_graphs_json(GraphsDict,GRAPHNAMES)
+        # On test le graphe avant
+        try:
+            graph = gg.GraphFactory(Dict= GraphsDict)
+            gv.main(graph)
+            self._write_graphs_json(GraphsDict, GRAPHNAMES)
+        except Exception as e:
+            raise me.GraphError(f"<h4><i class='fa fa-exclamation-triangle' \
+                style='color: red;'></i> There is an error with the\
+                imported graph:</h4><br><h5><span style='color: \
+                red;'>{e}</span></h5>")
 
     # FIXME useless
     def __graphs_download(self):
@@ -188,7 +241,7 @@ class Mirowrapper(Component):
             GraphID = self.__BoardGraphs[GraphName]
             BoardItems = self.__get_board_items(GraphID)
             BoardConnectors = self.__get_board_connectors(GraphID)
-            Generator = Mirogenerator(GraphName,BoardItems,BoardConnectors)
+            Generator = Mirogenerator(GraphName, BoardItems, BoardConnectors)
             Generator.Build()
             return Generator
         except Exception as RegularOne:
@@ -201,15 +254,17 @@ class Mirowrapper(Component):
             for GraphName in BOARDNAMES:
                 self.__GrapGenerators.append(self.__build_generator(GraphName))
             self.__write_graphs(self.__GRAPHSNAME)
-        except mosir_exceptions.Miroerror as Mirotrouble:
-            raise Miroerror(Mirotrouble,self.__BoardGraphs[GraphName])
+        except me.Miroerror as Mirotrouble:
+            raise Miroerror(Mirotrouble, self.__BoardGraphs[GraphName])
+        except me.GraphError as ge:
+            return Component.main_renderer.render(False, [ge.args[0]])
         except Exception as RegularOne:
             raise(RegularOne)
         return redirect(self.get_exit_html())
     
     def add_all_endpoints(self):
         self._add_endpoint(endpoint= '/', endpoint_name= '/', 
-                           handler= self.__get_home, methods= ['GET'])
+                           handler= self.__get_home, methods= ['GET', 'POST'])
         self._add_endpoint(endpoint= self.__REDIRECT_URI, endpoint_name= self.__REDIRECT_URI,
                            handler= self.__authorization_redirect, methods= ['GET','POST'])
         self._add_endpoint(endpoint= self.__REDIRECT_URI + '/authorize', 
@@ -230,6 +285,6 @@ class Mirowrapper(Component):
         return "Récupérer dans Miro"
     
     def get_symbol(self):
-        return "fa fa-users fa-fw"
+        return "fa fa-cloud-download fa-fw"
     
 mirowrapper = Mirowrapper()

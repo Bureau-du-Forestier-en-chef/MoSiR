@@ -6,7 +6,6 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 from setuptools import setup, find_packages
 
-
 try:
     # pip >=20
     from pip._internal.network.session import PipSession
@@ -24,12 +23,11 @@ install_reqs = parse_requirements("requirements.txt", session = PipSession())
 
 reqs = [str(ir.requirement) for ir in install_reqs]
 
-with open('README.md',encoding='utf-8') as f:
+with open('README.md', encoding='utf-8') as f:
     readme = f.read()
 
 with open('LICENSES/EN/LILIQ-R11EN.txt') as f:
     license = f.read()
-
 
 setup(
     name = 'MoSiR',
@@ -40,7 +38,7 @@ setup(
     author_email = 'gabriel.landry@fec.gouv.qc.ca',
     url = 'https://github.com/Bureau-du-Forestier-en-chef/MoSiR',
     license = license,
-    scripts = ['run_MoSiR.py'],
+    scripts = ['MoSiR.py'],
     packages = find_packages(exclude = ('tests', 'docs', 'image', 'standalone', 'examples')),
     install_requires = reqs,
     package_data = {'MoSiR': ['mirowrapper/**','static/**','templates/*',\

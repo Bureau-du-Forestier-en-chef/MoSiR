@@ -1,2 +1,2 @@
-MoSiR_standalone.7z filter=lfs diff=lfs merge=lfs -text
+MoSiR.dist.7z filter=lfs diff=lfs merge=lfs -text
 
