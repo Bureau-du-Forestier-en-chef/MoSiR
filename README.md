@@ -17,6 +17,7 @@
   <a href="#Description">Description</a> •
   <a href="#Installation">Installation</a> •
   <a href="#How-to-use">How To Use</a> •
+  <a href="#Directives">Directives</a> •
   <a href="#Credits">Credits</a> •
   <a href="#License">License</a>
 </p>
@@ -121,9 +122,8 @@ Si votre installation est un package python, la clé se retrouve ici dans votre 
 
 <details><summary><b>Avec l'interface</b></summary> <br>
   
-Dans  <br>
 1. Ouvrir l'application MoSiR <br>
-   Pour l'application standalone, un fichier exécutable `MoSiR.exe` se retrouve dans le dossier d'installation. Pour une installation en package python, le script `MoSiR.py` doit être lancé depuis son environnement. Celui-ci se retrouve sous `..\envs\MoSiR\Scripts\MoSiR.py`.
+   Pour l'application standalone, un fichier exécutable `MoSiR.exe` se retrouve dans le dossier d'installation. Pour une installation en package python, le script `MoSiR.py` doit être lancé depuis son environnement où il est installé. Le script se retrouve sous `..\envs\MoSiR\Scripts\MoSiR.py`.
 2. Sélectionner l'option `Récupérer dans Miro`
 3. Cliquer sur `Changer les clés d'identification Miro` <br>
    Inscire le `Client ID` et le `Client secret` qui ont été générés à l'étape 2.
@@ -132,12 +132,40 @@ Dans  <br>
    
 </details>
 
+L'installation est complétée, vous pouvez désormais utiliser MoSiR! :tada:
+
 [pip]: https://pypi.org/project/pip/
 [tag]: https://github.com/Bureau-du-Forestier-en-chef/MoSiR/tags
 [git]: https://git-scm.com/
 [la documentation de Miro]: https://developers.miro.com/reference/overview?utm_source=your_apps
 
 ## How to use
+
+<details><summary><b>As a python package</b></summary> <br>
+Le calculateur de MoSiR peut être directement appelé depuis un script python sans passer par l'interface web. Par exemple:
+  
+```python
+  from MoSiR import mosir_calculator
+  mosir_calculator.main(['-G', graph_json, '-D', input_json, '-R', report_json, '-E', export_folder])
+```
+
+Pour fonctionner, le calculateur a besoin d'un fichier `json` pour le graphe, un pour les intrants, un pour le report et le chemin vers l'endroit où seront les extrants. La structure et les directives concernant les différents fichiers `json` sont expliquées dans la section <a href="#Directives">Directives</a>
+
+</details>
+
+<details><summary><b>Avec l'interface</b></summary> <br>
+  
+1. Ouvrir l'application MoSiR <br>
+   Pour l'application standalone, un fichier exécutable `MoSiR.exe` se retrouve dans le dossier d'installation. Pour une installation en package python, le script `MoSiR.py` doit être lancé depuis son environnement où il est installé. Le script se retrouve sous `..\envs\MoSiR\Scripts\MoSiR.py`.
+2. Sélectionner l'option `Récupérer dans Miro`
+3. Cliquer sur `Changer les clés d'identification Miro` <br>
+   Inscire le `Client ID` et le `Client secret` qui ont été générés à l'étape 2.
+   
+   ![recuperer_dans_miro](https://github.com/Landry-G/MoSiR_images/blob/main/recuperer_dans_miro.gif)
+   
+</details>
+
+## Directives
 
 Text
 
