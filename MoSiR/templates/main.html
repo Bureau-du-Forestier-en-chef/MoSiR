@@ -17,9 +17,12 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
     background-image: url("{{ url_for('static', filename='image/MoSiR-logos_white.png') }}");
     background-repeat: no-repeat;
     background-position: 50% 10%; 
-    background-size: 60%;
+    background-size: 50%;
     flex-direction: column;
     justify-content: space-between;
+  }
+  .main-content {
+    margin-bottom: 200px; /* Remplacez 100px par la hauteur de votre footer */
   }
 </style>
 </head>
@@ -63,12 +66,12 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
 <div class="w3-overlay w3-hide-large w3-animate-opacity" onclick="w3_close()" style="cursor:pointer" title="close side menu" id="myOverlay"></div>
 
 <!-- !PAGE CONTENT! -->
-<div class="w3-main" style="margin-left:310px;margin-top:43px;">
+<div class="w3-main main-content" style="margin-left:310px;margin-top:43px;">
 
   <!-- Header -->
   <header class="w3-container" style="padding-top:22px">
     {% if descriptions is defined %}
-    <h5><b>Bienvenue sur MoSiR</b></h5>
+    <h5><b>Bienvenue sur MoSiR (pre-release version)</b></h5>
     {% endif %}
   </header>
 
@@ -84,7 +87,7 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
   </div>
   
   <!-- Footer -->
-  <footer class="w3-container w3-padding-16" style="position: fixed; bottom:0;">
+  <footer class="w3-container w3-padding-16" style="position: fixed; bottom: 0; width: 100%; background-color: #f1f1f1; text-align: left;">
     <!--<h4>FOOTER</h4>-->
     <p>MoSiR utilise la license <a href="https://forge.gouv.qc.ca/licence/liliq-v1-1/#r%C3%A9ciprocit%C3%A9-liliq-r" target="_blank">
       LiLiQ-R 1.1

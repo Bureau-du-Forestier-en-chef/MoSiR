@@ -16,13 +16,15 @@ from flask import render_template
 from datetime import datetime
 from datetime import timedelta
 from dotenv import load_dotenv
-from .. import mosir_exceptions
+from MoSiR import graph_generator as gg
+from MoSiR import mosir_exceptions as me
+from MoSiR import graph_verificator as gv
 from .miro_generator import Mirogenerator
 from ..blueprint_component import Component
 
 class Miroerror(werkzeug.exceptions.HTTPException):
     code = 507
-    def __init__(self, MiroException: mosir_exceptions.Miroerror, Board: str):
+    def __init__(self, MiroException: me.Miroerror, Board: str):
         self.__TraceBack = traceback.format_tb(MiroException.__traceback__)
         self.__ID = MiroException.GetItemID()
         self.__BOARD = Board
@@ -208,7 +210,16 @@ class Mirowrapper(Component):
         GraphsDict = {}
         for Generator in self.__GrapGenerators:
             GraphsDict[Generator.get_graph_name()] = Generator.to_dict()
-        self._write_graphs_json(GraphsDict,GRAPHNAMES)
+        # On test le graphe avant
+        try:
+            graph = gg.GraphFactory(Dict= GraphsDict)
+            gv.main(graph)
+            self._write_graphs_json(GraphsDict, GRAPHNAMES)
+        except Exception as e:
+            raise me.GraphError(f"<h4><i class='fa fa-exclamation-triangle' \
+                style='color: red;'></i> There is an error with the\
+                imported graph:</h4><br><h5><span style='color: \
+                red;'>{e}</span></h5>")
 
     # FIXME useless
     def __graphs_download(self):
@@ -230,7 +241,7 @@ class Mirowrapper(Component):
             GraphID = self.__BoardGraphs[GraphName]
             BoardItems = self.__get_board_items(GraphID)
             BoardConnectors = self.__get_board_connectors(GraphID)
-            Generator = Mirogenerator(GraphName,BoardItems,BoardConnectors)
+            Generator = Mirogenerator(GraphName, BoardItems, BoardConnectors)
             Generator.Build()
             return Generator
         except Exception as RegularOne:
@@ -243,8 +254,10 @@ class Mirowrapper(Component):
             for GraphName in BOARDNAMES:
                 self.__GrapGenerators.append(self.__build_generator(GraphName))
             self.__write_graphs(self.__GRAPHSNAME)
-        except mosir_exceptions.Miroerror as Mirotrouble:
-            raise Miroerror(Mirotrouble,self.__BoardGraphs[GraphName])
+        except me.Miroerror as Mirotrouble:
+            raise Miroerror(Mirotrouble, self.__BoardGraphs[GraphName])
+        except me.GraphError as ge:
+            return Component.main_renderer.render(False, [ge.args[0]])
         except Exception as RegularOne:
             raise(RegularOne)
         return redirect(self.get_exit_html())

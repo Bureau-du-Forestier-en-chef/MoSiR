@@ -373,7 +373,7 @@ class DecayNode(ProportionNode):
         des flux en provenance des nodes parents depuis le début.
 
         Args: 
-            Graph (nx.DiGraph): le DiGraph utilisé pour construire le réseau
+            Graphe (nx.DiGraph): le DiGraph utilisé pour construire le réseau
             time (int): Le temps en année
             cumulative (bool): To be implemented
 
@@ -460,7 +460,7 @@ class PoolNode(ProportionNode):
     def get_stock(self, graph: WPGraph, time: int, cumulative: bool = False) -> float:
         ''' get_stock Documentation   
         Args: 
-            Graph (nx.DiGraph): le DiGraph utilisé pour construire le réseau
+            Graphe (nx.DiGraph): le DiGraph utilisé pour construire le réseau
             time (int): Le temps en année
             cumulative (bool): To be implemented
             
@@ -495,7 +495,7 @@ class GraphFactory():
 
     def __init__(self, DIR: str= None, Dict: dict= None):
         self._DIRECTORY = DIR
-        """L'option de créer un graph grâce à un dictionnaire a été
+        """L'option de créer un graphe grâce à un dictionnaire a été
         ajouter pour l'analyse lors de l'importation dans l'API"""
         if DIR is None and Dict is not None:
             self._DATA = Dict
@@ -516,7 +516,7 @@ class GraphFactory():
             _EDGES = self.get_data[KEY].get('Edges', {})
             _NODES = self.get_data[KEY].get('Nodes', {})
             if len(_NODES) < 2 or len(_EDGES) == 0:
-                raise me.GraphError("Le graph doit contenir au moins deux noeud et un edge")
+                raise me.GraphError("Le graphe doit contenir au moins deux noeud et un edge")
             _TOPNODES = set([int(ID) for ID in _NODES]) - \
                 set([data['To'] for keys, data in _EDGES.items()])
             _LASTNODES = set([int(ID) for ID in _NODES]) - \

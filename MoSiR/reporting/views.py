@@ -104,7 +104,7 @@ class Reporting(Component):
     
     def __build_report_header(self) -> list[str]:
         stash = []
-        stash.append('<h4>Rapport</h4>')
+        stash.append('<h3><b>Rapport</b></h3>')
         stash += self.__build_coutputs_buttons()
         stash.append('<div>')
         stash.append('<label for="Time">Horizon de simulation</label>')
@@ -166,7 +166,7 @@ class Reporting(Component):
     
     def __build_inputs_table(self) -> list[str]:
         stash = []
-        stash.append('<h4>Intrants</h4>')
+        stash.append('<h3><b>Intrants</b></h3>')
         stash.append('<div class="w3-threequarter w3-margin-bottom">')
         #Unit selection...
         stash.append('<form action="'
@@ -218,6 +218,8 @@ class Reporting(Component):
             stash.append('</th>')
             stash.append('</tr>')
             stash.append('</table>')
+            stash.append('<br>')
+            stash.append('<br>')
         return stash
     
     def __get_sum(self) -> list[str]:

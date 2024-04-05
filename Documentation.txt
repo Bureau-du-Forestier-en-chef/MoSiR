@@ -4,7 +4,7 @@ Idées en vrac :
 - Si tu veux du radiatif dans le reporting, tu dois avoir le nom du gas dans la node
 - Aucune année manquante lors du calcul du radiatif, doit avoir 0 si l'année X n'a pas d'émissions
 - Bien définir comment caractériser l'overflow
-- Le nom du graph doit être identique entre le JSON de Miro et ceux qu'on retrouve dans les fichiers
+- Le nom du graphe doit être identique entre le JSON de Miro et ceux qu'on retrouve dans les fichiers
     pour le import et le report
 - Dans le nom d'une node, CO2, CH4 ou autre doit être en majuscule pour être reconnu comme un gas.
     Sinon, des noms comme "co2 emissions" "Co2" ne sont pas reconnu. 

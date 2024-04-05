@@ -5,8 +5,6 @@
 },
 "Describe" :{
     "Half-life" : {"style/borderStyle" : ["dashed"]},
-    "EternalStock" : {"style/borderColor" : ["#f24726"]},
-    "Export": {"style/fillColor" : ["#da0063"]},
     "Recycling" : {"style/fillColor" : ["#8fd14f"]}
     }
 }

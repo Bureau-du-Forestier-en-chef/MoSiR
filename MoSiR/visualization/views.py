@@ -28,7 +28,7 @@ class Visualization(Component):
     
     def __graphs_selection(self):
         Allhtmls = self.__generate_graphshtml()
-        allvariables = ["<h3>Graphs disponibles</h3>"]
+        allvariables = ["<h3>Graphes disponibles</h3>"]
         for name, html in Allhtmls:
             target = '<div><a class="w3-button w3-dark-grey" href=' \
                 + html + '>' + name + '<i class="fa fa-arrow-right"></i></a></div>'
@@ -51,7 +51,7 @@ class Visualization(Component):
                            methods = ['GET'])
         
     def get_description(self):
-        return "Visualiser les graphs existant"
+        return "Visualiser les graphes existant"
     
     def get_name(self):
         return "Visualiser"

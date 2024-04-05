@@ -21,11 +21,11 @@ class Stats(Component):
             for typeof, nom in zip(["Nodes", "Edges"], noms_fr):
                 total_elements = stats[typeof]["Size"]
                 stash.append('<h6>' + nom + '(' + str(total_elements) + ')</h6>')
-                for name,element in stats[typeof].items():
+                for name, element in stats[typeof].items():
                     if name not in ["Size", "Max", "Min"]:
                         totalstr = str((element / total_elements) * 100)[:4] + "%"
                         color = "green"
-                        for maxvalue,selected in colors.items():
+                        for maxvalue, selected in colors.items():
                             if (element / total_elements) >= maxvalue:
                                 color = selected
                         stash.append('<p>' + name + '</p>')
