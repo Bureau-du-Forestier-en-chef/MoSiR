@@ -1,6 +1,6 @@
 MoSiR/mirowrapper/inputs/MiroParserServerSecrets.json
 MoSiR/inputs/MiroParserServerSecrets.json
-MoSiR/mirowrapper/mirowrapper.env
+# MoSiR/mirowrapper/mirowrapper.env
 MoSiR/visualization/templates/*
 !MoSiR/visualization/templates/.gitkeep
 !MoSiR/visualization/templates/keepme.txt
