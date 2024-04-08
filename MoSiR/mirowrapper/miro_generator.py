@@ -200,7 +200,7 @@ class Mirogenerator(Generator):
                         break
                 if not GotAtarget:
                     raise(mosir_exceptions.Miroerror(
-                        "Tag ID " + str(EdgeItems["To"]) + " has no out edge",
+                        "Un item (tag ID" + str(EdgeItems["To"]) + ") has no out edge",
                             EdgeItems["To"]))
                 NewEdges[EdgeId] = EdgeItems
             elif(all(Item in ValidLocations for Item in (EdgeItems["To"], EdgeItems["From"]))):
@@ -208,7 +208,9 @@ class Mirogenerator(Generator):
         if len(TagUsed) < len(TAGLOCATION):
             for tagid in TAGLOCATION.keys():
                 if tagid not in TagUsed:
-                    Message = "Tag id " + str(tagid) + " not used"
+                    Message = "Un item est mal connecté dans le graphe (tag ID "\
+                        + str(tagid) + "). Veuillez vérifier que des liens sont bien\
+                        rattachés à celui-ci."
                     raise(mosir_exceptions.Miroerror(Message,tagid))
         Removed = len(self._edges) - len(NewEdges)
         self._edges = NewEdges
