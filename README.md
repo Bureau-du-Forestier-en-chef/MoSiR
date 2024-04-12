@@ -18,7 +18,8 @@
   <a href="#Installation">Installation</a> •
   <a href="#How-to-use">How To Use</a> •
   <a href="#Directives">Directives</a> •
-  <a href="#Credits">Credits</a> •
+  <a href="#Report a bug">Report A Bug</a> •
+  <a href="#FAQ">FAQ</a> •
   <a href="#License">License</a>
 </p>
 
@@ -26,12 +27,7 @@
 ## Description
 MoSiR, acronym for Network Simulation Model (Modèle de Simulation en Réseau), is a powerful tool originally designed at the Office of the Chief Forester (BFEC) to facilitate the modeling and simulation of the carbon fate of wood products from forest harvesting. This versatile tool now consists of two essential components that work together to provide a comprehensive solution to the user. MoSiR enables the calculation of the actual climate impact of emissions associated with wood products throughout their service life and end of life by allowing the user to use complex network architectures and associated input data in an automated manner.
 
-Component 1 - Web Interface:
-
-MoSiR's web interface serves as the gateway between the creation and simulation of conceptual models for carbon pathways in wood products and the calculation of their real climate impact. This user-friendly interface is based on HTML, making it easily accessible from any web browser.
-A distinct feature of MoSiR's Web Interface is its ability to load Miro boards created by the user, and convert them into a JSON file that can be read by MoSiR's calculator. Adhering to standards derived from the network design documentation in Miro (Link to documentation), the MoSiR Web Interface facilitates a seamless transition to the calculator while preserving the integrity of previously built data and architectural properties.
-
-Component 2 - Interpreter and Calculator:
+MoSiR's web interface serves as the gateway between the creation and simulation of conceptual models for carbon pathways in wood products and the calculation of their real climate impact. This user-friendly interface is based on HTML, making it easily accessible from any web browser. A distinct feature of MoSiR's Web Interface is its ability to load Miro boards created by the user, and convert them into a JSON file that can be read by MoSiR's calculator. Adhering to standards derived from the network design documentation in Miro (Link to documentation), the MoSiR Web Interface facilitates a seamless transition to the calculator while preserving the integrity of previously built data and architectural properties.
 
 The second element of MoSiR is a powerful interpreter and calculator dedicated to tracking the fate of carbon in the previously loaded network architecture. MoSiR allows for simulating and predicting the carbon fate in the network, thus providing a clear perspective on carbon flows and stocks in the system under study. The MoSiR calculator is also capable of assessing the radiative effect of carbon emissions into the atmosphere and, if desired by the user, can provide the complete radiative effect of emissions from wood products.
 
@@ -113,7 +109,7 @@ Si votre installation est en version standalone, les clés d'identification se r
    ```
   `MoSiR.dist` est le dossier que vous avez téléchargé ou copié depuis GitHub. Le fichier `.env` peut être ouvert avec un logiciel de traitement de fichier texte comme Bloc-notes.
 
-Si votre installation est un package python, la clé se retrouve ici dans votre environnement conda. Par exemple, dans mon environnement nommé `MoSiR`, mes clés d'environnements se retrouve ici:
+Si votre installation est un package python, la clé se retrouve ici dans votre environnement conda. Par exemple, dans un environnement nommé `MoSiR`, les clés d'environnements se retrouve ici:
    ```python
    ..\envs\MoSiR\Lib\site-packages\MoSiR\mirowrapper\mirowrapper.env
    ```
@@ -151,6 +147,8 @@ Le calculateur de MoSiR peut être directement appelé depuis un script python s
 
 Pour fonctionner, le calculateur a besoin d'un fichier `json` pour le graphe, un pour les intrants, un pour le report et le chemin vers l'endroit où seront les extrants. La structure et les directives concernant les différents fichiers `json` sont expliquées dans la section <a href="#Directives">Directives</a>
 
+Une fois la commande lancée, un fichier `csv` ou `json`, tout dépendant du report, sera produit à l'endroit souhaité. Si vous souhaitez modifier la manière dont les résultats sont générés, la fonction `output_creation` se retrouve dans le fichier `reporting_info.py` du dossier MoSiR.
+
 </details>
 
 <details><summary><b>Avec l'interface</b></summary> <br>
@@ -163,7 +161,13 @@ Pour fonctionner, le calculateur a besoin d'un fichier `json` pour le graphe, un
 
 À venir
 
-## Credits
+## Report A Bug
+
+Si vous rencontrez une erreur, la manière à prévilégier est par l'entremise des [Issues] sur GitHub.
+
+[Issues]: https://github.com/Bureau-du-Forestier-en-chef/MoSiR/issues
+
+## FAQ
 
 À venir
 
