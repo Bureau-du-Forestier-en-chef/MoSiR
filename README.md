@@ -54,7 +54,7 @@ MoSiR est hautement adaptable et permet ainsi de réaliser des analyses, quelle 
 </p>
 
 
-## $\color{Light blue}Installation$ :floppy_disk:
+## $\color{lightblue}Installation$ :floppy_disk:
 <p align="justify"> 
   L'installation peut se faire sous deux formats: en tant que package python ou comme un logiciel indépendant. Dans les deux cas, si l'utilisateur souhaite passer par Miro pour importer ses graphiques, il est nécessaire de se créer un compte Miro et de générer une clé d'application.
 </p>
@@ -166,7 +166,7 @@ L'installation est complétée, vous pouvez désormais utiliser MoSiR! :tada:
 [git]: https://git-scm.com/
 [la documentation de Miro]: https://developers.miro.com/reference/overview?utm_source=your_apps
 
-## How to use :mag:
+## $\color{orange}How \space to \space use$ :mag:
 
 <details><summary><b>As a python package</b></summary> <br>
 Le calculateur de MoSiR peut être directement appelé depuis un script python sans passer par l'interface web. Par exemple:
