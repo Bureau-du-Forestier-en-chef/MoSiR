@@ -19,7 +19,9 @@
   <a href="#Installation">Installation</a> •
   <a href="#How-to-use">How To Use</a> •
   <a href="#Directives">Directives</a> •
-  <a href="#Credits">Credits</a> •
+  <a href="#FAQ">FAQ</a> •
+  <a href="#Développements futurs">Développements futurs</a> •
+  <a href="#Report a bug">Report a bug</a> •
   <a href="#License">License</a>
 </p>
 
@@ -60,11 +62,9 @@ MoSiR est hautement adaptable et permet ainsi de réaliser des analyses, quelle 
 </p>
 
 ### <b>Étape 1</b>: Installer MoSiR
-<details><summary><b>As a python package</b></summary> <br>
+<details><summary><b>En tant que package python</b></summary> <br>
 
-<p align="justify"> 
-  MoSiR peut être installé sous forme de package python, à l'intérieur d'un environnement python 3. Pour ce faire, [pip] est nécessaire avant de procéder à l'installation. 
-</p>
+MoSiR peut être installé sous forme de package python, à l'intérieur d'un environnement python 3. Pour ce faire, [pip] et [git] sont nécessaire avant de procéder à l'installation. 
 
 1. Dans un terminal, activer l'environnement désiré, puis entrer cette ligne de commande:
    ```python
@@ -76,11 +76,9 @@ MoSiR est hautement adaptable et permet ainsi de réaliser des analyses, quelle 
    ```
 </details>
 
-<details><summary><b>As a standalone application</b></summary> <br>
+<details><summary><b>Comme application portable</b></summary> <br>
 
-<p align="justify"> 
-  Dans le repos MoSiR, un dossier standalone est accessible. Celui-ci contient un dossier compressé, dans lequel se retrouve un executable `.exe`. Il est possible de télécharger manuellement ce dossier pour utiliser MoSiR comme un programme qui fonctionne indépendamment, sans nécessiter de prérequis. L'installation nécessite toutefois [git] pour cloner les fichiers sur GitHub. Il est également possible de télécharger le dossier comprimé manuellement sur la plateforme GitHub si vous n'avez pas [git] d'installé. 
-</p>
+Dans le repos MoSiR, un dossier standalone est accessible. Celui-ci contient un dossier compressé, dans lequel se retrouve un executable `.exe`. Il est possible de télécharger manuellement ce dossier pour utiliser MoSiR comme un programme qui fonctionne indépendamment, sans nécessiter de prérequis. L'installation nécessite toutefois git pour cloner les fichiers sur GitHub. Il est également possible de télécharger le dossier comprimé manuellement sur la plateforme GitHub si vous n'avez pas git d'installé. 
 
 1. Ouvrir une invite de commande (command prompt)
 2. Localiser le dossier où vous souhaitez copier les fichiers sur votre ordinateur, par exemple `D:\Documents\Application` et changer le working directory de votre invite de commande pour celui-ci.
@@ -100,41 +98,40 @@ MoSiR est hautement adaptable et permet ainsi de réaliser des analyses, quelle 
    ```
 </details>
 
-<p align="justify">
-  :loudspeaker: Les étapes subséquentes sont nécessaires pour importer des graphiques depuis Miro. Si votre installation est une version "lightweight" ou si vous souhaitez importer vos graphiques directement à partir d'un fichier JSON, les étapes suivantes d'installation ne sont pas obligatoires pour faire fonctionner le reste du package ou de l'application MoSiR. 
-</p>
+> [!NOTE]
+> Les étapes subséquentes sont nécessaires pour importer des graphiques depuis Miro. Si votre installation est une version "lightweight" ou si vous souhaitez importer vos graphiques directement à partir d'un fichier JSON, les étapes suivantes d'installation ne sont pas obligatoires pour faire fonctionner le reste du package ou de l'application MoSiR. 
 
 ### <b>Étape 2</b>: Création d'un compte Miro et d'une clé d'application <br>
 
+
 <details><summary><b>Procédure sur Miro</b></summary><br>
-  
+
 1. Avec l'adresse courriel désirée, créer d'abord un compte Miro gratuit à partir de `https://miro.com/`
 2. Naviguer vers les paramètres de l'utilisateurs, puis, sélectionner `Vos applications` dans le menu.
    Cliquer sur `Créer une nouvelle application` et entrer le nom désiré.
 
-   ![miro_creation_1](https://github.com/Landry-G/MoSiR_images/blob/main/miro_creation_1.gif)
+   ![miro_creation_1](https://github.com/Landry-G/MoSiR_images/blob/main/miro_creation_1.gif)  
 
-   <p align="justify">
-     :exclamation: Attention :exclamation: Les identifiants confidentiels de votre application sont maintenant disponbiles. Ceux-ci servent à faire le pont avec Miro et vos différents tableaux. Ces clés NE DOIVENT PAS être partagé publiquement. Pour en savoir plus, consultez [la documentation de Miro]. 
-   </p>
-3. Naviguer vers "URL de l'application" et entrer http://localhost:3000
-4. Dans la section "Rediriger l'URI pour OAuth2.0, entrer ces trois addresses:
+4. Naviguer vers "URL de l'application" et entrer http://localhost:3000
+5. Dans la section "Rediriger l'URI pour OAuth2.0, entrer ces trois addresses:
    <pre>http://localhost:3000/redirect<br>
    https://miro.com/app-install-completed<br>
    http://localhost:3000/mirowrapper/redirect </pre>
    Pour la dernière adresse, sélectionner comme option `Utiliser cet URI pour l'autorisation SDK`
-5. Cocher l'option `boards:read` dans les Autorisations
-6. Finalement, cliquer sur `Installer l'application et obtenir le jeton OAuth`. L'installation est nécessaire, mais le jeton ne sera pas utilisé ultérieurement.
+6. Cocher l'option `boards:read` dans les Autorisations
+7. Finalement, cliquer sur `Installer l'application et obtenir le jeton OAuth`. L'installation est nécessaire, mais le jeton ne sera pas utilisé ultérieurement.
 
 ![miro_URL](https://github.com/Landry-G/MoSiR_images/blob/main/miro_URL.gif) 
 
 Voilà ! Vos identifiants secrets sont maintenant prêt à être utilisés pour faire fonctionner l'application avec Miro.
+
 </details>
 
 ### <b>Étape 3</b>: Appliquer les identifiants Miro dans l'installation MoSiR
-<p align="justify"> 
-  Les clés d'identification Miro peuvent être modifiées de deux façons: manuellement dans les fichiers de l'installation ou grâce à l'interface web. Si vous avez téléchargé MoSiR comme package python et que vous ne souhaitez pas utiliser l'interface, ces étapes ne sont pas nécessaires pour vous.
-</p>
+Les clés d'identification Miro peuvent être modifiées de deux façons: manuellement dans les fichiers de l'installation ou grâce à l'interface web.
+
+> [!CAUTION]
+> Les identifiants confidentiels de votre application  NE DOIVENT PAS être partagé publiquement. Pour en savoir plus, consultez [la documentation de Miro](https://developers.miro.com/reference/overview?utm_source=your_apps).
 
 <details><summary><b>Manuellement</b></summary> <br>
 
@@ -189,7 +186,35 @@ Pour fonctionner, le calculateur a besoin d'un fichier `json` pour le graphe, un
 
 <details><summary><b>Avec l'interface</b></summary> <br>
 
-À venir
+#### Miro
+ <p align="justify">
+[Miro]:(https://miro.com/) est une application en ligne qui permet à l'utilisateur de travailler sur des tableaux blancs facilitant notamment la mise en place de processus collaboratifs, tels que la gestion et la cartographie de projet. 
+Il est tout à fait possible d'utiliser directement une architecture de flux de matière existante au format .JSON dans MoSiR. 
+Cependant, la conception d'une nouvelle architecture est facilitée par l'utilisation de l'application Miro. Cependant, la création d'une architecture de flux de matière se doit de respecter une nomenclature stricte afin que l'outil puisse prendre en compte les hypothèses techniques développées dans la section précédente.
+MoSiR sera alors capable de venir charger l'architecture Miro de l'utilisateur et la traduire en un format .JSON que le calculateur interne à l'outil est capable de traiter.
+Miro => https://miro.com/
+C'est la capacité de cartographie de projets de Miro qui est exploitée avec la version actuelle de MoSiR pour concevoir des flux de matière complexes, tout en étant hautement ergonomique pour l'utilisateur.
+
+	-- Nomenclature Miro:
+
+* Noeud : Forme = "cercle", tous les nœuds de l'architecture doivent porter un nom unique, les virgules vont être effacées dans la création du fichier d'intrant .JSON par MoSiR.
+* Le sens des flèches entre les noeuds est important.
+* Flèches de débordement : Couleur = #17df23
+* Pense bête pour proportions : Couleur = "light_green"
+* Nœud de recyclage : Forme = "cercle" + Couleur de remplissage = "#8fd14f"
+* Nœud de stockage temporaire (selon une demi-vie donnée par l'utilisateur): Forme = "cercle" + Bordure = "dashed"
+Concernant la gestion de la demi-vie, dans la version 1.0 de MoSiR, il s'agit uniquement d'une dégradation exponentielle. Il est ainsi nécessaire d'écrire le nom du nœud avec les termes "Half-life" suivi de votre temps de demi-vie entre crochets. Exemple : Half-life[70]Sciage_Construction
+* Nœud d'émissions de GES : Le nom du nœud doit faire apparaitre clairement la molécule voulue. 
+Exemples : CH4 emissions / CO2 emissions / N2O emissions
+* Toutes les autres formes et couleurs de ligne et de nœuds sont laissées à la discrétion de l'utilisateur.
+-Mettre image exemple-
+
+À des fins purement ergonomiques, il est possible d'introduire dans l'architecture du flux de matière des nœuds particuliers imageant la notion de ventilation, ou split : Forme = "rectangle". 
+Lors de la transformation de l'architecture Miro en format .JSON, MoSiR va faire disparaitre ces nœuds, on ne retrouvera donc pas ces noeuds dans la visualisation disponible dans MoSiR.
+-Mettre image exemple-
+
+	-- Nomenclature .JSON:
+A DEVELOPPER (Traduction de la nomenclature MIRO en nomenclature JSON MoSiR)
    
 </details>
 
@@ -234,16 +259,59 @@ Par défaut, MoSiR utilise un potentiel de réchauffement global de 28 pour le C
 Pour le calcul de l'effet radiatif des émissions de GES, MoSiR utilise les données issues de Levasseur et al. (2010) et rendues disponibles via l'outil dynCO2 (https://ciraig.org/index.php/fr/project/dynco2-calculateur-dempreinte-carbone-dynamique/).
 C'est notamment l'approche retenue dans le cadre du Règlement relatif aux projets de boisement et de reboisement sur des terres du domaine privé admissibles à la délivrance de crédits compensatoires du Québec (https://www.environnement.gouv.qc.ca/changements/carbone/credits-compensatoires/sequestration-carbone-boisement-reboisement-terres-prive.htm)	
 
+## $\color{orange} FAQ$ :pushpin:
+
+À venir
+
+## $\color{orange} Développements futurs$ :thought_balloon:
+
+<p align="justify">
+Mosir est opérationnel dans sa version 1.0, il n'en reste pas moins que des développements sont en cours pour améliorer les capacités et l'ergonomie de l'outil et donc maximiser son potentiel d'utilisation par le plus grand nombre. Si au cours de l'utilisation de MoSiR vous percevez en tant qu'utilisateur un potentiel d'amélioration, n'hésitez surtout pas à partager votre idée dans la section  discussion du GitHub.
+</p>
+
+Partagez vos idées et suggestions ! :point_right: [Discussions](https://github.com/Bureau-du-Forestier-en-chef/MoSiR/discussions)
+
+- [x] [Mathématique de dégradation](https://github.com/Bureau-du-Forestier-en-chef/MoSiR/issues/2)
+- [ ] #39
+
+Dans sa version 1.0, MoSiR ne peut gérer la dégradation des produits du bois que d'une seule manière, via une dégradation de premier ordre (exponentielle) basée sur une demi-vie fournie par l'utilisateur (méthodologie du GIEC).
+La littérature est claire sur la pertinence d'utiliser une telle mécanique de dégradation pour les grandes familles de produits regroupant un ensemble complexe de produits finaux (sciage, pates et papiers, panneaux, etc.).
+La prémisse de la désintégration de premier ordre est que le taux de retrait d’un réservoir est proportionnel à la quantité d’éléments dans ce dernier.
+Donc, cette hypothèse a pour conséquence qu’une proportion importante des produits du bois est mise hors service dès les premières années après leur mise en marché, le taux de mise hors service étant alors à son maximum.
+Si l'architecture du flux de matière de l'utilisateur est plus détaillée que simplement les grandes familles de produits, il pourrait être pertinent d'utiliser une mécanique de dégradation différente. 
+En effet, s’il est vrai qu’un produit particulier se dégrade avec une certaine probabilité à différents moments, cette probabilité devrait être plus élevée à l’approche de la durée de vie prévue initialement.
+
+Il est donc prévu d'intégrer dans MoSiR une dégradation des produits du bois suivant une Loi Gamma (alpha, bêta). Il est à noter qu'une dégradation de premier ordre (exponentielle) peut être modélisée via une Loi Gamma en fixant le paramètre alpha à 1  et en faisant varier le paramètre bêta pour faire correspondre la courbe avec la demi-vie souhaitée. 
+Ce développement va donc laisser la liberté à l'utilisateur de définir le type de dégradation qu'il souhaite dans son architecture de flux de matière, en définissant pour chaque nœud de demi-vie un facteur alpha et bêta.
+Mosir ne nécessitant plus une valeur de demie-vie pour fonctionner, il sera de la responsabilité de l'utilisateur de fixer les paramètres alpha et bêta de manière adéquate. Un chiffrier Excel sera fourni pour aider les utilisateurs dans la détermination de ces valeurs.
+-Mettre image exemple-
+	
+	- Ergonomie de l'interface :
+Une amélioration continue de l'ergonomie de l'interface sera faite au fur et à mesure des versions de l'outil, nous recommandons à tous les utilisateurs de donner leur avis et leurs idées d'amélioration potentielles dans la section du Github prévue à cet effet.	
+	
+	- Tableau blanc Teams/autre
+Dans la version 1.0 de Mosir la lecture et la traduction d'une architecture de flux de matière ne sont possibles que par l'utilisation de l'application Miro. Afin de ne pas se retrouver sans solution dans le cas où la politique d'accessibilité de Miro venait à changer, il devrait être possible dans une version ultérieure de MoSiR d'utiliser d'autres applications semblables, en particulier les tableaux blancs de Teams (application utilisée au BFEC).
+	
+	- Gestion d'autres GES
+Par défaut dans sa version 1.0, MoSiR est capable de réaliser la comptabilisation en tCO2eq et en W/m2 des gaz à effet de serre suivant : CO2 / CH4 / N2O.
+Si ces trois GES devraient suffirent à la grande majorité des utilisateurs, des rajouts pourraient être faits selon des besoins particuliers.
+
+	- Optimisation de l'utilisation des produits du bois
+Mosir n'est dans sa version 1.0 qu'un outil permettant de suivre le devenir de la matière dans une architecture de flux et de réaliser en parallèle une lecture carbone et/ou climatiques des émissions de GES.
+MoSiR a besoin d'informations requises et demandées à l'utilisateur pour fonctionner correctement. Cependant, à partir d'une architecture de base et d'imposition de contraintes, il peut être pertinent de permettre à l'outil d'établir les flux de matière les plus à même de rencontrer une cible d'émissions fixée par l'utilisateur, MoSiR serait donc ainsi capable d'optimisation par programmation linéaire.
+	
+	- Analyse sensibilité/Incertitudes (Monte-Carlo)
+La version 1.0 de MoSiR requiert des valeurs spécifiées par l'utilisateur, offrant ainsi peu de flexibilité pour prendre en compte les incertitudes associées à ces données. 
+Un projet de développement est donc envisagé pour intégrer des simulations de Monte-Carlo, permettant d'estimer les résultats potentiels en tenant compte des incertitudes liées aux valeurs, certainement sous la forme d'intervalles de confiance définis par l'utilisateur. 
+Ce projet vise également à faciliter l'analyse de sensibilité pour l'utilisateur, en rendant le processus plus rapide.
+
+
 
 ## $\color{orange} Report \space a \space bug$ :speech_balloon:
 
 Si vous rencontrez une erreur, la manière à prévilégier est par l'entremise des [Issues] sur GitHub.
 
 [Issues]: https://github.com/Bureau-du-Forestier-en-chef/MoSiR/issues
-
-## $\color{orange} FAQ$ :pushpin:
-
-À venir
 
 ## $\color{orange} License$ :clipboard:
 
