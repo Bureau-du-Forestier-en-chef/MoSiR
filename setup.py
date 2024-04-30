@@ -29,6 +29,10 @@ with open('README.md', encoding='utf-8') as f:
 with open('LICENSES/EN/LILIQ-R11EN.txt') as f:
     license = f.read()
 
+# TODO install options à regarder pour aller chercher les json dans artemis pendant une 
+    # installation lightweight 
+    # https://stackoverflow.com/questions/18725137/how-to-obtain-arguments-passed-to-setup-py-from-pip-with-install-option
+
 setup(
     name = 'MoSiR',
     version = '1.0.0',
@@ -42,5 +46,5 @@ setup(
     packages = find_packages(exclude = ('tests', 'docs', 'image', 'standalone', 'examples')),
     install_requires = reqs,
     package_data = {'MoSiR': ['mirowrapper/**','static/**','templates/*',\
-        'uploads/*','visualization/**','RadiativeForcing/*', 'BFECGCBM/**', './README.md']}
+        'uploads/*','visualization/**','radiative_forcing/*', 'BFECGCBM/**', './README.md']}
 )

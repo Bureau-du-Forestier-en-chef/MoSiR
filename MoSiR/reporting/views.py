@@ -341,30 +341,35 @@ class Reporting(Component):
         all_data = []
         divid = filename
         layout = {'title': filename,
-                    'xaxis': {'tickfont': {
-                                'size': 14,
-                                'color': 'rgb(107, 107, 107)'
-                                        }},
-                    'yaxis': {'title': 'USD (millions)',
-                            'titlefont': {
+                    'xaxis': {
+                        'tickfont': {
+                            'size': 14,
+                            'color': 'rgb(107, 107, 107)'
+                            }
+                        },
+                    'yaxis': {
+                        'title': 'USD (millions)',
+                        'titlefont': {
                             'size': 16,
                             'color': 'rgb(107, 107, 107)'
                             },
-                            'tickfont': {
+                        'tickfont': {
                             'size': 14,
                             'color': 'rgb(107, 107, 107)'
                             },
-                            'tickformat':'{:d}',
-                            'exponentformat':'e'
-                            },
-                    'legend': {'x': 0,
-                            'y': 1.0,
-                            'bgcolor': 'rgba(255, 255, 255, 0)',
-                            'bordercolor': 'rgba(255, 255, 255, 0)'
-                            },
+                        'tickformat':'{:d}',
+                        'exponentformat':'e'
+                        },
+                    'legend': {
+                        'x': 0,
+                        'y': 1.0,
+                        'bgcolor': 'rgba(255, 255, 255, 0)',
+                        'bordercolor': 'rgba(255, 255, 255, 0)'
+                        },
                     'barmode': 'group',
                     'bargap': 0.15,
-                    'bargroupgap': 0.1}
+                    'bargroupgap': 0.1
+                    }
         with open(location, newline= '') as csvfile:
             reader = csv.DictReader(csvfile)
             pallet = seaborn.color_palette("pastel", n_colors= len(reader.fieldnames[1:-1]))

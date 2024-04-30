@@ -135,7 +135,7 @@ def output_creation(graph: gg.GraphFactory, import_data: ip.ImportData,
             elif report_unit == 'w/m2':
                 C = data['Cumulative']
                 RF = pd.read_excel(os.path.join(os.path.dirname(os.path.abspath(__file__)), \
-                                                "RadiativeForcing", "Dynco2_Base.xlsx")).\
+                                                "radiative_forcing", "Dynco2_Base.xlsx")).\
                     sort_values(by = 'Year').to_dict(orient = 'list')
 
                 # On formate les outputs en radiatif

@@ -68,6 +68,7 @@ def debugg_graph_01(graph: gg.GraphFactory):
         TOPNODES = set([int(ID) for ID in NODES]) - \
                     set([data['To'] for keys, data in EDGES.items()])
         if len(TOPNODES) > 1:
+            # FIXME Ne pas mettre un avertissement mais un raise
             warnings.warn(' '.join((f"Attention, plus d'une TopNode présente.\
                 Les inputs vont être acheminés à ces deux nodes: \
                 {TOPNODES}").split()), stacklevel = 2)  

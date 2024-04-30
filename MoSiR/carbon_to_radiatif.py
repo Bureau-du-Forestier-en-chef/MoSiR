@@ -41,7 +41,7 @@ def main(raw_args = None):
             (ex: '[1,2,3]')")
     gaz = args.G
     RF = pd.read_excel(os.path.join(os.path.dirname(os.path.abspath(__file__)), \
-        "RadiativeForcing", "Dynco2_Base.xlsx")).sort_values(by = 'Year')\
+        "radiative_forcing", "Dynco2_Base.xlsx")).sort_values(by = 'Year')\
         .to_dict(orient = 'list')
     if args.C in ['True', 'true']:
         cumulative = True

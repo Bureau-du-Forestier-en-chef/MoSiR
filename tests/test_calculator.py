@@ -161,7 +161,7 @@ def test_04_radiatif():
     }
 
     RF = pd.read_excel(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", 
-                                    "MoSiR", "RadiativeForcing", "Dynco2_Base.xlsx")).\
+                                    "MoSiR", "radiative_forcing", "Dynco2_Base.xlsx")).\
         sort_values(by = 'Year').drop('Unit', axis = 1).to_dict(orient = 'list')
     cr.rad_formatting(test_03, RF, cumulative = False)
     assert test_03 == RF, "Not the same RF as DynCo"
