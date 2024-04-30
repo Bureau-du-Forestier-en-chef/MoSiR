@@ -266,44 +266,42 @@ C'est notamment l'approche retenue dans le cadre du Règlement relatif aux proje
 ## $\color{orange} Développements futurs$ :thought_balloon:
 
 <p align="justify">
-Mosir est opérationnel dans sa version 1.0, il n'en reste pas moins que des développements sont en cours pour améliorer les capacités et l'ergonomie de l'outil et donc maximiser son potentiel d'utilisation par le plus grand nombre. Si au cours de l'utilisation de MoSiR vous percevez en tant qu'utilisateur un potentiel d'amélioration, n'hésitez surtout pas à partager votre idée dans la section  discussion du GitHub.
+Mosir est opérationnel dans sa version 1.0, il n'en reste pas moins que des développements sont en cours pour améliorer les capacités et l'ergonomie de l'outil et donc maximiser son potentiel d'utilisation par le plus grand nombre. Si au cours de l'utilisation de MoSiR vous percevez en tant qu'utilisateur un potentiel d'amélioration, n'hésitez surtout pas à partager votre idée dans la section  discussion du GitHub. Voici une liste d'améliorations futurs qui seront ajouté à MoSiR:
 </p>
+
+- [ ] Mathématique de dégradation https://github.com/Bureau-du-Forestier-en-chef/MoSiR/issues/2
+- [ ] Analyse de sensibilité (Monte-Carlo) https://github.com/Bureau-du-Forestier-en-chef/MoSiR/issues/39
+- [ ] Ergonomie de MoSiR https://github.com/Bureau-du-Forestier-en-chef/MoSiR/issues/37 https://github.com/Bureau-du-Forestier-en-chef/MoSiR/issues/35 https://github.com/Bureau-du-Forestier-en-chef/MoSiR/issues/14 https://github.com/Bureau-du-Forestier-en-chef/MoSiR/issues/43
 
 Partagez vos idées et suggestions ! :point_right: [Discussions](https://github.com/Bureau-du-Forestier-en-chef/MoSiR/discussions)
 
-- [x] [Mathématique de dégradation](https://github.com/Bureau-du-Forestier-en-chef/MoSiR/issues/2)
-- [ ] #39
-
-Dans sa version 1.0, MoSiR ne peut gérer la dégradation des produits du bois que d'une seule manière, via une dégradation de premier ordre (exponentielle) basée sur une demi-vie fournie par l'utilisateur (méthodologie du GIEC).
-La littérature est claire sur la pertinence d'utiliser une telle mécanique de dégradation pour les grandes familles de produits regroupant un ensemble complexe de produits finaux (sciage, pates et papiers, panneaux, etc.).
-La prémisse de la désintégration de premier ordre est que le taux de retrait d’un réservoir est proportionnel à la quantité d’éléments dans ce dernier.
-Donc, cette hypothèse a pour conséquence qu’une proportion importante des produits du bois est mise hors service dès les premières années après leur mise en marché, le taux de mise hors service étant alors à son maximum.
-Si l'architecture du flux de matière de l'utilisateur est plus détaillée que simplement les grandes familles de produits, il pourrait être pertinent d'utiliser une mécanique de dégradation différente. 
-En effet, s’il est vrai qu’un produit particulier se dégrade avec une certaine probabilité à différents moments, cette probabilité devrait être plus élevée à l’approche de la durée de vie prévue initialement.
-
+#### [Mathématique de dégradation](https://github.com/Bureau-du-Forestier-en-chef/MoSiR/issues/2) 
+<p align="justify">
+Dans sa version 1.0, MoSiR ne peut gérer la dégradation des produits du bois que d'une seule manière, via une dégradation de premier ordre (exponentielle) basée sur une demi-vie fournie par 		l'utilisateur (méthodologie du GIEC). La littérature est claire sur la pertinence d'utiliser une telle mécanique de dégradation pour les grandes familles de produits regroupant un ensemble 		complexe de produits finaux (sciage, pates et papiers, panneaux, etc.). La prémisse de la désintégration de premier ordre est que le taux de retrait d’un réservoir est proportionnel à la quantité 	d’éléments dans ce dernier. Donc, cette hypothèse a pour conséquence qu’une proportion importante des produits du bois est mise hors service dès les premières années après leur mise en marché, le 	taux de mise hors service étant alors à son maximum. Si l'architecture du flux de matière de l'utilisateur est plus détaillée que simplement les grandes familles de produits, il pourrait être 	pertinent d'utiliser une mécanique de dégradation différente. En effet, s’il est vrai qu’un produit particulier se dégrade avec une certaine probabilité à différents moments, cette probabilité 	devrait être plus élevée à l’approche de la durée de vie prévue initialement.
+</p>
+<p align="justify">
 Il est donc prévu d'intégrer dans MoSiR une dégradation des produits du bois suivant une Loi Gamma (alpha, bêta). Il est à noter qu'une dégradation de premier ordre (exponentielle) peut être modélisée via une Loi Gamma en fixant le paramètre alpha à 1  et en faisant varier le paramètre bêta pour faire correspondre la courbe avec la demi-vie souhaitée. 
-Ce développement va donc laisser la liberté à l'utilisateur de définir le type de dégradation qu'il souhaite dans son architecture de flux de matière, en définissant pour chaque nœud de demi-vie un facteur alpha et bêta.
-Mosir ne nécessitant plus une valeur de demie-vie pour fonctionner, il sera de la responsabilité de l'utilisateur de fixer les paramètres alpha et bêta de manière adéquate. Un chiffrier Excel sera fourni pour aider les utilisateurs dans la détermination de ces valeurs.
--Mettre image exemple-
+Ce développement va donc laisser la liberté à l'utilisateur de définir le type de dégradation qu'il souhaite dans son architecture de flux de matière, en définissant pour chaque nœud de demi-vie un facteur alpha et bêta. Mosir ne nécessitant plus une valeur de demie-vie pour fonctionner, il sera de la responsabilité de l'utilisateur de fixer les paramètres alpha et bêta de manière adéquate. Un chiffrier Excel sera fourni pour aider les utilisateurs dans la détermination de ces valeurs.
+</p>
 	
-	- Ergonomie de l'interface :
-Une amélioration continue de l'ergonomie de l'interface sera faite au fur et à mesure des versions de l'outil, nous recommandons à tous les utilisateurs de donner leur avis et leurs idées d'amélioration potentielles dans la section du Github prévue à cet effet.	
-	
-	- Tableau blanc Teams/autre
-Dans la version 1.0 de Mosir la lecture et la traduction d'une architecture de flux de matière ne sont possibles que par l'utilisation de l'application Miro. Afin de ne pas se retrouver sans solution dans le cas où la politique d'accessibilité de Miro venait à changer, il devrait être possible dans une version ultérieure de MoSiR d'utiliser d'autres applications semblables, en particulier les tableaux blancs de Teams (application utilisée au BFEC).
-	
-	- Gestion d'autres GES
-Par défaut dans sa version 1.0, MoSiR est capable de réaliser la comptabilisation en tCO2eq et en W/m2 des gaz à effet de serre suivant : CO2 / CH4 / N2O.
-Si ces trois GES devraient suffirent à la grande majorité des utilisateurs, des rajouts pourraient être faits selon des besoins particuliers.
-
-	- Optimisation de l'utilisation des produits du bois
-Mosir n'est dans sa version 1.0 qu'un outil permettant de suivre le devenir de la matière dans une architecture de flux et de réaliser en parallèle une lecture carbone et/ou climatiques des émissions de GES.
-MoSiR a besoin d'informations requises et demandées à l'utilisateur pour fonctionner correctement. Cependant, à partir d'une architecture de base et d'imposition de contraintes, il peut être pertinent de permettre à l'outil d'établir les flux de matière les plus à même de rencontrer une cible d'émissions fixée par l'utilisateur, MoSiR serait donc ainsi capable d'optimisation par programmation linéaire.
-	
-	- Analyse sensibilité/Incertitudes (Monte-Carlo)
+#### [Analyse sensibilité/Incertitudes (Monte-Carlo)](https://github.com/Bureau-du-Forestier-en-chef/MoSiR/issues/39)
 La version 1.0 de MoSiR requiert des valeurs spécifiées par l'utilisateur, offrant ainsi peu de flexibilité pour prendre en compte les incertitudes associées à ces données. 
 Un projet de développement est donc envisagé pour intégrer des simulations de Monte-Carlo, permettant d'estimer les résultats potentiels en tenant compte des incertitudes liées aux valeurs, certainement sous la forme d'intervalles de confiance définis par l'utilisateur. 
 Ce projet vise également à faciliter l'analyse de sensibilité pour l'utilisateur, en rendant le processus plus rapide.
+
+D'autres idées ont été soulevé, mais elles ne figurent pas en ce moment comme [Issues] à implémenter prochainement.
+
+- __Tableau blanc Teams/autre__ <br>
+	Dans la version 1.0 de Mosir la lecture et la traduction d'une architecture de flux de matière ne sont possibles que par l'utilisation de l'application Miro. Afin de ne pas se retrouver sans solution dans le cas où la politique d'accessibilité de Miro venait à changer, il devrait être possible dans une version ultérieure de MoSiR d'utiliser d'autres applications semblables, en particulier les tableaux blancs de Teams (application utilisée au BFEC).
+
+- __Gestion d'autres GES__ <br>
+  	Par défaut dans sa version 1.0, MoSiR est capable de réaliser la comptabilisation en tCO2eq et en W/m2 des gaz à effet de serre suivant : CO2 / CH4 / N2O.
+Si ces trois GES devraient suffirent à la grande majorité des utilisateurs, des rajouts pourraient être faits selon des besoins particuliers.
+
+- __Optimisation de l'utilisation des produits du bois__ <br>
+  	Mosir n'est dans sa version 1.0 qu'un outil permettant de suivre le devenir de la matière dans une architecture de flux et de réaliser en parallèle une lecture carbone et/ou climatiques des émissions de GES.
+MoSiR a besoin d'informations requises et demandées à l'utilisateur pour fonctionner correctement. Cependant, à partir d'une architecture de base et d'imposition de contraintes, il peut être pertinent de permettre à l'outil d'établir les flux de matière les plus à même de rencontrer une cible d'émissions fixée par l'utilisateur, MoSiR serait donc ainsi capable d'optimisation par programmation linéaire.
+	
 
 
 
