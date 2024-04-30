@@ -3,14 +3,14 @@
 <!-- HEADER -->
 <h1 align="center">
   <br>
-  <a href="https://github.com/Bureau-du-Forestier-en-chef/MoSiR"><img src="./static/image/MoSiR-logo-github.png" alt="Modèle de Simulation en Réseau" width="800"></a>
+  <a href="https://github.com/Bureau-du-Forestier-en-chef/MoSiR"><img src="./MoSiR/static/image/MoSiR-logo-github.png" alt="Modèle de Simulation en Réseau" width="800"></a>
   <br>
   Modèle de Simulation en Réseau
   <br>
 </h1>
 
 <h4 align="center"> 
-  <a href="https://forestierenchef.gouv.qc.ca"><img src="./static/image/BFEC.jpg" width="200"></a>
+  <a href="https://forestierenchef.gouv.qc.ca"><img src="./MoSiR/static/image/BFEC.jpg" width="200"></a>
   <br>
 <h4>
   
