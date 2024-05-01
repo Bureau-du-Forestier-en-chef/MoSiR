@@ -182,18 +182,20 @@ Le calculateur de MoSiR peut être directement appelé depuis un script python s
 
 Pour fonctionner, le calculateur a besoin d'un fichier `json` pour le graphe, un pour les intrants, un pour le report et le chemin vers l'endroit où seront les extrants. La structure et les directives concernant les différents fichiers `json` sont expliquées dans la section <a href="#Directives">Directives</a>
 
+Pour un nouvel utilisateur, il serait recommandé d'utiliser d'abord l'interface Miro, car celui-ci vous génère automatiquement des fichiers `JSON` pour le graphe, les intrants et le report. Ces fichiers générés par l'application sont disponibles dans l'onglet `Télécharger` une fois que vous avez importé votre graphe et rempli l'onglet `Calculer`. Ces `JSON` pourront agir par la suite comme modèle pour la structure du fichier. Il existe également des fichiers en exemple dans le Github de MoSiR sous `example\Inputs`
 </details>
 
 <details><summary><b>Avec l'interface</b></summary> <br>
+ <p align = "justify">
+Miro est une application en ligne qui permet à l'utilisateur de travailler sur des tableaux blancs facilitant notamment la mise en place de processus collaboratifs, tels que la gestion et la cartographie de projet. MoSiR a la capacité de venir lire un tableau de Miro pour en extraire les informations nécessaires pour bâtir un graphe (un réseau de noeud attaché par des liens).  Cependant, la création d'une architecture de flux de matière sous forme de graphe se doit de respecter une nomenclature stricte afin que l'outil puisse convenablement traduire le tableau blanc en fichier JSON qui sera utilisé à l'interne du calculateur MoSiR. </p>
+	
+<p align = "justify">
+La nomenclature reconnu par MoSiR est assez simple: il détecte les formes comme les cercles, les pense-bêtes (sticky note) et les flèches entre ceux-ci. L'utilisateur doit prendre les cercles pour illustrer les noeuds qui composent son graphe et les pense-bêtes pour indiquer la proportion de matière qui sera acheminée au noeud suivant. Un nom unique doit être attribué au noeud. La virgule est le seul caratère non autorisé. La proportion doit être un chiffre suivi d'un pourcentage (%). Les décimals sont illustré à l'aide d'un point et non d'une virgule. Un pense-bête doit être situé entre deux noeud, relié par deux flèches suivant le sens que parcours la matière. Un pense-bête ne peut pas être utilisé pour relié plusieurs noeuds. Plusieurs liens ne pourraient donc pas sortir du pense-bête pour rejoindre des noeuds souhaitant avoir les mêmes proportions. Les flèches peuvent être linéaires, ondulées ou en forme de coude. L'épaisseur ou la grosseur de la flèche n'a également pas d'importance. Par contre, la couleur, autant pour les flèches que pour les noeuds ou les pense-bêtes, est importante.
+</p>
 
-#### Miro
- <p align="justify">
-[Miro]:(https://miro.com/) est une application en ligne qui permet à l'utilisateur de travailler sur des tableaux blancs facilitant notamment la mise en place de processus collaboratifs, tels que la gestion et la cartographie de projet. 
-Il est tout à fait possible d'utiliser directement une architecture de flux de matière existante au format .JSON dans MoSiR. 
-Cependant, la conception d'une nouvelle architecture est facilitée par l'utilisation de l'application Miro. Cependant, la création d'une architecture de flux de matière se doit de respecter une nomenclature stricte afin que l'outil puisse prendre en compte les hypothèses techniques développées dans la section précédente.
-MoSiR sera alors capable de venir charger l'architecture Miro de l'utilisateur et la traduire en un format .JSON que le calculateur interne à l'outil est capable de traiter.
-Miro => https://miro.com/
-C'est la capacité de cartographie de projets de Miro qui est exploitée avec la version actuelle de MoSiR pour concevoir des flux de matière complexes, tout en étant hautement ergonomique pour l'utilisateur.
+![creation_graph](https://github.com/Landry-G/MoSiR_images/blob/main/creation_graph.gif)
+
+
 
 	-- Nomenclature Miro:
 
@@ -227,7 +229,7 @@ Il convient donc à chaque utilisateur de faire la lecture des résultats de MoS
 #### Écoulement de la matière dans l'architecture :
 
 *  <p align="justify"> MoSiR permet de suivre le devenir annuel d'une quantité de matière introduite dans une architecture de flux définie par l'utilisateur. L'outil peut aussi, à partir de ce suivi, établir la comptabilité des émissions de GES en kilogramme de carbone (kgC), en tonne de carbone (tC), en tonne de dioxyde de carbone équivalent (tCO2eq) ou bien encore en forçage radiatif des émissions (w/m2). L'architecture du flux de matière est donc un élément principal pour le bon fonctionnement de l'outil, c'est un travail qui est à la discrétion de l'utilisateur, mais qui repose sur une méthodologie particulière à l'outil. </p>
-*  <p align="justify"> Une architecture de flux de matière lisible par MoSiR est un ensemble de nœuds par lesquels va transiter annuellement la matière au gré d'une ventilation définie par l'utilisateur. L'introduction de matière dans l'architecture peut se faire via n'importe quel nœud.
+*  <p align="justify"> Une architecture de flux de matière lisible par MoSiR est un ensemble de nœuds par lesquels va transiter annuellement la matière au gré d'une ventilation définie par l'utilisateur. 
 Trois sortes de nœuds existent :
  - les nœuds transitoires: la matière ne fait que passer la même année, sans être stockée à aucun moment.
  - les nœuds de stockage: la matière passe au travers du nœud, mais la quantité sortante annuellement est définie par l'utilisateur (nœuds de dégradation, nœuds de stockage perpétuels, nœuds de recyclage etc.)
