@@ -35,14 +35,14 @@ class Reporting(Component):
         stash = []
         for generator in self.read_graphs_json():
             stash.append('<div>')
-            stash.append('<h5>' + generator.get_graph_name() + '</h5>')
+            stash.append('<h6> Nom du graphe: ' + generator.get_graph_name() + '</h6>')
             stash.append('<div>')
             stash.append('<table class="w3-table-all" style="table-layout:fixed;" id=coutputs_'
                          + generator.get_graph_name()
-                         + '><tr><th>Sortie</th><th>Noeuds</th><th>Type</th>\
-                            <th>Cumulatif</th><th>Sommation</th><th>Unité</th></tr>')
+                         + '><tr><th>Nom de la sortie</th><th>Noeuds</th><th>Type</th>\
+                            <th>Cumulatif</th><th>Regroupement</th><th>Unité</th></tr>')
             stash.append('<tr>')
-            stash.append('<th> <input type = "text" size = 10 name="Sortie~'
+            stash.append('<th> <input type = "text" size = 10 name="Nom de la sortie~'
                          + generator.get_graph_name()
                          + '" title="Nom de la sortie" min ="1" id="Output_'
                          + generator.get_graph_name()+'"/></th>')
@@ -77,7 +77,7 @@ class Reporting(Component):
             stash.append('</select>')
             stash.append('</th>')
             stash.append('<th>')
-            stash.append('<select name="Sommation" title="Sommation" id="sum_'
+            stash.append('<select name="Regroupement" title="Regroupement" id="sum_'
                          + generator.get_graph_name()+'">')
             for unit in self.__get_sum():
                 stash.append('<option value="' + unit + '">' + unit + '</option>')
@@ -93,7 +93,7 @@ class Reporting(Component):
             stash.append('<th>')
             stash.append('<button class="w3-button w3-dark-grey" type = "button" onclick=addcoutputs("'
                          + generator.get_graph_name() 
-                         + '")>Ajouter une sortie <j class="fa fa-plus-circle"></j></button>')
+                         + '")>Enregistrer la sortie <j class="fa fa-plus-circle"></j></button>')
             stash.append('</th>')
             stash.append('</div>')
             stash.append('</tr>')
@@ -187,16 +187,19 @@ class Reporting(Component):
 
         for generator in self.read_graphs_json():
             #For each graph allow an inputs of a list of numbers
-            stash.append('<h5>'+ generator.get_graph_name() + '</h5>')
+            # Input time / quantities
+            stash.append('<br>')
+            stash.append('<h6> Nom du graphe: '+ generator.get_graph_name() + '</h6>')
+            stash.append('<h5> Flux de matière </h5>')
             stash.append('<table class="w3-table-all" id=cinputs_'
                          + generator.get_graph_name()
-                         + '><tr><th>Noeud</th><th>Période</th><th>Quantité</th></tr>')
+                         + '><tr><th>Noeud d\'entrée</th><th>Période</th><th>Quantité</th></tr>')
             stash.append('<tr>')
             stash.append('<th>')
-            stash.append('<select name="Noeud" title="Noeud" id="Node_'
+            stash.append('<select name="Noeud d\'entrée" title="Noeud d\'entrée" id="Node_'
                          + generator.get_graph_name()
                          + '">')
-            for node in generator.get_node_names():
+            for node in generator.get_first_node_names():
                 stash.append('<option value="'
                              + node 
                              + '">'
@@ -205,7 +208,7 @@ class Reporting(Component):
             stash.append('</th>')
             stash.append('<th> <input type = "number" name="Période~'
                          + generator.get_graph_name() 
-                         + '" title="Période" min ="1" id="Period_'
+                         + '" title="Période" min ="0" id="Period_'
                          + generator.get_graph_name()
                          + '"/></th>')
             stash.append('<th> <input type = "number" name="Quantitée" title="Quantitée" min ="0" id="Quantity_'
@@ -214,7 +217,41 @@ class Reporting(Component):
             stash.append('<th>')
             stash.append('<button class="w3-button w3-dark-grey" type = "button" onclick=addcinputs("'
                          + generator.get_graph_name()
-                         + '")>Ajouter une période <j class="fa fa-plus-circle"></j></button>')
+                         + '")>Enregistrer la période <j class="fa fa-plus-circle"></j></button>')
+            stash.append('</th>')
+            stash.append('</tr>')
+            stash.append('</table>')
+            stash.append('<br>')
+            
+            # Input Decay node
+            stash.append('<h5> Valeurs de dégradation </h5>')
+            stash.append('<table class="w3-table-all" id=cinputs_'
+                         + generator.get_graph_name()
+                         + '><tr><th>Noeud de dégradation</th><th>Alpha</th><th>Gamma</th></tr>')
+            stash.append('<tr>')
+            stash.append('<th>')
+            stash.append('<select name="Noeud de dégradation title="Noeud de dégradation" id="Node_'
+                         + generator.get_graph_name()
+                         + '">')
+            for node in generator.get_decay_node_names():
+                stash.append('<option value="'
+                             + node 
+                             + '">'
+                             + node
+                             + '</option>')
+            stash.append('</th>')
+            stash.append('<th> <input type = "number" name="Alpha~'
+                         + generator.get_graph_name() 
+                         + '" title="Alpha" min ="0" id="Alpha_'
+                         + generator.get_graph_name()
+                         + '"/></th>')
+            stash.append('<th> <input type = "number" name="Gamma" title="Gamma" min ="0" id=Gamma_'
+                         + generator.get_graph_name()
+                         + '"/></th>')
+            stash.append('<th>')
+            stash.append('<button class="w3-button w3-dark-grey" type = "button" onclick=addcinputs("'
+                         + generator.get_graph_name()
+                         + '")>Enregistrer les valeurs <j class="fa fa-plus-circle"></j></button>')
             stash.append('</th>')
             stash.append('</tr>')
             stash.append('</table>')
@@ -223,7 +260,7 @@ class Reporting(Component):
         return stash
     
     def __get_sum(self) -> list[str]:
-        return ["Per_node", "Combined"]
+        return ["Par noeud", "Tout ensemble"]
     
     def __get_cumulative(self) -> list[str]:
         return ["Vrai", "Faux"]
@@ -298,6 +335,10 @@ class Reporting(Component):
                         cumulate = True
                     data["Output"][graph_name][output_name]["Cumulative"] = cumulate
                 elif(target_key == 'Summarize'):
+                    if value.lower() == "tout ensemble":
+                        value = "Combined"
+                    elif value.lower() == "par noeud":
+                        value = "Per node"
                     data["Output"][graph_name][output_name]["Summarize"] = value
                 elif(target_key == 'Unit'):
                     data["Output"][graph_name][output_name]["Unit"] = value

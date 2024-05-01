@@ -1,7 +1,7 @@
 {
 "Unit" : "kgc",
 "Inputs": {
-    "MicroTest_1" : {
+    "Exemple" : {
         "Entree": {
             "0": 100,
             "1": 115,

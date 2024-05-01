@@ -1,4 +1,4 @@
-{"MicroTest_1": {
+{"Exemple": {
     "Nodes": {
         "1": {"Half-life": 0.0, "Recycling": 0.0, "Name": "Noeud1", "X": 17.400000000000183, "Y": -83.25503554670017}, 
         "2": {"Half-life": 10.0, "Recycling": 0.0, "Name": "Noeud3", "X": 17.400000000000183, "Y": 203.88498282397282}, 

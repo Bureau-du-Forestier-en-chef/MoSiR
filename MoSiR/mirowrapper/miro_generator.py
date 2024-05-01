@@ -71,11 +71,11 @@ class ItemBuilder:
                 Selectedkeys = []
                 for KeyData, Data in  DataHolder.items():
                     if Data and KeyData in Name:
-                        DataHolder[KeyData] = self.__GetValue(Name, KeyData)
+                        DataHolder[KeyData] = self.__GetValue(Name, KeyData) # FIXME half-life valeur est cherché ici
                         Selectedkeys.append(KeyData)
                 DataHolder["Name"] = Name
                 if Selectedkeys:
-                    DataHolder["Name"] = self.__GetName(Name, Selectedkeys)
+                    DataHolder["Name"] = self.__GetName(Name, Selectedkeys) # FIXME half-life name qui se fait changer ici
         return DataHolder
 
 class Mirogenerator(Generator):
@@ -271,21 +271,21 @@ class Mirogenerator(Generator):
         MaxedgeId = self.__GetMaxId() + 1
         EdgesToRemove = set()
         NewEdges = {}
-        for EdgeId,EdgeItems in self._edges.items():
+        for EdgeId, EdgeItems in self._edges.items():
             if EdgeItems["To"] in FORKS:
                 #Now get the edges getting out of this fork
-                for SubEdgeId,SubEdgeItems in self._edges.items():
+                for SubEdgeId, SubEdgeItems in self._edges.items():
                     if SubEdgeItems["From"] == EdgeItems["To"]:
                         NewEdges[MaxedgeId] = self.__GetEdgeFromForkData(EdgeItems, SubEdgeItems)
                         EdgesToRemove.add(SubEdgeId)
                         MaxedgeId += 1
                         #Create new edge each time
                 EdgesToRemove.add(EdgeId)
-        for EdgeId,EdgeItems in self._edges.items():
+        for EdgeId, EdgeItems in self._edges.items():
             if EdgeId not in EdgesToRemove:
                 NewEdges[EdgeId] = EdgeItems
         self._edges = NewEdges
-        for EdgeId,EdgeItems in self._edges.items():
+        for EdgeId, EdgeItems in self._edges.items():
             self.__ValidateEdge(EdgeId, EdgeItems)
         ENDMESSAGE = "After Edges fork simplification got " + str(len(self._edges)) + " Edges"
         self.__LogStatus(ENDMESSAGE)

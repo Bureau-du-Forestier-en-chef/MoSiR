@@ -201,10 +201,10 @@ class TopNode(IndustrialNode):
             raise ValueError("Time must be a non-negative integer.")
         if len(self.time) != len(self.quantities):
             raise ValueError("Time and quantities lists must be the same length.")
-        try:
+        if when in self.time:
             index = self._time.index(when)
             return self._quantities[index]
-        except ValueError:
+        else:
             return 0
     
     def get_flux_out(self, graph: WPGraph, time: int, cumulative: bool = False) -> float:
@@ -493,7 +493,7 @@ class GraphFactory():
         GraphFactory: Un objet de la classe GraphFactory
     """
 
-    def __init__(self, DIR: str= None, Dict: dict= None):
+    def __init__(self, DIR: str=None, Dict: dict=None):
         self._DIRECTORY = DIR
         """L'option de créer un graphe grâce à un dictionnaire a été
         ajouter pour l'analyse lors de l'importation dans l'API"""
@@ -524,19 +524,24 @@ class GraphFactory():
         
             node_map = {}
             for node_id, node_data in _NODES.items():
-                if int(node_id) in _TOPNODES:    
+                if int(node_id) in _TOPNODES: 
+                    if node_data['Half-life'] > 0 or node_data['Recycling'] > 0:
+                        raise me.GraphError(f"Node at the top (a node without an edge \
+                            going into it) cannot also be identified as a recycling \
+                            or half-life node. Node name: {node_data['Name']}") 
                     new_node =  TopNode(node_data['Name'])
                 elif int(node_id) in _LASTNODES:
+                    if node_data['Half-life'] > 0 or node_data['Recycling'] > 0:
+                        raise me.GraphError(f"Node at the bottom (a node without an edge \
+                            going out of it) cannot also be identified as a recycling \
+                            or half-life node. Node name: {node_data['Name']}")  
                     new_node = PoolNode(node_data['Name'])
                 elif node_data["Half-life"] > 0:
-                    if int(node_id) in _LASTNODES or int(node_id) in _TOPNODES:
-                        raise me.GraphError("Un noeud avec une demi-vie ne peut \
-                             pas être un noeud de départ ou de fin.")
+                    if node_data["Recycling"] > 0:
+                        raise me.GraphError(f"A node cannot be both a recycling and \
+                            half-life node. Node name: {node_data['Name']}")
                     new_node = DecayNode(node_data['Name'], int(node_data['Half-life']))
                 elif node_data['Recycling'] == 1: 
-                    if int(node_id) in _LASTNODES or int(node_id) in _TOPNODES:
-                        raise me.GraphError("Un noeud avec un recyclage ne peut \
-                             pas être un noeud de départ ou de fin.")
                     new_node = RecyclingNode(node_data['Name'])
                 else: new_node = ProportionNode(node_data['Name'])
                 self._GRAPHS[graph_num].add_node(new_node)

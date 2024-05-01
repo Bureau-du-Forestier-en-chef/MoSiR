@@ -6,21 +6,41 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 from abc import ABCMeta
 
-class Generator(metaclass= ABCMeta):
+class Generator(metaclass=ABCMeta):
     def __init__(self, GraphName: str):
         self.__GraphName = GraphName
         self._nodes = {}
         self._edges = {}
+
     def get_graph_name(self) -> str:
         return self.__GraphName
+    
     def to_dict(self) -> dict:
         return {"Nodes": self._nodes,"Edges": self._edges}
+    
     def get_node_names(self) -> list[str]:
         all_names = []
         for items in self._nodes.values():
             all_names.append(items["Name"])
         all_names.sort()
         return all_names
+    
+    def get_first_node_names(self) -> list[str]:
+        TOPNODES = set([int(ID) for ID in self._nodes]) - \
+            set([data['To'] for keys, data in self._edges.items()])
+        all_names = []
+        for key, values in self._nodes.items():
+            if key in TOPNODES:
+                all_names.append(values['Name'])
+        return all_names
+    
+    def get_decay_node_names(self) -> list[str]:
+        all_names = []
+        for key, values in self._nodes.items():
+            if values['Half-life'] > 0:
+                all_names.append(values['Name'])
+        return all_names
+
     def get_graph_stats(self) -> dict:
         Alldata = {"Nodes": {"Size": len(self._nodes)}, 
                    "Edges": {"Size": len(self._edges)}}

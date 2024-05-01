@@ -156,6 +156,9 @@ def output_creation(graph: gg.GraphFactory, import_data: ip.ImportData,
 
                 # Nouveau dt avec seulement Time et Combined
                 dt = {k: dt[k] for k in ('Time', 'Combined')}
+            elif summarize != 'Per node':
+                raise me.InvalidOption(f"Should be 'Per node' or 'Combined'\
+                    and not {summarize}")
 
             dt['Unit'] = report_unit
             if ext == '.csv':

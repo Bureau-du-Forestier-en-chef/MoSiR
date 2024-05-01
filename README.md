@@ -3,14 +3,14 @@
 <!-- HEADER -->
 <h1 align="center">
   <br>
-  <a href="https://github.com/Bureau-du-Forestier-en-chef/MoSiR"><img src="./image/MoSiR-logo-github.png" alt="Modèle de Simulation en Réseau" width="800"></a>
+  <a href="https://github.com/Bureau-du-Forestier-en-chef/MoSiR"><img src="./static/image/MoSiR-logo-github.png" alt="Modèle de Simulation en Réseau" width="800"></a>
   <br>
   Modèle de Simulation en Réseau
   <br>
 </h1>
 
 <h4 align="center"> 
-  <a href="https://forestierenchef.gouv.qc.ca"><img src="./image/BFEC.jpg" width="200"></a>
+  <a href="https://forestierenchef.gouv.qc.ca"><img src="./static/image/BFEC.jpg" width="200"></a>
   <br>
 <h4>
   
@@ -34,8 +34,8 @@ The second element of MoSiR is a powerful interpreter and calculator dedicated t
 </p>
 
 <p align="justify"> 
-  L'outil Modèle de Simulation en Réseau (MoSiR) à été développé par le Bureau du forestier en chef du Québec (BFEC) à partir de mi-2023 afin de répondre à ses besoins internes de comptabilisation carbone du secteur forestier provincial (Forêt + Produits + Substitution). Le développement d’une interface utilisateur fut partie intégrante du projet dès ses débuts afin de pouvoir partager au plus grand nombre un outil performant, ergonomique et utilisé au sein du ministère des Ressources Naturelles et des Forêts (MRNF).
-MoSiR est un outil qui permet à l’utilisateur de pouvoir suivre le devenir du carbone dans les produits du bois provenant de la récolte forestière. Il permet de quantifier les stocks de carbone à la fois dans les produits en bois en service et dans les lieux d'enfouissement (fin de vie), ainsi que de comptabiliser les émissions de gaz à effet de serre (GES) résultant des processus d'extraction, de transport, de transformation, de valorisation et de dégradation de la biomasse. 
+  L'outil Modèle de Simulation en Réseau (MoSiR) à été développé par le Bureau du forestier en chef du Québec (BFEC) à partir de mi-2023 afin de répondre à ses besoins internes de comptabilisation carbone du secteur forestier provincial (Forêt + Produits + Substitution). Le développement d’une interface utilisateur fut partie intégrante du projet dès ses débuts afin de pouvoir partager au plus grand nombre un outil performant, ergonomique et utilisé au sein du ministère des Ressources naturelles et des Forêts (MRNF).
+MoSiR est un outil qui permet à l’utilisateur de suivre le devenir du carbone dans les produits du bois provenant de la récolte forestière. Il permet de quantifier les stocks de carbone à la fois dans les produits en bois en service et dans les lieux d'enfouissement (fin de vie), ainsi que de comptabiliser les émissions de gaz à effet de serre (GES) résultant des processus d'extraction, de transport, de transformation, de valorisation et de dégradation de la biomasse. 
 MoSiR est donc un outil pertinent dans une approche d’inventaire des émissions de GES du secteur forestier, mais peut aussi être un outil particulièrement efficace pour explorer des stratégies alternatives d'utilisation du bois et en comprendre les conséquences à long terme en termes de stockage et d'émissions. 
 La particularité de MoSiR est qu’il est un lecteur de modèles d’architectures de flux de matière, il ne possède presque aucun paramétrage par défaut, ce qui fait de lui un outil hautement adaptable aux situations particulières des différents utilisateurs. Ces derniers devant fournir à MoSiR à la fois une architecture de flux de matière et des intrants de récolte en kilogramme de carbone (kgC) ou tonne de carbone (tC).
 Cette documentation présentera aux utilisateurs les instructions nécessaires à la compréhension et à l’utilisation de MoSiR par le biais de son interface ou directement via sa librairie Python.
@@ -78,7 +78,7 @@ MoSiR peut être installé sous forme de package python, à l'intérieur d'un en
 
 <details><summary><b>Comme application portable</b></summary> <br>
 
-Dans le repos MoSiR, un dossier standalone est accessible. Celui-ci contient un dossier compressé, dans lequel se retrouve un executable `.exe`. Il est possible de télécharger manuellement ce dossier pour utiliser MoSiR comme un programme qui fonctionne indépendamment, sans nécessiter de prérequis. L'installation nécessite toutefois git pour cloner les fichiers sur GitHub. Il est également possible de télécharger le dossier comprimé manuellement sur la plateforme GitHub si vous n'avez pas git d'installé. 
+Dans le repos MoSiR, un dossier standalone est accessible. Celui-ci contient un dossier compressé, dans lequel se retrouve un exécutable `.exe`. Il est possible de télécharger manuellement ce dossier pour utiliser MoSiR comme un programme qui fonctionne indépendamment, sans nécessiter de prérequis. L'installation nécessite toutefois git pour cloner les fichiers sur GitHub. Il est également possible de télécharger le dossier comprimé manuellement sur la plateforme GitHub si vous n'avez pas git d'installé. 
 
 1. Ouvrir une invite de commande (command prompt)
 2. Localiser le dossier où vous souhaitez copier les fichiers sur votre ordinateur, par exemple `D:\Documents\Application` et changer le working directory de votre invite de commande pour celui-ci.
@@ -107,13 +107,13 @@ Dans le repos MoSiR, un dossier standalone est accessible. Celui-ci contient un 
 <details><summary><b>Procédure sur Miro</b></summary><br>
 
 1. Avec l'adresse courriel désirée, créer d'abord un compte Miro gratuit à partir de `https://miro.com/`
-2. Naviguer vers les paramètres de l'utilisateurs, puis, sélectionner `Vos applications` dans le menu.
+2. Naviguez vers les paramètres de l'utilisateur, puis, sélectionner `Vos applications` dans le menu.
    Cliquer sur `Créer une nouvelle application` et entrer le nom désiré.
 
    ![miro_creation_1](https://github.com/Landry-G/MoSiR_images/blob/main/miro_creation_1.gif)  
 
 4. Naviguer vers "URL de l'application" et entrer http://localhost:3000
-5. Dans la section "Rediriger l'URI pour OAuth2.0, entrer ces trois addresses:
+5. Dans la section, "Rediriger l'URI pour OAuth2.0, entrer ces trois adresses:
    <pre>http://localhost:3000/redirect<br>
    https://miro.com/app-install-completed<br>
    http://localhost:3000/mirowrapper/redirect </pre>
@@ -123,7 +123,7 @@ Dans le repos MoSiR, un dossier standalone est accessible. Celui-ci contient un 
 
 ![miro_URL](https://github.com/Landry-G/MoSiR_images/blob/main/miro_URL.gif) 
 
-Voilà ! Vos identifiants secrets sont maintenant prêt à être utilisés pour faire fonctionner l'application avec Miro.
+Voilà ! Vos identifiants secrets sont maintenant prêts à être utilisés pour faire fonctionner l'application avec Miro.
 
 </details>
 
@@ -131,7 +131,7 @@ Voilà ! Vos identifiants secrets sont maintenant prêt à être utilisés pour 
 Les clés d'identification Miro peuvent être modifiées de deux façons: manuellement dans les fichiers de l'installation ou grâce à l'interface web.
 
 > [!CAUTION]
-> Les identifiants confidentiels de votre application  NE DOIVENT PAS être partagé publiquement. Pour en savoir plus, consultez [la documentation de Miro](https://developers.miro.com/reference/overview?utm_source=your_apps).
+> Les identifiants confidentiels de votre application  NE DOIVENT PAS être partagés publiquement. Pour en savoir plus, consultez [la documentation de Miro](https://developers.miro.com/reference/overview?utm_source=your_apps).
 
 <details><summary><b>Manuellement</b></summary> <br>
 
@@ -141,7 +141,7 @@ Si votre installation est en version standalone, les clés d'identification se r
    ```
   `MoSiR.dist` est le dossier que vous avez téléchargé ou copié depuis GitHub. Le fichier `.env` peut être ouvert avec un logiciel de traitement de fichier texte comme Bloc-notes.
 <p align="justify"> 
-  Si votre installation est un package python, la clé se retrouve ici dans votre environnement conda. Par exemple, dans mon environnement nommé `MoSiR`, mes clés d'environnements se retrouve ici:
+  Si votre installation est un package python, la clé se retrouve ici dans votre environnement conda. Par exemple, dans mon environnement nommé `MoSiR`, mes clés d'environnements se retrouvent ici:
 </p>
 
    ```python
@@ -197,8 +197,8 @@ C'est la capacité de cartographie de projets de Miro qui est exploitée avec la
 
 	-- Nomenclature Miro:
 
-* Noeud : Forme = "cercle", tous les nœuds de l'architecture doivent porter un nom unique, les virgules vont être effacées dans la création du fichier d'intrant .JSON par MoSiR.
-* Le sens des flèches entre les noeuds est important.
+* Nœud : Forme = "cercle", tous les nœuds de l'architecture doivent porter un nom unique, les virgules vont être effacées dans la création du fichier d'intrant .JSON par MoSiR.
+* Le sens des flèches entre les nœuds est important.
 * Flèches de débordement : Couleur = #17df23
 * Pense bête pour proportions : Couleur = "light_green"
 * Nœud de recyclage : Forme = "cercle" + Couleur de remplissage = "#8fd14f"
@@ -210,7 +210,7 @@ Exemples : CH4 emissions / CO2 emissions / N2O emissions
 -Mettre image exemple-
 
 À des fins purement ergonomiques, il est possible d'introduire dans l'architecture du flux de matière des nœuds particuliers imageant la notion de ventilation, ou split : Forme = "rectangle". 
-Lors de la transformation de l'architecture Miro en format .JSON, MoSiR va faire disparaitre ces nœuds, on ne retrouvera donc pas ces noeuds dans la visualisation disponible dans MoSiR.
+Lors de la transformation de l'architecture Miro en format .JSON, MoSiR va faire disparaitre ces nœuds, on ne retrouvera donc pas ces nœuds dans la visualisation disponible dans MoSiR.
 -Mettre image exemple-
 
 	-- Nomenclature .JSON:
@@ -220,7 +220,7 @@ A DEVELOPPER (Traduction de la nomenclature MIRO en nomenclature JSON MoSiR)
 
 ## $\color{orange} Directives$ :memo:
  <p align="justify">
-   Le suivi de la matière et la lecture des émissions de GES vers l'Atmosphère dans l'architecture préalablement chargé par l'utilisateur respecte certaines contraintes techniques inhérentes à MoSiR. 
+   Le suivi de la matière et la lecture des émissions de GES vers l'Atmosphère dans l'architecture préalablement chargé par l'utilisateur respectent certaines contraintes techniques inhérentes à MoSiR. 
 Il convient donc à chaque utilisateur de faire la lecture des résultats de MoSiR au regard de ces contraintes.
  </p>
 
@@ -230,14 +230,14 @@ Il convient donc à chaque utilisateur de faire la lecture des résultats de MoS
 *  <p align="justify"> Une architecture de flux de matière lisible par MoSiR est un ensemble de nœuds par lesquels va transiter annuellement la matière au gré d'une ventilation définie par l'utilisateur. L'introduction de matière dans l'architecture peut se faire via n'importe quel nœud.
 Trois sortes de nœuds existent :
  - les nœuds transitoires: la matière ne fait que passer la même année, sans être stockée à aucun moment.
- - les nœuds de stockage: la matière passe au travers du nœud, mais la quantité sortante annuellement est définie par l'utilisateur (nœuds de dégradation, nœuds de stockage perpétuels, nœuds de recyclage etc.)
- - Les noeuds d'entrées: il s'agit des premiers noeuds dans un graphe qui conservent l'information des intrants de l'utilisateur.
+ - les nœuds de stockage: la matière passe au travers du nœud, mais la quantité sortante annuellement est définie par l'utilisateur (nœuds de dégradation, nœuds de stockage perpétuels, nœuds de recyclage, etc.)
+ - Les nœuds d'entrées: il s'agit des premiers nœuds dans un graphe qui conservent l'information des intrants de l'utilisateur.
 Par défaut, si un nœud n'a aucune sortie (lien d'écoulement avec un autre nœud), il va être considéré par défaut comme un nœud de stockage (infini dans ce cas particulier). </p>
 
 	
 #### Flux de débordement :
 L'intérêt premier de MoSiR est de pouvoir suivre le devenir du carbone biogénique dans les produits du bois, en ce sens de nombreux tests internes existent pour assurer la robustesse des calculs et éviter toute perte de matière. 
-La somme de la matière sortante de l'architecture sous forme d'émissions et la matière stockée dans l'architecture est en tout temps égal à la somme de la matière qui est rentrée dans l'architecture.
+La somme de la matière sortante de l'architecture sous forme d'émissions et la matière stockée dans l'architecture est en tout temps égale à la somme de la matière qui est rentrée dans l'architecture.
 Cependant, il est tout à fait possible d'intégrer des émissions associées à l'extraction, au transport ou encore à la transformation de la ressource dans l'architecture. Ce carbone n'étant pas du carbone biogénique, il est comptabilisé comme un flux supplémentaire, c'est-à-dire un flux de débordement (voir secteur X pour nomenclature des flux de débordement).
 Les flux de débordement peuvent aussi être utilisés pour comptabiliser des émissions de gaz à effet de serre non carbonés, notamment le N2O, qui sont produites dans le cycle de vie des produits du bois (incinération, compostage, épandage, etc.).
 	
@@ -246,7 +246,7 @@ Dans MoSiR, afin d'éviter toute boucle infinie durant une même période de tem
 Si 100 tonnes de carbone rentrent dans un nœud de recyclage à l'année x, ces 100 tonnes seront stockées dans ce nœud durant l'année X et s'écouleront de nouveau dans l'architecture du flux de matière à partir de l'année X+1.	
 	
 #### Mathématique de dégradation :
-Dans la version 1.0 de Mosir la dégradation des produits du bois dans un noeud de demi-vie suit une dégradation de premier ordre (exponentielle) basée sur une demi-vie fournie par l'utilisateur selon la méthodologie classique du GIEC (voir section X pour nomenclature des nœuds de demi-vie).
+Dans la version 1.0 de Mosir, la dégradation des produits du bois dans un nœud de demi-vie suit une dégradation de premier ordre (exponentielle) basée sur une demi-vie fournie par l'utilisateur selon la méthodologie classique du GIEC (voir section X pour nomenclature des nœuds de demi-vie).
 	
 #### GES inclus :
 Par défaut, MoSiR ne peut effectuer la comptabilisation des émissions des gaz à effet de serre suivant : Méthane (CH4), Dioxyde de carbone (CO2) et l'Oxyde nitreux (N2O).
@@ -266,7 +266,7 @@ C'est notamment l'approche retenue dans le cadre du Règlement relatif aux proje
 ## $\color{orange} Développements futurs$ :thought_balloon:
 
 <p align="justify">
-Mosir est opérationnel dans sa version 1.0, il n'en reste pas moins que des développements sont en cours pour améliorer les capacités et l'ergonomie de l'outil et donc maximiser son potentiel d'utilisation par le plus grand nombre. Si au cours de l'utilisation de MoSiR vous percevez en tant qu'utilisateur un potentiel d'amélioration, n'hésitez surtout pas à partager votre idée dans la section  discussion du GitHub. Voici une liste d'améliorations futurs qui seront ajouté à MoSiR:
+Mosir est opérationnel dans sa version 1.0, il n'en reste pas moins que des développements sont en cours pour améliorer les capacités et l'ergonomie de l'outil et donc maximiser son potentiel d'utilisation par le plus grand nombre. Si au cours de l'utilisation de MoSiR vous percevez en tant qu'utilisateur un potentiel d'amélioration, n'hésitez surtout pas à partager votre idée dans la section  discussion du GitHub. Voici une liste d'améliorations futures qui seront ajoutées à MoSiR:
 </p>
 
 - [ ] Mathématique de dégradation https://github.com/Bureau-du-Forestier-en-chef/MoSiR/issues/2
@@ -277,11 +277,11 @@ Partagez vos idées et suggestions ! :point_right: [Discussions](https://github.
 
 #### [Mathématique de dégradation](https://github.com/Bureau-du-Forestier-en-chef/MoSiR/issues/2) 
 <p align="justify">
-Dans sa version 1.0, MoSiR ne peut gérer la dégradation des produits du bois que d'une seule manière, via une dégradation de premier ordre (exponentielle) basée sur une demi-vie fournie par 		l'utilisateur (méthodologie du GIEC). La littérature est claire sur la pertinence d'utiliser une telle mécanique de dégradation pour les grandes familles de produits regroupant un ensemble 		complexe de produits finaux (sciage, pates et papiers, panneaux, etc.). La prémisse de la désintégration de premier ordre est que le taux de retrait d’un réservoir est proportionnel à la quantité 	d’éléments dans ce dernier. Donc, cette hypothèse a pour conséquence qu’une proportion importante des produits du bois est mise hors service dès les premières années après leur mise en marché, le 	taux de mise hors service étant alors à son maximum. Si l'architecture du flux de matière de l'utilisateur est plus détaillée que simplement les grandes familles de produits, il pourrait être 	pertinent d'utiliser une mécanique de dégradation différente. En effet, s’il est vrai qu’un produit particulier se dégrade avec une certaine probabilité à différents moments, cette probabilité 	devrait être plus élevée à l’approche de la durée de vie prévue initialement.
+Dans sa version 1.0, MoSiR ne peut gérer la dégradation des produits du bois que d'une seule manière, via une dégradation de premier ordre (exponentielle) basée sur une demi-vie fournie par 		l'utilisateur (méthodologie du GIEC). La littérature est claire sur la pertinence d'utiliser une telle mécanique de dégradation pour les grandes familles de produits regroupant un ensemble 		complexe de produits finaux (sciage, pâtes et papiers, panneaux, etc.). La prémisse de la désintégration de premier ordre est que le taux de retrait d’un réservoir est proportionnel à la quantité 	d’éléments dans ce dernier. Donc, cette hypothèse a pour conséquence qu’une proportion importante des produits du bois est mise hors service dès les premières années après leur mise en marché, le 	taux de mise hors service étant alors à son maximum. Si l'architecture du flux de matière de l'utilisateur est plus détaillée que simplement les grandes familles de produits, il pourrait être 	pertinent d'utiliser une mécanique de dégradation différente. En effet, s’il est vrai qu’un produit particulier se dégrade avec une certaine probabilité à différents moments, cette probabilité 	devrait être plus élevée à l’approche de la durée de vie prévue initialement.
 </p>
 <p align="justify">
 Il est donc prévu d'intégrer dans MoSiR une dégradation des produits du bois suivant une Loi Gamma (alpha, bêta). Il est à noter qu'une dégradation de premier ordre (exponentielle) peut être modélisée via une Loi Gamma en fixant le paramètre alpha à 1  et en faisant varier le paramètre bêta pour faire correspondre la courbe avec la demi-vie souhaitée. 
-Ce développement va donc laisser la liberté à l'utilisateur de définir le type de dégradation qu'il souhaite dans son architecture de flux de matière, en définissant pour chaque nœud de demi-vie un facteur alpha et bêta. Mosir ne nécessitant plus une valeur de demie-vie pour fonctionner, il sera de la responsabilité de l'utilisateur de fixer les paramètres alpha et bêta de manière adéquate. Un chiffrier Excel sera fourni pour aider les utilisateurs dans la détermination de ces valeurs.
+Ce développement va donc laisser la liberté à l'utilisateur de définir le type de dégradation qu'il souhaite dans son architecture de flux de matière, en définissant pour chaque nœud de demi-vie un facteur alpha et bêta. Mosir ne nécessitant plus une valeur de demi-vie pour fonctionner, il sera de la responsabilité de l'utilisateur de fixer les paramètres alpha et bêta de manière adéquate. Un chiffrier Excel sera fourni pour aider les utilisateurs dans la détermination de ces valeurs.
 </p>
 	
 #### [Analyse sensibilité/Incertitudes (Monte-Carlo)](https://github.com/Bureau-du-Forestier-en-chef/MoSiR/issues/39)
@@ -289,7 +289,7 @@ La version 1.0 de MoSiR requiert des valeurs spécifiées par l'utilisateur, off
 Un projet de développement est donc envisagé pour intégrer des simulations de Monte-Carlo, permettant d'estimer les résultats potentiels en tenant compte des incertitudes liées aux valeurs, certainement sous la forme d'intervalles de confiance définis par l'utilisateur. 
 Ce projet vise également à faciliter l'analyse de sensibilité pour l'utilisateur, en rendant le processus plus rapide.
 
-D'autres idées ont été soulevé, mais elles ne figurent pas en ce moment comme [Issues] à implémenter prochainement.
+D'autres idées ont été soulevées, mais elles ne figurent pas en ce moment comme [Issues] à implémenter prochainement.
 
 - __Tableau blanc Teams/autre__ <br>
 	Dans la version 1.0 de Mosir la lecture et la traduction d'une architecture de flux de matière ne sont possibles que par l'utilisation de l'application Miro. Afin de ne pas se retrouver sans solution dans le cas où la politique d'accessibilité de Miro venait à changer, il devrait être possible dans une version ultérieure de MoSiR d'utiliser d'autres applications semblables, en particulier les tableaux blancs de Teams (application utilisée au BFEC).
@@ -307,7 +307,7 @@ MoSiR a besoin d'informations requises et demandées à l'utilisateur pour fonct
 
 ## $\color{orange} Report \space a \space bug$ :speech_balloon:
 
-Si vous rencontrez une erreur, la manière à prévilégier est par l'entremise des [Issues] sur GitHub.
+Si vous rencontrez une erreur, la manière à privilégier est par l'entremise des [Issues] sur GitHub.
 
 [Issues]: https://github.com/Bureau-du-Forestier-en-chef/MoSiR/issues
 

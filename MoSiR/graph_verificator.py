@@ -5,6 +5,7 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 """
 
+import copy
 import warnings
 from MoSiR import graph_generator as gg
 from MoSiR import mosir_exceptions as me
@@ -23,11 +24,13 @@ def main(graph: gg.GraphFactory):
         à tester
     """
 
+    graph_copy = copy.deepcopy(graph)
+
     # On récupère les noms des nodes qui ont un overflow
     # TODO créer une deepcopy du GraphFactory
     overflow_name = {}
-    for graph_name in graph.get_data:
-        G0 = graph.get_data.get(graph_name)
+    for graph_name in graph_copy.get_data:
+        G0 = graph_copy.get_data.get(graph_name)
         NODES = G0.get('Nodes', {})
         EDGES = G0.get('Edges', {})
         overflow_id = []
@@ -41,21 +44,21 @@ def main(graph: gg.GraphFactory):
                 overflow_name[graph_name].append(values.get('Name'))
 
     # On effectue les tests
-    debugg_graph_01(graph)
-    debugg_graph_02(graph, overflow= overflow_name)
-    debugg_graph_03(graph)
-    debugg_graph_04(graph, overflow= overflow_name)
-    debugg_graph_05(graph)
-    debugg_graph_06(graph)
-    debugg_graph_07(graph)
-    debugg_graph_08(graph)
+    debugg_graph_01(graph_copy)
+    debugg_graph_02(graph_copy, overflow=overflow_name)
+    debugg_graph_03(graph_copy)
+    debugg_graph_04(graph_copy, overflow=overflow_name)
+    debugg_graph_05(graph_copy)
+    debugg_graph_06(graph_copy)
+    debugg_graph_07(graph_copy)
+    debugg_graph_08(graph_copy)
     #debugg_graph_09(graph) Executé à même graph_generator.py
     #debugg_graph_10(graph) Executé à même graph_generator.py
-    debugg_graph_11(graph)
-    debugg_graph_12(graph)
-    debugg_graph_13(graph)
-    debugg_graph_14(graph)
-    debugg_graph_15(graph)
+    debugg_graph_11(graph_copy)
+    debugg_graph_12(graph_copy)
+    debugg_graph_13(graph_copy)
+    debugg_graph_14(graph_copy)
+    debugg_graph_15(graph_copy)
 
 # Tests -----------------------------------------------------------------------
 # On test si on a bien un first et un last node
@@ -66,12 +69,11 @@ def debugg_graph_01(graph: gg.GraphFactory):
         NODES = G1.get('Nodes', {})
         EDGES = G1.get('Edges', {})
         TOPNODES = set([int(ID) for ID in NODES]) - \
-                    set([data['To'] for keys, data in EDGES.items()])
+            set([data['To'] for keys, data in EDGES.items()])
         if len(TOPNODES) > 1:
-            # FIXME Ne pas mettre un avertissement mais un raise
             warnings.warn(' '.join((f"Attention, plus d'une TopNode présente.\
                 Les inputs vont être acheminés à ces deux nodes: \
-                {TOPNODES}").split()), stacklevel = 2)  
+                {TOPNODES}").split()), stacklevel=2)  
         elif len(TOPNODES) == 0:
             raise me.NodeError("Aucune TopNode présente dans le graph")
         LASTNODES = set([int(ID) for ID in NODES]) - \
@@ -80,7 +82,7 @@ def debugg_graph_01(graph: gg.GraphFactory):
             warnings.warn(' '.join((f"Attention, aucune PoolNode présente. \
                 La quantité de carbone présente dans le système sera calculé \
                 seulement sur des nodes de demi-vie ou de recyclage").split()), 
-                stacklevel= 2)  
+                stacklevel=2)  
 
 # On test si la somme des edges sortant de chaque node est égale à 100%
 def debugg_graph_02(graph: gg.GraphFactory, overflow: dict[str, list[str]]):
@@ -102,7 +104,7 @@ def debugg_graph_02(graph: gg.GraphFactory, overflow: dict[str, list[str]]):
                     {node.NAME} n'est pas égale à 100% ({total * 100})").split())) 
         if len(no_edges) > 0:   
             warnings.warn(f'Le ou les noeuds suivants ont aucun edge sortant: {no_edges}',
-                stacklevel = 2)
+                stacklevel=2)
 
 # On test si une node reçoit des edges avec et sans overflow
 def debugg_graph_03(graph: gg.GraphFactory):
@@ -128,6 +130,13 @@ def debugg_graph_04(graph: gg.GraphFactory, overflow: list[str]):
     # total input versus in system 
     for name in graph.get_graph_name:
         G4 = graph.get_graph(name)
+
+        # On ajoute les inputs
+        for node in G4.nodes():
+            if type(node) == gg.TopNode:
+                node.time = range(time + 1)
+                node.quantities = range(time + 1)
+
         carbon_input = 0
         for timestep in range(time + 1):
             in_system = 0
@@ -199,7 +208,7 @@ def debugg_graph_07(graph: gg.GraphFactory):
                     no_edges.append(node.NAME)
         if len(no_edges) > 0:
             warnings.warn(f'Le ou les noeuds suivants ont aucun edge: {no_edges}',
-                          stacklevel = 2)
+                          stacklevel=2)
 
 # Vérifier si des PoolNode ont aucun edges entrant
 def debugg_graph_08(graph: gg.GraphFactory):
@@ -215,7 +224,7 @@ def debugg_graph_08(graph: gg.GraphFactory):
                     no_edges.append(node.NAME)
         if len(no_edges) > 0:
             warnings.warn(f'Le ou les noeuds suivants ont aucun edge: {no_edges}',
-                          stacklevel = 2)
+                          stacklevel=2)
 
 """# Vérifier que les graphes contiennent au moins une node
 def debugg_graph_09(graph: gg.GraphFactory):
@@ -298,7 +307,7 @@ def is_gas_present_in_name(string: str):
         if word.upper() in gas:
             if word != word.upper():
                 warnings.warn(' '.join((f"{word} doit être en majuscule pour \
-                    calculer le radiatif").split()), stacklevel = 2)
+                    calculer le radiatif").split()), stacklevel=2)
     gas_wrongly_written = ['Co2', 'co2', 'cO2', 'ch4', 'cH4', \
                            'Ch4', 'n2o', 'N2o', 'n2O']
     for gas in gas_wrongly_written:
@@ -308,7 +317,7 @@ def is_gas_present_in_name(string: str):
                 en radiatif fonctionne correctement, le gaz doit être écrit \
                 en majuscule et isolé des autres charactères par des espaces \
                 (ex: 'CO2 emission' est valide et non 'CO2_emissions')").split()), 
-                stacklevel= 2)
+                stacklevel=2)
 
 def debugg_graph_14(graph: gg.GraphFactory):
     for name in graph.get_graph_name:

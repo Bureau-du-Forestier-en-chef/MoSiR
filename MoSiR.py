@@ -36,7 +36,7 @@ def run_server():
    server.register(visualization)
    server.register(download)
    server.register(upload)
-   server.register(stats)
+   #server.register(stats) TODO more meaningful
    server.register(reporting)
    server.sign_in()
    server.run()
