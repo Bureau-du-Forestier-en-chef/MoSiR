@@ -24,6 +24,7 @@ class Reporting(Component):
         stash += self.__build_inputs_table()
         stash += self.__build_report_header()
         stash += self.__build_report_outputs()
+        stash.append('<br>')
         stash.append('<button class="w3-button w3-dark-grey" input type = \
                      "submit" value = "submit">Exécuter <i class="fa fa-arrow-right"></i></button>')
         stash.append('</div>')
@@ -132,22 +133,6 @@ class Reporting(Component):
         stash.append('</div>')
         return stash
     
-    def __build_cinputs_buttons(self) -> list[str]:
-        #Avec les files names appeller jsonprovider avec le fetch
-        stash = []
-        for input in self._get_inputs_files():
-            jsonname = pathlib.Path(input).stem
-            htmltarget = self._get_url_for("/json_provider/<filename>", 
-                                           filename= jsonname + '.json')
-            stash.append('<button class="w3-button w3-dark-grey" id='
-                         + htmltarget 
-                         + '  type="button" onclick=fillcinputs("'
-                         + htmltarget
-                         + '")> Ajouter '
-                         + jsonname
-                         + ' <i class="fa fa-arrow-right"></i></button>')
-        return stash
-    
     def __build_coutputs_buttons(self) -> list[str]:
         #Avec les files names appeller jsonprovider avec le fetch
         stash = []
@@ -164,6 +149,22 @@ class Reporting(Component):
                          +' <i class="fa fa-arrow-right"></i></button>')
         return stash
     
+    def __build_cinputs_biomass_buttons(self) -> list[str]:
+        #Avec les files names appeller jsonprovider avec le fetch
+        stash = []
+        for input in self._get_inputs_files():
+            jsonname = pathlib.Path(input).stem
+            htmltarget = self._get_url_for("/json_provider/<filename>", 
+                                           filename= jsonname + '.json')
+            stash.append('<button class="w3-button w3-dark-grey" id='
+                         + htmltarget 
+                         + '  type="button" onclick=fillcinputs("'
+                         + htmltarget
+                         + '")> Ajouter '
+                         + jsonname
+                         + ' <i class="fa fa-arrow-right"></i></button>')
+        return stash
+    
     def __build_inputs_table(self) -> list[str]:
         stash = []
         stash.append('<h3><b>Intrants</b></h3>')
@@ -172,10 +173,11 @@ class Reporting(Component):
         stash.append('<form action="'
                      + self._get_url_for("/report")
                      +'" id="cinputsform" method = "POST">')
-        stash += self.__build_cinputs_buttons()
+        stash += self.__build_cinputs_biomass_buttons()
         stash.append('<div>')
         stash.append('<label for="units">Unité</label>')
         stash.append('<select name="units" id="units">')
+
         for unit in self.__get_units():
             stash.append('<option value="'
                          + unit
@@ -225,35 +227,18 @@ class Reporting(Component):
             
             # Input Decay node
             stash.append('<h5> Valeurs de dégradation </h5>')
-            stash.append('<table class="w3-table-all" id=cinputs_'
-                         + generator.get_graph_name()
-                         + '><tr><th>Noeud de dégradation</th><th>Alpha</th><th>Gamma</th></tr>')
-            stash.append('<tr>')
-            stash.append('<th>')
-            stash.append('<select name="Noeud de dégradation title="Noeud de dégradation" id="Node_'
-                         + generator.get_graph_name()
-                         + '">')
+            stash.append('<table'
+                         + '><tr><th>Noeud</th><th>k</th><th>Theta</th></tr>')
             for node in generator.get_decay_node_names():
-                stash.append('<option value="'
-                             + node 
-                             + '">'
-                             + node
-                             + '</option>')
-            stash.append('</th>')
-            stash.append('<th> <input type = "number" name="Alpha~'
-                         + generator.get_graph_name() 
-                         + '" title="Alpha" min ="0" id="Alpha_'
-                         + generator.get_graph_name()
-                         + '"/></th>')
-            stash.append('<th> <input type = "number" name="Gamma" title="Gamma" min ="0" id=Gamma_'
-                         + generator.get_graph_name()
-                         + '"/></th>')
-            stash.append('<th>')
-            stash.append('<button class="w3-button w3-dark-grey" type = "button" onclick=addcinputs("'
-                         + generator.get_graph_name()
-                         + '")>Enregistrer les valeurs <j class="fa fa-plus-circle"></j></button>')
-            stash.append('</th>')
-            stash.append('</tr>')
+                stash.append('<tr>')
+                stash.append('<td>{}</td>'.format(node))
+                stash.append('<td><input type="float" name="k_value~'
+                             + generator.get_graph_name() + '~' + node
+                             + '"></td>')
+                stash.append('<td><input type="float" name="theta_value~'
+                             + generator.get_graph_name() + '~' + node
+                             + '"></td>')
+                stash.append('</tr>')
             stash.append('</table>')
             stash.append('<br>')
             stash.append('<br>')
@@ -279,6 +264,7 @@ class Reporting(Component):
     
     def __get_graphs_inputs(self) -> str:
         data = {"Inputs":{}}
+        # TODO decay
         for field_name, value in request.form.items():
             splitted_key = field_name.split('~')
             target_key = splitted_key[0]
