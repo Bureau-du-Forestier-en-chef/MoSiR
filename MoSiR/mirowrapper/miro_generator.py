@@ -68,14 +68,14 @@ class ItemBuilder:
             if "data" in Item and "content" in Item["data"]:
                 Name = utilities.Htmlparser.get_string_from_html(
                     Item["data"]["content"]).replace(',', '')
-                Selectedkeys = []
-                for KeyData, Data in  DataHolder.items():
-                    if Data and KeyData in Name:
-                        DataHolder[KeyData] = self.__GetValue(Name, KeyData) # FIXME half-life valeur est cherché ici
-                        Selectedkeys.append(KeyData)
+                #Selectedkeys = []
+                #for KeyData, Data in  DataHolder.items():
+                #    if Data and KeyData in Name:
+                #        DataHolder[KeyData] = self.__GetValue(Name, KeyData) # FIXME half-life valeur est cherché ici
+                #        Selectedkeys.append(KeyData)
                 DataHolder["Name"] = Name
-                if Selectedkeys:
-                    DataHolder["Name"] = self.__GetName(Name, Selectedkeys) # FIXME half-life name qui se fait changer ici
+                #if Selectedkeys:
+                #    DataHolder["Name"] = self.__GetName(Name, Selectedkeys) # FIXME half-life name qui se fait changer ici
         return DataHolder
 
 class Mirogenerator(Generator):

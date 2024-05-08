@@ -17,12 +17,12 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
     background-image: url("{{ url_for('static', filename='image/MoSiR-logos_white.png') }}");
     background-repeat: no-repeat;
     background-position: 50% 10%; 
-    background-size: 50%;
+    background-size: 55%;
     flex-direction: column;
     justify-content: space-between;
   }
   .main-content {
-    margin-bottom: 200px; /* Remplacez 100px par la hauteur de votre footer */
+    margin-bottom: 200px; /* hauteur du footer */
   }
 </style>
 </head>
@@ -66,7 +66,7 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
 <div class="w3-overlay w3-hide-large w3-animate-opacity" onclick="w3_close()" style="cursor:pointer" title="close side menu" id="myOverlay"></div>
 
 <!-- !PAGE CONTENT! -->
-<div class="w3-main main-content" style="margin-left:310px;margin-top:43px;">
+<div class="w3-main main-content" style="margin-left:310px;margin-top:43px;margin-right:0px;">
 
   <!-- Header -->
   <header class="w3-container" style="padding-top:22px">
@@ -110,6 +110,8 @@ var mySidebar = document.getElementById("mySidebar");
 var overlayBg = document.getElementById("myOverlay");
 
 var lastPeriod = [];
+var one_filed_is_manual = false
+var manual_count = 0
 
 // Toggle between showing and hiding the sidebar, and add overlay effect
 function w3_open() {
@@ -138,6 +140,53 @@ function isInteger(value) {
     return /^\d+$/.test(value);
 }
 
+
+// Pour déjà démarrer checkType
+window.onload = function() {
+  var selectElements = document.querySelectorAll('select[name="Type"]');
+  selectElements.forEach(function(selectElement) {
+    checkType(selectElement);
+  });
+};
+
+// zone grise dans decay lors de la sélection
+function checkType(selectElement) {
+  var row = selectElement.parentNode.parentNode;
+  var halflifeInput = row.querySelector('input[name^="halflife_value"]');
+  var alphaInput = row.querySelector('input[name^="alpha_value"]');
+  var betaInput = row.querySelector('input[name^="beta_value"]');
+  var alphaTitle = document.getElementById('alphaTitle');
+  var betaTitle = document.getElementById('betaTitle');
+  if (selectElement.value == "Manuel") {
+    one_filed_is_manual = true
+    manual_count ++
+    halflifeInput.disabled = true;
+    halflifeInput.style.backgroundColor = "darkgrey";
+    halflifeInput.value = "";  // Clear the input field
+    alphaInput.disabled = false;
+    alphaInput.style.backgroundColor = "white";
+    alphaInput.style.display = "";  // Show the input field
+    alphaTitle.style.display = "";  // Show the title
+    betaInput.disabled = false;
+    betaInput.style.backgroundColor = "white";
+    betaInput.style.display = "";  // Show the input field
+    betaTitle.style.display = "";  // Show the title
+  } else {
+    halflifeInput.disabled = false;
+    halflifeInput.style.backgroundColor = "white";
+    alphaInput.disabled = true;
+    alphaInput.style.backgroundColor = "darkgrey";
+    alphaInput.value = "";  // Clear the input field
+    alphaInput.style.display = "none";  // Hide the input field
+    alphaTitle.style.display = "none";  // Hide the title
+    betaInput.disabled = true;
+    betaInput.style.backgroundColor = "darkgrey";
+    betaInput.value = "";  // Clear the input field
+    betaInput.style.display = "none";  // Hide the input field
+    betaTitle.style.display = "none";  // Hide the title
+  }
+}
+
 //Append to table cinputs
 function appendcinputs(graph_name, period, quantity, node) {
 	if (isInteger(period) && parseFloat(quantity) && node) {
@@ -156,30 +205,28 @@ function appendcinputs(graph_name, period, quantity, node) {
     	    data.title = all_data[i];
     	    data.id = keys[i] + '~' + key;
     	    data.name = keys[i] + '~' + key;
-            data.value = all_data[i];
-            data.readOnly = true
+          data.value = all_data[i];
+          data.readOnly = true
     	    newcell.appendChild(data);
     	}
-    }
+  }
 }	
 
+// async await est la manière à faire
+
 //Push a .json into the cinputs
-function fillcinputs(html_inputs) 
-  {
-    const histo_data = fetch(html_inputs).then(response => response.json()).then((data)=>{
-      for (const [graph_name, input_entry] of Object.entries(data.Inputs)) 
-        {
-        for (const [node, inputs] of Object.entries(input_entry)) 
-          {
-          for (const [period,quantity] of Object.entries(inputs))
-            {
+function fillcinputs(html_inputs)  {
+    const histo_data = fetch(html_inputs).then(response => response.json()).then((data) => {
+      for (const [graph_name, input_entry] of Object.entries(data.Inputs)) {
+        for (const [node, inputs] of Object.entries(input_entry)) {
+          for (const [period, quantity] of Object.entries(inputs)) {
             appendcinputs(graph_name, period, quantity, node);
             }
           }
         }
         let unit_element = document.getElementById("units");
         unit_element.value = data.Unit;
-        });
+      });
     const element = document.getElementById(html_inputs);
     element.remove();
   }

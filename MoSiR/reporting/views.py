@@ -32,76 +32,108 @@ class Reporting(Component):
         stash.append('</div>')
         return Component.main_renderer.render(False, stash)
     
-    def __build_report_outputs(self) -> list[str]:
+    def __build_inputs_table(self) -> list[str]:
         stash = []
+        stash.append('<h3><b>Intrants</b></h3>')
+        stash.append('<div class="w3-threequarter w3-margin-bottom">')
+        #Unit selection...
+        stash.append('<form action="'
+                     + self._get_url_for("/report")
+                     +'" id="cinputsform" method = "POST">')
+        stash += self.__build_cinputs_biomass_buttons()
+        stash.append('<div>')
+        stash.append('<label for="units">Unité</label>')
+        stash.append('<select name="units" id="units">')
+
+        for unit in self.__get_units():
+            stash.append('<option value="'
+                         + unit
+                         + '">'
+                         + unit
+                         + '</option>')
+        stash.append('</select>')
+        stash.append('</div>')
+
         for generator in self.read_graphs_json():
-            stash.append('<div>')
-            stash.append('<h6> Nom du graphe: ' + generator.get_graph_name() + '</h6>')
-            stash.append('<div>')
-            stash.append('<table class="w3-table-all" style="table-layout:fixed;" id=coutputs_'
-                         + generator.get_graph_name()
-                         + '><tr><th>Nom de la sortie</th><th>Noeuds</th><th>Type</th>\
-                            <th>Cumulatif</th><th>Regroupement</th><th>Unité</th></tr>')
+            #For each graph allow an inputs of a list of numbers
+            # Input time / quantities
+            stash.append('<h6> Nom du graphe: '+ generator.get_graph_name() + '</h6>')
+            stash.append('<h5> Flux de matière </h5>')
+            stash.append('<div class="w3-responsive">')
+            stash.append('<table class="w3-striped w3-border w3-hoverable" id=cinputs_'
+                + generator.get_graph_name()
+                + '><tr class="w3-sand">'
+                + '<th>Noeud d\'entrée</th>'
+                + '<th>Période</th>'
+                + '<th>Quantité</th>'
+                + '</tr>')
             stash.append('<tr>')
-            stash.append('<th> <input type = "text" size = 10 name="Nom de la sortie~'
+            stash.append('<th>')
+            stash.append('<select name="Noeud d\'entrée" title="Noeud d\'entrée" id="Node_'
                          + generator.get_graph_name()
-                         + '" title="Nom de la sortie" min ="1" id="Output_'
-                         + generator.get_graph_name()+'"/></th>')
-            stash.append('<th>')
-            stash.append('<div id="drop_list_' 
-                         + generator.get_graph_name()
-                         + '" class="dropdown-check-list" tabindex="100">')
-            stash.append('<span class="anchor" onclick=dropdown("'
-                         + generator.get_graph_name()
-                         + '")>Noeuds</span>')
-            stash.append('<ul id="drop_list_ul_'
-                         + generator.get_graph_name()
-                         + '" class="items">')
-            for node in generator.get_node_names():
-                stash.append('<li><input type="checkbox"/>'
-                             + node + '</li>')
-            stash.append('</ul>')
-            stash.append('</div>')
+                         + '">')
+            for node in generator.get_first_node_names():
+                stash.append('<option value="'
+                             + node 
+                             + '">'
+                             + node
+                             + '</option>')
             stash.append('</th>')
-            stash.append('<th>')
-            stash.append('<select name="Type de sortie" title="Type de sortie" id="out_type_'
-                         + generator.get_graph_name() + '">')
-            for unit in self.__get_outputs_types():
-                stash.append('<option value="' + unit + '">' + unit + '</option>')
-            stash.append('</select>')
-            stash.append('</th>')
-            stash.append('<th>')
-            stash.append('<select name="Cumulatif" title="Cumulatif" id="cumulative_'
-                         + generator.get_graph_name() + '">')
-            for unit in self.__get_cumulative():
-                stash.append('<option value="' + unit + '">' + unit + '</option>')
-            stash.append('</select>')
-            stash.append('</th>')
-            stash.append('<th>')
-            stash.append('<select name="Regroupement" title="Regroupement" id="sum_'
-                         + generator.get_graph_name()+'">')
-            for unit in self.__get_sum():
-                stash.append('<option value="' + unit + '">' + unit + '</option>')
-            stash.append('</select>')
-            stash.append('</th>')
-            stash.append('<th>')
-            stash.append('<select name="Unité de sortie" title="Unité de sortie" id="out_unit_'
-                         + generator.get_graph_name() + '">')
-            for unit in self.__get_outputs_units():
-                stash.append('<option value="' + unit + '">' + unit + '</option>')
-            stash.append('</select>')
-            stash.append('</th>')
-            stash.append('<th>')
-            stash.append('<button class="w3-button w3-dark-grey" type = "button" onclick=addcoutputs("'
+            stash.append('<th> <input type = "number" name="Période~'
                          + generator.get_graph_name() 
-                         + '")>Enregistrer la sortie <j class="fa fa-plus-circle"></j></button>')
+                         + '" title="Période" min ="0" id="Period_'
+                         + generator.get_graph_name()
+                         + '"/></th>')
+            stash.append('<th> <input type = "number" name="Quantitée" title="Quantitée" min ="0" id="Quantity_'
+                         + generator.get_graph_name()
+                         + '"/></th>')
+            stash.append('<th>')
+            stash.append('<button class="w3-button w3-dark-grey" type = "button" onclick=addcinputs("'
+                         + generator.get_graph_name()
+                         + '")>Enregistrer la période <j class="fa fa-plus-circle"></j></button>')
             stash.append('</th>')
-            stash.append('</div>')
             stash.append('</tr>')
             stash.append('</table>')
             stash.append('</div>')
-        stash.append('<div>')
-        return stash 
+            stash.append('<br>')
+            
+            # Input Decay node
+            stash.append('<h5> Valeurs de dégradation </h5>')
+            stash.append('<table class="w3-striped w3-border w3-hoverable w3-sand">'
+                + '<tr>'
+                + '<th>Noeud</th>'
+                + '<th>Type</th>'
+                + '<th>halflife</th>'
+                + '<th><span id="alphaTitle">Alpha</span></th>'
+                + '<th><span id="betaTitle">Beta</span></th>'
+                + '</tr>')
+            for node in generator.get_decay_node_names():
+                stash.append('<tr>')
+                stash.append('<td>{}</td>'.format(node))
+                stash.append('<th>')
+                stash.append('<select name="Type" title="Type" id="Type_'
+                            + generator.get_graph_name() + '~' + node
+                            + '" onchange="checkType(this)">')
+                for decay in ['Exponentielle', 'Gamma', 'Chi-square', 'Manuel']:
+                    stash.append('<option value="'
+                                 + decay 
+                                 + '">'
+                                 + decay
+                                 + '</option>')
+                stash.append('</th>')
+                stash.append('<td><input type="int" name="halflife_value~'
+                             + generator.get_graph_name() + '~' + node
+                             + '></td>')
+                stash.append('<td><input type="float" name="alpha_value~'
+                             + generator.get_graph_name() + '~' + node
+                             + '"></td>')
+                stash.append('<td><input type="float" name="beta_value~'
+                             + generator.get_graph_name() + '~' + node 
+                             + '"></td>')
+                stash.append('</tr>')
+            stash.append('</table>')
+            stash.append('<br>')
+        return stash
     
     def __build_report_header(self) -> list[str]:
         stash = []
@@ -133,6 +165,82 @@ class Reporting(Component):
         stash.append('</div>')
         return stash
     
+    def __build_report_outputs(self) -> list[str]:
+        stash = []
+        for generator in self.read_graphs_json():
+            stash.append('<div>')
+            stash.append('<h6> Nom du graphe: ' + generator.get_graph_name() + '</h6>')
+            stash.append('<div class="w3-responsive">')
+            stash.append('<table class="w3-striped w3-border" style="table-layout: fixed" id=coutputs_'
+                         + generator.get_graph_name()
+                         + '><tr class="w3-sand">'
+                         + '<th>Nom de la sortie</th>'
+                         + '<th>Noeuds</th>'
+                         + '<th>Type</th>'
+                         + '<th>Cumulatif</th>'
+                         + '<th>Regroupement</th>'
+                         + '<th>Unité</th>'
+                         + '</tr>')
+            stash.append('<tr>')
+            stash.append('<td> <input type = "text" name="Nom de la sortie~'
+                         + generator.get_graph_name()
+                         + '" title="Nom de la sortie" min ="1" id="Output_'
+                         + generator.get_graph_name()+'"/></td>')
+            stash.append('<td>')
+            stash.append('<div id="drop_list_' 
+                         + generator.get_graph_name()
+                         + '" class="dropdown-check-list" tabindex="100">')
+            stash.append('<span class="anchor" onclick=dropdown("'
+                         + generator.get_graph_name()
+                         + '")>Noeuds</span>')
+            stash.append('<ul id="drop_list_ul_'
+                         + generator.get_graph_name()
+                         + '" class="items">')
+            for node in generator.get_node_names():
+                stash.append('<li><input type="checkbox"/>'
+                             + node + '</li>')
+            stash.append('</ul>')
+            stash.append('</div>')
+            stash.append('</td>')
+            stash.append('<td>')
+            stash.append('<select name="Type de sortie" title="Type de sortie" id="out_type_'
+                         + generator.get_graph_name() + '">')
+            for unit in self.__get_outputs_types():
+                stash.append('<option value="' + unit + '">' + unit + '</option>')
+            stash.append('</select>')
+            stash.append('</td>')
+            stash.append('<td>')
+            stash.append('<select name="Cumulatif" title="Cumulatif" id="cumulative_'
+                         + generator.get_graph_name() + '">')
+            for unit in self.__get_cumulative():
+                stash.append('<option value="' + unit + '">' + unit + '</option>')
+            stash.append('</select>')
+            stash.append('</td>')
+            stash.append('<td>')
+            stash.append('<select name="Regroupement" title="Regroupement" id="sum_'
+                         + generator.get_graph_name()+'">')
+            for unit in self.__get_sum():
+                stash.append('<option value="' + unit + '">' + unit + '</option>')
+            stash.append('</select>')
+            stash.append('</td>')
+            stash.append('<td>')
+            stash.append('<select name="Unité de sortie" title="Unité de sortie" id="out_unit_'
+                         + generator.get_graph_name() + '">')
+            for unit in self.__get_outputs_units():
+                stash.append('<option value="' + unit + '">' + unit + '</option>')
+            stash.append('</select>')
+            stash.append('</td>')
+            stash.append('<td>')
+            stash.append('<button class="w3-button w3-dark-grey" type="button" onclick=addcoutputs("'
+                         + generator.get_graph_name() 
+                         + '")>Enregistrer la sortie <j class="fa fa-plus-circle"></j></button>')
+            stash.append('</td>')
+            stash.append('</tr>')
+            stash.append('</table>')
+            stash.append('</div>')
+        stash.append('<div>')
+        return stash 
+
     def __build_coutputs_buttons(self) -> list[str]:
         #Avec les files names appeller jsonprovider avec le fetch
         stash = []
@@ -163,85 +271,6 @@ class Reporting(Component):
                          + '")> Ajouter '
                          + jsonname
                          + ' <i class="fa fa-arrow-right"></i></button>')
-        return stash
-    
-    def __build_inputs_table(self) -> list[str]:
-        stash = []
-        stash.append('<h3><b>Intrants</b></h3>')
-        stash.append('<div class="w3-threequarter w3-margin-bottom">')
-        #Unit selection...
-        stash.append('<form action="'
-                     + self._get_url_for("/report")
-                     +'" id="cinputsform" method = "POST">')
-        stash += self.__build_cinputs_biomass_buttons()
-        stash.append('<div>')
-        stash.append('<label for="units">Unité</label>')
-        stash.append('<select name="units" id="units">')
-
-        for unit in self.__get_units():
-            stash.append('<option value="'
-                         + unit
-                         + '">'
-                         + unit
-                         + '</option>')
-        stash.append('</select>')
-        stash.append('</div>')
-
-        for generator in self.read_graphs_json():
-            #For each graph allow an inputs of a list of numbers
-            # Input time / quantities
-            stash.append('<br>')
-            stash.append('<h6> Nom du graphe: '+ generator.get_graph_name() + '</h6>')
-            stash.append('<h5> Flux de matière </h5>')
-            stash.append('<table class="w3-table-all" id=cinputs_'
-                         + generator.get_graph_name()
-                         + '><tr><th>Noeud d\'entrée</th><th>Période</th><th>Quantité</th></tr>')
-            stash.append('<tr>')
-            stash.append('<th>')
-            stash.append('<select name="Noeud d\'entrée" title="Noeud d\'entrée" id="Node_'
-                         + generator.get_graph_name()
-                         + '">')
-            for node in generator.get_first_node_names():
-                stash.append('<option value="'
-                             + node 
-                             + '">'
-                             + node
-                             + '</option>')
-            stash.append('</th>')
-            stash.append('<th> <input type = "number" name="Période~'
-                         + generator.get_graph_name() 
-                         + '" title="Période" min ="0" id="Period_'
-                         + generator.get_graph_name()
-                         + '"/></th>')
-            stash.append('<th> <input type = "number" name="Quantitée" title="Quantitée" min ="0" id="Quantity_'
-                         + generator.get_graph_name()
-                         + '"/></th>')
-            stash.append('<th>')
-            stash.append('<button class="w3-button w3-dark-grey" type = "button" onclick=addcinputs("'
-                         + generator.get_graph_name()
-                         + '")>Enregistrer la période <j class="fa fa-plus-circle"></j></button>')
-            stash.append('</th>')
-            stash.append('</tr>')
-            stash.append('</table>')
-            stash.append('<br>')
-            
-            # Input Decay node
-            stash.append('<h5> Valeurs de dégradation </h5>')
-            stash.append('<table'
-                         + '><tr><th>Noeud</th><th>k</th><th>Theta</th></tr>')
-            for node in generator.get_decay_node_names():
-                stash.append('<tr>')
-                stash.append('<td>{}</td>'.format(node))
-                stash.append('<td><input type="float" name="k_value~'
-                             + generator.get_graph_name() + '~' + node
-                             + '"></td>')
-                stash.append('<td><input type="float" name="theta_value~'
-                             + generator.get_graph_name() + '~' + node
-                             + '"></td>')
-                stash.append('</tr>')
-            stash.append('</table>')
-            stash.append('<br>')
-            stash.append('<br>')
         return stash
     
     def __get_sum(self) -> list[str]:

@@ -85,7 +85,7 @@ class Component(ABC, Blueprint):
     def clear_users_data(folder) -> None:
         for element in os.listdir(folder):
             if os.path.isdir(os.path.join(folder, element)):
-                shutil.rmtree(os.path.join(folder, element), ignore_errors= True)
+                shutil.rmtree(os.path.join(folder, element), ignore_errors=True)
 
     def _get_graphs_files(self) -> list[str]:
         graphs_folder = self._get_uploads_folder()
@@ -107,7 +107,7 @@ class Component(ABC, Blueprint):
         graphs_folder = self._get_uploads_folder()
         locations = []
         for element in os.listdir(graphs_folder):
-            if os.path.isfile(os.path.join(graphs_folder,element)) and element.endswith(".json"):
+            if os.path.isfile(os.path.join(graphs_folder, element)) and element.endswith(".json"):
                 json_file = utilities.Jsonparser.read(os.path.join(graphs_folder, element))
                 inputkeys = list(json_file.keys())
                 if "Unit" in inputkeys and "Inputs" in inputkeys:
