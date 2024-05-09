@@ -140,50 +140,55 @@ function isInteger(value) {
     return /^\d+$/.test(value);
 }
 
-
 // Pour déjà démarrer checkType
-window.onload = function() {
-  var selectElements = document.querySelectorAll('select[name="Type"]');
-  selectElements.forEach(function(selectElement) {
-    checkType(selectElement);
-  });
-};
+window.onload = checkTypes;
 
 // zone grise dans decay lors de la sélection
-function checkType(selectElement) {
+function checkType(selectElement, manual_count) {
   var row = selectElement.parentNode.parentNode;
   var halflifeInput = row.querySelector('input[name^="halflife_value"]');
   var alphaInput = row.querySelector('input[name^="alpha_value"]');
   var betaInput = row.querySelector('input[name^="beta_value"]');
-  var alphaTitle = document.getElementById('alphaTitle');
-  var betaTitle = document.getElementById('betaTitle');
   if (selectElement.value == "Manuel") {
-    one_filed_is_manual = true
-    manual_count ++
     halflifeInput.disabled = true;
     halflifeInput.style.backgroundColor = "darkgrey";
     halflifeInput.value = "";  // Clear the input field
     alphaInput.disabled = false;
     alphaInput.style.backgroundColor = "white";
     alphaInput.style.display = "";  // Show the input field
-    alphaTitle.style.display = "";  // Show the title
     betaInput.disabled = false;
     betaInput.style.backgroundColor = "white";
     betaInput.style.display = "";  // Show the input field
-    betaTitle.style.display = "";  // Show the title
+    return manual_count + 1;
   } else {
     halflifeInput.disabled = false;
     halflifeInput.style.backgroundColor = "white";
     alphaInput.disabled = true;
     alphaInput.style.backgroundColor = "darkgrey";
     alphaInput.value = "";  // Clear the input field
-    alphaInput.style.display = "none";  // Hide the input field
-    alphaTitle.style.display = "none";  // Hide the title
     betaInput.disabled = true;
     betaInput.style.backgroundColor = "darkgrey";
-    betaInput.value = "";  // Clear the input field
+    betaInput.value = "";  // Clear the input field    
+    alphaInput.style.display = "none";  // Hide the input field
     betaInput.style.display = "none";  // Hide the input field
+    return manual_count;
+  }
+}
+
+function checkTypes() {
+  let manual_count = 0;
+  let selectElements = document.querySelectorAll('select[name="Type"]');
+  selectElements.forEach(function(selectElement) {
+    manual_count = checkType(selectElement, manual_count);
+  });
+  let alphaTitle = document.getElementById('alphaTitle');
+  let betaTitle = document.getElementById('betaTitle');
+  if(manual_count == 0){
     betaTitle.style.display = "none";  // Hide the title
+    alphaTitle.style.display = "none";  // Hide the title
+  } else {
+    betaTitle.style.display = "";  // Show the title
+    alphaTitle.style.display = "";  // Show the title
   }
 }
 
@@ -211,6 +216,32 @@ function appendcinputs(graph_name, period, quantity, node) {
     	}
   }
 }	
+
+// Function for decay node
+function setdecay(input) {
+    var row = input.parentNode.parentNode;
+    var rowData = [];
+    var cells = row.getElementsByTagName('td');
+    for (var i = 0; i < cells.length; i++) {
+        var inputElement = cells[i].getElementsByTagName('input')[0];
+        // Ignore the hidden input field
+        if (inputElement && inputElement.type !== 'hidden' && inputElement.value) {
+            rowData.push(inputElement.value);
+        } else if (cells[i].textContent) {
+            rowData.push(cells[i].textContent);
+        }
+    }
+    var th = row.getElementsByTagName('th')[0];
+    if (th) {
+        var select = th.getElementsByTagName('select')[0];
+        if (select) {
+            rowData.push(select.options[select.selectedIndex].value);
+        }
+    }
+    // Find the hidden input field and update its value
+    var hiddenInput = row.querySelector('input[type="hidden"]');
+    hiddenInput.value = JSON.stringify(rowData);
+}
 
 // async await est la manière à faire
 

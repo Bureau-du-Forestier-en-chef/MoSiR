@@ -25,8 +25,8 @@ class Reporting(Component):
         stash += self.__build_report_header()
         stash += self.__build_report_outputs()
         stash.append('<br>')
-        stash.append('<button class="w3-button w3-dark-grey" input type = \
-                     "submit" value = "submit">Exécuter <i class="fa fa-arrow-right"></i></button>')
+        stash.append('<button class="w3-button w3-dark-grey" input type ='
+            + '"submit" value = "submit">Exécuter <i class="fa fa-arrow-right"></i></button>')
         stash.append('</div>')
         stash.append('</form>')
         stash.append('</div>')
@@ -113,7 +113,7 @@ class Reporting(Component):
                 stash.append('<th>')
                 stash.append('<select name="Type" title="Type" id="Type_'
                             + generator.get_graph_name() + '~' + node
-                            + '" onchange="checkType(this)">')
+                            + '" onchange="checkTypes(); setdecay(this)">')
                 for decay in ['Exponentielle', 'Gamma', 'Chi-square', 'Manuel']:
                     stash.append('<option value="'
                                  + decay 
@@ -121,15 +121,21 @@ class Reporting(Component):
                                  + decay
                                  + '</option>')
                 stash.append('</th>')
-                stash.append('<td><input type="int" name="halflife_value~'
+                stash.append('<td><input type="number" min="1" step="1" name="halflife_value~'
                              + generator.get_graph_name() + '~' + node
+                             + '" onchange="setdecay(this)"'
                              + '></td>')
-                stash.append('<td><input type="float" name="alpha_value~'
+                stash.append('<td><input type="number" name="alpha_value~'
                              + generator.get_graph_name() + '~' + node
-                             + '"></td>')
-                stash.append('<td><input type="float" name="beta_value~'
+                             + '" onchange="setdecay(this)" step="any"'
+                             + '></td>')
+                stash.append('<td><input type="number" name="beta_value~'
                              + generator.get_graph_name() + '~' + node 
+                             + '" onchange="setdecay(this)" step="any"'
                              + '"></td>')
+                stash.append('<td><input type="hidden" name="rowData~'
+                    + generator.get_graph_name() + '~' + node
+                    + '"></td>')
                 stash.append('</tr>')
             stash.append('</table>')
             stash.append('<br>')
@@ -171,20 +177,29 @@ class Reporting(Component):
             stash.append('<div>')
             stash.append('<h6> Nom du graphe: ' + generator.get_graph_name() + '</h6>')
             stash.append('<div class="w3-responsive">')
-            stash.append('<table class="w3-striped w3-border" style="table-layout: fixed" id=coutputs_'
-                         + generator.get_graph_name()
-                         + '><tr class="w3-sand">'
-                         + '<th>Nom de la sortie</th>'
-                         + '<th>Noeuds</th>'
-                         + '<th>Type</th>'
-                         + '<th>Cumulatif</th>'
-                         + '<th>Regroupement</th>'
-                         + '<th>Unité</th>'
-                         + '</tr>')
+            stash.append('<table class="w3-border w3-striped" id=coutputs_'
+                + generator.get_graph_name()
+                + ' style="table-layout: fixed; width: 71%;">'
+                + '<colgroup>'
+                + '<col style="width: 7em;">'
+                + '<col style="width: 8em;">'
+                + '<col style="width: 6em;">'
+                + '<col style="width: 5em;">'
+                + '<col style="width: 9em;">'
+                + '<col style="width: 5em;">'
+                + '</colgroup>'
+                + '<tr class="w3-sand">'
+                + '<th>Nom</th>'
+                + '<th>Noeuds</th>'
+                + '<th>Type</th>'
+                + '<th>Cumulatif</th>'
+                + '<th>Regroupement</th>'
+                + '<th>Unité</th>'
+                + '</tr>')
             stash.append('<tr>')
-            stash.append('<td> <input type = "text" name="Nom de la sortie~'
+            stash.append('<td> <input type = "text" size="10" name="Nom~'
                          + generator.get_graph_name()
-                         + '" title="Nom de la sortie" min ="1" id="Output_'
+                         + '" title="Nom" min ="1" id="Output_'
                          + generator.get_graph_name()+'"/></td>')
             stash.append('<td>')
             stash.append('<div id="drop_list_' 
@@ -224,7 +239,7 @@ class Reporting(Component):
             stash.append('</select>')
             stash.append('</td>')
             stash.append('<td>')
-            stash.append('<select name="Unité de sortie" title="Unité de sortie" id="out_unit_'
+            stash.append('<select name="Unité" title="Unité" id="out_unit_'
                          + generator.get_graph_name() + '">')
             for unit in self.__get_outputs_units():
                 stash.append('<option value="' + unit + '">' + unit + '</option>')
@@ -237,6 +252,7 @@ class Reporting(Component):
             stash.append('</td>')
             stash.append('</tr>')
             stash.append('</table>')
+            stash.append('</div>')
             stash.append('</div>')
         stash.append('<div>')
         return stash 
@@ -292,7 +308,7 @@ class Reporting(Component):
         return ['Flux in', 'Flux out', 'Stock']
     
     def __get_graphs_inputs(self) -> str:
-        data = {"Inputs":{}}
+        data = {"Inputs": {}, "Decay": {}}
         # TODO decay
         for field_name, value in request.form.items():
             splitted_key = field_name.split('~')
@@ -311,6 +327,23 @@ class Reporting(Component):
                     if node not in data["Inputs"][graph]:
                         data["Inputs"][graph][node] = {}
                     data["Inputs"][graph][node][period] = the_value
+            elif target_key == "rowData":
+                value_list = value.strip('[]').replace('"', '').split(',')
+                graph = splitted_key[1]
+                node = splitted_key[2]
+                decay_type = value_list[-1]
+                # TODO S'assurer que 1 : il y a deux valeurs lorsque Manuel
+                # Et s'assurer qu'il y a une erreur si champs libre pour le reste
+                if decay_type == 'Manuel':
+                    value = {'alpha': float(value_list[1]),
+                             'beta': float(value_list[2])}
+                else:
+                    value = int(value_list[1])
+                if graph not in data["Decay"]:
+                    data["Decay"][graph] = {node: {decay_type: value}}
+                else:
+                    data["Decay"][graph][node] = {decay_type: value}
+
         location = os.path.join(self._get_uploads_folder(), "inputs.json")
         utilities.Jsonparser.write(location, data)
         return location
@@ -369,7 +402,7 @@ class Reporting(Component):
             message = self.__run_mosir(graph_json, inputs_json, report_json)
         histogram_json = self.__get_histogram_json(report_json)
         jsonname = pathlib.Path(histogram_json).stem
-        htmltarget = self._get_url_for("/json_provider/<filename>", filename= jsonname + '.json')
+        htmltarget = self._get_url_for("/json_provider/<filename>", filename=jsonname + '.json')
         stash = []
         if message is not None:
             stash.append(message)
@@ -476,19 +509,26 @@ class Reporting(Component):
         target_json = os.path.join(self._get_uploads_folder(), filename)
         return jsonify(utilities.Jsonparser.read(target_json))
     
+    def __test(self):
+        return 'Hello'
+
     def add_all_endpoints(self) -> None:
-        self._add_endpoint(endpoint= '/', 
-                           endpoint_name= '/', 
-                           handler= self.__get_inputs, 
-                           methods= ['GET','POST'])
-        self._add_endpoint(endpoint= '/report', 
-                           endpoint_name= '/report', 
-                           handler= self.__report,
-                           methods= ['GET','POST'])
-        self._add_endpoint(endpoint= '/json_provider/<filename>', 
-                           endpoint_name= '/json_provider/<filename>',
-                           handler= self.__json_provider, 
-                           methods= ['GET','POST'])
+        self._add_endpoint(endpoint='/', 
+                           endpoint_name='/', 
+                           handler=self.__get_inputs, 
+                           methods=['GET', 'POST'])
+        self._add_endpoint(endpoint='/report', 
+                           endpoint_name='/report', 
+                           handler=self.__report,
+                           methods=['GET', 'POST'])
+        #self._add_endpoint(endpoint= '/test',
+        #                   endpoint_name= '/test', 
+        #                   handler= self.__test,
+        #                   methods= ['GET','POST'])
+        self._add_endpoint(endpoint='/json_provider/<filename>', 
+                           endpoint_name='/json_provider/<filename>',
+                           handler=self.__json_provider, 
+                           methods=['GET', 'POST'])
     
     def get_description(self) -> str:
         return "Calculer les émissions générées"
