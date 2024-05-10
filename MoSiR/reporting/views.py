@@ -84,7 +84,8 @@ class Reporting(Component):
                          + '" title="Période" min ="0" id="Period_'
                          + generator.get_graph_name()
                          + '"/></th>')
-            stash.append('<th> <input type = "number" name="Quantitée" title="Quantitée" min ="0" id="Quantity_'
+            stash.append('<th> <input type = "number" name="Quantitée" title="Quantitée"'
+                         + 'min ="0" required id="Quantity_'
                          + generator.get_graph_name()
                          + '"/></th>')
             stash.append('<th>')
@@ -123,15 +124,15 @@ class Reporting(Component):
                 stash.append('</th>')
                 stash.append('<td><input type="number" min="1" step="1" name="halflife_value~'
                              + generator.get_graph_name() + '~' + node
-                             + '" onchange="setdecay(this)"'
+                             + '" onchange="setdecay(this)" required'
                              + '></td>')
                 stash.append('<td><input type="number" name="alpha_value~'
                              + generator.get_graph_name() + '~' + node
-                             + '" onchange="setdecay(this)" step="any"'
+                             + '" onchange="setdecay(this)" step="any" required'
                              + '></td>')
                 stash.append('<td><input type="number" name="beta_value~'
                              + generator.get_graph_name() + '~' + node 
-                             + '" onchange="setdecay(this)" step="any"'
+                             + '" onchange="setdecay(this)" step="any" required'
                              + '"></td>')
                 stash.append('<td><input type="hidden" name="rowData~'
                     + generator.get_graph_name() + '~' + node
@@ -332,8 +333,7 @@ class Reporting(Component):
                 graph = splitted_key[1]
                 node = splitted_key[2]
                 decay_type = value_list[-1]
-                # TODO S'assurer que 1 : il y a deux valeurs lorsque Manuel
-                # Et s'assurer qu'il y a une erreur si champs libre pour le reste
+                # Le script html s'assure que les cases sont remplies
                 if decay_type == 'Manuel':
                     value = {'alpha': float(value_list[1]),
                              'beta': float(value_list[2])}
@@ -521,10 +521,6 @@ class Reporting(Component):
                            endpoint_name='/report', 
                            handler=self.__report,
                            methods=['GET', 'POST'])
-        #self._add_endpoint(endpoint= '/test',
-        #                   endpoint_name= '/test', 
-        #                   handler= self.__test,
-        #                   methods= ['GET','POST'])
         self._add_endpoint(endpoint='/json_provider/<filename>', 
                            endpoint_name='/json_provider/<filename>',
                            handler=self.__json_provider, 

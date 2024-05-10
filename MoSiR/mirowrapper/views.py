@@ -212,7 +212,7 @@ class Mirowrapper(Component):
             GraphsDict[Generator.get_graph_name()] = Generator.to_dict()
         # On test le graphe avant
         try:
-            graph = gg.GraphFactory(Dict= GraphsDict)
+            graph = gg.GraphFactory(Dict=GraphsDict)
             gv.main(graph)
             self._write_graphs_json(GraphsDict, GRAPHNAMES)
         except Exception as e:

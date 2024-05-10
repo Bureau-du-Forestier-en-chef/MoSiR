@@ -37,7 +37,7 @@ class Generator(metaclass=ABCMeta):
     def get_decay_node_names(self) -> list[str]:
         all_names = []
         for key, values in self._nodes.items():
-            if values['Half-life'] > 0:
+            if values['Decay'] > 0:
                 all_names.append(values['Name'])
         return all_names
 

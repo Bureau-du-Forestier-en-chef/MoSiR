@@ -5,7 +5,8 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 """
 import json
-import warnings # Maybe
+import warnings
+from scipy.stats import gamma
 from MoSiR import networkx_graph as wp
 from MoSiR import mosir_exceptions as me
 from abc import ABCMeta, abstractmethod
@@ -313,43 +314,50 @@ class DecayNode(ProportionNode):
     Returns:
         DecayNode: Un objet de la classe DecayNode
     """
-    def __init__(self, NAME: str, HalfLife: int):
+    def __init__(self, NAME: str, decay: int):
         super().__init__(NAME)
-        if not isinstance(HalfLife, int) or HalfLife <= 0:
-            raise ValueError("Half-life must be a positive integer.")
-        self._HalfLife = HalfLife
+        if not isinstance(decay, int) or decay <= 0:
+            raise ValueError("Decay value must be a positive integer.")
+        self._decay = decay
+        self.alpha_value = None
+        self.beta_value = None
         self.__dn_cache = Caching()
     
     def past_carbon(self):
         return self.__dn_cache
         
     @property
-    def HalfLife(self):
-        return self._HalfLife
+    def decay(self):
+        return self._alpha_value, self._beta_value
 
-    @HalfLife.setter 
-    def HalfLife(self, Value):
-       self._HalfLife = Value
+    @decay.setter 
+    def decay(self, alpha, beta):
+       self._alpha_value = alpha
+       self._beta_value = beta
     
     def get_flux_out(self, graph: WPGraph, time: int, cumulative: bool = False) -> float:
         total = 0
         if cumulative == False:
             if time in self.past_carbon().flux_cache:
                 return self.past_carbon().get_flux_cache(time)
-            for timestep in range(time + 1): 
-                if timestep != time:  
-                    flux_in = self.get_flux_in(graph, timestep, cumulative)
-                    output_flux_out = (flux_in * ((0.5) ** ((time - timestep - 1)/self.HalfLife))) - \
-                        (flux_in * ((0.5) ** ((time - timestep)/self.HalfLife)))
-                    total += output_flux_out
+            for timestep in range(time):   
+                flux_in = self.get_flux_in(graph, timestep, cumulative)
+                if flux_in == 0: 
+                    continue
+                print(f"It is a test : {self.decay}")
+                decay_proportion = gamma.cdf(time, self.alpha_value, scale=self.beta_value) \
+                    - gamma.cdf(time - 1, self.alpha_value, scale=self.beta_value)
+                total += flux_in * decay_proportion
             self.past_carbon().set_flux_cache(time, total)
             return total
         else: 
-            for timestep in range(time + 1):
-                if timestep != time:   
-                    flux_in = self.get_flux_in(graph, timestep, cumulative= False)
-                    output_flux_out = flux_in - (flux_in * ((0.5) ** ((time - timestep)/self.HalfLife)))
-                    total += output_flux_out
+            for timestep in range(time):  
+                flux_in = self.get_flux_in(graph, timestep, cumulative= False)
+                if flux_in == 0:
+                    continue
+                decay_proportion = gamma.cdf(
+                    time - timestep, self.alpha_value, scale=self.beta_value)
+                total += flux_in * decay_proportion
             return total
         
     def get_flux_in(self, graph: WPGraph, time: int, cumulative: bool = False) -> float:
@@ -383,15 +391,16 @@ class DecayNode(ProportionNode):
 
         '''
         try:
-            total = float(0)
-            for Year in range(time + 1): 
-                Annual = self.get_flux_in(graph, Year, cumulative= False)
-                Restant = Annual * ((0.5) ** ((time - Year)/self.HalfLife))
-                total += Restant
+            total = 0
+            for timestep in range(time + 1): 
+                annual = self.get_flux_in(graph, timestep, cumulative= False)
+                decay_proportion = 1 - gamma.cdf(
+                    time - timestep, self.alpha_value, scale=self.beta_value)
+                total += annual * decay_proportion
             return total
         except RecursionError:
             raise me.RecursionNode("Un maximum de demande a été effectué. \
-                                 Une boucle entre des ProportionNode est présente")          
+                Une boucle entre des ProportionNode est présente")          
 
 class RecyclingNode(ProportionNode):
     def __init__(self, NAME: str):
@@ -525,22 +534,22 @@ class GraphFactory():
             node_map = {}
             for node_id, node_data in _NODES.items():
                 if int(node_id) in _TOPNODES: 
-                    if node_data['Half-life'] > 0 or node_data['Recycling'] > 0:
+                    if node_data['Decay'] > 0 or node_data['Recycling'] > 0:
                         raise me.GraphError(f"Node at the top (a node without an edge \
                             going into it) cannot also be identified as a recycling \
-                            or half-life node. Node name: {node_data['Name']}") 
+                            or decay node. Node name: {node_data['Name']}") 
                     new_node =  TopNode(node_data['Name'])
                 elif int(node_id) in _LASTNODES:
-                    if node_data['Half-life'] > 0 or node_data['Recycling'] > 0:
+                    if node_data['Decay'] > 0 or node_data['Recycling'] > 0:
                         raise me.GraphError(f"Node at the bottom (a node without an edge \
                             going out of it) cannot also be identified as a recycling \
-                            or half-life node. Node name: {node_data['Name']}")  
+                            or decay node. Node name: {node_data['Name']}")  
                     new_node = PoolNode(node_data['Name'])
-                elif node_data["Half-life"] > 0:
+                elif node_data["Decay"] > 0:
                     if node_data["Recycling"] > 0:
                         raise me.GraphError(f"A node cannot be both a recycling and \
-                            half-life node. Node name: {node_data['Name']}")
-                    new_node = DecayNode(node_data['Name'], int(node_data['Half-life']))
+                            decay node. Node name: {node_data['Name']}")
+                    new_node = DecayNode(node_data['Name'], int(node_data['Decay']))
                 elif node_data['Recycling'] == 1: 
                     new_node = RecyclingNode(node_data['Name'])
                 else: new_node = ProportionNode(node_data['Name'])

@@ -68,14 +68,7 @@ class ItemBuilder:
             if "data" in Item and "content" in Item["data"]:
                 Name = utilities.Htmlparser.get_string_from_html(
                     Item["data"]["content"]).replace(',', '')
-                #Selectedkeys = []
-                #for KeyData, Data in  DataHolder.items():
-                #    if Data and KeyData in Name:
-                #        DataHolder[KeyData] = self.__GetValue(Name, KeyData) # FIXME half-life valeur est cherché ici
-                #        Selectedkeys.append(KeyData)
                 DataHolder["Name"] = Name
-                #if Selectedkeys:
-                #    DataHolder["Name"] = self.__GetName(Name, Selectedkeys) # FIXME half-life name qui se fait changer ici
         return DataHolder
 
 class Mirogenerator(Generator):
@@ -211,7 +204,7 @@ class Mirogenerator(Generator):
                     Message = "Un item est mal connecté dans le graphe (tag ID "\
                         + str(tagid) + "). Veuillez vérifier que des liens sont bien\
                         rattachés à celui-ci."
-                    raise(mosir_exceptions.Miroerror(Message,tagid))
+                    raise(mosir_exceptions.Miroerror(Message, tagid))
         Removed = len(self._edges) - len(NewEdges)
         self._edges = NewEdges
         for EdgeId,EdgeItems in self._edges.items():

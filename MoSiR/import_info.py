@@ -5,6 +5,7 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 """
 import json
+from MoSiR import gamma_function as gf
 
 # Json -----------------------------------------------------------------------
 
@@ -16,14 +17,20 @@ class ImportData():
     def get_unit(self):
         return self._DATA['Unit']
     
-    def get_data(self, GraphName: str):
-        return self._DATA['Inputs'][GraphName]
+    def get_flux_data(self, graph_name: str):
+        return self._DATA['Inputs'][graph_name]
     
-    def get_nodes_name(self, GraphName: str):
-        return [i for i in self.get_data(GraphName)]
+    def get_decay_data(self, graph_name: str):
+        return self._DATA['Decay'][graph_name]
     
-    def get_node_input(self, GraphName: str, NodeName):
-        intrant = self.get_data(GraphName)[NodeName]
+    def get_flux_name(self, graph_name: str):
+        return [i for i in self.get_flux_data(graph_name)]
+    
+    def get_decay_name(self, graph_name: str):
+        return [i for i in self.get_decay_data(graph_name)]
+    
+    def get_flux_input(self, graph_name: str, node_name: str):
+        intrant = self.get_flux_data(graph_name)[node_name]
         time = []
         quantities = []
         for temps, value in intrant.items():
@@ -32,13 +39,27 @@ class ImportData():
             time.append(int(temps)) 
             quantities.append(value)
         return time, quantities
+    
+    def get_decay_input(self, graph_name: str, node_name: str):
+        intrant = self.get_decay_data(graph_name)[node_name]
+        if intrant.key() == "Manuel":
+            alpha_value = intrant['Manuel']['alpha']
+            beta_value = intrant['Manuel']['beta']
+        elif intrant.key() in ['Exponentielle', 'Gamma', 'Chi-square']:
+            decay_type = intrant.key()
+            halflife_value = intrant[decay_type]
+            alpha_value, beta_value = gf.DecayTypeOptimizer(
+                node_name, decay_type, halflife_value).find_param()
+        return alpha_value, beta_value
 
 def add_import(graph, import_data):
     for graph_name in graph.get_graph_name:
         G = graph.get_graph(graph_name)
         for node in G.nodes():
-            if node.NAME in import_data.get_nodes_name(graph_name):
-                time = import_data.get_node_input(graph_name, node.NAME)[0]
-                quantities = import_data.get_node_input(graph_name, node.NAME)[1]
+            if node.NAME in import_data.get_flux_name(graph_name):
+                time, quantities = import_data.get_flux_input(graph_name, node.NAME)
                 node.time = time
                 node.quantities = quantities
+            if node.NAME in import_data.get_decay_name(graph_name):
+                alpha, beta = import_data.get_decay_input(graph_name, node.NAME)
+                node.decay = alpha, beta
