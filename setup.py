@@ -38,7 +38,7 @@ setup(
     version = '1.0.0',
     description = 'MoSiR',
     long_description = readme,
-    author = 'Gabriel Landry & Guillaume Cyr',
+    author = 'Gabriel Landry, Guillaume Cyr et Marc-Alexandre Martel',
     author_email = 'gabriel.landry@fec.gouv.qc.ca',
     url = 'https://github.com/Bureau-du-Forestier-en-chef/MoSiR',
     license = license,

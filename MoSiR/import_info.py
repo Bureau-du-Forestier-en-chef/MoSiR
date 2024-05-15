@@ -42,11 +42,11 @@ class ImportData():
     
     def get_decay_input(self, graph_name: str, node_name: str):
         intrant = self.get_decay_data(graph_name)[node_name]
-        if intrant.key() == "Manuel":
+        if list(intrant.keys())[0] == "Manuel":
             alpha_value = intrant['Manuel']['alpha']
             beta_value = intrant['Manuel']['beta']
-        elif intrant.key() in ['Exponentielle', 'Gamma', 'Chi-square']:
-            decay_type = intrant.key()
+        elif list(intrant.keys())[0] in ['Exponentielle', 'Gamma', 'Chi-square']:
+            decay_type = list(intrant.keys())[0]
             halflife_value = intrant[decay_type]
             alpha_value, beta_value = gf.DecayTypeOptimizer(
                 node_name, decay_type, halflife_value).find_param()
@@ -62,4 +62,5 @@ def add_import(graph, import_data):
                 node.quantities = quantities
             if node.NAME in import_data.get_decay_name(graph_name):
                 alpha, beta = import_data.get_decay_input(graph_name, node.NAME)
-                node.decay = alpha, beta
+                node.alpha = alpha
+                node.beta = beta

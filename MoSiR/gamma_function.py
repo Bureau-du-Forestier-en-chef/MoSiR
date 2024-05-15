@@ -20,7 +20,16 @@ class DecayTypeOptimizer:
         elif self.decay_type == "Chi-square":
             self.beta = 2
 
-    def objective(self, param) -> float:
+    def objective(self, param: float) -> float:
+        """Set up param à optimiser tout dépendant ce qu'on recherche
+        Param is unknow
+
+        Args:
+            param (_type_): Alpha or beta (float)
+
+        Returns:
+            float: _description_
+        """
         if hasattr(self, 'alpha'):
             cdf_value = gamma.cdf(self.value, self.alpha, scale=param)
         elif hasattr(self, 'beta'):
@@ -28,7 +37,25 @@ class DecayTypeOptimizer:
         return abs(cdf_value - 0.5)
 
     def find_param(self) -> tuple[float, float]:
-        result = minimize_scalar(self.objective)
+        """Permet d'optimiser la valeur manquante
+        Avec des hautes valeurs, l'optimisateur a de la difficulté à
+        trouver la réponse. Il faut donc pointer un intervalle de possibilités
+        avec bounds. Le chiffre 300 est approximativement le maximum que peut
+        atteindre alpha ou beta avec un halflife de 200 ans. 
+
+        Raises:
+            me.DecayError: Advenant que l'optimisation échoue
+
+        Returns:
+            tuple[float, float]: Combinaison alpha, beta
+        """
+        if self.decay_type == "Exponentielle":
+            bounds = (self.value * 0.5, self.value * 2)
+        elif self.decay_type == "Gamma":
+            bounds = (self.value * 0.5, self.value * 1.5)
+        elif self.decay_type == "Chi-square":
+            bounds = (self.value * 0.25, self.value * 0.9)
+        result = minimize_scalar(self.objective, bounds=bounds)
         if result.success == False:
             raise me.DecayError(f"Optimization of {self.node_name} decay \
                 values (half-life of {self.value}) unsuccessfull")
@@ -38,19 +65,8 @@ class DecayTypeOptimizer:
         elif hasattr(self, 'beta'):
             alpha_value = result.x
             beta_value = self.beta
+        # Test
+        if round(gamma.cdf(self.value, alpha_value, scale=beta_value), 4) != 0.5000:
+            raise me.DecayError(f"Optimization of {self.node_name} decay \
+                values (half-life of {self.value}) unsuccessfull")
         return alpha_value, beta_value
-
-# Usage:
-DecayTypeOptimizer("Name_of_node", "Exponentielle", 1).find_param()
-
-#TODO vérifier les ranges où il y a une erreur et si je peux guider
-# le solveur vers la réponse pour l'aider
-failed = []
-for i in range(150):
-    try:
-        DecayTypeOptimizer("Name_of_node", "Exponentielle", i).find_param()
-    except:
-        failed.append(i)
-
-print(failed)
-

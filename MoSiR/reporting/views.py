@@ -85,7 +85,7 @@ class Reporting(Component):
                          + generator.get_graph_name()
                          + '"/></th>')
             stash.append('<th> <input type = "number" name="Quantitée" title="Quantitée"'
-                         + 'min ="0" required id="Quantity_'
+                         + 'min ="0" id="Quantity_'
                          + generator.get_graph_name()
                          + '"/></th>')
             stash.append('<th>')
@@ -103,7 +103,7 @@ class Reporting(Component):
             stash.append('<table class="w3-striped w3-border w3-hoverable w3-sand">'
                 + '<tr>'
                 + '<th>Noeud</th>'
-                + '<th>Type</th>'
+                + '<th>Dégradation</th>'
                 + '<th>halflife</th>'
                 + '<th><span id="alphaTitle">Alpha</span></th>'
                 + '<th><span id="betaTitle">Beta</span></th>'
@@ -112,7 +112,7 @@ class Reporting(Component):
                 stash.append('<tr>')
                 stash.append('<td>{}</td>'.format(node))
                 stash.append('<th>')
-                stash.append('<select name="Type" title="Type" id="Type_'
+                stash.append('<select name="Dégradation" title="Dégradation" id="Decay_'
                             + generator.get_graph_name() + '~' + node
                             + '" onchange="checkTypes(); setdecay(this)">')
                 for decay in ['Exponentielle', 'Gamma', 'Chi-square', 'Manuel']:
@@ -122,7 +122,7 @@ class Reporting(Component):
                                  + decay
                                  + '</option>')
                 stash.append('</th>')
-                stash.append('<td><input type="number" min="1" step="1" name="halflife_value~'
+                stash.append('<td><input type="number" min="1" max="500" step="1" name="halflife_value~'
                              + generator.get_graph_name() + '~' + node
                              + '" onchange="setdecay(this)" required'
                              + '></td>')
@@ -426,10 +426,13 @@ class Reporting(Component):
         #https://plotly.com/javascript/bar-charts/
         #https://stackoverflow.com/questions/42499535/passing-a-json-object-from-flask-to-javascript
         filename = pathlib.Path(location).stem
+        filename_list = filename.split("_")
+        graph_name = filename_list[0]
+        output_title = filename_list[1]
         
         all_data = []
         divid = filename
-        layout = {'title': filename,
+        layout = {'title': graph_name + ': ' + output_title,
                     'xaxis': {
                         'tickfont': {
                             'size': 14,
@@ -508,9 +511,6 @@ class Reporting(Component):
     def __json_provider(self, filename: str):
         target_json = os.path.join(self._get_uploads_folder(), filename)
         return jsonify(utilities.Jsonparser.read(target_json))
-    
-    def __test(self):
-        return 'Hello'
 
     def add_all_endpoints(self) -> None:
         self._add_endpoint(endpoint='/', 

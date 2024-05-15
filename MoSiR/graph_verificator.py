@@ -27,7 +27,6 @@ def main(graph: gg.GraphFactory):
     graph_copy = copy.deepcopy(graph)
 
     # On récupère les noms des nodes qui ont un overflow
-    # TODO créer une deepcopy du GraphFactory
     overflow_name = {}
     for graph_name in graph_copy.get_data:
         G0 = graph_copy.get_data.get(graph_name)
@@ -126,7 +125,7 @@ def debugg_graph_03(graph: gg.GraphFactory):
 # On test si la quantité total en input est égale à la quantité total dans le système
 def debugg_graph_04(graph: gg.GraphFactory, overflow: list[str]):
     MOSIR_TOLERENCE = 0.0001
-    time = 150
+    time = 15
     # total input versus in system 
     for name in graph.get_graph_name:
         G4 = graph.get_graph(name)
@@ -134,8 +133,11 @@ def debugg_graph_04(graph: gg.GraphFactory, overflow: list[str]):
         # On ajoute les inputs
         for node in G4.nodes():
             if type(node) == gg.TopNode:
-                node.time = range(time + 1)
-                node.quantities = range(time + 1)
+                node.time = list(range(time + 1))
+                node.quantities = [1] * (time + 1)
+            elif type(node) == gg.DecayNode:
+                node.alpha = 1
+                node.beta = 7.21347398
 
         carbon_input = 0
         for timestep in range(time + 1):

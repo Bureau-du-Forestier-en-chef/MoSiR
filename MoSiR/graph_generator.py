@@ -319,20 +319,27 @@ class DecayNode(ProportionNode):
         if not isinstance(decay, int) or decay <= 0:
             raise ValueError("Decay value must be a positive integer.")
         self._decay = decay
-        self.alpha_value = None
-        self.beta_value = None
+        self._alpha_value = None
+        self._beta_value = None
         self.__dn_cache = Caching()
     
     def past_carbon(self):
         return self.__dn_cache
         
     @property
-    def decay(self):
-        return self._alpha_value, self._beta_value
-
-    @decay.setter 
-    def decay(self, alpha, beta):
+    def alpha(self):
+        return self._alpha_value
+    
+    @alpha.setter 
+    def alpha(self, alpha):
        self._alpha_value = alpha
+
+    @property
+    def beta(self):
+        return self._beta_value
+    
+    @beta.setter 
+    def beta(self, beta):
        self._beta_value = beta
     
     def get_flux_out(self, graph: WPGraph, time: int, cumulative: bool = False) -> float:
@@ -344,19 +351,18 @@ class DecayNode(ProportionNode):
                 flux_in = self.get_flux_in(graph, timestep, cumulative)
                 if flux_in == 0: 
                     continue
-                print(f"It is a test : {self.decay}")
-                decay_proportion = gamma.cdf(time, self.alpha_value, scale=self.beta_value) \
-                    - gamma.cdf(time - 1, self.alpha_value, scale=self.beta_value)
+                decay_proportion = gamma.cdf(time - timestep, self.alpha, scale=self.beta) \
+                    - gamma.cdf(time - timestep - 1, self.alpha, scale=self.beta)
                 total += flux_in * decay_proportion
             self.past_carbon().set_flux_cache(time, total)
             return total
-        else: 
+        else:
             for timestep in range(time):  
                 flux_in = self.get_flux_in(graph, timestep, cumulative= False)
                 if flux_in == 0:
                     continue
                 decay_proportion = gamma.cdf(
-                    time - timestep, self.alpha_value, scale=self.beta_value)
+                    time - timestep, self.alpha, scale=self.beta)
                 total += flux_in * decay_proportion
             return total
         
@@ -394,8 +400,10 @@ class DecayNode(ProportionNode):
             total = 0
             for timestep in range(time + 1): 
                 annual = self.get_flux_in(graph, timestep, cumulative= False)
+                if annual == 0:
+                    continue
                 decay_proportion = 1 - gamma.cdf(
-                    time - timestep, self.alpha_value, scale=self.beta_value)
+                    time - timestep, self.alpha, scale=self.beta)
                 total += annual * decay_proportion
             return total
         except RecursionError:
@@ -519,11 +527,11 @@ class GraphFactory():
         graph_num = 0
         keys = list(self.get_data.keys())
         keys.sort()
-        for KEY in keys:
-            self._GRAPHNAME.append(KEY)
-            self._GRAPHS.append(wp.WPGraph(KEY))
-            _EDGES = self.get_data[KEY].get('Edges', {})
-            _NODES = self.get_data[KEY].get('Nodes', {})
+        for graph in keys:
+            self._GRAPHNAME.append(graph)
+            self._GRAPHS.append(wp.WPGraph(graph))
+            _EDGES = self.get_data[graph].get('Edges', {})
+            _NODES = self.get_data[graph].get('Nodes', {})
             if len(_NODES) < 2 or len(_EDGES) == 0:
                 raise me.GraphError("Le graphe doit contenir au moins deux noeud et un edge")
             _TOPNODES = set([int(ID) for ID in _NODES]) - \
