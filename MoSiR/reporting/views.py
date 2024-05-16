@@ -100,8 +100,10 @@ class Reporting(Component):
             
             # Input Decay node
             stash.append('<h5> Valeurs de dégradation </h5>')
-            stash.append('<table class="w3-striped w3-border w3-hoverable w3-sand">'
-                + '<tr>'
+            stash += self.__build_cdecay_button()
+            stash.append('<table class="w3-striped w3-border w3-hoverable w3-sand" id=cdecay_'
+                + generator.get_graph_name()
+                + '><tr>'
                 + '<th>Noeud</th>'
                 + '<th>Dégradation</th>'
                 + '<th>halflife</th>'
@@ -124,17 +126,25 @@ class Reporting(Component):
                 stash.append('</th>')
                 stash.append('<td><input type="number" min="1" max="500" step="1" name="halflife_value~'
                              + generator.get_graph_name() + '~' + node
+                             + '" id="halflife_value~'
+                             + generator.get_graph_name() + '~' + node
                              + '" onchange="setdecay(this)" required'
                              + '></td>')
                 stash.append('<td><input type="number" name="alpha_value~'
+                             + generator.get_graph_name() + '~' + node
+                             + '" id="alpha_value~'
                              + generator.get_graph_name() + '~' + node
                              + '" onchange="setdecay(this)" step="any" required'
                              + '></td>')
                 stash.append('<td><input type="number" name="beta_value~'
                              + generator.get_graph_name() + '~' + node 
+                             + '" id="beta_value~'
+                             + generator.get_graph_name() + '~' + node
                              + '" onchange="setdecay(this)" step="any" required'
                              + '"></td>')
                 stash.append('<td><input type="hidden" name="rowData~'
+                    + generator.get_graph_name() + '~' + node
+                    + '" id="rowData~'
                     + generator.get_graph_name() + '~' + node
                     + '"></td>')
                 stash.append('</tr>')
@@ -290,6 +300,22 @@ class Reporting(Component):
                          + ' <i class="fa fa-arrow-right"></i></button>')
         return stash
     
+    def __build_cdecay_button(self) -> list[str]:
+        #Avec les files names appeller jsonprovider avec le fetch
+        stash = []
+        for input in self._get_inputs_files():
+            jsonname = pathlib.Path(input).stem
+            htmltarget = self._get_url_for("/json_provider/<filename>", 
+                                           filename= jsonname + '.json')
+            stash.append('<button class="w3-button w3-dark-grey" id='
+                         + htmltarget + '_decay' 
+                         + '  type="button" onclick=fillcdecay("'
+                         + htmltarget
+                         + '")> Ajouter '
+                         + jsonname
+                         + ' <i class="fa fa-arrow-right"></i></button>')
+        return stash
+    
     def __get_sum(self) -> list[str]:
         return ["Par noeud", "Tout ensemble"]
     
@@ -379,7 +405,7 @@ class Reporting(Component):
                     data["Output"][graph_name][output_name]["Type"] = value
                 elif(target_key == 'Cumulative'):
                     cumulate = False
-                    if value.lower() == "vrai":
+                    if value.lower() in ["vrai", "true"]:
                         cumulate = True
                     data["Output"][graph_name][output_name]["Cumulative"] = cumulate
                 elif(target_key == 'Summarize'):

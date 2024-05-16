@@ -217,14 +217,14 @@ function appendcinputs(graph_name, period, quantity, node) {
   }
 }	
 
-// Function for decay node
+// Fonction pour les decay node. Créer des valeurs cachés pour les gérer
+// données qui sont entrées. 
 function setdecay(input) {
     var row = input.parentNode.parentNode;
     var rowData = [];
     var cells = row.getElementsByTagName('td');
     for (var i = 0; i < cells.length; i++) {
         var inputElement = cells[i].getElementsByTagName('input')[0];
-        // Ignore the hidden input field
         if (inputElement && inputElement.type !== 'hidden' && inputElement.value) {
             rowData.push(inputElement.value);
         } else if (cells[i].textContent) {
@@ -238,7 +238,6 @@ function setdecay(input) {
             rowData.push(select.options[select.selectedIndex].value);
         }
     }
-    // Find the hidden input field and update its value
     var hiddenInput = row.querySelector('input[type="hidden"]');
     hiddenInput.value = JSON.stringify(rowData);
 }
@@ -262,6 +261,49 @@ function fillcinputs(html_inputs)  {
     element.remove();
   }
 
+//Push a .json into the cdecay
+function fillcdecay(html_inputs)  {
+    const histo_data = fetch(html_inputs)
+    .then(response => response.json())
+    .then((data) => {
+      for (const [graph_name, decay_entry] of Object.entries(data.Decay)) {
+        for (const [node, decay] of Object.entries(decay_entry)) {
+          for (const [decay_type, valeur] of Object.entries(decay)) {
+            appendcdecay(graph_name, node, decay_type, valeur)
+            }
+          }
+        }
+      });
+    const element = document.getElementById(html_inputs + "_decay");
+    element.remove();
+  }
+
+//Append to table cdecay
+function appendcdecay(graph_name, node, decay_type, valeur) {
+  // Get the select element for "Dégradation"
+  var selectElement = document.getElementById("Decay_" + graph_name + "~" + node);
+  
+  // Set the select element to the correct decay_type
+  for (var i = 0; i < selectElement.options.length; i++) {
+    if (selectElement.options[i].value == decay_type) {
+      selectElement.selectedIndex = i;
+      break;
+    }
+  }
+  checkTypes();
+
+  // Check the decay_type and update the corresponding value
+  if (decay_type != "Manuel") {
+    document.getElementById("halflife_value~" + graph_name + "~" + node).value = valeur;
+    document.getElementById("rowData~" + graph_name + "~" + node).value = [node, valeur, decay_type];
+  } else {
+    document.getElementById("alpha_value~" + graph_name + "~" + node).value = valeur['alpha'];
+    document.getElementById("beta_value~" + graph_name + "~" + node).value = valeur['beta'];
+    document.getElementById("rowData~" + graph_name + "~" + node).value = [node, valeur['alpha'], valeur['beta'], decay_type];
+  }
+}
+        
+
 //Adding period inputs
 function addcinputs(graph_name) {
     var period = document.getElementById('Period_' + graph_name).value;
@@ -278,18 +320,15 @@ function addcinputs(graph_name) {
 }
 
 //Add one output to table
-function appendcoutputs(graph_name,output_name,output_type,cumulative,sum,out_unit,all_nodes)
-  {
-    if (output_name && output_type && cumulative && sum && out_unit && all_nodes)
-      {
+function appendcoutputs(graph_name, output_name, output_type, cumulative, sum, out_unit, all_nodes) {
+    if (output_name && output_type && cumulative && sum && out_unit && all_nodes) {
       var table = document.getElementById("coutputs_"+graph_name);
       var key = graph_name+'~'+output_name +'~'+output_type+'~'+cumulative+'~'+sum+'~'+out_unit+'~'+all_nodes
       var row = table.insertRow(table.rows.length-1);
       var all_data = [output_name,all_nodes,output_type,cumulative,sum,out_unit];
       var types = ["text", "text", "text", "text", "text", "text"];
       var keys = ["Output", "Nodes_name", "Type", "Cumulative", "Summarize", "Unit"]
-      for (let i = 0; i < all_data.length; i++) 
-        {
+      for (let i = 0; i < all_data.length; i++) {
         var newcell = row.insertCell(i);
         var data = document.createElement("input");
         data.type = types[i];
