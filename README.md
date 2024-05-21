@@ -15,14 +15,14 @@
 <h4>
   
 <p align="center">
-  <a href="#Description">Description</a> •
-  <a href="#Installation">Installation</a> •
-  <a href="#Comment l'utiliser">Comment l'utiliser</a> •
-  <a href="#Directives">Directives</a> •
-  <a href="#FAQ">FAQ</a> •
-  <a href="#Développements futurs">Développements futurs</a> •
-  <a href="#Report a bug">Report a bug</a> •
-  <a href="#License">License</a>
+  <a href="##Description">Description</a> •
+  <a href="##Installation">Installation</a> •
+  <a href="##Comment l'utiliser">Comment l'utiliser</a> •
+  <a href="##Directives">Directives</a> •
+  <a href="##FAQ">FAQ</a> •
+  <a href="##Développements futurs">Développements futurs</a> •
+  <a href="##Report a bug">Report a bug</a> •
+  <a href="##License">License</a>
 </p>
 
 <!-- TEXTE -->
