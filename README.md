@@ -17,7 +17,7 @@
 <p align="center">
   <a href="#description">Description</a> •
   <a href="#installation">Installation</a> •
-  <a href="#comment-l'utiliser">Comment l'utiliser</a> • <br>
+  <a href="#comment-lutiliser">Comment l'utiliser</a> • <br>
   <a href="#directives">Directives</a> •
   <a href="#faq">FAQ</a> • 
   <a href="#développements-futurs">Développements futurs</a> • 
