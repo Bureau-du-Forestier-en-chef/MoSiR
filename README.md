@@ -14,22 +14,19 @@
   <br>
 <h4>
   
-<p align="left">
-  <a href="#$\color{orange]Description$-:book:">Description</a> •
-  <a href="#Installation">Installation</a> •
-  <a href="#Comment-l'utiliser">Comment l'utiliser</a> •
-  <a href="#Directives">Directives</a> •
-  <a href="#FAQ-:pushpin:">FAQ</a> •
-  <a href="#Développements futurs">Développements futurs</a> •
-  <a href="#Report a bug">Report a bug</a> •
-  <a href="#License">License</a>
+<p align="center">
+  <a href="#description">Description</a> •
+  <a href="#installation">Installation</a> •
+  <a href="#comment-l'utiliser">Comment l'utiliser</a> • <br>
+  <a href="#directives">Directives</a> •
+  <a href="#faq">FAQ</a> • 
+  <a href="#développements-futurs">Développements futurs</a> • 
+  <a href="#signaler-une-erreur">Signaler une erreur</a> • 
+  <a href="#license">License</a> •
 </p>
 
-- [FAQ](#FAQ-:pushpin:)
-- [FAQ](#$\color{orange}FAQ$)
-
 <!-- TEXTE -->
-## $\color{orange}Description$ :book:
+# Description :book:
 <p align="justify"> 
   MoSiR, acronyme de Modèle de Simulation en Réseau, est un outil puissant conçu par le Bureau du Chef Forestier (BFEC) pour faciliter la modélisation et la simulation du devenir du carbone dans les produits du bois issus de l'exploitation forestière. MoSiR permet de calculer l'impact climatique réel des émissions associées aux produits du bois tout au long de leur durée de vie et de leur fin de vie en permettant à l'utilisateur d'utiliser des architectures de réseau complexes et des données d'entrée associées de manière automatisée. L'interface web de MoSiR sert de passerelle entre la création et la simulation de modèles conceptuels pour les trajectoires du carbone dans les produits du bois et le calcul de leur impact réel sur le climat. Cette interface est facilement accessible à partir de n'importe quel navigateur web. L'interface Web de MoSiR se distingue par sa capacité à charger les cartes Miro créées par l'utilisateur et à les convertir en un fichier JSON qui peut être lu par le calculateur de MoSiR. L'interface Web MoSiR facilite une transition transparente vers le calculateur tout en préservant l'intégrité des données et des propriétés architecturales précédemment construites.
 
@@ -97,7 +94,7 @@ Une fois votre graphe complété, celui-ci peut être importé dans l'interface 
 Ceci est un bref résumé de l'utilisation de MoSiR dans son interface. MoSiR est également disponible comme package python. Celui-ci n'utilise donc plus l'interface web et Miro pour générer les résultats. Il est par contre nécessaire de bâtir manuellement les fichiers JSON.
 </details>
 
-## $\color{orange}Installation$ :floppy_disk:
+# Installation :floppy_disk:
 <p align="justify"> 
   L'installation peut se faire sous deux formats: en tant que package python ou comme une application indépendante. Dans les deux cas, si l'utilisateur souhaite passer par Miro pour transformer ses graphes en fichier JSON, il est nécessaire de se créer un compte Miro et de générer une clé d'application.
 </p>
@@ -209,7 +206,7 @@ L'installation est complétée, vous pouvez désormais utiliser MoSiR! :tada:
 [git]: https://git-scm.com/
 [la documentation de Miro]: https://developers.miro.com/reference/overview?utm_source=your_apps
 
-## $\color{orange}Comment \space l'utiliser$ :computer:
+# Comment l'utiliser :computer:
 
 <details><summary><b>Comme package python</b></summary> <br>
 Le calculateur de MoSiR peut être directement appelé depuis un script python sans passer par l'interface web. Par exemple:
@@ -248,7 +245,7 @@ Lors de la transformation de l'architecture Miro en format .JSON, MoSiR va faire
 A DEVELOPPER (Traduction de la nomenclature MIRO en nomenclature JSON MoSiR)
    
 
-## $\color{orange} Directives$ :memo:
+# Directives :memo:
  <p align="justify">
    Le suivi de la matière et la lecture des émissions de GES vers l'Atmosphère dans l'architecture préalablement chargé par l'utilisateur respectent certaines contraintes techniques inhérentes à MoSiR. 
 Il convient donc à chaque utilisateur de faire la lecture des résultats de MoSiR au regard de ces contraintes.
@@ -289,11 +286,11 @@ Par défaut, MoSiR utilise un potentiel de réchauffement global de 28 pour le C
 Pour le calcul de l'effet radiatif des émissions de GES, MoSiR utilise les données issues de Levasseur et al. (2010) et rendues disponibles via l'outil dynCO2 (https://ciraig.org/index.php/fr/project/dynco2-calculateur-dempreinte-carbone-dynamique/).
 C'est notamment l'approche retenue dans le cadre du Règlement relatif aux projets de boisement et de reboisement sur des terres du domaine privé admissibles à la délivrance de crédits compensatoires du Québec (https://www.environnement.gouv.qc.ca/changements/carbone/credits-compensatoires/sequestration-carbone-boisement-reboisement-terres-prive.htm)	
 
-## FAQ :pushpin:
+# FAQ :pushpin:
 
 À venir
 
-## $\color{orange} Développements futurs$ :thought_balloon:
+# Développements futurs :thought_balloon:
 
 <p align="justify">
 Mosir est opérationnel dans sa version 1.0, il n'en reste pas moins que des développements sont en cours pour améliorer les capacités et l'ergonomie de l'outil et donc maximiser son potentiel d'utilisation par le plus grand nombre. Si au cours de l'utilisation de MoSiR vous percevez en tant qu'utilisateur un potentiel d'amélioration, n'hésitez surtout pas à partager votre idée dans la section  discussion du GitHub. Voici une liste d'améliorations futures qui seront ajoutées à MoSiR:
@@ -333,15 +330,13 @@ Si ces trois GES devraient suffirent à la grande majorité des utilisateurs, de
 MoSiR a besoin d'informations requises et demandées à l'utilisateur pour fonctionner correctement. Cependant, à partir d'une architecture de base et d'imposition de contraintes, il peut être pertinent de permettre à l'outil d'établir les flux de matière les plus à même de rencontrer une cible d'émissions fixée par l'utilisateur, MoSiR serait donc ainsi capable d'optimisation par programmation linéaire.
 	
 
-
-
-## $\color{orange} Report \space a \space bug$ :speech_balloon:
+# Signaler une erreur :speech_balloon:
 
 Si vous rencontrez une erreur, la manière à privilégier est par l'entremise des [Issues] sur GitHub.
 
 [Issues]: https://github.com/Bureau-du-Forestier-en-chef/MoSiR/issues
 
-## $\color{orange} License$ :clipboard:
+# License :clipboard:
 
 MoSiR is a [LiLiQ-R 1.1](https://github.com/gcyr/FMT/blob/master/LICENSES/EN/LILIQ-R11EN.pdf) licensed library.
 
