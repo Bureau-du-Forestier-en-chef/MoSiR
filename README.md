@@ -22,7 +22,7 @@
   <a href="#faq">FAQ</a> • 
   <a href="#développements-futurs">Développements futurs</a> • 
   <a href="#signaler-une-erreur">Signaler une erreur</a> • 
-  <a href="#license">License</a> •
+  <a href="#license">License</a>
 </p>
 
 <!-- TEXTE -->
