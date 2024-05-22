@@ -7,6 +7,8 @@ assignees: Landry-G
 
 ---
 
+The following can be in french or english.
+
 **Describe the bug**
 A clear and concise description of what the bug is.
 
