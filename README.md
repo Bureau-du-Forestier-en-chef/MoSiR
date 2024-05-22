@@ -16,17 +16,17 @@
   
 <p align="center">
   <a href="#description">Description :book:</a> •
-  <a href="#installation">Installation</a> •
-  <a href="#comment-lutiliser">Comment l'utiliser</a> • <br>
-  <a href="#directives">Directives</a> •
-  <a href="#faq">FAQ</a> • 
-  <a href="#développements-futurs">Développements futurs</a> • 
-  <a href="#signaler-une-erreur">Signaler une erreur</a> • 
-  <a href="#license">License</a>
+  <a href="#installation">Installation :floppy_disk:</a> •
+  <a href="#comment-lutiliser">Comment l'utiliser :computer:</a> • <br>
+  <a href="#directives">Directives :memo:</a> •
+  <a href="#faq">FAQ :pushpin:</a> • 
+  <a href="#développements-futurs">Développements futurs :thought_balloon:</a> • 
+  <a href="#signaler-une-erreur">Signaler une erreur :speech_balloon:</a> • 
+  <a href="#license">License :clipboard:</a>
 </p>
 
 <!-- TEXTE -->
-# Description :book:
+# Description
 <p align="justify"> 
   MoSiR, acronyme de Modèle de Simulation en Réseau, est un outil puissant conçu par le Bureau du Chef Forestier (BFEC) pour faciliter la modélisation et la simulation du devenir du carbone dans les produits du bois issus de l'exploitation forestière. MoSiR permet de calculer l'impact climatique réel des émissions associées aux produits du bois tout au long de leur durée de vie et de leur fin de vie en permettant à l'utilisateur d'utiliser des architectures de réseau complexes et des données d'entrée associées de manière automatisée. L'interface web de MoSiR sert de passerelle entre la création et la simulation de modèles conceptuels pour les trajectoires du carbone dans les produits du bois et le calcul de leur impact réel sur le climat. Cette interface est facilement accessible à partir de n'importe quel navigateur web. L'interface Web de MoSiR se distingue par sa capacité à charger les cartes Miro créées par l'utilisateur et à les convertir en un fichier JSON qui peut être lu par le calculateur de MoSiR. L'interface Web MoSiR facilite une transition transparente vers le calculateur tout en préservant l'intégrité des données et des propriétés architecturales précédemment construites.
 
@@ -57,44 +57,14 @@ MoSiR est hautement adaptable et permet ainsi de réaliser des analyses, quelle 
 
 <details><summary><b>En bref, comment ça fonctionne? :mag:</b></summary> <br>
 <p align = "justify">
-MoSiR utilise la plateforme Miro pour faciliter la création de réseau de produit du bois. Miro est une application en ligne qui permet à l'utilisateur de travailler sur des tableaux blancs facilitant notamment la mise en place de processus collaboratifs, tels que la gestion et la cartographie de projet. MoSiR a la capacité de venir lire un tableau de Miro pour en extraire les informations nécessaires pour bâtir un graphe (un réseau de noeud attaché par des liens).  Cependant, la création d'une architecture de flux de matière sous forme de graphe se doit de respecter une nomenclature stricte afin que l'outil puisse convenablement traduire le tableau blanc en fichier JSON qui sera utilisé à l'interne du calculateur MoSiR. </p>
-	
-<p align = "justify">
-La nomenclature reconnu par MoSiR est assez simple: il détecte les formes comme les cercles, les pense-bêtes (sticky note) et les flèches entre ceux-ci (et leur sens). L'utilisateur doit prendre les cercles pour illustrer les noeuds qui composent son graphe et les pense-bêtes pour indiquer la proportion de matière qui sera acheminée au noeud suivant. Un nom unique doit être attribué au noeud. La proportion doit être un chiffre suivi d'un pourcentage (%). Les décimals sont illustré à l'aide d'un point et non d'une virgule. Un pense-bête doit être situé entre deux noeud, relié par deux flèches suivant le sens que parcours la matière. Un pense-bête ne peut pas être utilisé pour relié plusieurs noeuds. Plusieurs liens ne pourraient donc pas sortir du même pense-bête pour rejoindre des noeuds souhaitant avoir la même proportion. Les flèches peuvent être linéaires, ondulées ou en forme de coude. L'épaisseur ou la grosseur de la flèche n'a également pas d'importance. Par contre, la couleur, autant pour les flèches que pour les noeuds ou les pense-bêtes, est importante.
+MoSiR utilise la plateforme Miro pour faciliter la création de réseau de produit du bois. Miro est une application en ligne qui permet à l'utilisateur de travailler sur des tableaux blancs facilitant notamment la mise en place de processus collaboratifs, tels que la gestion et la cartographie de projet. MoSiR a la capacité de venir lire un tableau de Miro pour en extraire les informations nécessaires pour bâtir un graphe (un réseau de noeud attaché par des liens).  Cependant, la création d'une architecture de flux de matière sous forme de graphe se doit de respecter une nomenclature stricte afin que l'outil puisse convenablement traduire le tableau blanc pour le calculateur de MoSiR. Celui-ci calcule 3 informations, le flux de matière qui entre dans un noeud, qui sort d'un noeud et la matière qui reste dans celui-ci (stock). De plus amples détails sont disponibles dans la section <a href="#Directives">Directives</a>. 
 </p>
-
-![creation_graph](https://github.com/Landry-G/MoSiR_images/blob/main/creation_graph.gif)
-
 <p align = "justify">
-Les noeuds sont utilisés comme fourche où la matière peut divergée selon différentes proportions. On utilise donc les noeuds pour identifier les endroits d'intérêts où on pourra extraire de l'information. MoSiR calcule 3 informations à un temps donné pour un noeud: la quantité de matière qui rentre dans le noeud (flux in), la quantité de matière qui résident dans le noeud (stock) et finalement la quantité de matière qui quitte le noeud (flux out). Il comptabilise l'ensemble des flux qui quitte ses parents et les multiplient à la proportion (pense-bête) qui fait le lien entre les deux noeuds. Si le parent n'a pas la réponse à la quantité qui le quitte, il questionne lui aussi ses parents et ainsi de suite.
+L'utilisateur a la possibilité de bâtir dans Miro un graphe pouvant contenir autant de noeud que souhaité, dont certains peuvent gérer du recyclage ou de la dégradation selon une loi exponentielle, gamma ou chi-square. Lorsque l'utilisateur a un graphe fonctionnel, celui-ci peut être utilisé dans l'application portable de MoSiR. Dans cette application, l'utilisateur peut importer depuis Miro ou depuis son ordinateur le graphe souhaité et lancer une commande au calculateur de MoSiR. Il est possible d'y inscrire les intrants pour les noeuds de départ, les temps de demi-vie pour les noeuds de dégradation et l'information que vous souhaitez extraire. Essentiellement, il s'agit de questionner les noeuds qui vous intéresse, choisir si vous voulez les flux entrant, sortant ou les stocks, le cumulatif sur la période demandé et la sommation, si plusieurs noeuds ont été sélectionné, des résultats. Finalement, vous pouvez choisir l'unité des extrants. MoSiR vous demande dabord les unités de vos intrants, pour que celui-ci soit capable de faire la transformation nécessaire. Si le nom de vos noeuds contiennent le nom d'un gaz comme CO2, CO, CH4 ou N2O, MoSiR peut également faire la transformation de ces quantité de carbone en tonne équivalente de CO2 ou même en forcage radiatif. 
 </p>
-
-<p align = "justify">
-Avec les noeuds par défaut, la matière s'écoule à l'intérieur du graphe la même année qu'un intrant entre dans un noeud du début, il n'y a donc pas de matière qui s'accumule dans les noeuds transitoires, seulement les derniers noeuds à la fin du graphe se retrouve à collecter indéfiniment la matière qui rentre dans ceux-ci. MoSiR offre l'opportunité d'identifier des noeuds comme étant du recyclage ou des noeuds avec un temps de demi-vie. Ces noeuds ont pour but de retenir la matière et de l'écouler d'une manière précise. Les noeuds de recyclage, identifiés par une couleur verte de remplissage, retiennent la matière pendant 1 an et la libère par la suite à son ou ses noeuds enfants. Pour les noeuds de dégradation, la matière libérée tiendra compte du temps de demi-vie et du type de dégradation choisi. Un noeud de dégradation est indentifé en ayant son contour en pointillé, peu importe l'épaisseur. Les détails des différents types de dégradation sont expliqués dans la section Directive. 
-</p>
-
-![creation_graph_2](https://github.com/Landry-G/MoSiR_images/blob/main/creation_graph_2.gif)
-
-<p align = "justify">
-Dans cet exemple, 3 noeuds ont été identifiés comme un noeud avec de la dégradation: Cardboard, Sawnwood et Panels. Le noeud Paper quant à lui un noeud de recyclage. Conséquemment, si 100 tonnes de carbone était acheminés à notre premier noeud Harvested Biomass au temps 1, seulement 10 tonnes seraient enregistré comme quantité entrant (flux in) dans notre dernier noeud CO2 emissions au temps 1. Par le fait même, le noeud CO2 emissions aurait une quantité de 10 tonnes qui résiderait (stock) au temps 1. La raison étant simple, le noeud Bioenergy est le seul qui agit comme noeud transitoire sans retenir le flux de matière, le flux de matière le traverse donc l'année même pour s'écouler dans le noeud suivant. Tout les autres noeuds ont une composant qui retient la matière pour un temps déterminé. Par exemple, notre noeud de recyclage Paper détient en lui (stock) 20 tonnes de carbone qui libérera (flux out) l'année suivante au noeud Pulp and paper. Pour nos trois autres noeuds, aucune dégradation s'effectue l'année même, donc ils conservent l'ensemble des flux rentrant. La quantité qu'ils libéreront l'année suivante et les années subséquentes dépendera du temps de demi-vie et du type de dégradation qui sera enregistré dans MoSiR.
-</p>
-
-<p align = "justify">
-Par défaut, MoSiR va s'assurer que la quantité de matière dans le graphe est toujous égale à la somme des intrants à chaque pas de temps. Conséquemment, l'ensemble des liens sortant d'un noeud doit être égale à 100%. Si un utilisateur veut représenter une perte, il doit tout simplement créer un noeud dédié à cet effet et y acheminé un lien en s'assurant que l'ensemble des liens sortant du parent soit égale à 100%. Si l'utilisateur veut représenter un gain qui n'est pas pris en compte par les intrants de son graphe, l'utilsateur doit identifier différemment le lien grâce à un code de couleur (#17df23). On caratérise ces liens comme étant du débordement (overflow). Par exemple, l'utilisateur pourrait représenter la création de N2O lors de la combustion d'un produit ou bien représenter les émissions de transport ou de récolte, si ceux-ci peuvent se rattacher à un pourcentage de flux de matière. Dans notre exemple, on pourrait déterminer que pour chaque tonne de carbone circulant dans notre graphe, 1% de N2O est créé avec le noeud Bioenergy et 5% est créé pour les émissions de transport avec le noeud d'entrée. À des fins de comptabilisation, un noeud ne peut recevoir un mélange de lien normal et de débordement.
-</p>
-
-![creation_graph_3](https://github.com/Landry-G/MoSiR_images/blob/main/creation_graph_3.gif)
-
-<p align = "justify">
-Une fois votre graphe complété, celui-ci peut être importé dans l'interface MoSiR. En bref, MoSiR importe votre graphe depuis Miro et le transforme en fichier JSON interprétable par le calculateur. Vous pouvez par la suite visualiser votre graphe simplifié dans MoSiR, télécharger directement le fichier JSON pour pouvoir l'importer une prochaine fois sans passer par Miro et finalement, créer votre propre demande au calculateur MoSiR. Vous devez y inscrire les intrants de vos noeuds de départ, le temps de demi-vie des noeuds de dégradation, le type de dégradation de vos noeuds concernés et l'information en extrant que vous souhaitez recevoir. Essentiellement, il s'agit de questionner les noeuds qui vous intéresse, choisir si vous voulez les flux entrant, sortant ou les stocks, le cumulatif sur la période demandé et la sommation, si plusieurs noeuds ont été sélectionné, des résultats. Finalement, vous pouvez choisir l'unité des extrants. MoSiR vous demande dabord les unités de vos intrants, pour que celui-ci soit capable de faire la transformation nécessaire. Si le nom de vos noeuds contiennent le nom d'un gaz comme CO2, CO, CH4 ou N2O, MoSiR peut également faire la transformation de ces quantité de carbone en tonne équivalente de CO2 ou même en forcage radiatif. 
-</p>
-
-![utilisation_mosir](https://github.com/Landry-G/MoSiR_images/blob/main/utilisation_mosir.gif)
-
-Ceci est un bref résumé de l'utilisation de MoSiR dans son interface. MoSiR est également disponible comme package python. Celui-ci n'utilise donc plus l'interface web et Miro pour générer les résultats. Il est par contre nécessaire de bâtir manuellement les fichiers JSON.
 </details>
 
-# Installation :floppy_disk:
+# Installation
 <p align="justify"> 
   L'installation peut se faire sous deux formats: en tant que package python ou comme une application indépendante. Dans les deux cas, si l'utilisateur souhaite passer par Miro pour transformer ses graphes en fichier JSON, il est nécessaire de se créer un compte Miro et de générer une clé d'application.
 </p>
@@ -140,8 +110,6 @@ Dans le repos MoSiR, un dossier standalone est accessible. Celui-ci contient un 
 > Les étapes subséquentes sont nécessaires pour importer des graphiques depuis Miro. Si votre installation est une version "lightweight" ou si vous souhaitez importer vos graphiques directement à partir d'un fichier JSON, les étapes suivantes d'installation ne sont pas obligatoires pour faire fonctionner le reste du package ou de l'application MoSiR. 
 
 ### <b>Étape 2</b>: Création d'un compte Miro et d'une clé d'application <br>
-
-
 <details><summary><b>Procédure sur Miro</b></summary><br>
 
 1. Avec l'adresse courriel désirée, créer d'abord un compte Miro gratuit à partir de `https://miro.com/`
@@ -206,8 +174,76 @@ L'installation est complétée, vous pouvez désormais utiliser MoSiR! :tada:
 [git]: https://git-scm.com/
 [la documentation de Miro]: https://developers.miro.com/reference/overview?utm_source=your_apps
 
-# Comment l'utiliser :computer:
+# Directives
+	
+<p align = "justify">
+La nomenclature reconnu par MoSiR est assez simple: il détecte les formes comme les cercles, les pense-bêtes (sticky note) et les flèches entre ceux-ci (et leur sens). L'utilisateur doit prendre les cercles pour illustrer les noeuds qui composent son graphe et les pense-bêtes pour indiquer la proportion de matière qui sera acheminée au noeud suivant. Un nom unique doit être attribué au noeud. La proportion doit être un chiffre suivi d'un pourcentage (%). Les décimals sont illustré à l'aide d'un point et non d'une virgule. Un pense-bête doit être situé entre deux noeud, relié par deux flèches suivant le sens que parcours la matière. Un pense-bête ne peut pas être utilisé pour relié plusieurs noeuds. Plusieurs liens ne pourraient donc pas sortir du même pense-bête pour rejoindre des noeuds souhaitant avoir la même proportion. Les flèches peuvent être linéaires, ondulées ou en forme de coude. L'épaisseur ou la grosseur de la flèche n'a également pas d'importance. Par contre, la couleur, autant pour les flèches que pour les noeuds ou les pense-bêtes, est importante.
+</p>
 
+![creation_graph](https://github.com/Landry-G/MoSiR_images/blob/main/creation_graph.gif)
+
+<p align = "justify">
+Les noeuds sont utilisés comme fourche où la matière peut divergée selon différentes proportions. On utilise donc les noeuds pour identifier les endroits d'intérêts où on pourra extraire de l'information. MoSiR calcule 3 informations à un temps donné pour un noeud: la quantité de matière qui rentre dans le noeud (flux in), la quantité de matière qui résident dans le noeud (stock) et finalement la quantité de matière qui quitte le noeud (flux out). Il comptabilise l'ensemble des flux qui quitte ses parents et les multiplient à la proportion (pense-bête) qui fait le lien entre les deux noeuds. Si le parent n'a pas la réponse à la quantité qui le quitte, il questionne lui aussi ses parents et ainsi de suite.
+</p>
+
+<p align = "justify">
+Avec les noeuds par défaut, la matière s'écoule à l'intérieur du graphe la même année qu'un intrant entre dans un noeud du début, il n'y a donc pas de matière qui s'accumule dans les noeuds transitoires, seulement les derniers noeuds à la fin du graphe se retrouve à collecter indéfiniment la matière qui rentre dans ceux-ci. MoSiR offre l'opportunité d'identifier des noeuds comme étant du recyclage ou des noeuds avec un temps de demi-vie. Ces noeuds ont pour but de retenir la matière et de l'écouler d'une manière précise. Les noeuds de recyclage, identifiés par une couleur verte de remplissage, retiennent la matière pendant 1 an et la libère par la suite à son ou ses noeuds enfants. Pour les noeuds de dégradation, la matière libérée tiendra compte du temps de demi-vie et du type de dégradation choisi. Un noeud de dégradation est indentifé en ayant son contour en pointillé, peu importe l'épaisseur. Les détails des différents types de dégradation sont expliqués dans la section Directive. 
+</p>
+
+![creation_graph_2](https://github.com/Landry-G/MoSiR_images/blob/main/creation_graph_2.gif)
+
+<p align = "justify">
+Dans cet exemple, 3 noeuds ont été identifiés comme un noeud avec de la dégradation: Cardboard, Sawnwood et Panels. Le noeud Paper quant à lui un noeud de recyclage. Conséquemment, si 100 tonnes de carbone était acheminés à notre premier noeud Harvested Biomass au temps 1, seulement 10 tonnes seraient enregistré comme quantité entrant (flux in) dans notre dernier noeud CO2 emissions au temps 1. Par le fait même, le noeud CO2 emissions aurait une quantité de 10 tonnes qui résiderait (stock) au temps 1. La raison étant simple, le noeud Bioenergy est le seul qui agit comme noeud transitoire sans retenir le flux de matière, le flux de matière le traverse donc l'année même pour s'écouler dans le noeud suivant. Tout les autres noeuds ont une composant qui retient la matière pour un temps déterminé. Par exemple, notre noeud de recyclage Paper détient en lui (stock) 20 tonnes de carbone qui libérera (flux out) l'année suivante au noeud Pulp and paper. Pour nos trois autres noeuds, aucune dégradation s'effectue l'année même, donc ils conservent l'ensemble des flux rentrant. La quantité qu'ils libéreront l'année suivante et les années subséquentes dépendera du temps de demi-vie et du type de dégradation qui sera enregistré dans MoSiR.
+</p>
+
+<p align = "justify">
+Par défaut, MoSiR va s'assurer que la quantité de matière dans le graphe est toujous égale à la somme des intrants à chaque pas de temps. Conséquemment, l'ensemble des liens sortant d'un noeud doit être égale à 100%. Si un utilisateur veut représenter une perte, il doit tout simplement créer un noeud dédié à cet effet et y acheminé un lien en s'assurant que l'ensemble des liens sortant du parent soit égale à 100%. Si l'utilisateur veut représenter un gain qui n'est pas pris en compte par les intrants de son graphe, l'utilsateur doit identifier différemment le lien grâce à un code de couleur (#17df23). On caratérise ces liens comme étant du débordement (overflow). Par exemple, l'utilisateur pourrait représenter la création de N2O lors de la combustion d'un produit ou bien représenter les émissions de transport ou de récolte, si ceux-ci peuvent se rattacher à un pourcentage de flux de matière. Ce carbone n'étant pas du carbone biogénique, il est comptabilisé comme un flux supplémentaire, c'est-à-dire un flux de débordement  Dans notre exemple, on pourrait déterminer que pour chaque tonne de carbone circulant dans notre graphe, 1% de N2O est créé avec le noeud Bioenergy et 5% est créé pour les émissions de transport avec le noeud d'entrée. À des fins de comptabilisation, un noeud ne peut recevoir un mélange de lien normal et de débordement.
+</p>
+
+![creation_graph_3](https://github.com/Landry-G/MoSiR_images/blob/main/creation_graph_3.gif)
+
+Pour résumé, trois sortes de nœuds existent :
+ - les nœuds transitoires: la matière ne fait que passer la même année, sans être stockée à aucun moment.
+ - les nœuds de stockage: la matière passe au travers du nœud, mais la quantité sortante annuellement est définie par l'utilisateur (nœuds de dégradation, nœuds de recyclage, noeuds de fin de graphe, etc.)
+ - Les nœuds d'entrées: il s'agit des premiers nœuds dans un graphe qui conservent l'information des intrants de l'utilisateur.
+
+<p align="justify">  
+Par défaut, tous les noeuds sont transitoires à moins qu'ils répondent à certaines caractéristiques. Ils deviennent des noeuds d'entrées si aucun lien dans le graphe entre dans ceux-ci (ils ont donc seulement des liens sortants). Ils deviennent des noeuds de stockage de fin de graphe si aucun lien ne sort de ceux-ci (ils ont donc seulement des liens entrants). Ils peuvent également être des noeuds de recyclage s'ils sont identifiés en vert ou de dégradation s'ils ont un contour en pointillé. Un noeud de dégradation ou de recyclage ne peut pas être en début (noeud d'entrée) ou à la fin d'un graphe (noeud de fin de graphe).
+</p>
+
+<p align = "justify">
+Une fois votre graphe complété, celui-ci peut être importé dans l'interface MoSiR. En bref, MoSiR importe votre graphe depuis Miro et le transforme en fichier JSON interprétable par le calculateur. Vous pouvez par la suite visualiser votre graphe simplifié dans MoSiR, télécharger directement le fichier JSON pour pouvoir l'importer une prochaine fois sans passer par Miro et finalement, créer votre propre demande au calculateur MoSiR. Vous devez y inscrire les intrants de vos noeuds de départ, le temps de demi-vie des noeuds de dégradation, le type de dégradation de vos noeuds concernés et l'information en extrant que vous souhaitez recevoir. Essentiellement, il s'agit de questionner les noeuds qui vous intéresse, choisir si vous voulez les flux entrant, sortant ou les stocks, le cumulatif sur la période demandé et la sommation, si plusieurs noeuds ont été sélectionné, des résultats. Finalement, vous pouvez choisir l'unité des extrants. MoSiR vous demande dabord les unités de vos intrants, pour que celui-ci soit capable de faire la transformation nécessaire. Si le nom de vos noeuds contiennent le nom d'un gaz comme CO2, CO, CH4 ou N2O, MoSiR peut également faire la transformation de ces quantité de carbone en tonne équivalente de CO2 ou même en forcage radiatif. 
+</p>
+
+![utilisation_mosir](https://github.com/Landry-G/MoSiR_images/blob/main/utilisation_mosir.gif)
+
+Pour que le forçage radiatif puisse être calculé, le nom du gaz doit être identifié clairement dans le nom du noeud, par exemple: "Émissions de CH4 dépotoire". Le nom du gas doit être en lettre majuscule, séparé du reste du nom. Voici une liste d'exemple de nom qui ne pourrait donc pas fonctionner :
+* emission_CO2
+* co2 emission
+* CO2emission
+
+<p align = "justify">
+À des fins purement ergonomiques, il est possible d'introduire dans l'architecture du flux de matière des nœuds particuliers pour mieux imager la notion de ventilation. Lors de l'importation dans MoSiR, ceux-ci sont effacés et le lien entre le noeud avant et après est refait. Pour ce faire, le noeud doit être de la forme de rectangle et être positionner avant et après deux noeuds qui sont sous forme de cercle (avec leur pense-bête respectif). Il ne peut donc pas y avoir deux rectangles qui se suivent. Cette possibilité est simplement pour aider à la notation dans Miro, car cette information n'est pas conserver dans MoSiR.
+</p>
+
+![split_division](https://github.com/Landry-G/MoSiR_images/blob/main/split_division.png)
+
+
+Nomenclature générale de Miro:
+
+* Nœud : Forme = cercle, nom unique
+* Pense-bête : Couleur = Vert clair / light green
+* Le sens des flèches entre les nœuds est important.
+* Flèches de débordement : Couleur = #17df23
+* Nœud de recyclage : Forme = "cercle", Couleur de remplissage = Vert / green (#8fd14f)
+* Nœud de dégradation: Forme = "cercle", Bordure = "dashed"
+* Nœud d'émissions de GES : Le nom du nœud doit faire apparaitre clairement la molécule voulue. 
+Exemples : CH4 emissions / CO2 emissions / N2O emissions
+* Les rectangles servent à annoter le graphe entre deux noeuds normals
+  
+-- Nomenclature .JSON:
+A DEVELOPPER (Traduction de la nomenclature MIRO en nomenclature JSON MoSiR)
+   
 <details><summary><b>Comme package python</b></summary> <br>
 Le calculateur de MoSiR peut être directement appelé depuis un script python sans passer par l'interface web. Par exemple:
   
@@ -216,68 +252,10 @@ Le calculateur de MoSiR peut être directement appelé depuis un script python s
   mosir_calculator.main(['-G', graph_json, '-D', input_json, '-R', report_json, '-E', export_folder])
 ```
 
-Pour fonctionner, le calculateur a besoin d'un fichier `JSON` pour le graphe, un pour les intrants, un pour le report et le chemin vers l'endroit où seront les extrants. La structure et les directives concernant les différents fichiers `JSON` sont expliquées dans la section <a href="#Directives">Directives</a>
+Pour fonctionner, le calculateur a besoin d'un fichier `JSON` pour le graphe, un pour les intrants, un pour le report et le chemin vers l'endroit où seront les extrants.
 
 Pour un nouvel utilisateur, il serait recommandé d'utiliser d'abord l'interface Miro, car celui-ci vous génère automatiquement des fichiers `JSON` pour le graphe, les intrants et le report. Ces fichiers générés par l'application sont disponibles dans l'onglet `Télécharger` une fois que vous avez importé votre graphe et rempli l'onglet `Calculer`. Ces `JSON` pourront agir par la suite comme modèle pour la structure du fichier. Il existe également des fichiers en exemple dans le Github de MoSiR sous `example\Inputs`.
 </details>
-
-Il est recommandé de lire dabord la sous-section En bref de la section <a href="#Description">Description</a>
-
-Nomenclature générale de Miro:
-
-* Nœud : Forme = cercle, nom unique
-* Pense-bête : Couleur = Vert clair / light green
-* Le sens des flèches entre les nœuds est important.
-* Flèches de débordement : Couleur = #17df23
-* Nœud de recyclage : Forme = "cercle" + Couleur de remplissage = Vert / green (#8fd14f)
-* Nœud de stockage temporaire (selon une demi-vie donnée par l'utilisateur): Forme = "cercle" + Bordure = "dashed"
-Concernant la gestion de la demi-vie, dans la version 1.0 de MoSiR, il s'agit uniquement d'une dégradation exponentielle. Il est ainsi nécessaire d'écrire le nom du nœud avec les termes "Half-life" suivi de votre temps de demi-vie entre crochets. Exemple : Half-life[70]Sciage_Construction
-* Nœud d'émissions de GES : Le nom du nœud doit faire apparaitre clairement la molécule voulue. 
-Exemples : CH4 emissions / CO2 emissions / N2O emissions
-* Toutes les autres formes et couleurs de ligne et de nœuds sont laissées à la discrétion de l'utilisateur.
--Mettre image exemple-
-
-À des fins purement ergonomiques, il est possible d'introduire dans l'architecture du flux de matière des nœuds particuliers imageant la notion de ventilation, ou split : Forme = "rectangle". 
-Lors de la transformation de l'architecture Miro en format .JSON, MoSiR va faire disparaitre ces nœuds, on ne retrouvera donc pas ces nœuds dans la visualisation disponible dans MoSiR.
--Mettre image exemple-
-
-	-- Nomenclature .JSON:
-A DEVELOPPER (Traduction de la nomenclature MIRO en nomenclature JSON MoSiR)
-   
-
-# Directives :memo:
- <p align="justify">
-   Le suivi de la matière et la lecture des émissions de GES vers l'Atmosphère dans l'architecture préalablement chargé par l'utilisateur respectent certaines contraintes techniques inhérentes à MoSiR. 
-Il convient donc à chaque utilisateur de faire la lecture des résultats de MoSiR au regard de ces contraintes.
- </p>
-
-#### Écoulement de la matière dans l'architecture :
-
-*  <p align="justify"> MoSiR permet de suivre le devenir annuel d'une quantité de matière introduite dans une architecture de flux définie par l'utilisateur. L'outil peut aussi, à partir de ce suivi, établir la comptabilité des émissions de GES en kilogramme de carbone (kgC), en tonne de carbone (tC), en tonne de dioxyde de carbone équivalent (tCO2eq) ou bien encore en forçage radiatif des émissions (w/m2). L'architecture du flux de matière est donc un élément principal pour le bon fonctionnement de l'outil, c'est un travail qui est à la discrétion de l'utilisateur, mais qui repose sur une méthodologie particulière à l'outil. </p>
-*  <p align="justify"> Une architecture de flux de matière lisible par MoSiR est un ensemble de nœuds par lesquels va transiter annuellement la matière au gré d'une ventilation définie par l'utilisateur. 
-Trois sortes de nœuds existent :
- - les nœuds transitoires: la matière ne fait que passer la même année, sans être stockée à aucun moment.
- - les nœuds de stockage: la matière passe au travers du nœud, mais la quantité sortante annuellement est définie par l'utilisateur (nœuds de dégradation, nœuds de stockage perpétuels, nœuds de recyclage, etc.)
- - Les nœuds d'entrées: il s'agit des premiers nœuds dans un graphe qui conservent l'information des intrants de l'utilisateur.
-Par défaut, si un nœud n'a aucune sortie (lien d'écoulement avec un autre nœud), il va être considéré par défaut comme un nœud de stockage (infini dans ce cas particulier). </p>
-
-	
-#### Flux de débordement :
-L'intérêt premier de MoSiR est de pouvoir suivre le devenir du carbone biogénique dans les produits du bois, en ce sens de nombreux tests internes existent pour assurer la robustesse des calculs et éviter toute perte de matière. 
-La somme de la matière sortante de l'architecture sous forme d'émissions et la matière stockée dans l'architecture est en tout temps égale à la somme de la matière qui est rentrée dans l'architecture.
-Cependant, il est tout à fait possible d'intégrer des émissions associées à l'extraction, au transport ou encore à la transformation de la ressource dans l'architecture. Ce carbone n'étant pas du carbone biogénique, il est comptabilisé comme un flux supplémentaire, c'est-à-dire un flux de débordement (voir secteur X pour nomenclature des flux de débordement).
-Les flux de débordement peuvent aussi être utilisés pour comptabiliser des émissions de gaz à effet de serre non carbonés, notamment le N2O, qui sont produites dans le cycle de vie des produits du bois (incinération, compostage, épandage, etc.).
-	
-#### Recyclage
-Dans MoSiR, afin d'éviter toute boucle infinie durant une même période de temps, un nœud de recyclage stocke la matière entrante pendant une période de temps égale à 1 (voir section X pour nomenclature des nœuds de recyclage). 
-Si 100 tonnes de carbone rentrent dans un nœud de recyclage à l'année x, ces 100 tonnes seront stockées dans ce nœud durant l'année X et s'écouleront de nouveau dans l'architecture du flux de matière à partir de l'année X+1.	
-	
-#### Mathématique de dégradation :
-Dans la version 1.0 de Mosir, la dégradation des produits du bois dans un nœud de demi-vie suit une dégradation de premier ordre (exponentielle) basée sur une demi-vie fournie par l'utilisateur selon la méthodologie classique du GIEC (voir section X pour nomenclature des nœuds de demi-vie).
-	
-#### GES inclus :
-Par défaut, MoSiR ne peut effectuer la comptabilisation des émissions des gaz à effet de serre suivant : Méthane (CH4), Dioxyde de carbone (CO2) et l'Oxyde nitreux (N2O).
-Il peut cependant suivre le devenir de la matière dans l'ensemble de l'architecture produite par l'utilisateur.
 	
 #### Potentiel de réchauffement global :
 Par défaut, MoSiR utilise un potentiel de réchauffement global de 28 pour le CH4 et de 265 pour le N2O. Ces valeurs peuvent être modifiées par l'utilisateur.
@@ -286,14 +264,14 @@ Par défaut, MoSiR utilise un potentiel de réchauffement global de 28 pour le C
 Pour le calcul de l'effet radiatif des émissions de GES, MoSiR utilise les données issues de Levasseur et al. (2010) et rendues disponibles via l'outil dynCO2 (https://ciraig.org/index.php/fr/project/dynco2-calculateur-dempreinte-carbone-dynamique/).
 C'est notamment l'approche retenue dans le cadre du Règlement relatif aux projets de boisement et de reboisement sur des terres du domaine privé admissibles à la délivrance de crédits compensatoires du Québec (https://www.environnement.gouv.qc.ca/changements/carbone/credits-compensatoires/sequestration-carbone-boisement-reboisement-terres-prive.htm)	
 
-# FAQ :pushpin:
+# FAQ
 
 À venir
 
-# Développements futurs :thought_balloon:
+# Développements futurs
 
 <p align="justify">
-Mosir est opérationnel dans sa version 1.0, il n'en reste pas moins que des développements sont en cours pour améliorer les capacités et l'ergonomie de l'outil et donc maximiser son potentiel d'utilisation par le plus grand nombre. Si au cours de l'utilisation de MoSiR vous percevez en tant qu'utilisateur un potentiel d'amélioration, n'hésitez surtout pas à partager votre idée dans la section  discussion du GitHub. Voici une liste d'améliorations futures qui seront ajoutées à MoSiR:
+Mosir est opérationnel dans sa version 1.0, il n'en reste pas moins que des développements sont en cours pour améliorer les capacités et l'ergonomie de l'outil et donc maximiser son potentiel d'utilisation par le plus grand nombre. Si au cours de l'utilisation de MoSiR vous percevez en tant qu'utilisateur un potentiel d'amélioration, n'hésitez surtout pas à partager votre idée dans la section discussion du GitHub. Voici une liste d'améliorations futures qui seront ajoutées à MoSiR:
 </p>
 
 - [ ] Mathématique de dégradation https://github.com/Bureau-du-Forestier-en-chef/MoSiR/issues/2
@@ -329,14 +307,13 @@ Si ces trois GES devraient suffirent à la grande majorité des utilisateurs, de
   	Mosir n'est dans sa version 1.0 qu'un outil permettant de suivre le devenir de la matière dans une architecture de flux et de réaliser en parallèle une lecture carbone et/ou climatiques des émissions de GES.
 MoSiR a besoin d'informations requises et demandées à l'utilisateur pour fonctionner correctement. Cependant, à partir d'une architecture de base et d'imposition de contraintes, il peut être pertinent de permettre à l'outil d'établir les flux de matière les plus à même de rencontrer une cible d'émissions fixée par l'utilisateur, MoSiR serait donc ainsi capable d'optimisation par programmation linéaire.
 	
+# Signaler une erreur
 
-# Signaler une erreur :speech_balloon:
-
-Si vous rencontrez une erreur, la manière à privilégier est par l'entremise des [Issues] sur GitHub.
+Si vous rencontrez une erreur, la manière à privilégier est par l'entremise des [Issues] sur GitHub. Sur la page des `Issues` de MoSiR, cliquer sur `New issue`. Il est nécessaire de donner le plus d'informations possibles pour reproduire l'erreur que vous rencontrez. Si vous souhaitez faire des suggestions d'amélioration, se référer à la sections <a href="#Développements futurs">Développements futurs</a>.
 
 [Issues]: https://github.com/Bureau-du-Forestier-en-chef/MoSiR/issues
 
-# License :clipboard:
+# License
 
 MoSiR is a [LiLiQ-R 1.1](https://github.com/gcyr/FMT/blob/master/LICENSES/EN/LILIQ-R11EN.pdf) licensed library.
 
