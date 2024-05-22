@@ -17,7 +17,6 @@
 <p align="center">
   <a href="#description">Description :book:</a> •
   <a href="#installation">Installation :floppy_disk:</a> •
-  <a href="#comment-lutiliser">Comment l'utiliser :computer:</a> • <br>
   <a href="#directives">Directives :memo:</a> •
   <a href="#faq">FAQ :pushpin:</a> • 
   <a href="#développements-futurs">Développements futurs :thought_balloon:</a> • 
@@ -212,7 +211,7 @@ Par défaut, tous les noeuds sont transitoires à moins qu'ils répondent à cer
 </p>
 
 <p align = "justify">
-Une fois votre graphe complété, celui-ci peut être importé dans l'interface MoSiR. En bref, MoSiR importe votre graphe depuis Miro et le transforme en fichier JSON interprétable par le calculateur. Vous pouvez par la suite visualiser votre graphe simplifié dans MoSiR, télécharger directement le fichier JSON pour pouvoir l'importer une prochaine fois sans passer par Miro et finalement, créer votre propre demande au calculateur MoSiR. Vous devez y inscrire les intrants de vos noeuds de départ, le temps de demi-vie des noeuds de dégradation, le type de dégradation de vos noeuds concernés et l'information en extrant que vous souhaitez recevoir. Essentiellement, il s'agit de questionner les noeuds qui vous intéresse, choisir si vous voulez les flux entrant, sortant ou les stocks, le cumulatif sur la période demandé et la sommation, si plusieurs noeuds ont été sélectionné, des résultats. Finalement, vous pouvez choisir l'unité des extrants. MoSiR vous demande dabord les unités de vos intrants, pour que celui-ci soit capable de faire la transformation nécessaire. Si le nom de vos noeuds contiennent le nom d'un gaz comme CO2, CO, CH4 ou N2O, MoSiR peut également faire la transformation de ces quantité de carbone en tonne équivalente de CO2 ou même en forcage radiatif. 
+Une fois votre graphe complété, celui-ci peut être importé dans l'interface MoSiR. En bref, MoSiR importe votre graphe depuis Miro et le transforme en fichier JSON interprétable par le calculateur. Vous pouvez par la suite visualiser votre graphe simplifié dans MoSiR, télécharger directement le fichier JSON pour pouvoir l'importer une prochaine fois sans passer par Miro et finalement, créer votre propre demande au calculateur MoSiR. Vous devez y inscrire les intrants de vos noeuds de départ, le temps de demi-vie des noeuds de dégradation, le type de dégradation de vos noeuds concernés et l'information en extrant que vous souhaitez recevoir. Essentiellement, il s'agit de questionner les noeuds qui vous intéresse, choisir si vous voulez les flux entrant, sortant ou les stocks, le cumulatif sur la période demandé et la sommation, si plusieurs noeuds ont été sélectionné, des résultats. Finalement, vous pouvez choisir l'unité des extrants. MoSiR vous demande dabord les unités de vos intrants, pour que celui-ci soit capable de faire la transformation nécessaire. Si le nom de vos noeuds contiennent le nom d'un gaz comme CO2, CO, CH4 ou N2O, MoSiR peut également faire la transformation de ces quantité de carbone en tonne équivalente de CO2 ou même en forcage radiatif. 	
 </p>
 
 ![utilisation_mosir](https://github.com/Landry-G/MoSiR_images/blob/main/utilisation_mosir.gif)
@@ -222,12 +221,14 @@ Pour que le forçage radiatif puisse être calculé, le nom du gaz doit être id
 * co2 emission
 * CO2emission
 
+MoSiR utilise les données issues de Levasseur et al. (2010) et rendues disponibles via l'outil [dynCO2](https://ciraig.org/index.php/fr/project/dynco2-calculateur-dempreinte-carbone-dynamique/). C'est notamment l'approche retenue dans le cadre du [Règlement](https://www.environnement.gouv.qc.ca/changements/carbone/credits-compensatoires/sequestration-carbone-boisement-reboisement-terres-prive.htm) relatif aux projets de boisement et de reboisement sur des terres du domaine privé admissibles à la délivrance de crédits compensatoires du Québec.
+Par défaut, MoSiR utilise un potentiel de réchauffement global de 28 pour le CH4 et de 265 pour le N2O lors du calcul de tonne de CO2 equivalente. Ces valeurs peuvent être modifiées par l'utilisateur.
+
 <p align = "justify">
-À des fins purement ergonomiques, il est possible d'introduire dans l'architecture du flux de matière des nœuds particuliers pour mieux imager la notion de ventilation. Lors de l'importation dans MoSiR, ceux-ci sont effacés et le lien entre le noeud avant et après est refait. Pour ce faire, le noeud doit être de la forme de rectangle et être positionner avant et après deux noeuds qui sont sous forme de cercle (avec leur pense-bête respectif). Il ne peut donc pas y avoir deux rectangles qui se suivent. Cette possibilité est simplement pour aider à la notation dans Miro, car cette information n'est pas conserver dans MoSiR.
+À des fins purement ergonomiques, il est possible d'introduire dans l'architecture du flux de matière des nœuds particuliers pour mieux imager la notion de ventilation. Lors de l'importation dans MoSiR, ceux-ci sont effacés et le lien entre le noeud avant et après est refait. Pour ce faire, le noeud doit être de la forme de rectangle et être positionné avant et après deux noeuds qui sont sous forme de cercle (avec leur pense-bête respectif). Il ne peut donc pas y avoir deux rectangles qui se suivent. Cette possibilité est simplement pour aider à la notation dans Miro, car cette information n'est pas conserver dans MoSiR. Par exemple, un graphe dans Miro contenant des noeuds et des proportions entre ceux-ci serait réajusté une fois importé dans MoSiR:
 </p>
 
-![split_division](https://github.com/Landry-G/MoSiR_images/blob/main/split_division.png)
-
+![split_division_2](https://github.com/Landry-G/MoSiR_images/blob/main/split_division_2.png)
 
 Nomenclature générale de Miro:
 
@@ -256,13 +257,6 @@ Pour fonctionner, le calculateur a besoin d'un fichier `JSON` pour le graphe, un
 
 Pour un nouvel utilisateur, il serait recommandé d'utiliser d'abord l'interface Miro, car celui-ci vous génère automatiquement des fichiers `JSON` pour le graphe, les intrants et le report. Ces fichiers générés par l'application sont disponibles dans l'onglet `Télécharger` une fois que vous avez importé votre graphe et rempli l'onglet `Calculer`. Ces `JSON` pourront agir par la suite comme modèle pour la structure du fichier. Il existe également des fichiers en exemple dans le Github de MoSiR sous `example\Inputs`.
 </details>
-	
-#### Potentiel de réchauffement global :
-Par défaut, MoSiR utilise un potentiel de réchauffement global de 28 pour le CH4 et de 265 pour le N2O. Ces valeurs peuvent être modifiées par l'utilisateur.
-	
-#### Forçage radiatif :
-Pour le calcul de l'effet radiatif des émissions de GES, MoSiR utilise les données issues de Levasseur et al. (2010) et rendues disponibles via l'outil dynCO2 (https://ciraig.org/index.php/fr/project/dynco2-calculateur-dempreinte-carbone-dynamique/).
-C'est notamment l'approche retenue dans le cadre du Règlement relatif aux projets de boisement et de reboisement sur des terres du domaine privé admissibles à la délivrance de crédits compensatoires du Québec (https://www.environnement.gouv.qc.ca/changements/carbone/credits-compensatoires/sequestration-carbone-boisement-reboisement-terres-prive.htm)	
 
 # FAQ
 
@@ -309,7 +303,7 @@ MoSiR a besoin d'informations requises et demandées à l'utilisateur pour fonct
 	
 # Signaler une erreur
 
-Si vous rencontrez une erreur, la manière à privilégier est par l'entremise des [Issues] sur GitHub. Sur la page des `Issues` de MoSiR, cliquer sur `New issue`. Il est nécessaire de donner le plus d'informations possibles pour reproduire l'erreur que vous rencontrez. Si vous souhaitez faire des suggestions d'amélioration, se référer à la sections <a href="#Développements futurs">Développements futurs</a>.
+Si vous rencontrez une erreur, la manière à privilégier est par l'entremise des [Issues] sur GitHub. Sur la page des `Issues` de MoSiR, cliquer sur `New issue`. Il est nécessaire de donner le plus d'informations possibles pour reproduire l'erreur que vous rencontrez. Si vous souhaitez faire des suggestions d'amélioration, se référer à la section <a href="#Développements futurs">Développements futurs</a>.
 
 [Issues]: https://github.com/Bureau-du-Forestier-en-chef/MoSiR/issues
 
