@@ -268,7 +268,7 @@ Pour un nouvel utilisateur, il serait recommandé d'utiliser d'abord l'interface
 Mosir est opérationnel dans sa version 1.0, il n'en reste pas moins que des développements sont en cours pour améliorer les capacités et l'ergonomie de l'outil et donc maximiser son potentiel d'utilisation par le plus grand nombre. Si au cours de l'utilisation de MoSiR vous percevez en tant qu'utilisateur un potentiel d'amélioration, n'hésitez surtout pas à partager votre idée dans la section discussion du GitHub. Voici une liste d'améliorations futures qui seront ajoutées à MoSiR:
 </p>
 
-- [ ] Mathématique de dégradation https://github.com/Bureau-du-Forestier-en-chef/MoSiR/issues/2
+- [x] Mathématique de dégradation https://github.com/Bureau-du-Forestier-en-chef/MoSiR/issues/2
 - [ ] Analyse de sensibilité (Monte-Carlo) https://github.com/Bureau-du-Forestier-en-chef/MoSiR/issues/39
 - [ ] Ergonomie de MoSiR https://github.com/Bureau-du-Forestier-en-chef/MoSiR/issues/37 https://github.com/Bureau-du-Forestier-en-chef/MoSiR/issues/35 https://github.com/Bureau-du-Forestier-en-chef/MoSiR/issues/14 https://github.com/Bureau-du-Forestier-en-chef/MoSiR/issues/43
 
