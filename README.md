@@ -17,7 +17,7 @@
 <p align="center">
   <a href="#description">Description :book:</a> •
   <a href="#installation">Installation :floppy_disk:</a> •
-  <a href="#directives">Directives :memo:</a> •
+  <a href="#directives">Directives :memo:</a> <br>
   <a href="#faq">FAQ :pushpin:</a> • 
   <a href="#développements-futurs">Développements futurs :thought_balloon:</a> • 
   <a href="#signaler-une-erreur">Signaler une erreur :speech_balloon:</a> • 
@@ -174,7 +174,20 @@ L'installation est complétée, vous pouvez désormais utiliser MoSiR! :tada:
 [la documentation de Miro]: https://developers.miro.com/reference/overview?utm_source=your_apps
 
 # Directives
-	
+<details><summary><b>Comment l'utiliser en package python</b></summary><br>
+Le calculateur de MoSiR peut être directement appelé depuis un script python sans passer par l'interface web. Par exemple:
+  
+```python
+  from MoSiR import mosir_calculator
+  mosir_calculator.main(['-G', graph_json, '-D', input_json, '-R', report_json, '-E', export_folder])
+```
+
+Pour fonctionner, le calculateur a besoin d'un fichier `JSON` pour le graphe, un pour les intrants, un pour le report et le chemin vers l'endroit où seront les extrants.
+
+Pour un nouvel utilisateur, il serait recommandé d'utiliser d'abord l'interface Miro, car celui-ci vous génère automatiquement des fichiers `JSON` pour le graphe, les intrants et le report. Ces fichiers générés par l'application sont disponibles dans l'onglet `Télécharger` une fois que vous avez importé votre graphe et rempli l'onglet `Calculer`. Ces `JSON` pourront agir par la suite comme modèle pour la structure du fichier. Il existe également des fichiers en exemple dans le Github de MoSiR sous `example\Inputs`.
+</details>
+
+<details><summary><b>Comment l'utiliser avec Miro et l'interface web</b></summary><br>
 <p align = "justify">
 La nomenclature reconnu par MoSiR est assez simple: il détecte les formes comme les cercles, les pense-bêtes (sticky note) et les flèches entre ceux-ci (et leur sens). L'utilisateur doit prendre les cercles pour illustrer les noeuds qui composent son graphe et les pense-bêtes pour indiquer la proportion de matière qui sera acheminée au noeud suivant. Un nom unique doit être attribué au noeud. La proportion doit être un chiffre suivi d'un pourcentage (%). Les décimals sont illustré à l'aide d'un point et non d'une virgule. Un pense-bête doit être situé entre deux noeud, relié par deux flèches suivant le sens que parcours la matière. Un pense-bête ne peut pas être utilisé pour relié plusieurs noeuds. Plusieurs liens ne pourraient donc pas sortir du même pense-bête pour rejoindre des noeuds souhaitant avoir la même proportion. Les flèches peuvent être linéaires, ondulées ou en forme de coude. L'épaisseur ou la grosseur de la flèche n'a également pas d'importance. Par contre, la couleur, autant pour les flèches que pour les noeuds ou les pense-bêtes, est importante.
 </p>
@@ -225,38 +238,30 @@ MoSiR utilise les données issues de Levasseur et al. (2010) et rendues disponib
 Par défaut, MoSiR utilise un potentiel de réchauffement global de 28 pour le CH4 et de 265 pour le N2O lors du calcul de tonne de CO2 equivalente. Ces valeurs peuvent être modifiées par l'utilisateur.
 
 <p align = "justify">
-À des fins purement ergonomiques, il est possible d'introduire dans l'architecture du flux de matière des nœuds particuliers pour mieux imager la notion de ventilation. Lors de l'importation dans MoSiR, ceux-ci sont effacés et le lien entre le noeud avant et après est refait. Pour ce faire, le noeud doit être de la forme de rectangle et être positionné avant et après deux noeuds qui sont sous forme de cercle (avec leur pense-bête respectif). Il ne peut donc pas y avoir deux rectangles qui se suivent. Cette possibilité est simplement pour aider à la notation dans Miro, car cette information n'est pas conserver dans MoSiR. Par exemple, un graphe dans Miro contenant des noeuds et des proportions entre ceux-ci serait réajusté une fois importé dans MoSiR:
+À des fins purement ergonomiques, il est possible d'introduire dans l'architecture du flux de matière des nœuds particuliers pour mieux imager la notion de ventilation. Lors de l'importation dans MoSiR, ceux-ci sont effacés et le lien entre le noeud avant et après est refait. Pour ce faire, le noeud doit être de forme rectangulaire et être positionné avant et après deux noeuds qui sont sous forme de cercle (avec leur pense-bête respectif). Il ne peut donc pas y avoir deux rectangles qui se suivent. Cette possibilité est simplement pour aider à la notation dans Miro, car cette information n'est pas conserver dans MoSiR. Une fois interprété par MoSiR, les proportions sont réajustées de le graphe. Par exemple, un graphe dans Miro avec certaines notations pourrait ressembler à ceci:
 </p>
 
-![split_division_2](https://github.com/Landry-G/MoSiR_images/blob/main/split_division_2.png)
+![split_in_miro](https://github.com/Landry-G/MoSiR_images/blob/main/split_in_miro.png)
 
-Nomenclature générale de Miro:
+Une fois dans MoSiR, celui-ci est interprété sans les rectangles et les proportions sont ajustées:
 
-* Nœud : Forme = cercle, nom unique
-* Pense-bête : Couleur = Vert clair / light green
-* Le sens des flèches entre les nœuds est important.
-* Flèches de débordement : Couleur = #17df23
-* Nœud de recyclage : Forme = "cercle", Couleur de remplissage = Vert / green (#8fd14f)
-* Nœud de dégradation: Forme = "cercle", Bordure = "dashed"
-* Nœud d'émissions de GES : Le nom du nœud doit faire apparaitre clairement la molécule voulue. 
-Exemples : CH4 emissions / CO2 emissions / N2O emissions
+![split_in_mosir](https://github.com/Landry-G/MoSiR_images/blob/main/split_in_mosir.png)
+
+En bref:
+* Nœud: Forme = cercle, nom unique
 * Les rectangles servent à annoter le graphe entre deux noeuds normals
-  
--- Nomenclature .JSON:
-A DEVELOPPER (Traduction de la nomenclature MIRO en nomenclature JSON MoSiR)
-   
-<details><summary><b>Comme package python</b></summary> <br>
-Le calculateur de MoSiR peut être directement appelé depuis un script python sans passer par l'interface web. Par exemple:
-  
-```python
-  from MoSiR import mosir_calculator
-  mosir_calculator.main(['-G', graph_json, '-D', input_json, '-R', report_json, '-E', export_folder])
-```
-
-Pour fonctionner, le calculateur a besoin d'un fichier `JSON` pour le graphe, un pour les intrants, un pour le report et le chemin vers l'endroit où seront les extrants.
-
-Pour un nouvel utilisateur, il serait recommandé d'utiliser d'abord l'interface Miro, car celui-ci vous génère automatiquement des fichiers `JSON` pour le graphe, les intrants et le report. Ces fichiers générés par l'application sont disponibles dans l'onglet `Télécharger` une fois que vous avez importé votre graphe et rempli l'onglet `Calculer`. Ces `JSON` pourront agir par la suite comme modèle pour la structure du fichier. Il existe également des fichiers en exemple dans le Github de MoSiR sous `example\Inputs`.
+* Pense-bête: Couleur = Vert clair / light green
+* Le sens des flèches entre les nœuds est important.
+* Flèches de débordement: Couleur = #17df23
+* Nœud de recyclage: Forme = "cercle", Couleur de remplissage = Vert / green (#8fd14f)
+* Nœud de dégradation: Forme = "cercle", Bordure = "dashed"
+* Nœud d'émissions de GES: Le nom du nœud doit faire apparaitre clairement la molécule voulue. Exemples : CH4 emissions / CO2 emissions / N2O emissions
 </details>
+
+<details><summary><b>Nomemclature des fichiers JSON</b></summary><br>
+Nomenclature .JSON:
+A DEVELOPPER (Traduction de la nomenclature MIRO en nomenclature JSON MoSiR)
+</details> 
 
 # FAQ
 
@@ -265,7 +270,7 @@ Pour un nouvel utilisateur, il serait recommandé d'utiliser d'abord l'interface
 # Développements futurs
 
 <p align="justify">
-Mosir est opérationnel dans sa version 1.0, il n'en reste pas moins que des développements sont en cours pour améliorer les capacités et l'ergonomie de l'outil et donc maximiser son potentiel d'utilisation par le plus grand nombre. Si au cours de l'utilisation de MoSiR vous percevez en tant qu'utilisateur un potentiel d'amélioration, n'hésitez surtout pas à partager votre idée dans la section discussion du GitHub. Voici une liste d'améliorations futures qui seront ajoutées à MoSiR:
+Mosir est opérationnel dans sa version 1.0.0, il n'en reste pas moins que des développements sont en cours pour améliorer les capacités et l'ergonomie de l'outil et donc maximiser son potentiel d'utilisation par le plus grand nombre. Si au cours de l'utilisation de MoSiR vous percevez en tant qu'utilisateur un potentiel d'amélioration, n'hésitez surtout pas à partager votre idée dans la section discussion du GitHub. Voici une liste d'améliorations futures qui seront ajoutées à MoSiR:
 </p>
 
 - [x] Mathématique de dégradation https://github.com/Bureau-du-Forestier-en-chef/MoSiR/issues/2
@@ -276,12 +281,13 @@ Partagez vos idées et suggestions ! :point_right: [Discussions](https://github.
 
 #### [Mathématique de dégradation](https://github.com/Bureau-du-Forestier-en-chef/MoSiR/issues/2) 
 <p align="justify">
-Dans sa version 1.0, MoSiR ne peut gérer la dégradation des produits du bois que d'une seule manière, via une dégradation de premier ordre (exponentielle) basée sur une demi-vie fournie par 		l'utilisateur (méthodologie du GIEC). La littérature est claire sur la pertinence d'utiliser une telle mécanique de dégradation pour les grandes familles de produits regroupant un ensemble 		complexe de produits finaux (sciage, pâtes et papiers, panneaux, etc.). La prémisse de la désintégration de premier ordre est que le taux de retrait d’un réservoir est proportionnel à la quantité 	d’éléments dans ce dernier. Donc, cette hypothèse a pour conséquence qu’une proportion importante des produits du bois est mise hors service dès les premières années après leur mise en marché, le 	taux de mise hors service étant alors à son maximum. Si l'architecture du flux de matière de l'utilisateur est plus détaillée que simplement les grandes familles de produits, il pourrait être 	pertinent d'utiliser une mécanique de dégradation différente. En effet, s’il est vrai qu’un produit particulier se dégrade avec une certaine probabilité à différents moments, cette probabilité 	devrait être plus élevée à l’approche de la durée de vie prévue initialement.
+Dans sa version préliminaire, MoSiR ne pouvait gérer la dégradation des produits du bois que d'une seule manière, via une dégradation de premier ordre (exponentielle) basée sur une demi-vie fournie par l'utilisateur (méthodologie du GIEC). La littérature est claire sur la pertinence d'utiliser une telle mécanique de dégradation pour les grandes familles de produits regroupant un ensemble complexe de produits finaux (sciage, pâtes et papiers, panneaux, etc.). La prémisse de la désintégration de premier ordre est que le taux de retrait d’un réservoir est proportionnel à la quantité d’éléments dans ce dernier. Donc, cette hypothèse a pour conséquence qu’une proportion importante des produits du bois est mise hors service dès les premières années après leur mise en marché, le 	taux de mise hors service étant alors à son maximum. Si l'architecture du flux de matière de l'utilisateur est plus détaillée que simplement les grandes familles de produits, il pourrait être pertinent d'utiliser une mécanique de dégradation différente. En effet, s’il est vrai qu’un produit particulier se dégrade avec une certaine probabilité à différents moments, cette probabilité devrait être plus élevée à l’approche de la durée de vie prévue initialement.
 </p>
 <p align="justify">
-Il est donc prévu d'intégrer dans MoSiR une dégradation des produits du bois suivant une Loi Gamma (alpha, bêta). Il est à noter qu'une dégradation de premier ordre (exponentielle) peut être modélisée via une Loi Gamma en fixant le paramètre alpha à 1  et en faisant varier le paramètre bêta pour faire correspondre la courbe avec la demi-vie souhaitée. 
-Ce développement va donc laisser la liberté à l'utilisateur de définir le type de dégradation qu'il souhaite dans son architecture de flux de matière, en définissant pour chaque nœud de demi-vie un facteur alpha et bêta. Mosir ne nécessitant plus une valeur de demi-vie pour fonctionner, il sera de la responsabilité de l'utilisateur de fixer les paramètres alpha et bêta de manière adéquate. Un chiffrier Excel sera fourni pour aider les utilisateurs dans la détermination de ces valeurs.
+Il y a donc dans MoSiR l'option de choisir son équation de dégradation (exponentielle, gamma, chi-square ou au choix). Chacune de ces équations peut être représenté selon une distribution gamma en ajustant les paramètres alpha et bêta. Si l'utilisateur souhaite avoir une dégradation exponentielle (alpha = 1), gamma (bêta = 1) ou chi-square (bêta = 2), il doit spécifier le temps de demi-vie souhaité pour que MoSiR calcul le alpha ou bêta manquant. Si l'utilisateur souhaite paramétrer lui-même son équation de dégradation, il peut alors choisir l'option de manuellement inscrire les paramètres alpha et bêta souhaité. 
 </p>
+
+Un fichier excel pour déterminer manuellement le alpha et le bêta est disponible sous `MoSiR\gamma_distribution\gamma_decay.xlsx`. 
 	
 #### [Analyse sensibilité/Incertitudes (Monte-Carlo)](https://github.com/Bureau-du-Forestier-en-chef/MoSiR/issues/39)
 La version 1.0 de MoSiR requiert des valeurs spécifiées par l'utilisateur, offrant ainsi peu de flexibilité pour prendre en compte les incertitudes associées à ces données. 
