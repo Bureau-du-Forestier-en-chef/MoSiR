@@ -27,7 +27,11 @@ class ImportData():
         return [i for i in self.get_flux_data(graph_name)]
     
     def get_decay_name(self, graph_name: str):
-        return [i for i in self.get_decay_data(graph_name)]
+        try:
+            decay_name = [i for i in self.get_decay_data(graph_name)]
+        except:
+            decay_name = []
+        return decay_name 
     
     def get_flux_input(self, graph_name: str, node_name: str):
         intrant = self.get_flux_data(graph_name)[node_name]
@@ -42,10 +46,10 @@ class ImportData():
     
     def get_decay_input(self, graph_name: str, node_name: str):
         intrant = self.get_decay_data(graph_name)[node_name]
-        if list(intrant.keys())[0] == "Manuel":
-            alpha_value = intrant['Manuel']['alpha']
-            beta_value = intrant['Manuel']['beta']
-        elif list(intrant.keys())[0] in ['Exponentielle', 'Gamma', 'Chi-square']:
+        if list(intrant.keys())[0] == "Custom":
+            alpha_value = intrant['Custom']['alpha']
+            beta_value = intrant['Custom']['beta']
+        elif list(intrant.keys())[0] in ['Exponential', 'Gamma', 'Chi-square']:
             decay_type = list(intrant.keys())[0]
             halflife_value = intrant[decay_type]
             alpha_value, beta_value = gf.DecayTypeOptimizer(

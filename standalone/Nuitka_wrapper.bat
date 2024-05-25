@@ -20,10 +20,9 @@ if %ErrorLevel% == 1 (
     pause >nul
     python -m nuitka ^
     --standalone ^
-    --onefile ^
-    --onefile-windows-splash-screen-image=..\MoSiR\static\image\MoSiR-logo_BW.png ^
     --include-package-data=MoSiR ^
     --include-package-data=pyvis ^
+    --windows-disable-console ^
     --windows-icon-from-ico=..\MoSiR\static\image\MoSiR-logo.png ^
     --company-name="Bureau du Forestier en chef" ^
     --product-name=MoSiR ^

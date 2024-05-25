@@ -99,57 +99,58 @@ class Reporting(Component):
             stash.append('<br>')
             
             # Input Decay node
-            stash.append('<h5> Valeurs de dégradation </h5>')
-            stash += self.__build_cdecay_button()
-            stash.append('<table class="w3-striped w3-border w3-hoverable w3-sand" id=cdecay_'
-                + generator.get_graph_name()
-                + '><tr>'
-                + '<th>Noeud</th>'
-                + '<th>Dégradation</th>'
-                + '<th>halflife</th>'
-                + '<th><span id="alphaTitle">Alpha</span></th>'
-                + '<th><span id="betaTitle">Beta</span></th>'
-                + '</tr>')
-            for node in generator.get_decay_node_names():
-                stash.append('<tr>')
-                stash.append('<td>{}</td>'.format(node))
-                stash.append('<th>')
-                stash.append('<select name="Dégradation" title="Dégradation" id="Decay_'
-                            + generator.get_graph_name() + '~' + node
-                            + '" onchange="checkTypes(); setdecay(this)">')
-                for decay in ['Exponentielle', 'Gamma', 'Chi-square', 'Manuel']:
-                    stash.append('<option value="'
-                                 + decay 
-                                 + '">'
-                                 + decay
-                                 + '</option>')
-                stash.append('</th>')
-                stash.append('<td><input type="number" min="1" max="500" step="1" name="halflife_value~'
-                             + generator.get_graph_name() + '~' + node
-                             + '" id="halflife_value~'
-                             + generator.get_graph_name() + '~' + node
-                             + '" onchange="setdecay(this)" required'
-                             + '></td>')
-                stash.append('<td><input type="number" name="alpha_value~'
-                             + generator.get_graph_name() + '~' + node
-                             + '" id="alpha_value~'
-                             + generator.get_graph_name() + '~' + node
-                             + '" onchange="setdecay(this)" step="any" required'
-                             + '></td>')
-                stash.append('<td><input type="number" name="beta_value~'
-                             + generator.get_graph_name() + '~' + node 
-                             + '" id="beta_value~'
-                             + generator.get_graph_name() + '~' + node
-                             + '" onchange="setdecay(this)" step="any" required'
-                             + '"></td>')
-                stash.append('<td><input type="hidden" name="rowData~'
-                    + generator.get_graph_name() + '~' + node
-                    + '" id="rowData~'
-                    + generator.get_graph_name() + '~' + node
-                    + '"></td>')
-                stash.append('</tr>')
-            stash.append('</table>')
-            stash.append('<br>')
+            if len(generator.get_decay_node_names()) > 0:
+                stash.append('<h5> Valeurs de dégradation </h5>')
+                stash += self.__build_cdecay_button()
+                stash.append('<table class="w3-striped w3-border w3-hoverable w3-sand" id=cdecay_'
+                    + generator.get_graph_name()
+                    + '><tr>'
+                    + '<th>Noeud</th>'
+                    + '<th>Dégradation</th>'
+                    + '<th>Demi-vie</th>'
+                    + '<th><span id="alphaTitle">Alpha</span></th>'
+                    + '<th><span id="betaTitle">Beta</span></th>'
+                    + '</tr>')
+                for node in generator.get_decay_node_names():
+                    stash.append('<tr>')
+                    stash.append('<td>{}</td>'.format(node))
+                    stash.append('<th>')
+                    stash.append('<select name="Dégradation" title="Dégradation" id="Decay_'
+                                + generator.get_graph_name() + '~' + node
+                                + '" onchange="checkTypes(); setdecay(this)">')
+                    for decay in self.__get_decay_types():
+                        stash.append('<option value="'
+                                     + decay 
+                                     + '">'
+                                     + decay
+                                     + '</option>')
+                    stash.append('</th>')
+                    stash.append('<td><input type="number" min="1" max="500" name="halflife_value~'
+                                 + generator.get_graph_name() + '~' + node
+                                 + '" id="halflife_value~'
+                                 + generator.get_graph_name() + '~' + node
+                                 + '" onchange="setdecay(this)" step="any" required'
+                                 + '></td>')
+                    stash.append('<td><input type="number" max="500" name="alpha_value~'
+                                 + generator.get_graph_name() + '~' + node
+                                 + '" id="alpha_value~'
+                                 + generator.get_graph_name() + '~' + node
+                                 + '" onchange="setdecay(this); validateInput(this)" step="any" required'
+                                 + '></td>')
+                    stash.append('<td><input type="number" max="500" name="beta_value~'
+                                 + generator.get_graph_name() + '~' + node 
+                                 + '" id="beta_value~'
+                                 + generator.get_graph_name() + '~' + node
+                                 + '" onchange="setdecay(this); validateInput(this)" step="any" required'
+                                 + '"></td>')
+                    stash.append('<td><input type="hidden" name="rowData~'
+                        + generator.get_graph_name() + '~' + node
+                        + '" id="rowData~'
+                        + generator.get_graph_name() + '~' + node
+                        + '"></td>')
+                    stash.append('</tr>')
+                stash.append('</table>')
+                stash.append('<br>')
         return stash
     
     def __build_report_header(self) -> list[str]:
@@ -170,7 +171,7 @@ class Reporting(Component):
         stash.append('</select>')
         stash.append('</div>')
         stash.append('<div>')
-        stash.append('<h7>Potentiel de réchauffement global</h7>')
+        stash.append('<h7>Potentiel de réchauffement global:</h7>')
         stash.append('<label for="CH4">CH<sub>4</sub></label>')
         stash.append('<input type = "number" name="CH4" \
                      title="Potentiel de réchauffement global (CH4)" \
@@ -202,7 +203,7 @@ class Reporting(Component):
                 + '<tr class="w3-sand">'
                 + '<th>Nom</th>'
                 + '<th>Noeuds</th>'
-                + '<th>Type</th>'
+                + '<th>Type de flux</th>'
                 + '<th>Cumulatif</th>'
                 + '<th>Regroupement</th>'
                 + '<th>Unité</th>'
@@ -229,7 +230,7 @@ class Reporting(Component):
             stash.append('</div>')
             stash.append('</td>')
             stash.append('<td>')
-            stash.append('<select name="Type de sortie" title="Type de sortie" id="out_type_'
+            stash.append('<select name="Type de flux" title="Type de flux" id="out_type_'
                          + generator.get_graph_name() + '">')
             for unit in self.__get_outputs_types():
                 stash.append('<option value="' + unit + '">' + unit + '</option>')
@@ -290,7 +291,7 @@ class Reporting(Component):
         for input in self._get_inputs_files():
             jsonname = pathlib.Path(input).stem
             htmltarget = self._get_url_for("/json_provider/<filename>", 
-                                           filename= jsonname + '.json')
+                                           filename=jsonname + '.json')
             stash.append('<button class="w3-button w3-dark-grey" id='
                          + htmltarget 
                          + '  type="button" onclick=fillcinputs("'
@@ -306,7 +307,7 @@ class Reporting(Component):
         for input in self._get_inputs_files():
             jsonname = pathlib.Path(input).stem
             htmltarget = self._get_url_for("/json_provider/<filename>", 
-                                           filename= jsonname + '.json')
+                                           filename=jsonname + '.json')
             stash.append('<button class="w3-button w3-dark-grey" id='
                          + htmltarget + '_decay' 
                          + '  type="button" onclick=fillcdecay("'
@@ -316,11 +317,14 @@ class Reporting(Component):
                          + ' <i class="fa fa-arrow-right"></i></button>')
         return stash
     
+    def __get_decay_types(self) -> list[str]:
+        return ["Exponentielle", "Gamma", "Chi-square", "Personnalisée"]
+    
     def __get_sum(self) -> list[str]:
         return ["Par noeud", "Tout ensemble"]
     
     def __get_cumulative(self) -> list[str]:
-        return ["Vrai", "Faux"]
+        return ["Oui", "Non"]
     
     def __get_file_types(self) -> list[str]:
         return [".csv"]
@@ -329,14 +333,15 @@ class Reporting(Component):
         return ['kgC', 'tC']
     
     def __get_outputs_units(self) -> list[str]:
-        return ['kgC','tC','w/m2', 'tco2eq']
+        return ['kgC','tC','w/m2', 'tCO2eq']
     
     def __get_outputs_types(self) -> list[str]:
-        return ['Flux in', 'Flux out', 'Stock']
+        # Anglais ['Flux in', 'Flux out', 'Stock']
+        # Français ['Entrant', 'Sortant', 'Stock']
+        return ['Entrant', 'Sortant', 'Stock']
     
     def __get_graphs_inputs(self) -> str:
         data = {"Inputs": {}, "Decay": {}}
-        # TODO decay
         for field_name, value in request.form.items():
             splitted_key = field_name.split('~')
             target_key = splitted_key[0]
@@ -360,9 +365,13 @@ class Reporting(Component):
                 node = splitted_key[2]
                 decay_type = value_list[-1]
                 # Le script html s'assure que les cases sont remplies
-                if decay_type == 'Manuel':
+                if decay_type == "Personnalisée":
+                    decay_type = "Custom"
                     value = {'alpha': float(value_list[1]),
                              'beta': float(value_list[2])}
+                elif decay_type == "Exponentielle":
+                    decay_type = "Exponential"
+                    value = int(value_list[1])
                 else:
                     value = int(value_list[1])
                 if graph not in data["Decay"]:
@@ -389,7 +398,7 @@ class Reporting(Component):
                 elif(target_key == 'N2O'):
                     data["PRG"]["N2O"] = int(value)
             if target_key in ["Output", "Nodes_name", "Type", "Cumulative", "Summarize", "Unit"]:
-                output_name = splitted_key[2]
+                output_name = splitted_key[2].replace('~', '_').replace(' ', '_') # Car on split avec ~ pour le graphique
                 graph_name = splitted_key[1]
                 if graph_name not in data["Output"]:
                     data["Output"][graph_name] = {}
@@ -402,10 +411,14 @@ class Reporting(Component):
                 elif(target_key == 'Nodes_name'):
                     data["Output"][graph_name][output_name]["Nodes_name"] = value.split(",")
                 elif(target_key == 'Type'):
+                    traduction = {'Entrant': 'Flux in',
+                                  'Sortant': 'Flux out'}
+                    if value in traduction: 
+                        value = traduction[value]
                     data["Output"][graph_name][output_name]["Type"] = value
                 elif(target_key == 'Cumulative'):
                     cumulate = False
-                    if value.lower() in ["vrai", "true"]:
+                    if value.lower() == "oui":
                         cumulate = True
                     data["Output"][graph_name][output_name]["Cumulative"] = cumulate
                 elif(target_key == 'Summarize'):
@@ -447,12 +460,13 @@ class Reporting(Component):
             stash.append('<div id=' + divid + '></div>')
         return Component.main_renderer.render(False, stash)
     
-    def __get_result(self, location: str) -> tuple[str, list, dict]: #Return the divid,data,layout of the histogram
-        #Based on https://codepen.io/pen
-        #https://plotly.com/javascript/bar-charts/
-        #https://stackoverflow.com/questions/42499535/passing-a-json-object-from-flask-to-javascript
+    def __get_result(self, location: str) -> tuple[str, list, dict]: 
+        # Return the divid,data,layout of the histogram
+        # Based on https://codepen.io/pen
+        # https://plotly.com/javascript/bar-charts/
+        # https://stackoverflow.com/questions/42499535/passing-a-json-object-from-flask-to-javascript
         filename = pathlib.Path(location).stem
-        filename_list = filename.split("_")
+        filename_list = filename.split("~")
         graph_name = filename_list[0]
         output_title = filename_list[1]
         
@@ -466,7 +480,7 @@ class Reporting(Component):
                             }
                         },
                     'yaxis': {
-                        'title': 'USD (millions)',
+                        'title': 'Error in graph',
                         'titlefont': {
                             'size': 16,
                             'color': 'rgb(107, 107, 107)'
@@ -488,9 +502,9 @@ class Reporting(Component):
                     'bargap': 0.15,
                     'bargroupgap': 0.1
                     }
-        with open(location, newline= '') as csvfile:
+        with open(location, newline='') as csvfile:
             reader = csv.DictReader(csvfile)
-            pallet = seaborn.color_palette("pastel", n_colors= len(reader.fieldnames[1:-1]))
+            pallet = seaborn.color_palette("pastel", n_colors=len(reader.fieldnames[1:-1]))
             fid = 0 
             for name in reader.fieldnames[1:-1]:
                 all_data.append({'x':[],'y':[],"name":name,

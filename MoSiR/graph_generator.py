@@ -305,7 +305,7 @@ class DecayNode(ProportionNode):
 
     Args:
         LOCALNAME (str): Le nom du noeud
-        HalfLife (int): La demi-vie du carbone dans le noeud
+        HalfLife (int): Simplement un indicateur nécessaire pour le json
     
     Raises:
         ValueError: Le nom du noeud doit être une chaine de caractère

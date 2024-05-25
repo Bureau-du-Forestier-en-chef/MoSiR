@@ -52,10 +52,14 @@ class Flaskwrapper:
             package_data = list(all_data.keys())
             package_data.sort()
             # Fix qui a été fait pour seulement garder 3 infos
+            traduction = {'Author': 'Auteur',
+                          'Author-email': 'Courriel',
+                          'Version': 'Version'}
             for data in package_data:
                 if data in ['Author', 'Author-email', 'Version']:
+                    key = traduction[data]
                     info = all_data[data]
-                    output = f'{data}: {info}'
+                    output = f'{key}: {info}'
                     if output not in all_text:
                         all_text.append(output)
         return all_text

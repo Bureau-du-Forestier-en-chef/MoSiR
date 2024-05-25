@@ -79,11 +79,11 @@ def output_creation(graph: gg.GraphFactory, import_data: ip.ImportData,
             nodes_name = data['Nodes_name']
             out_type = data['Type']
             summarize = data['Summarize']
-            report_unit = data['Unit'].lower()
+            report_unit = data['Unit']
             if type(data['Cumulative']) == bool:
                 if report_unit == 'w/m2':
                     cumu = False
-                elif report_unit in ['kgc', 'tc', 'tco2eq']:
+                elif report_unit in ['kgC', 'tC', 'tCO2eq']:
                     cumu = data['Cumulative']
                 else:
                     raise me.InvalidOption(f"Unit ({data['Unit']}) dans le fichier \
@@ -95,7 +95,6 @@ def output_creation(graph: gg.GraphFactory, import_data: ip.ImportData,
             # Dictionnaire pour les outputs
             dt = {'Time': [i for i in range(time + 1)]}
             dt.update({node_name: [] for node_name in nodes_name})
-
 
             # On produit les outputs par graph
             G = graph.get_graph(graph_name)
@@ -116,7 +115,7 @@ def output_creation(graph: gg.GraphFactory, import_data: ip.ImportData,
                         dt[node.NAME].append(result)
             
             # On ajuste les outputs selon le reporting
-            if report_unit == 'tco2eq':
+            if report_unit == 'tCO2eq':
                 for col in dt:
                     if col == 'Time':
                         continue
@@ -131,7 +130,7 @@ def output_creation(graph: gg.GraphFactory, import_data: ip.ImportData,
                     else:
                         dt[col] = 0
                         warnings.warn(f"Il n'y a pas de gas reconnu dans {col}, \
-                                      le résultat sera donc de 0", stacklevel = 2)
+                                      le résultat sera donc de 0", stacklevel=2)
             elif report_unit == 'w/m2':
                 C = data['Cumulative']
                 RF = pd.read_excel(os.path.join(os.path.dirname(os.path.abspath(__file__)), \
@@ -163,15 +162,15 @@ def output_creation(graph: gg.GraphFactory, import_data: ip.ImportData,
             dt['Unit'] = report_unit
             if ext == '.csv':
                 if directory[-1] == '/':
-                    pd.DataFrame(dt).to_csv(directory + graph_name + '_' + output_name + ext,
+                    pd.DataFrame(dt).to_csv(directory + graph_name + '~' + output_name + ext,
                               index= False, sep = ',')
                 elif directory[-1] != '/':
-                    pd.DataFrame(dt).to_csv(directory + '/' + graph_name + '_' + output_name + ext,
+                    pd.DataFrame(dt).to_csv(directory + '/' + graph_name + '~' + output_name + ext,
                                 index= False, sep= ',')
             elif ext == '.json':
                 if directory[-1] == '/':
-                    with open(directory + graph_name + '_' + output_name + ext, 'w') as f:
+                    with open(directory + graph_name + '~' + output_name + ext, 'w') as f:
                         json.dump(dt, f)
                 elif directory[-1] != '/':
-                    with open(directory + '/' + graph_name + '_' + output_name + ext, 'w') as f:
+                    with open(directory + '/' + graph_name + '~' + output_name + ext, 'w') as f:
                         json.dump(dt, f)

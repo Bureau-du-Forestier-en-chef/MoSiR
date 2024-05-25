@@ -17,7 +17,7 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
     background-image: url("{{ url_for('static', filename='image/MoSiR-logos_white.png') }}");
     background-repeat: no-repeat;
     background-position: 50% 10%; 
-    background-size: 55%;
+    background-size: 50%;
     flex-direction: column;
     justify-content: space-between;
   }
@@ -71,7 +71,7 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
   <!-- Header -->
   <header class="w3-container" style="padding-top:22px">
     {% if descriptions is defined %}
-    <h5><b>Bienvenue sur MoSiR (pre-release version)</b></h5>
+    <h5><b>Bienvenue sur MoSiR</b></h5>
     {% endif %}
   </header>
 
@@ -95,7 +95,7 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
     <p>Pour la documentation complète, veuillez consulter le <a href="https://github.com/Bureau-du-Forestier-en-chef/MoSiR" target="_blank">
       Github de MoSiR
     </a></p>
-    <p>Par le <a href="https://github.com/Bureau-du-Forestier-en-chef/" target="_blank">
+    <p>Par le <a href="https://forestierenchef.gouv.qc.ca/" target="_blank">
     <img alt="fec" src="{{ url_for('static', filename='image/fec.png') }}" class="w3-circle w3-margin-right" style="width:20px">
       Bureau du Forestier en Chef
     </a></p>
@@ -111,7 +111,7 @@ var overlayBg = document.getElementById("myOverlay");
 
 var lastPeriod = [];
 var one_filed_is_manual = false
-var manual_count = 0
+var custom_count = 0
 
 // Toggle between showing and hiding the sidebar, and add overlay effect
 function w3_open() {
@@ -144,12 +144,12 @@ function isInteger(value) {
 window.onload = checkTypes;
 
 // zone grise dans decay lors de la sélection
-function checkType(selectElement, manual_count) {
+function checkType(selectElement, custom_count) {
   var row = selectElement.parentNode.parentNode;
   var halflifeInput = row.querySelector('input[name^="halflife_value"]');
   var alphaInput = row.querySelector('input[name^="alpha_value"]');
   var betaInput = row.querySelector('input[name^="beta_value"]');
-  if (selectElement.value == "Manuel") {
+  if (selectElement.value == "Personnalisée") {
     halflifeInput.disabled = true;
     halflifeInput.style.backgroundColor = "darkgrey";
     halflifeInput.value = "";  // Clear the input field
@@ -159,7 +159,7 @@ function checkType(selectElement, manual_count) {
     betaInput.disabled = false;
     betaInput.style.backgroundColor = "white";
     betaInput.style.display = "";  // Show the input field
-    return manual_count + 1;
+    return custom_count + 1;
   } else {
     halflifeInput.disabled = false;
     halflifeInput.style.backgroundColor = "white";
@@ -171,19 +171,19 @@ function checkType(selectElement, manual_count) {
     betaInput.value = "";  // Clear the input field    
     alphaInput.style.display = "none";  // Hide the input field
     betaInput.style.display = "none";  // Hide the input field
-    return manual_count;
+    return custom_count;
   }
 }
 
 function checkTypes() {
-  let manual_count = 0;
+  let custom_count = 0;
   let selectElements = document.querySelectorAll('select[name="Dégradation"]');
   selectElements.forEach(function(selectElement) {
-    manual_count = checkType(selectElement, manual_count);
+    custom_count = checkType(selectElement, custom_count);
   });
   let alphaTitle = document.getElementById('alphaTitle');
   let betaTitle = document.getElementById('betaTitle');
-  if(manual_count == 0){
+  if(custom_count == 0){
     betaTitle.style.display = "none";  // Hide the title
     alphaTitle.style.display = "none";  // Hide the title
   } else {
@@ -269,7 +269,16 @@ function fillcdecay(html_inputs)  {
       for (const [graph_name, decay_entry] of Object.entries(data.Decay)) {
         for (const [node, decay] of Object.entries(decay_entry)) {
           for (const [decay_type, valeur] of Object.entries(decay)) {
-            appendcdecay(graph_name, node, decay_type, valeur)
+            // traduction en français
+            let decay_type_fr; 
+            if (decay_type === "Custom") {
+              decay_type_fr = "Personnalisée";
+            } else if (decay_type === "Exponential") {
+              decay_type_fr = "Exponentielle";
+            } else {
+              decay_type_fr = decay_type
+            }
+            appendcdecay(graph_name, node, decay_type_fr, valeur)
             }
           }
         }
@@ -293,7 +302,7 @@ function appendcdecay(graph_name, node, decay_type, valeur) {
   checkTypes();
 
   // Check the decay_type and update the corresponding value
-  if (decay_type != "Manuel") {
+  if (decay_type != "Personnalisée") {
     document.getElementById("halflife_value~" + graph_name + "~" + node).value = valeur;
     document.getElementById("rowData~" + graph_name + "~" + node).value = [node, valeur, decay_type];
   } else {
@@ -302,7 +311,14 @@ function appendcdecay(graph_name, node, decay_type, valeur) {
     document.getElementById("rowData~" + graph_name + "~" + node).value = [node, valeur['alpha'], valeur['beta'], decay_type];
   }
 }
-        
+
+// Onvalide si des alpha ou beta sont < 0
+function validateInput(input) {
+    if (input.value <= 0) {
+        alert("La valeur doit être supérieure à 0");
+        input.value = "";
+    }
+}
 
 //Adding period inputs
 function addcinputs(graph_name) {
@@ -325,7 +341,7 @@ function appendcoutputs(graph_name, output_name, output_type, cumulative, sum, o
       var table = document.getElementById("coutputs_"+graph_name);
       var key = graph_name+'~'+output_name +'~'+output_type+'~'+cumulative+'~'+sum+'~'+out_unit+'~'+all_nodes
       var row = table.insertRow(table.rows.length-1);
-      var all_data = [output_name,all_nodes,output_type,cumulative,sum,out_unit];
+      var all_data = [output_name, all_nodes, output_type, cumulative, sum, out_unit];
       var types = ["text", "text", "text", "text", "text", "text"];
       var keys = ["Output", "Nodes_name", "Type", "Cumulative", "Summarize", "Unit"]
       for (let i = 0; i < all_data.length; i++) {
@@ -340,56 +356,77 @@ function appendcoutputs(graph_name, output_name, output_type, cumulative, sum, o
         newcell.appendChild(data);
         }
       }
-
   }
 
 //Adding outputs by json
-function fillcoutputs(html_outputs) 
-  {
-    const histo_data = fetch(html_outputs).then(response => response.json()).then((data)=>{
-      for (const [graph_name, output_entry] of Object.entries(data.Output)) 
-        {
-        for (const [output_name, output] of Object.entries(output_entry)) 
-          {
-          const output_type = output.Type;
-          const cumulative = output.Cumulative;
-          const sum = output.Summarize;
+function fillcoutputs(html_outputs) {
+  const histo_data = fetch(html_outputs)
+    .then(response => response.json())
+    .then((data) => {
+      for (const [graph_name, output_entry] of Object.entries(data.Output)) {
+        for (const [output_name, output] of Object.entries(output_entry)) {
+          // traduction en français
+          let output_type;
+          if (output.Type === "Flux in") {
+            output_type = "Entrant"
+          } else if (output.Type === "Flux out"){
+            output_type = "Sortant"
+          } else {
+            output_type = "Stock"
+          }
+
+          let cumulative; 
+          if (output.Cumulative === true) {
+            cumulative = "Oui";
+          } else {
+            cumulative = "Non";
+          }
+
+          let sum; 
+          if (output.Summarize === "Combined") {
+            sum = "Tout ensemble";
+          } else {
+            sum = "Par noeud";
+          }
+
           const out_unit = output.Unit;
           const all_nodes = output.Nodes_name.join(",");
-          appendcoutputs(graph_name,output_name,output_type,cumulative,sum,out_unit,all_nodes);
-          }
+          appendcoutputs(graph_name, output_name, output_type, cumulative, sum, out_unit, all_nodes);
         }
-        let time_element = document.getElementById("Time");
-        time_element.value = data.Time;
-        let extension_element = document.getElementById("Output file extension");
-        extension_element.value = data["Output file extension"]
-        let prg_ch4 = document.getElementById("CH4");
-        prg_ch4.value = data.PRG.CH4;
-        let prg_N20 = document.getElementById("N2O");
-        prg_N20.value = data.PRG.N2O;
-        });
-    const element = document.getElementById(html_outputs);
-    element.remove();
-  }
+      }
+
+      let time_element = document.getElementById("Time");
+      time_element.value = data.Time;
+      let extension_element = document.getElementById("Output file extension");
+      extension_element.value = data["Output file extension"];
+      let prg_ch4 = document.getElementById("CH4");
+      prg_ch4.value = data.PRG.CH4;
+      let prg_N20 = document.getElementById("N2O");
+      prg_N20.value = data.PRG.N2O;
+    });
+
+  const element = document.getElementById(html_outputs);
+  element.remove();
+}
 
 //Adding anoutput
 function addcoutputs(graph_name) {
-  var table = document.getElementById("coutputs_"+graph_name);
-  var output_name = document.getElementById('Output_'+graph_name).value;
+  var table = document.getElementById("coutputs_" + graph_name);
+  var output_name = document.getElementById('Output_' + graph_name).value;
 
-  var element_output_type = document.getElementById('out_type_'+graph_name);
+  var element_output_type = document.getElementById('out_type_' + graph_name);
   var output_type = element_output_type.options[element_output_type.selectedIndex].text;
 
-  var element_cumulative_type = document.getElementById('cumulative_'+graph_name);
+  var element_cumulative_type = document.getElementById('cumulative_' + graph_name);
   var cumulative = element_cumulative_type.options[element_cumulative_type.selectedIndex].text;
 
   var element_sum_type = document.getElementById('sum_'+graph_name);
   var sum = element_sum_type.options[element_sum_type.selectedIndex].text;
 
-  var element_out_unit_type = document.getElementById('out_unit_'+graph_name);
+  var element_out_unit_type = document.getElementById('out_unit_' + graph_name);
   var out_unit = element_out_unit_type.options[element_out_unit_type.selectedIndex].text;
 
-  var ul = document.getElementById('drop_list_ul_'+graph_name);
+  var ul = document.getElementById('drop_list_ul_' + graph_name);
   var li = ul.getElementsByTagName('li');
   var all_selected = [];
   for(var i=0; i<li.length; i++)
@@ -400,7 +437,7 @@ function addcoutputs(graph_name) {
             }
         }
   var all_nodes = all_selected.join(",");
-  appendcoutputs(graph_name,output_name,output_type,cumulative,sum,out_unit,all_nodes);
+  appendcoutputs(graph_name, output_name, output_type, cumulative, sum, out_unit, all_nodes);
   }
 
     function dropdown(graphname) 

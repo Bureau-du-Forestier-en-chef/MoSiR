@@ -48,7 +48,7 @@ class Miroerror(werkzeug.exceptions.HTTPException):
                                              MiroUrl= self.__LOCATION), 200)
     
     def get_description(self, environ):
-        return  self.description
+        return self.description
     
 class Mirowrapper(Component):
     def __init__(self):
@@ -171,7 +171,8 @@ class Mirowrapper(Component):
     def __wp_selected(self):
         NewBoards = {}
         for Dictionary in request.form:
-            NewBoards[Dictionary] = self.__BoardGraphs[Dictionary]
+            board = request.form[Dictionary]
+            NewBoards[board] = self.__BoardGraphs[board]
         self.__BoardGraphs = NewBoards
         return redirect(self._get_url_for("/graph_generation"))
     
@@ -217,8 +218,8 @@ class Mirowrapper(Component):
             self._write_graphs_json(GraphsDict, GRAPHNAMES)
         except Exception as e:
             raise me.GraphError(f"<h4><i class='fa fa-exclamation-triangle' \
-                style='color: red;'></i> There is an error with the\
-                imported graph:</h4><br><h5><span style='color: \
+                style='color: red;'></i> Il y a une erreur avec le graph\
+                importé:</h4><br><h5><span style='color: \
                 red;'>{e}</span></h5>")
 
     # FIXME useless

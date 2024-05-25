@@ -43,11 +43,11 @@ def test_01_in_eq_out():
     A1.time = [0, 1, 2, 3, 4, 5, 50]
     A1.quantities = [10, 20, 30, 40, 10, 10, 2000]
 
-    C_decay = gf.DecayTypeOptimizer('C', 'Exponentielle', 75).find_param()
+    C_decay = gf.DecayTypeOptimizer('C', 'Exponential', 75).find_param()
     C1.alpha = C_decay[0]
     C1.beta = C_decay[1]
 
-    D_decay = gf.DecayTypeOptimizer('D', 'Exponentielle', 50).find_param()
+    D_decay = gf.DecayTypeOptimizer('D', 'Exponential', 50).find_param()
     D1.alpha = D_decay[0]
     D1.beta = D_decay[1]
 
@@ -145,7 +145,7 @@ def test_03_decay():
     A3.time = [0]
     A3.quantities = [100]
 
-    B_decay = gf.DecayTypeOptimizer('B', 'Exponentielle', 75).find_param()
+    B_decay = gf.DecayTypeOptimizer('B', 'Exponential', 75).find_param()
     B3.alpha = B_decay[0]
     B3.beta = B_decay[1]
 
@@ -213,7 +213,7 @@ def test_05_micro1():
     A5.time = [0]
     A5.quantities = [100]
 
-    E_decay = gf.DecayTypeOptimizer('E', 'Exponentielle', 10).find_param()
+    E_decay = gf.DecayTypeOptimizer('E', 'Exponential', 10).find_param()
     E5.alpha = E_decay[0]
     E5.beta = E_decay[1]
 
@@ -269,11 +269,11 @@ def test_06_micro2():
     A6.time = [0]
     A6.quantities = [100]
 
-    B_decay = gf.DecayTypeOptimizer('B', 'Exponentielle', 5).find_param()
+    B_decay = gf.DecayTypeOptimizer('B', 'Exponential', 5).find_param()
     B6.alpha = B_decay[0]
     B6.beta = B_decay[1]
 
-    C_decay = gf.DecayTypeOptimizer('C', 'Exponentielle', 10).find_param()
+    C_decay = gf.DecayTypeOptimizer('C', 'Exponential', 10).find_param()
     C6.alpha = C_decay[0]
     C6.beta = C_decay[1]
 

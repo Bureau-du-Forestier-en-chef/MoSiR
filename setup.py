@@ -45,6 +45,7 @@ setup(
     scripts = ['MoSiR.py'],
     packages = find_packages(exclude = ('tests', 'docs', 'image', 'standalone', 'examples')),
     install_requires = reqs,
-    package_data = {'MoSiR': ['mirowrapper/**','static/**','templates/*',\
-        'uploads/*','visualization/**','radiative_forcing/*', 'BFECGCBM/**', './README.md']}
+    package_data = {'MoSiR': ['mirowrapper/**','static/**','templates/*', 
+        'gamma_distribution/*', 'uploads/*','visualization/**','radiative_forcing/*', \
+        'BFECGCBM/**', 'examples/**','./README.md']}
 )

@@ -13,7 +13,7 @@ class DecayTypeOptimizer:
         self.node_name = node_name
         self.decay_type = decay_type
         self.value = value
-        if self.decay_type == "Exponentielle":
+        if self.decay_type == "Exponential":
             self.alpha = 1
         elif self.decay_type == "Gamma":
             self.beta = 1
@@ -40,8 +40,7 @@ class DecayTypeOptimizer:
         """Permet d'optimiser la valeur manquante
         Avec des hautes valeurs, l'optimisateur a de la difficulté à
         trouver la réponse. Il faut donc pointer un intervalle de possibilités
-        avec bounds. Le chiffre 300 est approximativement le maximum que peut
-        atteindre alpha ou beta avec un halflife de 200 ans. 
+        avec bounds.  
 
         Raises:
             me.DecayError: Advenant que l'optimisation échoue
@@ -49,7 +48,7 @@ class DecayTypeOptimizer:
         Returns:
             tuple[float, float]: Combinaison alpha, beta
         """
-        if self.decay_type == "Exponentielle":
+        if self.decay_type == "Exponential":
             bounds = (self.value * 0.5, self.value * 2)
         elif self.decay_type == "Gamma":
             bounds = (self.value * 0.5, self.value * 1.5)

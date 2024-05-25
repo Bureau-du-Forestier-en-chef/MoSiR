@@ -43,13 +43,13 @@ class Component(ABC, Blueprint):
 
     def __init__(self, name: str, import_name: str):
          Blueprint.__init__(self, name.lower(), import_name, 
-                            url_prefix= "/" + name.lower(), 
-                            template_folder= "templates",
-                            static_folder='static')
+            url_prefix = "/" + name.lower(), template_folder = "templates",
+            static_folder ='static')
          self._entries = []
          self._descriptions = ""
 
-    def _add_endpoint(self, endpoint= None, endpoint_name= None, handler= None, methods= ['GET']):
+    def _add_endpoint(self, endpoint = None, endpoint_name = None, 
+                      handler = None, methods = ['GET']):
         self.add_url_rule(endpoint, endpoint_name, Endpointaction(handler), methods= methods)
 
     def _get_json(self, response: Response) -> dict:
@@ -118,7 +118,7 @@ class Component(ABC, Blueprint):
         graphs_folder = self._get_uploads_folder()
         locations = []
         for element in os.listdir(graphs_folder):
-            if os.path.isfile(os.path.join(graphs_folder,element)) and element.endswith(".json"):
+            if os.path.isfile(os.path.join(graphs_folder, element)) and element.endswith(".json"):
                 json_file = utilities.Jsonparser.read(os.path.join(graphs_folder, element))
                 inputkeys = list(json_file.keys())
                 if "Output file extension" in inputkeys and "Output" in inputkeys \
@@ -132,10 +132,12 @@ class Component(ABC, Blueprint):
         all_files = []
         for reporting_file in self._get_reporting_files():
             json_file = utilities.Jsonparser.read(os.path.join(graphs_folder, reporting_file))
-            all_extensions.append(json_file["Output file extension" ])
+            file_ext = json_file["Output file extension"]
+            if file_ext not in all_extensions:
+                all_extensions.append(file_ext)
         for element in os.listdir(graphs_folder):
-            for exention in all_extensions:
-                if os.path.isfile(os.path.join(graphs_folder, element)) and element.endswith(exention):
+            for extention in all_extensions:
+                if os.path.isfile(os.path.join(graphs_folder, element)) and element.endswith(extention):
                     all_files.append(os.path.join(graphs_folder, element))
         return all_files
     
@@ -155,6 +157,9 @@ class Component(ABC, Blueprint):
     
     def get_exit_html(self) -> str:
         return request.host_url
+    
+    def get_upload_html(self) -> str:
+        return request.host_url + "/upload/"
     
     def set_main_entries(self, entries: list):
         self._entries = entries

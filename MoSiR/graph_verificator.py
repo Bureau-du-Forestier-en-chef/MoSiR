@@ -58,6 +58,8 @@ def main(graph: gg.GraphFactory):
     debugg_graph_13(graph_copy)
     debugg_graph_14(graph_copy)
     debugg_graph_15(graph_copy)
+    debugg_graph_16(graph_copy)
+    debugg_graph_17(graph_copy)
 
 # Tests -----------------------------------------------------------------------
 # On test si on a bien un first et un last node
@@ -344,4 +346,15 @@ def debugg_graph_15(graph: gg.GraphFactory):
                     raise me.NodeError(' '.join((f"La node {node.NAME} n'a pas \
                         de edges entrant ou sortant. Une node de type DecayNode \
                         ne peut pas être au début ou à la fin d'un graph").split())) 
-
+                
+def debugg_graph_16(graph: gg.GraphFactory):
+    for name in graph.get_graph_name:
+        if " " in name:
+            raise me.GraphError(' '.join((f"Le graphe '{name}' ne \
+                peut pas avoir d'espace dans son nom").split())) 
+        
+def debugg_graph_17(graph: gg.GraphFactory):
+    for name in graph.get_graph_name:
+        if "~" in name:
+            raise me.GraphError(' '.join((f"Le graphe '{name}' ne \
+                peut pas avoir le caratère '~' dans son nom").split())) 
