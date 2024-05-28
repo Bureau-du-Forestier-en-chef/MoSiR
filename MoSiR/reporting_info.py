@@ -6,7 +6,6 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 """
 import os
 import json
-import warnings
 import pandas as pd
 from MoSiR import import_info as ip
 from MoSiR import graph_generator as gg
@@ -128,9 +127,10 @@ def output_creation(graph: gg.GraphFactory, import_data: ip.ImportData,
                     elif 'CO' in col and 'CO2' not in col:
                         dt[col] = [i * 2.3333 for i in dt[col]]
                     else:
-                        dt[col] = 0
-                        warnings.warn(f"Il n'y a pas de gas reconnu dans {col}, \
-                                      le résultat sera donc de 0", stacklevel=2)
+                        raise me.InvalidOption(f"Il n'y a pas de gaz reconnu dans {col}. \
+                            Le nom du noeud doit contenir en majuscule et séparé par des \
+                            espaces le nom d'un gaz pour être transformé en tCO2eq. \
+                            Options valides: CO2, CO, N2O, CH4. Exemple '{col} CH4'")
             elif report_unit == 'w/m2':
                 C = data['Cumulative']
                 RF = pd.read_excel(os.path.join(os.path.dirname(os.path.abspath(__file__)), \

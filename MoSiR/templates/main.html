@@ -316,14 +316,14 @@ function validateInput(input) {
 function addcinputs(graph_name) {
     var period = document.getElementById('Period_' + graph_name).value;
     var quantity = document.getElementById('Quantity_' + graph_name).value;
-    if (lastPeriod.includes(period)){
-        alert("Cette période existe déjà!");
-        return;
-    } else if (quantity.trim() !== "" && !isNaN(quantity) && Number(quantity) >= 0) {
-        lastPeriod.push(period);
-    }
     var element = document.getElementById('Node_' + graph_name);
     var node = element.options[element.selectedIndex].text;
+    if (lastPeriod.some(e => e.node === node && e.period === period)){
+        alert("Cette période existe déjà pour ce noeud!");
+        return;
+    } else if (quantity.trim() !== "" && !isNaN(quantity) && Number(quantity) >= 0) {
+        lastPeriod.push({node: node, period: period});
+    }
     appendcinputs(graph_name, period, quantity, node);
 }
 

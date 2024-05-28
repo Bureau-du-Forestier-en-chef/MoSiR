@@ -221,8 +221,6 @@ class TopNode(IndustrialNode):
         return self.get_flux_out(graph, time, cumulative= cumulative)
 
     def get_stock(self, graph: WPGraph, time: int, cumulative: bool = False) -> float:
-        warnings.warn(' '.join(f'Aucun carbone ne résident dans le noeud \
-            {self.NAME}, seulement des flux le traverse').split(), stacklevel= 2)
         return 0
 
 class ProportionNode(IndustrialNode):
@@ -290,8 +288,6 @@ class ProportionNode(IndustrialNode):
             return total
 
     def get_stock(self, graph: WPGraph, time: int, cumulative: bool = False) -> int:
-        warnings.warn(' '.join(f'Aucun carbone ne résident dans le noeud \
-            {self.NAME}, seulement des flux le traverse').split(), stacklevel= 2)
         return 0
 
 class DecayNode(ProportionNode):
@@ -305,7 +301,7 @@ class DecayNode(ProportionNode):
 
     Args:
         LOCALNAME (str): Le nom du noeud
-        HalfLife (int): Simplement un indicateur nécessaire pour le json
+        HalfLife (int): Simplement un indicateur nécessaire pour le gaz
     
     Raises:
         ValueError: Le nom du noeud doit être une chaine de caractère
@@ -471,7 +467,6 @@ class PoolNode(ProportionNode):
             return total    
     
     def get_flux_out(self, graph: WPGraph, time: int, cumulative: bool = False) -> float:
-        warnings.warn(f'Aucun carbone sortant de la node {self.NAME}', stacklevel= 2)
         return 0
       
     def get_stock(self, graph: WPGraph, time: int, cumulative: bool = False) -> float:

@@ -5,7 +5,6 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 """
 import os
-import warnings
 import numpy as np
 import pandas as pd
 import argparse as ap
@@ -132,9 +131,10 @@ def rad_formatting(data: dict, RF: dict, cumulative: bool = False):
         elif 'N2O' in col:
             data[col] = list(rad_convolve(data[col], 'N2O', RF, cumulative = cumulative))
         else:
-            data[col] = 0
-            warnings.warn(f"Il n'y a pas de gas reconnu dans {col}, \
-                          le résultat sera donc de 0", stacklevel = 2)
+            raise me.InvalidOption(f"Il n'y a pas de gaz reconnu dans {col}. \
+                Le nom du noeud doit contenir en majuscule et séparé par des \
+                espaces le nom d'un gaz pour être transformé en w/m2. \
+                Options valides: CO2, CO, N2O, CH4. Exemple '{col} CH4'")
 
 if __name__ == "__main__":
     main()
