@@ -18,7 +18,8 @@ tests/Microtests
 .vs 
 .vscode
 .pytest_cache
-standalone/MoSiR.dist.7z
+standalone/MoSiR.dist
+standalone/MoSiR.build
 MoSiR/BFECGCBM
 htmlcov/
 .coverage

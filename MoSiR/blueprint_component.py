@@ -31,12 +31,11 @@ class Main_renderer:
     def render(self, description: bool = False, allvariables: list[str] = []) -> str:
         if not description:
             return render_template("main.html",
-                    variables = allvariables, entries= self.__entries)
+                    variables=allvariables, entries=self.__entries)
         else:
             return render_template("main.html",
-                    descriptions = self.__descriptions,
-                    variables = allvariables, entries= self.__entries)
-    
+                    descriptions=self.__descriptions,
+                    variables=allvariables, entries=self.__entries)
     
 class Component(ABC, Blueprint):
     main_renderer = Main_renderer()
@@ -50,7 +49,7 @@ class Component(ABC, Blueprint):
 
     def _add_endpoint(self, endpoint = None, endpoint_name = None, 
                       handler = None, methods = ['GET']):
-        self.add_url_rule(endpoint, endpoint_name, Endpointaction(handler), methods= methods)
+        self.add_url_rule(endpoint, endpoint_name, Endpointaction(handler), methods=methods)
 
     def _get_json(self, response: Response) -> dict:
         if response.status_code < 400:
@@ -159,7 +158,7 @@ class Component(ABC, Blueprint):
         return request.host_url
     
     def get_upload_html(self) -> str:
-        return request.host_url + "/upload/"
+        return request.host_url + "upload/"
     
     def set_main_entries(self, entries: list):
         self._entries = entries

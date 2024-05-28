@@ -10,7 +10,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <script src='https://cdn.plot.ly/plotly-2.27.0.min.js'></script>
 <style>
-html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
+html, body, h1, h2, h3, h4, h5 {font-family: "Raleway", sans-serif}
 </style>
 <style>
   body {
@@ -45,18 +45,10 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
   <div class="w3-container">
     <h5>Allez à</h5>
   </div>
-  <div class="w3-bar-block">
+  <div class="w3-bar-block" id="sidebar-entries">
     <a href="#" class="w3-bar-item w3-button w3-padding-16 w3-hide-large w3-dark-grey w3-hover-black" onclick="w3_close()" title="close menu"><i class="fa fa-remove fa-fw"></i>  Close Menu</a>
-    {% for name,link,description,symbol in entries %}
+    {% for name, link, description, symbol in entries %}
     <a href="{{link}}" class="w3-bar-item w3-button w3-padding w3-blue"><i class="{{symbol}}"></i>  {{name}}</a>
-    <!--<a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-eye fa-fw"></i>  Views</a>
-    <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-users fa-fw"></i>  Traffic</a>
-    <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-bullseye fa-fw"></i>  Geo</a>
-    <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-diamond fa-fw"></i>  Orders</a>
-    <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-bell fa-fw"></i>  News</a>
-    <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-bank fa-fw"></i>  General</a>
-    <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-history fa-fw"></i>  History</a>
-    <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-cog fa-fw"></i>  Settings</a><br><br>-->
     {% endfor %}
     <a class="w3-bar-item w3-button w3-padding" onclick="quit()"><i class="fa fa-sign-out fa-fw"></i>  Quitter</a>
   </div>

@@ -8,11 +8,11 @@ ECHO Un environnement python nommé MoSiR devrait être présent dans vos enviro
 ECHO.
 ECHO Dépendances : conda, python, dossier MoSiR, nuitka dans l'environnement MoSiR, un compilateur C (voir Nuitka)
 ECHO.
-ECHO 1 = Installe le package MoSiR et wrap l'application sous %CD% (Avez-vous bien regardé la documentation avant?)
+ECHO 1 = Installe le package MoSiR et wrap l'application sous %CD%
 ECHO 2 = Quitte le command prompt
 ECHO.
 
-CHOICE /c 12 /m "Entrer le choix souhaité (#2 si tu hésites) :"
+CHOICE /c 12 /m "Entrer le choix souhaité:"
 if %ErrorLevel% == 1 (
     conda activate MoSiR
     pip install ..\. 
@@ -23,7 +23,7 @@ if %ErrorLevel% == 1 (
     --include-package-data=MoSiR ^
     --include-package-data=pyvis ^
     --windows-disable-console ^
-    --windows-icon-from-ico=..\MoSiR\static\image\MoSiR-logo.png ^
+    --windows-icon-from-ico=..\MoSiR\static\image\MoSiR-logo_2.png ^
     --company-name="Bureau du Forestier en chef" ^
     --product-name=MoSiR ^
     --product-version=1.0.0 ^

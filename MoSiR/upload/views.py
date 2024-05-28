@@ -26,6 +26,7 @@ class Upload(Component):
                   + '</form> ']
         return Component.main_renderer.render(False, target)
     
+    # TODO Page après upload, sidebar needs update
     def __success_upload(self, item):
         target = ['<br><form action = '
                   + self._get_url_for('/graphs_upload/')
@@ -35,7 +36,7 @@ class Upload(Component):
                   + '<input type = "submit"/> '
                   + '</form><br>'
                   + '<h5><i class="fa fa-check-square-o" style="color: green;"></i>'
-                  + ' ' + item + 'a été téléversé avec succès </h5>']
+                  + ' ' + item + ' a été téléversé avec succès </h5>']
         return Component.main_renderer.render(False, target)
     
     def __graphs_upload(self):
@@ -73,11 +74,12 @@ class Upload(Component):
             with open(os.path.join(self._get_uploads_folder(), content.filename), "w") as f:
                 json.dump(content_dict, f)
 
-            return self.__success_upload(content.filename)
+            return redirect(self.get_exit_html())
+            #return self.__success_upload(content.filename)
         
     def add_all_endpoints(self):
         self._add_endpoint(endpoint='/', 
-                           endpoint_name='/', 
+                           endpoint_name='/',  
                            handler=self.__get_graphs, 
                            methods=['GET','POST'])
         self._add_endpoint(endpoint='/graphs_upload/', 
