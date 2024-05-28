@@ -371,9 +371,9 @@ class Reporting(Component):
                              'beta': float(value_list[2])}
                 elif decay_type == "Exponentielle":
                     decay_type = "Exponential"
-                    value = int(value_list[1])
+                    value = float(value_list[1])
                 else:
-                    value = int(value_list[1])
+                    value = float(value_list[1])
                 if graph not in data["Decay"]:
                     data["Decay"][graph] = {node: {decay_type: value}}
                 else:
