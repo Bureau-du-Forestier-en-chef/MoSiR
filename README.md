@@ -56,11 +56,14 @@ MoSiR est hautement adaptable et permet ainsi de réaliser des analyses, quelle 
 
 <details><summary><b>En bref, comment ça fonctionne? :mag:</b></summary> <br>
 <p align = "justify">
-MoSiR utilise la plateforme Miro pour faciliter la création de réseau de produit du bois. Miro est une application en ligne qui permet à l'utilisateur de travailler sur des tableaux blancs facilitant notamment la mise en place de processus collaboratifs, tels que la gestion et la cartographie de projet. MoSiR a la capacité de venir lire un tableau de Miro pour en extraire les informations nécessaires pour bâtir un graphe (un réseau de noeud attaché par des liens).  Cependant, la création d'une architecture de flux de matière sous forme de graphe se doit de respecter une nomenclature stricte afin que l'outil puisse convenablement traduire le tableau blanc pour le calculateur de MoSiR. Celui-ci calcule 3 informations, le flux de matière qui entre dans un noeud, qui sort d'un noeud et la matière qui reste dans celui-ci (stock). De plus amples détails sont disponibles dans la section <a href="#Directives">Directives</a>. 
+MoSiR comporte deux volets: un calculateur et une interface web. MoSiR est à la base un calculateur sous forme de package python. Une application utilisant un interface web a été effectué pour faciliter son utilisation sans devoir passer par python. L'interface MoSiR utilise de même la plateforme Miro pour faciliter la création de réseau de produit du bois. Miro est une application en ligne qui permet à l'utilisateur de travailler sur des tableaux blancs facilitant notamment la mise en place de processus collaboratifs, tels que la gestion et la cartographie de projet. MoSiR a la capacité de venir lire un tableau de Miro pour en extraire les informations nécessaires pour bâtir un graphe (un réseau de noeud attaché par des liens).  
 </p>
 <p align = "justify">
-L'utilisateur a la possibilité de bâtir dans Miro un graphe pouvant contenir autant de noeud que souhaité, dont certains peuvent gérer du recyclage ou de la dégradation selon une loi exponentielle, gamma ou chi-square. Lorsque l'utilisateur a un graphe fonctionnel, celui-ci peut être utilisé dans l'application portable de MoSiR. Dans cette application, l'utilisateur peut importer depuis Miro ou depuis son ordinateur le graphe souhaité et lancer une commande au calculateur de MoSiR. Il est possible d'y inscrire les intrants pour les noeuds de départ, les temps de demi-vie pour les noeuds de dégradation et l'information que vous souhaitez extraire. Essentiellement, il s'agit de questionner les noeuds qui vous intéresse, choisir si vous voulez les flux entrant, sortant ou les stocks, le cumulatif sur la période demandé et la sommation, si plusieurs noeuds ont été sélectionné, des résultats. Finalement, vous pouvez choisir l'unité des extrants. MoSiR vous demande dabord les unités de vos intrants, pour que celui-ci soit capable de faire la transformation nécessaire. Si le nom de vos noeuds contiennent le nom d'un gaz comme CO2, CO, CH4 ou N2O, MoSiR peut également faire la transformation de ces quantité de carbone en tonne équivalente de CO2 ou même en forcage radiatif. 
+L'utilisateur a la possibilité de bâtir dans Miro un graphe pouvant contenir autant de noeud que souhaité, dont certains peuvent gérer du recyclage ou de la dégradation selon une loi exponentielle, gamma ou chi-square. Dans cette application, l'utilisateur peut importer depuis Miro ou depuis son ordinateur le graphe souhaité et lancer une commande au calculateur de MoSiR. Celui-ci peut calculer 3 informations: le flux de matière qui entre dans un noeud, qui sort d'un noeud et la matière qui reste dans celui-ci (stock).  Il est possible d'y inscrire les intrants pour les noeuds de départ, les temps de demi-vie pour les noeuds de dégradation et l'information que vous souhaitez extraire. Essentiellement, il s'agit de questionner les noeuds qui vous intéresse, choisir si vous voulez les flux entrant, sortant ou les stocks, le cumulatif sur la période demandé et la sommation, si plusieurs noeuds ont été sélectionné, des résultats. Finalement, vous pouvez choisir l'unité des extrants. MoSiR vous demande dabord les unités de vos intrants, pour que celui-ci soit capable de faire la transformation nécessaire. Si le nom de vos noeuds contiennent le nom d'un gaz comme CO2, CO, CH4 ou N2O, MoSiR peut également faire la transformation de ces quantité de carbone en tonne équivalente de CO2 ou même en forcage radiatif. De plus amples détails sont disponibles dans la section <a href="#Directives">Directives</a>.
 </p>
+
+ ![mosir_example](https://github.com/Landry-G/MoSiR_images/blob/main/mosir_example.gif)
+ 
 </details>
 
 # Installation
@@ -258,7 +261,7 @@ En bref:
 * Nœud d'émissions de GES: Le nom du nœud doit faire apparaitre clairement la molécule voulue. Exemples : CH4 emissions / CO2 emissions / N2O emissions
 </details>
 
-<details><summary><b>Nomemclature des fichiers JSON</b></summary><br>
+<details><summary><b>Nomenclature des fichiers JSON</b></summary><br>
 Nomenclature .JSON:
 A DEVELOPPER (Traduction de la nomenclature MIRO en nomenclature JSON MoSiR)
 </details> 
