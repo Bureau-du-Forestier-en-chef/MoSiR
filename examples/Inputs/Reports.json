@@ -1,0 +1,26 @@
+{"Output": {
+    "Example": {
+        "Output_1": {
+            "Nodes_name": ["CO2 emissions", "CO2 emissions from transport", "N2O emissions"], 
+            "Type": "Flux in", 
+            "Cumulative": true, 
+            "Summarize": "Combined", 
+            "Unit": "w/m2"}, 
+        "Output_2": {
+            "Nodes_name": ["CO2 emissions", "CO2 emissions from transport", "N2O emissions"], 
+            "Type": "Flux in", 
+            "Cumulative": false, 
+            "Summarize": "Per node", 
+            "Unit": "tCO2eq"}, 
+        "Output_3": {
+            "Nodes_name": ["Cardboard", "Panels", "Sawnwood"], 
+            "Type": "Stock", 
+            "Cumulative": false, 
+            "Summarize": "Per node", 
+            "Unit": "tC"}
+        }
+    }, 
+"PRG": {"CH4": 28, "N2O": 265}, 
+"Time": 100, 
+"Output file extension": ".csv"
+}

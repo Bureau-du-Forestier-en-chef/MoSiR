@@ -7,7 +7,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 # Exceptions -------------------------------------------------------------------
 
 class Miroerror(Exception):
-    def __init__(self, message:str,itemid:int):            
+    def __init__(self, message: str, itemid: int):            
         super().__init__(message)
         self.__ID = itemid
     def GetItemID(self):
@@ -42,6 +42,10 @@ class TimeStepError(Exception):
         super().__init__(message)
 
 class GraphError(Exception):
+    def __init__(self, message: str):    
+        super().__init__(message)
+        
+class DecayError(Exception):
     def __init__(self, message: str):    
         super().__init__(message)
         

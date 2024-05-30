@@ -6,7 +6,6 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 """
 import os
 import json
-import warnings
 import pandas as pd
 from MoSiR import import_info as ip
 from MoSiR import graph_generator as gg
@@ -79,11 +78,11 @@ def output_creation(graph: gg.GraphFactory, import_data: ip.ImportData,
             nodes_name = data['Nodes_name']
             out_type = data['Type']
             summarize = data['Summarize']
-            report_unit = data['Unit'].lower()
+            report_unit = data['Unit']
             if type(data['Cumulative']) == bool:
                 if report_unit == 'w/m2':
                     cumu = False
-                elif report_unit in ['kgc', 'tc', 'tco2eq']:
+                elif report_unit in ['kgC', 'tC', 'tCO2eq']:
                     cumu = data['Cumulative']
                 else:
                     raise me.InvalidOption(f"Unit ({data['Unit']}) dans le fichier \
@@ -93,8 +92,8 @@ def output_creation(graph: gg.GraphFactory, import_data: ip.ImportData,
                                     de reporting doit être un booléen, donc soit 'true' ou 'false'")
 
             # Dictionnaire pour les outputs
-            dt = {node_name: [] for node_name in nodes_name}
-            dt['Time'] = [i for i in range(time + 1)]
+            dt = {'Time': [i for i in range(time + 1)]}
+            dt.update({node_name: [] for node_name in nodes_name})
 
             # On produit les outputs par graph
             G = graph.get_graph(graph_name)
@@ -115,7 +114,7 @@ def output_creation(graph: gg.GraphFactory, import_data: ip.ImportData,
                         dt[node.NAME].append(result)
             
             # On ajuste les outputs selon le reporting
-            if report_unit == 'tco2eq':
+            if report_unit == 'tCO2eq':
                 for col in dt:
                     if col == 'Time':
                         continue
@@ -128,13 +127,14 @@ def output_creation(graph: gg.GraphFactory, import_data: ip.ImportData,
                     elif 'CO' in col and 'CO2' not in col:
                         dt[col] = [i * 2.3333 for i in dt[col]]
                     else:
-                        dt[col] = 0
-                        warnings.warn(f"Il n'y a pas de gas reconnu dans {col}, \
-                                      le résultat sera donc de 0", stacklevel = 2)
+                        raise me.InvalidOption(f"Il n'y a pas de gaz reconnu dans {col}. \
+                            Le nom du noeud doit contenir en majuscule et séparé par des \
+                            espaces le nom d'un gaz pour être transformé en tCO2eq. \
+                            Options valides: CO2, CO, N2O, CH4. Exemple '{col} CH4'")
             elif report_unit == 'w/m2':
                 C = data['Cumulative']
                 RF = pd.read_excel(os.path.join(os.path.dirname(os.path.abspath(__file__)), \
-                                                "RadiativeForcing", "Dynco2_Base.xlsx")).\
+                                                "radiative_forcing", "Dynco2_Base.xlsx")).\
                     sort_values(by = 'Year').to_dict(orient = 'list')
 
                 # On formate les outputs en radiatif
@@ -155,19 +155,22 @@ def output_creation(graph: gg.GraphFactory, import_data: ip.ImportData,
 
                 # Nouveau dt avec seulement Time et Combined
                 dt = {k: dt[k] for k in ('Time', 'Combined')}
+            elif summarize != 'Per node':
+                raise me.InvalidOption(f"Should be 'Per node' or 'Combined'\
+                    and not {summarize}")
 
             dt['Unit'] = report_unit
             if ext == '.csv':
                 if directory[-1] == '/':
-                    pd.DataFrame(dt).to_csv(directory + graph_name + '_' + output_name + '_dt' + ext,
+                    pd.DataFrame(dt).to_csv(directory + graph_name + '~' + output_name + ext,
                               index= False, sep = ',')
                 elif directory[-1] != '/':
-                    pd.DataFrame(dt).to_csv(directory + '/' + graph_name + '_' + output_name + '_dt' + ext,
+                    pd.DataFrame(dt).to_csv(directory + '/' + graph_name + '~' + output_name + ext,
                                 index= False, sep= ',')
             elif ext == '.json':
                 if directory[-1] == '/':
-                    with open(directory + graph_name + '_' + output_name + ext, 'w') as f:
+                    with open(directory + graph_name + '~' + output_name + ext, 'w') as f:
                         json.dump(dt, f)
                 elif directory[-1] != '/':
-                    with open(directory + '/' + graph_name + '_' + output_name + ext, 'w') as f:
+                    with open(directory + '/' + graph_name + '~' + output_name + ext, 'w') as f:
                         json.dump(dt, f)

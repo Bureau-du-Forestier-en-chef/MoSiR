@@ -5,11 +5,11 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 """
 import os
-import json
 import pytest
 import warnings
 import pandas as pd
 from MoSiR import networkx_graph as wp
+from MoSiR import gamma_function as gf
 from MoSiR import graph_generator as gg
 from MoSiR import mosir_exceptions as me
 from MoSiR import carbon_to_radiatif as cr
@@ -35,13 +35,21 @@ def test_01_in_eq_out():
     test_01.add_node(D1)
     test_01.add_node(E1)
  
-    test_01.add_edge(A1, B1, proportions= [1])
-    test_01.add_edge(B1, C1, proportions= [1])
-    test_01.add_edge(C1, D1, proportions= [1])
-    test_01.add_edge(D1, E1, proportions= [1])
+    test_01.add_edge(A1, B1, proportions=[1])
+    test_01.add_edge(B1, C1, proportions=[1])
+    test_01.add_edge(C1, D1, proportions=[1])
+    test_01.add_edge(D1, E1, proportions=[1])
 
     A1.time = [0, 1, 2, 3, 4, 5, 50]
     A1.quantities = [10, 20, 30, 40, 10, 10, 2000]
+
+    C_decay = gf.DecayTypeOptimizer('C', 'Exponential', 75).find_param()
+    C1.alpha = C_decay[0]
+    C1.beta = C_decay[1]
+
+    D_decay = gf.DecayTypeOptimizer('D', 'Exponential', 50).find_param()
+    D1.alpha = D_decay[0]
+    D1.beta = D_decay[1]
 
     for timestep in range(150):
         assert A1.get_flux_out(test_01, timestep) \
@@ -50,43 +58,43 @@ def test_01_in_eq_out():
             == C1.get_flux_in(test_01, timestep), \
                 'Flux out of A1 != Flux in of B1'
 
-        assert A1.get_flux_out(test_01, timestep, cumulative= True) \
-            == B1.get_flux_in(test_01, timestep, cumulative= True) \
-            == B1.get_flux_out(test_01, timestep, cumulative= True) \
-            == C1.get_flux_in(test_01, timestep, cumulative= True), \
+        assert A1.get_flux_out(test_01, timestep, cumulative=True) \
+            == B1.get_flux_in(test_01, timestep, cumulative=True) \
+            == B1.get_flux_out(test_01, timestep, cumulative=True) \
+            == C1.get_flux_in(test_01, timestep, cumulative=True), \
                 'Cumulative flux out of A1 != Flux in of B1'
 
         assert abs(C1.get_flux_out(test_01, timestep) \
             - D1.get_flux_in(test_01, timestep)) \
             < MOSIR_TOLERENCE, 'Flux out of C1 != Flux in of D1'
 
-        assert abs(C1.get_flux_out(test_01, timestep, cumulative= True) \
-            - D1.get_flux_in(test_01, timestep, cumulative= True)) \
+        assert abs(C1.get_flux_out(test_01, timestep, cumulative=True) \
+            - D1.get_flux_in(test_01, timestep, cumulative=True)) \
             < MOSIR_TOLERENCE, 'Cumulative flux out of C1 != Flux in of D1'
 
         assert abs(D1.get_flux_out(test_01, timestep) \
             - E1.get_flux_in(test_01, timestep) \
             < MOSIR_TOLERENCE), 'Flux out of D1 != Flux in of E1'
 
-        assert abs(D1.get_flux_out(test_01, timestep, cumulative= True) \
-            - E1.get_flux_in(test_01, timestep, cumulative= True) \
+        assert abs(D1.get_flux_out(test_01, timestep, cumulative=True) \
+            - E1.get_flux_in(test_01, timestep, cumulative=True) \
             < MOSIR_TOLERENCE), 'Cumulative flux out of D1 != Flux in of E1'
 
         assert abs(C1.get_stock(test_01, timestep) \
-            - (C1.get_flux_in(test_01, timestep, cumulative= True) \
-                - C1.get_flux_out(test_01, timestep, cumulative= True))) \
+            - (C1.get_flux_in(test_01, timestep, cumulative=True) \
+                - C1.get_flux_out(test_01, timestep, cumulative=True))) \
             < MOSIR_TOLERENCE, 'C1 stock != cumulative flux in - \
                     flux out'
 
         assert abs(D1.get_stock(test_01, timestep) \
-            - (D1.get_flux_in(test_01, timestep, cumulative= True) \
-                - D1.get_flux_out(test_01, timestep, cumulative= True))) \
+            - (D1.get_flux_in(test_01, timestep, cumulative=True) \
+                - D1.get_flux_out(test_01, timestep, cumulative=True))) \
             < MOSIR_TOLERENCE, 'D1 stock != cumulative flux in - \
                     cumulative flux out'
         with warnings.catch_warnings():
             warnings.simplefilter('ignore')
             assert abs(E1.get_stock(test_01, timestep) \
-                - E1.get_flux_in(test_01, timestep, cumulative= True)) \
+                - E1.get_flux_in(test_01, timestep, cumulative=True)) \
                 < MOSIR_TOLERENCE, 'E1 stock != cumulative flux in'
 
 # Test si le noeud de recyclage fonctionne ------------------------------------
@@ -103,10 +111,10 @@ def test_02_recycling():
     test_02.add_node(C2)
     test_02.add_node(D2)
     
-    test_02.add_edge(A2, B2, proportions= [1])
-    test_02.add_edge(B2, C2, proportions= [1])
-    test_02.add_edge(C2, D2, proportions= [1])
-    test_02.add_edge(D2, B2, proportions= [1])
+    test_02.add_edge(A2, B2, proportions=[1])
+    test_02.add_edge(B2, C2, proportions=[1])
+    test_02.add_edge(C2, D2, proportions=[1])
+    test_02.add_edge(D2, B2, proportions=[1])
 
     A2.time = [0, 1, 2, 3, 4, 5]
     A2.quantities = [1, 3, 5, 7, 9, 11]
@@ -116,8 +124,8 @@ def test_02_recycling():
                == D2.get_flux_in(test_02, timestep) \
                == D2.get_flux_out(test_02, timestep + 1))
         
-        assert(D2.get_flux_in(test_02, timestep, cumulative= True) \
-               == D2.get_flux_out(test_02, timestep + 1, cumulative= True))
+        assert(D2.get_flux_in(test_02, timestep, cumulative=True) \
+               == D2.get_flux_out(test_02, timestep + 1, cumulative=True))
         
 # Test si le noeud de decay fonctionne ----------------------------------------
 def test_03_decay():
@@ -131,11 +139,15 @@ def test_03_decay():
     test_03.add_node(B3)
     test_03.add_node(C3)
     
-    test_03.add_edge(A3, B3, proportions= [1])
-    test_03.add_edge(B3, C3, proportions= [1])
+    test_03.add_edge(A3, B3, proportions=[1])
+    test_03.add_edge(B3, C3, proportions=[1])
 
     A3.time = [0]
     A3.quantities = [100]
+
+    B_decay = gf.DecayTypeOptimizer('B', 'Exponential', 75).find_param()
+    B3.alpha = B_decay[0]
+    B3.beta = B_decay[1]
 
     for timestep in range(150):
         B3_stock = B3.get_stock(test_03, timestep)
@@ -161,8 +173,8 @@ def test_04_radiatif():
     }
 
     RF = pd.read_excel(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", 
-                                    "MoSiR", "RadiativeForcing", "Dynco2_Base.xlsx")).\
-        sort_values(by = 'Year').drop('Unit', axis = 1).to_dict(orient = 'list')
+                                    "MoSiR", "radiative_forcing", "Dynco2_Base.xlsx")).\
+        sort_values(by='Year').drop('Unit', axis=1).to_dict(orient='list')
     cr.rad_formatting(test_03, RF, cumulative = False)
     assert test_03 == RF, "Not the same RF as DynCo"
 
@@ -188,23 +200,27 @@ def test_05_micro1():
     test_05.add_node(G5)
     test_05.add_node(H5)
     
-    test_05.add_edge(A5, B5, proportions= [0.5])
-    test_05.add_edge(A5, C5, proportions= [0.5])
-    test_05.add_edge(B5, E5, proportions= [1])
-    test_05.add_edge(C5, D5, proportions= [0.25])
-    test_05.add_edge(D5, E5, proportions= [1])
-    test_05.add_edge(C5, F5, proportions= [0.75])
-    test_05.add_edge(E5, G5, proportions= [0.5, 0.5, 0.5, 0.75])
-    test_05.add_edge(E5, H5, proportions= [0.5, 0.5, 0.5, 0.25])
-    test_05.add_edge(F5, H5, proportions= [1])
+    test_05.add_edge(A5, B5, proportions=[0.5])
+    test_05.add_edge(A5, C5, proportions=[0.5])
+    test_05.add_edge(B5, E5, proportions=[1])
+    test_05.add_edge(C5, D5, proportions=[0.25])
+    test_05.add_edge(D5, E5, proportions=[1])
+    test_05.add_edge(C5, F5, proportions=[0.75])
+    test_05.add_edge(E5, G5, proportions=[0.5, 0.5, 0.5, 0.75])
+    test_05.add_edge(E5, H5, proportions=[0.5, 0.5, 0.5, 0.25])
+    test_05.add_edge(F5, H5, proportions=[1])
 
     A5.time = [0]
     A5.quantities = [100]
 
+    E_decay = gf.DecayTypeOptimizer('E', 'Exponential', 10).find_param()
+    E5.alpha = E_decay[0]
+    E5.beta = E_decay[1]
+
     Annual_CO2 = [H5.get_flux_in(test_05, time) for time in range(16)]
     Annual_CH4 = [G5.get_flux_in(test_05, time) for time in range(16)]
-    Cumu_CO2 = [H5.get_flux_in(test_05, time, cumulative= True) for time in range(16)]
-    Cumu_CH4 = [G5.get_flux_in(test_05, time, cumulative= True) for time in range(16)]
+    Cumu_CO2 = [H5.get_flux_in(test_05, time, cumulative=True) for time in range(16)]
+    Cumu_CH4 = [G5.get_flux_in(test_05, time, cumulative=True) for time in range(16)]
 
     Annual_CO2_2 = [37.5000000000, 2.0927190145, 1.9525758825, 0.9109088584, 
                     0.8499080172, 0.7929922198, 0.7398879031, 0.6903398237, 
@@ -245,16 +261,24 @@ def test_06_micro2():
     test_06.add_node(D6)
     test_06.add_node(E6)
     
-    test_06.add_edge(A6, B6, proportions= [1])
-    test_06.add_edge(B6, C6, proportions= [1])
-    test_06.add_edge(C6, D6, proportions= [0.5])
-    test_06.add_edge(C6, E6, proportions= [0.5])
+    test_06.add_edge(A6, B6, proportions=[1])
+    test_06.add_edge(B6, C6, proportions=[1])
+    test_06.add_edge(C6, D6, proportions=[0.5])
+    test_06.add_edge(C6, E6, proportions=[0.5])
 
     A6.time = [0]
     A6.quantities = [100]
 
+    B_decay = gf.DecayTypeOptimizer('B', 'Exponential', 5).find_param()
+    B6.alpha = B_decay[0]
+    B6.beta = B_decay[1]
+
+    C_decay = gf.DecayTypeOptimizer('C', 'Exponential', 10).find_param()
+    C6.alpha = C_decay[0]
+    C6.beta = C_decay[1]
+
     Annual = [D6.get_flux_in(test_06, time) for time in range(16)]
-    Cumu = [D6.get_flux_in(test_06, time, cumulative= True) for time in range(16)]
+    Cumu = [D6.get_flux_in(test_06, time, cumulative=True) for time in range(16)]
 
     Annual_2 = [0.0000000000, 0.0000000000, 0.4334420762, 0.7817490005,
                 1.0578852763, 1.2730069883, 1.4367046185, 1.5572138462,
@@ -322,11 +346,11 @@ def test_11_edge_proportion():
     test_11.add_node(B11)
     test_11.add_node(C11)
  
-    test_11.add_edge(A11, B11, proportions= [1])
+    test_11.add_edge(A11, B11, proportions=[1])
     with pytest.raises(me.EdgeError):
-        test_11.add_edge(B11, C11, proportions= [1.1])
+        test_11.add_edge(B11, C11, proportions=[1.1])
     with pytest.raises(me.EdgeError):
-        test_11.add_edge(B11, C11, proportions= [-0.1])
+        test_11.add_edge(B11, C11, proportions=[-0.1])
 
 # Vérifier qu'on ne peut pas changer le nom d'un graph
 def test_12_graph_name():
@@ -336,7 +360,7 @@ def test_12_graph_name():
 
 # Vérifier qu'on ne peut pas passer un graph sans nom dans gg.GraphFactory
 def test_13_graph_name():
-    with pytest.raises(TypeError):
+    with pytest.raises(me.InvalidOption):
         gg.GraphFactory(None)
 
 # Vérifier que l'on peut faire un graph avec plusieurs TopNode avec
@@ -357,10 +381,10 @@ def test_14_multiple_top():
     test_14.add_node(D14)
     test_14.add_node(E14)
  
-    test_14.add_edge(A14, C14, proportions= [1])
-    test_14.add_edge(B14, D14, proportions= [1])
-    test_14.add_edge(C14, E14, proportions= [1])
-    test_14.add_edge(D14, E14, proportions= [1])
+    test_14.add_edge(A14, C14, proportions=[1])
+    test_14.add_edge(B14, D14, proportions=[1])
+    test_14.add_edge(C14, E14, proportions=[1])
+    test_14.add_edge(D14, E14, proportions=[1])
 
     A14.time = [0, 1, 2, 3, 4, 5, 50]
     A14.quantities = [10, 20, 30, 40, 10, 10, 2000]
@@ -382,19 +406,20 @@ def test_14_multiple_top():
             == E14.get_flux_in(test_14, timestep), \
             'Sum flux out of C14 and D14 != Flux in of E14'
         
-        assert A14.get_flux_out(test_14, timestep, cumulative= True) \
-            == C14.get_flux_in(test_14, timestep, cumulative= True), \
+        assert A14.get_flux_out(test_14, timestep, cumulative=True) \
+            == C14.get_flux_in(test_14, timestep, cumulative=True), \
             'Cumulative flux out of A14 != Flux in of C14'
         
-        assert B14.get_flux_out(test_14, timestep, cumulative= True) \
-            == D14.get_flux_in(test_14, timestep, cumulative= True), \
+        assert B14.get_flux_out(test_14, timestep, cumulative=True) \
+            == D14.get_flux_in(test_14, timestep, cumulative=True), \
             'Cumulative flux out of B14 != Flux in of D14'
         
-        assert C14.get_flux_out(test_14, timestep, cumulative= True) \
-            + D14.get_flux_out(test_14, timestep, cumulative= True) \
-            == E14.get_flux_in(test_14, timestep, cumulative= True), \
+        assert C14.get_flux_out(test_14, timestep, cumulative=True) \
+            + D14.get_flux_out(test_14, timestep, cumulative=True) \
+            == E14.get_flux_in(test_14, timestep, cumulative=True), \
             'Sum cumulative flux out of C14 and D14 != Flux in of E14'
         
+<<<<<<< HEAD
         assert C14.get_flux_in(test_14, timestep, cumulative= True) \
             == C14.get_flux_out(test_14, timestep, cumulative= True), \
             'C14 flux in != cumulative flux out'
@@ -402,9 +427,26 @@ def test_14_multiple_top():
         assert D14.get_flux_in(test_14, timestep, cumulative= True) \
             == D14.get_flux_out(test_14, timestep, cumulative= True), \
             'D14 flux in != cumulative cumulative flux out'
+=======
+        assert A14._get_quantity_time(timestep) \
+            == A14.get_flux_out(test_14, timestep, cumulative=False), \
+            'A14 _get_quantity_time != flux out'
+        
+        assert B14._get_quantity_time(timestep) \
+            == B14.get_flux_out(test_14, timestep, cumulative=False), \
+            'B14 _get_quantity_time != flux out'
+        
+        assert C14.get_flux_in(test_14, timestep, cumulative=True) \
+            == C14.get_flux_out(test_14, timestep, cumulative=True), \
+            'C14 cumulative flux in != cumulative flux out'
+        
+        assert D14.get_flux_in(test_14, timestep, cumulative=True) \
+            == D14.get_flux_out(test_14, timestep, cumulative=True), \
+            'D14 cumulative flux in != cumulative flux out'
+>>>>>>> version-1.0.0
         
         assert E14.get_stock(test_14, timestep) \
-            == E14.get_flux_in(test_14, timestep, cumulative= True), \
+            == E14.get_flux_in(test_14, timestep, cumulative=True), \
             'E14 stock != cumulative flux in'
         
 # Vérifier qu'il est impossible de mettre une DecayNode avec un temps de 0
@@ -428,7 +470,7 @@ def test_17_self_edge():
     test_17.add_node(B17)
 
     with pytest.raises(me.EdgeError):
-        test_17.add_edge(A17, A17, proportions= [1])
+        test_17.add_edge(A17, A17, proportions=[1])
 
 
 # Vérifier que les tests passent ----------------------------------------------

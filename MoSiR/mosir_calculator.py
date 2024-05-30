@@ -39,6 +39,9 @@ def main(raw_args = None):
     # Add imports to graph
     ip.add_import(Graph, Import)
 
+    # La vérification est faite à l'importation
+    # gv.main(Graph)
+
     # Reporting
     rp.output_creation(Graph, Import, Report, args.E)
 
