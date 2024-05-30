@@ -84,28 +84,19 @@ MoSiR peut être installé sous forme de package python, à l'intérieur d'un en
    ```python
    pip install git+https://github.com/Bureau-du-Forestier-en-chef/MoSiR@v1.0.0-lightweight
    ```
+Pour vérifier quelles versions sont disponibles, consultez la page [Releases](https://github.com/Bureau-du-Forestier-en-chef/MoSiR/releases). Il est préférable d'utiliser la dernière version à jour.
 </details>
 
 <details><summary><b>Comme application portable</b></summary> <br>
 
-Dans le repos MoSiR, un dossier standalone est accessible. Celui-ci contient un dossier compressé, dans lequel se retrouve un exécutable `.exe`. Il est possible de télécharger manuellement ce dossier pour utiliser MoSiR comme un programme qui fonctionne indépendamment, sans nécessiter de prérequis. L'installation nécessite toutefois git pour cloner les fichiers sur GitHub. Il est également possible de télécharger le dossier comprimé manuellement sur la plateforme GitHub si vous n'avez pas git d'installé. 
+Une version de MoSiR, sous format d'application portable, est disponible dans l'onglet [Releases](https://github.com/Bureau-du-Forestier-en-chef/MoSiR/releases) du GitHub de MoSiR. 
 
-1. Ouvrir une invite de commande (command prompt)
-2. Localiser le dossier où vous souhaitez copier les fichiers sur votre ordinateur, par exemple `D:\Documents\Application` et changer le working directory de votre invite de commande pour celui-ci.
-   ```cmd
-   cd /d D:\Documents\Application
-   ```
-   Il est également possible d'ouvrir une invite de commande directement à partir du dossier souhaité. Simplement naviguer avec votre explorateur de fichier jusqu'au dossier voulu et écrire `cmd` dans l'onglet contenant le lien vers ce dossier.
-   
-   ![open_cmd](https://github.com/Landry-G/MoSiR_images/blob/main/open_cmd.gif)
-   
-4. Copier ces lignes dans votre invite de commande. Un clone du dossier standalone sera alors copié sur votre ordinateur.
-   ```cmd
-   git clone -n --depth=1 --filter=tree:0 https://github.com/Bureau-du-Forestier-en-chef/MoSiR
-   cd MoSiR
-   git sparse-checkout set --no-cone standalone
-   git checkout
-   ```
+1. Naviguer vers [Releases](https://github.com/Bureau-du-Forestier-en-chef/MoSiR/releases)
+2. Sélectionner la dernière version à jour de MoSiR
+3. Télécharger le fichier `MoSiR.dist.7z` et le décompresser à l'endroit souhaité.
+4. Dans le dossier `MoSiR.dist`, ouvrir le fichier `MoSiR.exe`.
+5. MoSiR devrait s'ouvrir dans votre navigateur web par défaut dans les instants suivants.
+
 </details>
 
 > [!NOTE]
