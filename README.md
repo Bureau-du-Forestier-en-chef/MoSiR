@@ -28,7 +28,9 @@
 # Description
 <p align="justify"> 
   MoSiR, acronyme de Modèle de Simulation en Réseau, est un outil puissant conçu par le Bureau du Chef Forestier (BFEC) pour faciliter la modélisation et la simulation du devenir du carbone dans les produits du bois issus de l'exploitation forestière. MoSiR permet de calculer l'impact climatique réel des émissions associées aux produits du bois tout au long de leur durée de vie et de leur fin de vie en permettant à l'utilisateur d'utiliser des architectures de réseau complexes et des données d'entrée associées de manière automatisée. L'interface web de MoSiR sert de passerelle entre la création et la simulation de modèles conceptuels pour les trajectoires du carbone dans les produits du bois et le calcul de leur impact réel sur le climat. Cette interface est facilement accessible à partir de n'importe quel navigateur web. L'interface Web de MoSiR se distingue par sa capacité à charger les cartes Miro créées par l'utilisateur et à les convertir en un fichier JSON qui peut être lu par le calculateur de MoSiR. L'interface Web MoSiR facilite une transition transparente vers le calculateur tout en préservant l'intégrité des données et des propriétés architecturales précédemment construites.
+</p>
 
+<p align="justify"> 
 MoSiR est également un calculateur sous forme de package python, dédié au suivi du devenir du carbone dans l'architecture du réseau précédemment chargée. MoSiR permet de simuler et de prédire le devenir du carbone dans le réseau, offrant ainsi une perspective claire sur les flux et les stocks de carbone dans le système étudié. Le calculateur MoSiR est également capable d'évaluer l'effet radiatif des émissions de carbone dans l'atmosphère et, si l'utilisateur le souhaite, il peut fournir l'effet radiatif complet des émissions provenant des produits du bois.
 </p>
 
@@ -104,8 +106,8 @@ Une version de MoSiR, sous format d'application portable, est disponible dans l'
 > [!NOTE]
 > Les étapes subséquentes sont nécessaires pour importer des graphiques depuis Miro. Si votre installation est une version "lightweight" ou si vous souhaitez importer vos graphiques directement à partir d'un fichier JSON, les étapes suivantes d'installation ne sont pas obligatoires pour faire fonctionner le reste du package ou de l'application MoSiR. 
 
-### <b>Étape 2</b>: Création d'un compte Miro et d'une clé d'application <br>
-<details><summary><b>Procédure sur Miro</b></summary><br>
+### <b>Étape 2</b>: Création d'un compte Miro et d'une clé d'application
+<details><summary><b>Procédure sur Miro</b></summary>
 
 1. Avec l'adresse courriel désirée, créer d'abord un compte Miro gratuit à partir de `https://miro.com/`
 2. Naviguer vers les paramètres de l'utilisateur, puis, sélectionner `Vos applications` dans le menu.
@@ -140,7 +142,7 @@ Si votre installation est en version standalone, les clés d'identification se r
    ```python
    ..\MoSiR.dist\MoSiR\mirowrapper\mirowrapper.env
    ```
-  `MoSiR.dist` est le dossier que vous avez téléchargé ou copié depuis GitHub. Le fichier `.env` peut être ouvert avec un logiciel de traitement de fichier texte comme Bloc-notes.
+  `MoSiR.dist` est le dossier que vous avez téléchargé depuis GitHub. Le fichier `.env` peut être ouvert avec un logiciel de traitement de fichier texte comme Bloc-notes.
 <p align="justify"> 
   Si votre installation est un package python, la clé se retrouve ici dans votre environnement conda. Par exemple, dans mon environnement nommé `MoSiR`, mes clés d'environnements se retrouvent ici:
 </p>
@@ -150,10 +152,10 @@ Si votre installation est en version standalone, les clés d'identification se r
    ```
 </details>
 
-<details><summary><b>Avec l'interface</b></summary> <br>
+<details><summary><b>Avec l'interface</b></summary>
   
 1. Ouvrir l'application MoSiR <br>
-   Pour l'application standalone, un fichier exécutable `MoSiR.exe` se retrouve dans le dossier d'installation. Pour une installation en package python, le script `MoSiR.py` doit être lancé depuis son environnement où il est installé. Le script se retrouve sous `..\envs\MoSiR\Scripts\MoSiR.py`.
+   Pour l'application portable, un fichier exécutable `MoSiR.exe` se retrouve dans le dossier d'installation. Pour une installation en package python, le script `MoSiR.py` doit être lancé depuis son environnement où il est installé. Le script se retrouve sous `..\envs\MoSiR\Scripts\MoSiR.py`.
 2. Sélectionner l'option `Récupérer dans Miro`
 3. Cliquer sur `Changer les clés d'identification Miro` <br>
    Inscrire le `Client ID` et le `Client secret` qui ont été générés à l'étape 2.
