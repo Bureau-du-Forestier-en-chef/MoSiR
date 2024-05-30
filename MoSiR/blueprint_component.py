@@ -31,26 +31,25 @@ class Main_renderer:
     def render(self, description: bool = False, allvariables: list[str] = []) -> str:
         if not description:
             return render_template("main.html",
-                    variables = allvariables, entries= self.__entries)
+                    variables=allvariables, entries=self.__entries)
         else:
             return render_template("main.html",
-                    descriptions = self.__descriptions,
-                    variables = allvariables, entries= self.__entries)
-    
+                    descriptions=self.__descriptions,
+                    variables=allvariables, entries=self.__entries)
     
 class Component(ABC, Blueprint):
     main_renderer = Main_renderer()
 
     def __init__(self, name: str, import_name: str):
          Blueprint.__init__(self, name.lower(), import_name, 
-                            url_prefix= "/" + name.lower(), 
-                            template_folder= "templates",
-                            static_folder='static')
+            url_prefix = "/" + name.lower(), template_folder = "templates",
+            static_folder ='static')
          self._entries = []
          self._descriptions = ""
 
-    def _add_endpoint(self, endpoint= None, endpoint_name= None, handler= None, methods= ['GET']):
-        self.add_url_rule(endpoint, endpoint_name, Endpointaction(handler), methods= methods)
+    def _add_endpoint(self, endpoint = None, endpoint_name = None, 
+                      handler = None, methods = ['GET']):
+        self.add_url_rule(endpoint, endpoint_name, Endpointaction(handler), methods=methods)
 
     def _get_json(self, response: Response) -> dict:
         if response.status_code < 400:
@@ -85,7 +84,7 @@ class Component(ABC, Blueprint):
     def clear_users_data(folder) -> None:
         for element in os.listdir(folder):
             if os.path.isdir(os.path.join(folder, element)):
-                shutil.rmtree(os.path.join(folder, element), ignore_errors= True)
+                shutil.rmtree(os.path.join(folder, element), ignore_errors=True)
 
     def _get_graphs_files(self) -> list[str]:
         graphs_folder = self._get_uploads_folder()
@@ -107,7 +106,7 @@ class Component(ABC, Blueprint):
         graphs_folder = self._get_uploads_folder()
         locations = []
         for element in os.listdir(graphs_folder):
-            if os.path.isfile(os.path.join(graphs_folder,element)) and element.endswith(".json"):
+            if os.path.isfile(os.path.join(graphs_folder, element)) and element.endswith(".json"):
                 json_file = utilities.Jsonparser.read(os.path.join(graphs_folder, element))
                 inputkeys = list(json_file.keys())
                 if "Unit" in inputkeys and "Inputs" in inputkeys:
@@ -118,7 +117,7 @@ class Component(ABC, Blueprint):
         graphs_folder = self._get_uploads_folder()
         locations = []
         for element in os.listdir(graphs_folder):
-            if os.path.isfile(os.path.join(graphs_folder,element)) and element.endswith(".json"):
+            if os.path.isfile(os.path.join(graphs_folder, element)) and element.endswith(".json"):
                 json_file = utilities.Jsonparser.read(os.path.join(graphs_folder, element))
                 inputkeys = list(json_file.keys())
                 if "Output file extension" in inputkeys and "Output" in inputkeys \
@@ -132,10 +131,12 @@ class Component(ABC, Blueprint):
         all_files = []
         for reporting_file in self._get_reporting_files():
             json_file = utilities.Jsonparser.read(os.path.join(graphs_folder, reporting_file))
-            all_extensions.append(json_file["Output file extension" ])
+            file_ext = json_file["Output file extension"]
+            if file_ext not in all_extensions:
+                all_extensions.append(file_ext)
         for element in os.listdir(graphs_folder):
-            for exention in all_extensions:
-                if os.path.isfile(os.path.join(graphs_folder, element)) and element.endswith(exention):
+            for extention in all_extensions:
+                if os.path.isfile(os.path.join(graphs_folder, element)) and element.endswith(extention):
                     all_files.append(os.path.join(graphs_folder, element))
         return all_files
     
@@ -155,6 +156,9 @@ class Component(ABC, Blueprint):
     
     def get_exit_html(self) -> str:
         return request.host_url
+    
+    def get_upload_html(self) -> str:
+        return request.host_url + "upload/"
     
     def set_main_entries(self, entries: list):
         self._entries = entries

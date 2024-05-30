@@ -32,10 +32,10 @@ class Flaskwrapper:
         Component.main_renderer.set_description(self.__get_description())
         
     def start_counter(self):
-        """Timer de deux heures pour forcer la fermeture du terminal"""
+        """Timer de 1 heure pour forcer la fermeture du terminal"""
         if self.__start_shutdown_timer is not None:
             self.__start_shutdown_timer.cancel()
-        self.__start_shutdown_timer = threading.Timer(7200, self.shutdown)
+        self.__start_shutdown_timer = threading.Timer(3600, self.shutdown)
         self.__start_shutdown_timer.start()
         
     def __get_description(self) -> list[str]:
@@ -52,10 +52,14 @@ class Flaskwrapper:
             package_data = list(all_data.keys())
             package_data.sort()
             # Fix qui a été fait pour seulement garder 3 infos
+            traduction = {'Author': 'Auteur',
+                          'Author-email': 'Courriel',
+                          'Version': 'Version'}
             for data in package_data:
                 if data in ['Author', 'Author-email', 'Version']:
+                    key = traduction[data]
                     info = all_data[data]
-                    output = f'{data}: {info}'
+                    output = f'{key}: {info}'
                     if output not in all_text:
                         all_text.append(output)
         return all_text

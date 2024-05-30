@@ -5,7 +5,6 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Sélection des produits du bois</title>
         <link rel="stylesheet" href="{{ url_for('.static', filename='css/style.css') }}" />
-        <!-- <link rel="stylesheet" href="../static/css/mirotone/styles.css" /> --> 
         <script src="https://miro.com/app/static/sdk/v2/miro.js"></script>
     </head>
     <body>
@@ -21,16 +20,12 @@
                      <div name="WPSelection" class="cs1 ce12">
                         {% for Board in Boards %}
                         <label class="checkbox">
-                            <input type="checkbox" name="{{ Board }}">
+                            <!-- Give all radio buttons the same name -->
+                            <input type="radio" name="boardSelection" value="{{ Board }}">
                             <span>{{ Board }}</span>
                         </label>
                         {% endfor %}
                     </div>
-                    <!--<button type="submit",class="cs1 ce12 button button-primary">
-                        <div class="cs1 ce12">
-                            <h1>Générer les graphs</h1>
-                        </div>
-                    </button>-->
                     <button
                     class="button button-primary"
                     type="submit"
@@ -40,6 +35,6 @@
                     </button>
                 </div>
             </form>
-        </div>        
+        </div>   
     </body>
 </html>

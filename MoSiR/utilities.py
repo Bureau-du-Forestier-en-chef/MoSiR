@@ -10,7 +10,7 @@ class Jsonparser:
     def read(JsonLocation: str):
             return json.loads(pkgutil.get_data("MoSiR", JsonLocation))
     @staticmethod
-    def write(JsonLocation: str, Values: {}) -> None:
+    def write(JsonLocation: str, Values: dict) -> None:
          with open(JsonLocation, 'w') as JsonFile:
             json.dump(Values, JsonFile)
 

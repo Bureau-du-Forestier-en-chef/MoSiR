@@ -1,6 +1,5 @@
 MoSiR/mirowrapper/inputs/MiroParserServerSecrets.json
 MoSiR/inputs/MiroParserServerSecrets.json
-# MoSiR/mirowrapper/mirowrapper.env
 MoSiR/visualization/templates/*
 !MoSiR/visualization/templates/.gitkeep
 !MoSiR/visualization/templates/keepme.txt
@@ -18,9 +17,11 @@ tests/Microtests
 .vs 
 .vscode
 .pytest_cache
-standalone/wrap_onefile.bat
-standalone/wrap_standalone.bat
+standalone/MoSiR.dist
+standalone/MoSiR.dist.7z
+standalone/MoSiR.build
 MoSiR/BFECGCBM
 htmlcov/
 .coverage
 README_package.md
+# MoSiR/mirowrapper/mirowrapper.env

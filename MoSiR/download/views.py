@@ -17,7 +17,7 @@ class Download(Component):
         for graphfile in self._get_graphs_files() + self._get_inputs_files() \
             + self._get_reporting_files() + self._get_results_files():
             htmltarget = self._get_url_for("/graphs_download/<filename>", 
-                                           filename= graphfile)
+                filename=graphfile)
             target = '<p><a class="w3-button w3-dark-grey" href=' + htmltarget \
                 + '>' + "Télécharger " + os.path.basename(graphfile) \
                 + ' <i class="fa fa-arrow-right"></i></a></p>'
@@ -29,14 +29,14 @@ class Download(Component):
                                       filename), as_attachment= True)
     
     def add_all_endpoints(self):
-        self._add_endpoint(endpoint= '/', 
-                           endpoint_name= '/', 
-                           handler= self.__get_graphs, 
-                           methods= ['GET'])
-        self._add_endpoint(endpoint= '/graphs_download/<filename>', 
-                           endpoint_name= '/graphs_download/<filename>', 
-                           handler= self.__graphs_download, 
-                           methods= ['GET','POST'])
+        self._add_endpoint(endpoint='/', 
+                           endpoint_name='/', 
+                           handler=self.__get_graphs, 
+                           methods=['GET'])
+        self._add_endpoint(endpoint='/graphs_download/<filename>', 
+                           endpoint_name='/graphs_download/<filename>', 
+                           handler=self.__graphs_download, 
+                           methods=['GET','POST'])
 
     def get_description(self):
         return "Télécharger des fichiers graphs"

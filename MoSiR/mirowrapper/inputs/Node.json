@@ -4,7 +4,7 @@
     "data/shape" : ["circle"]
 },
 "Describe" :{
-    "Half-life" : {"style/borderStyle" : ["dashed"]},
+    "Decay" : {"style/borderStyle" : ["dashed"]},
     "Recycling" : {"style/fillColor" : ["#8fd14f"]}
     }
 }

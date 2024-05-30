@@ -5,7 +5,7 @@
 	},
 "Node" :{
     "Base" : "#ffe5d4",
-    "Half-life": "#efc7c2",
+    "Decay": "#efc7c2",
     "Recycling" : "#bfd3c1"
     }
 }

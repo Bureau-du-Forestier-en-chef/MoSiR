@@ -68,14 +68,7 @@ class ItemBuilder:
             if "data" in Item and "content" in Item["data"]:
                 Name = utilities.Htmlparser.get_string_from_html(
                     Item["data"]["content"]).replace(',', '')
-                Selectedkeys = []
-                for KeyData, Data in  DataHolder.items():
-                    if Data and KeyData in Name:
-                        DataHolder[KeyData] = self.__GetValue(Name, KeyData)
-                        Selectedkeys.append(KeyData)
                 DataHolder["Name"] = Name
-                if Selectedkeys:
-                    DataHolder["Name"] = self.__GetName(Name, Selectedkeys)
         return DataHolder
 
 class Mirogenerator(Generator):
@@ -200,7 +193,7 @@ class Mirogenerator(Generator):
                         break
                 if not GotAtarget:
                     raise(mosir_exceptions.Miroerror(
-                        "Tag ID " + str(EdgeItems["To"]) + " has no out edge",
+                        "Un item (tag ID" + str(EdgeItems["To"]) + ") has no out edge",
                             EdgeItems["To"]))
                 NewEdges[EdgeId] = EdgeItems
             elif(all(Item in ValidLocations for Item in (EdgeItems["To"], EdgeItems["From"]))):
@@ -208,8 +201,10 @@ class Mirogenerator(Generator):
         if len(TagUsed) < len(TAGLOCATION):
             for tagid in TAGLOCATION.keys():
                 if tagid not in TagUsed:
-                    Message = "Tag id " + str(tagid) + " not used"
-                    raise(mosir_exceptions.Miroerror(Message,tagid))
+                    Message = "Un item est mal connecté dans le graphe (tag ID "\
+                        + str(tagid) + "). Veuillez vérifier que des liens sont bien\
+                        rattachés à celui-ci."
+                    raise(mosir_exceptions.Miroerror(Message, tagid))
         Removed = len(self._edges) - len(NewEdges)
         self._edges = NewEdges
         for EdgeId,EdgeItems in self._edges.items():
@@ -269,21 +264,21 @@ class Mirogenerator(Generator):
         MaxedgeId = self.__GetMaxId() + 1
         EdgesToRemove = set()
         NewEdges = {}
-        for EdgeId,EdgeItems in self._edges.items():
+        for EdgeId, EdgeItems in self._edges.items():
             if EdgeItems["To"] in FORKS:
                 #Now get the edges getting out of this fork
-                for SubEdgeId,SubEdgeItems in self._edges.items():
+                for SubEdgeId, SubEdgeItems in self._edges.items():
                     if SubEdgeItems["From"] == EdgeItems["To"]:
                         NewEdges[MaxedgeId] = self.__GetEdgeFromForkData(EdgeItems, SubEdgeItems)
                         EdgesToRemove.add(SubEdgeId)
                         MaxedgeId += 1
                         #Create new edge each time
                 EdgesToRemove.add(EdgeId)
-        for EdgeId,EdgeItems in self._edges.items():
+        for EdgeId, EdgeItems in self._edges.items():
             if EdgeId not in EdgesToRemove:
                 NewEdges[EdgeId] = EdgeItems
         self._edges = NewEdges
-        for EdgeId,EdgeItems in self._edges.items():
+        for EdgeId, EdgeItems in self._edges.items():
             self.__ValidateEdge(EdgeId, EdgeItems)
         ENDMESSAGE = "After Edges fork simplification got " + str(len(self._edges)) + " Edges"
         self.__LogStatus(ENDMESSAGE)

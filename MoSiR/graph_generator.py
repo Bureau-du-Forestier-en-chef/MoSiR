@@ -5,7 +5,8 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 """
 import json
-import warnings # Maybe
+import warnings
+from scipy.stats import gamma
 from MoSiR import networkx_graph as wp
 from MoSiR import mosir_exceptions as me
 from abc import ABCMeta, abstractmethod
@@ -201,10 +202,10 @@ class TopNode(IndustrialNode):
             raise ValueError("Time must be a non-negative integer.")
         if len(self.time) != len(self.quantities):
             raise ValueError("Time and quantities lists must be the same length.")
-        try:
+        if when in self.time:
             index = self._time.index(when)
             return self._quantities[index]
-        except ValueError:
+        else:
             return 0
     
     def get_flux_out(self, graph: WPGraph, time: int, cumulative: bool = False) -> float:
@@ -220,8 +221,6 @@ class TopNode(IndustrialNode):
         return self.get_flux_out(graph, time, cumulative= cumulative)
 
     def get_stock(self, graph: WPGraph, time: int, cumulative: bool = False) -> float:
-        warnings.warn(' '.join(f'Aucun carbone ne résident dans le noeud \
-            {self.NAME}, seulement des flux le traverse').split(), stacklevel= 2)
         return 0
 
 class ProportionNode(IndustrialNode):
@@ -289,8 +288,6 @@ class ProportionNode(IndustrialNode):
             return total
 
     def get_stock(self, graph: WPGraph, time: int, cumulative: bool = False) -> int:
-        warnings.warn(' '.join(f'Aucun carbone ne résident dans le noeud \
-            {self.NAME}, seulement des flux le traverse').split(), stacklevel= 2)
         return 0
 
 class DecayNode(ProportionNode):
@@ -304,7 +301,7 @@ class DecayNode(ProportionNode):
 
     Args:
         LOCALNAME (str): Le nom du noeud
-        HalfLife (int): La demi-vie du carbone dans le noeud
+        HalfLife (int): Simplement un indicateur nécessaire pour le gaz
     
     Raises:
         ValueError: Le nom du noeud doit être une chaine de caractère
@@ -313,43 +310,56 @@ class DecayNode(ProportionNode):
     Returns:
         DecayNode: Un objet de la classe DecayNode
     """
-    def __init__(self, NAME: str, HalfLife: int):
+    def __init__(self, NAME: str, decay: int):
         super().__init__(NAME)
-        if not isinstance(HalfLife, int) or HalfLife <= 0:
-            raise ValueError("Half-life must be a positive integer.")
-        self._HalfLife = HalfLife
+        if not isinstance(decay, int) or decay <= 0:
+            raise ValueError("Decay value must be a positive integer.")
+        self._decay = decay
+        self._alpha_value = None
+        self._beta_value = None
         self.__dn_cache = Caching()
     
     def past_carbon(self):
         return self.__dn_cache
         
     @property
-    def HalfLife(self):
-        return self._HalfLife
+    def alpha(self):
+        return self._alpha_value
+    
+    @alpha.setter 
+    def alpha(self, alpha):
+       self._alpha_value = alpha
 
-    @HalfLife.setter 
-    def HalfLife(self, Value):
-       self._HalfLife = Value
+    @property
+    def beta(self):
+        return self._beta_value
+    
+    @beta.setter 
+    def beta(self, beta):
+       self._beta_value = beta
     
     def get_flux_out(self, graph: WPGraph, time: int, cumulative: bool = False) -> float:
         total = 0
         if cumulative == False:
             if time in self.past_carbon().flux_cache:
                 return self.past_carbon().get_flux_cache(time)
-            for timestep in range(time + 1): 
-                if timestep != time:  
-                    flux_in = self.get_flux_in(graph, timestep, cumulative)
-                    output_flux_out = (flux_in * ((0.5) ** ((time - timestep - 1)/self.HalfLife))) - \
-                        (flux_in * ((0.5) ** ((time - timestep)/self.HalfLife)))
-                    total += output_flux_out
+            for timestep in range(time):   
+                flux_in = self.get_flux_in(graph, timestep, cumulative)
+                if flux_in == 0: 
+                    continue
+                decay_proportion = gamma.cdf(time - timestep, self.alpha, scale=self.beta) \
+                    - gamma.cdf(time - timestep - 1, self.alpha, scale=self.beta)
+                total += flux_in * decay_proportion
             self.past_carbon().set_flux_cache(time, total)
             return total
-        else: 
-            for timestep in range(time + 1):
-                if timestep != time:   
-                    flux_in = self.get_flux_in(graph, timestep, cumulative= False)
-                    output_flux_out = flux_in - (flux_in * ((0.5) ** ((time - timestep)/self.HalfLife)))
-                    total += output_flux_out
+        else:
+            for timestep in range(time):  
+                flux_in = self.get_flux_in(graph, timestep, cumulative= False)
+                if flux_in == 0:
+                    continue
+                decay_proportion = gamma.cdf(
+                    time - timestep, self.alpha, scale=self.beta)
+                total += flux_in * decay_proportion
             return total
         
     def get_flux_in(self, graph: WPGraph, time: int, cumulative: bool = False) -> float:
@@ -383,15 +393,18 @@ class DecayNode(ProportionNode):
 
         '''
         try:
-            total = float(0)
-            for Year in range(time + 1): 
-                Annual = self.get_flux_in(graph, Year, cumulative= False)
-                Restant = Annual * ((0.5) ** ((time - Year)/self.HalfLife))
-                total += Restant
+            total = 0
+            for timestep in range(time + 1): 
+                annual = self.get_flux_in(graph, timestep, cumulative= False)
+                if annual == 0:
+                    continue
+                decay_proportion = 1 - gamma.cdf(
+                    time - timestep, self.alpha, scale=self.beta)
+                total += annual * decay_proportion
             return total
         except RecursionError:
             raise me.RecursionNode("Un maximum de demande a été effectué. \
-                                 Une boucle entre des ProportionNode est présente")          
+                Une boucle entre des ProportionNode est présente")          
 
 class RecyclingNode(ProportionNode):
     def __init__(self, NAME: str):
@@ -454,7 +467,6 @@ class PoolNode(ProportionNode):
             return total    
     
     def get_flux_out(self, graph: WPGraph, time: int, cumulative: bool = False) -> float:
-        warnings.warn(f'Aucun carbone sortant de la node {self.NAME}', stacklevel= 2)
         return 0
       
     def get_stock(self, graph: WPGraph, time: int, cumulative: bool = False) -> float:
@@ -493,7 +505,7 @@ class GraphFactory():
         GraphFactory: Un objet de la classe GraphFactory
     """
 
-    def __init__(self, DIR: str= None, Dict: dict= None):
+    def __init__(self, DIR: str=None, Dict: dict=None):
         self._DIRECTORY = DIR
         """L'option de créer un graphe grâce à un dictionnaire a été
         ajouter pour l'analyse lors de l'importation dans l'API"""
@@ -510,11 +522,11 @@ class GraphFactory():
         graph_num = 0
         keys = list(self.get_data.keys())
         keys.sort()
-        for KEY in keys:
-            self._GRAPHNAME.append(KEY)
-            self._GRAPHS.append(wp.WPGraph(KEY))
-            _EDGES = self.get_data[KEY].get('Edges', {})
-            _NODES = self.get_data[KEY].get('Nodes', {})
+        for graph in keys:
+            self._GRAPHNAME.append(graph)
+            self._GRAPHS.append(wp.WPGraph(graph))
+            _EDGES = self.get_data[graph].get('Edges', {})
+            _NODES = self.get_data[graph].get('Nodes', {})
             if len(_NODES) < 2 or len(_EDGES) == 0:
                 raise me.GraphError("Le graphe doit contenir au moins deux noeud et un edge")
             _TOPNODES = set([int(ID) for ID in _NODES]) - \
@@ -524,19 +536,24 @@ class GraphFactory():
         
             node_map = {}
             for node_id, node_data in _NODES.items():
-                if int(node_id) in _TOPNODES:    
+                if int(node_id) in _TOPNODES: 
+                    if node_data['Decay'] > 0 or node_data['Recycling'] > 0:
+                        raise me.GraphError(f"Node at the top (a node without an edge \
+                            going into it) cannot also be identified as a recycling \
+                            or decay node. Node name: {node_data['Name']}") 
                     new_node =  TopNode(node_data['Name'])
                 elif int(node_id) in _LASTNODES:
+                    if node_data['Decay'] > 0 or node_data['Recycling'] > 0:
+                        raise me.GraphError(f"Node at the bottom (a node without an edge \
+                            going out of it) cannot also be identified as a recycling \
+                            or decay node. Node name: {node_data['Name']}")  
                     new_node = PoolNode(node_data['Name'])
-                elif node_data["Half-life"] > 0:
-                    if int(node_id) in _LASTNODES or int(node_id) in _TOPNODES:
-                        raise me.GraphError("Un noeud avec une demi-vie ne peut \
-                             pas être un noeud de départ ou de fin.")
-                    new_node = DecayNode(node_data['Name'], int(node_data['Half-life']))
+                elif node_data["Decay"] > 0:
+                    if node_data["Recycling"] > 0:
+                        raise me.GraphError(f"A node cannot be both a recycling and \
+                            decay node. Node name: {node_data['Name']}")
+                    new_node = DecayNode(node_data['Name'], int(node_data['Decay']))
                 elif node_data['Recycling'] == 1: 
-                    if int(node_id) in _LASTNODES or int(node_id) in _TOPNODES:
-                        raise me.GraphError("Un noeud avec un recyclage ne peut \
-                             pas être un noeud de départ ou de fin.")
                     new_node = RecyclingNode(node_data['Name'])
                 else: new_node = ProportionNode(node_data['Name'])
                 self._GRAPHS[graph_num].add_node(new_node)

@@ -73,20 +73,18 @@
         // Récupérer le bouton de fermeture
         var closeBtn = document.getElementsByClassName('close')[0];
 
-        // Lorsque vous cliquez sur le bouton, ouvrez la boîte modale
+        // Ouvrir la boîte modale
         changeKeysButton.onclick = function() {
             modal.style.display = 'block';
-            // Afficher les champs pour entrer les clés
             document.getElementById('key1').classList.remove('hidden');
             document.getElementById('key2').classList.remove('hidden');
         }
 
-        // Lorsque vous cliquez sur le bouton de fermeture, fermez la boîte modale
+        // Fermer la boîte modale
         closeBtn.onclick = function() {
             modal.style.display = 'none';
         }
 
-        // Fermez la boîte modale si vous cliquez en dehors de celle-ci
         window.onclick = function(event) {
             if (event.target == modal) {
                 modal.style.display = 'none';
