@@ -97,6 +97,8 @@ Une version de MoSiR, sous format d'application portable, est disponible dans l'
 4. Dans le dossier `MoSiR.dist`, ouvrir le fichier `MoSiR.exe`.
 5. MoSiR devrait s'ouvrir dans votre navigateur web par défaut dans les instants suivants.
 
+ ![mosir_download](https://github.com/Landry-G/MoSiR_images/blob/main/mosir_download.gif)
+
 </details>
 
 > [!NOTE]
