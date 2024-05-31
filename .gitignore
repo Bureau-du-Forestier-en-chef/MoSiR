@@ -1,11 +1,3 @@
-MoSiR/mirowrapper/inputs/MiroParserServerSecrets.json
-MoSiR/inputs/MiroParserServerSecrets.json
-MoSiR/visualization/templates/*
-!MoSiR/visualization/templates/.gitkeep
-!MoSiR/visualization/templates/keepme.txt
-MoSiR/uploads/*
-!MoSiR/uploads/.gitkeep
-!MoSiR/uploads/keepme.txt
 MoSiR/__pycache__/
 tests/__pycache__/
 build/
@@ -16,11 +8,6 @@ tests/Microtests
 .vs 
 .vscode
 .pytest_cache
-standalone/MoSiR.dist
-standalone/MoSiR.dist.7z
-standalone/MoSiR.build
-MoSiR/BFECGCBM
 htmlcov/
 .coverage
 README_package.md
-# MoSiR/mirowrapper/mirowrapper.env
