@@ -6,7 +6,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 from abc import ABCMeta
 
-class Generator(metaclass=ABCMeta):
+class Generator(metaclass = ABCMeta):
     def __init__(self, GraphName: str):
         self.__GraphName = GraphName
         self._nodes = {}

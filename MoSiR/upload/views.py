@@ -18,25 +18,25 @@ class Upload(Component):
         Component.__init__(self, __class__.__name__, __name__)
     def __get_graphs(self):
         target = ['<br><form action = '
-                  + self._get_url_for('/graphs_upload/')
-                  + ' method = "POST" '
-                  + 'enctype = "multipart/form-data"> '
-                  + '<input type = "file" name = "file" accept=".json" title ="upload file"/> '
-                  + '<input type = "submit"/> '
-                  + '</form> ']
+            + self._get_url_for('/graphs_upload/')
+            + ' method = "POST" '
+            + 'enctype = "multipart/form-data"> '
+            + '<input type = "file" name = "file" accept=".json" title ="upload file"/> '
+            + '<input type = "submit"/> '
+            + '</form> ']
         return Component.main_renderer.render(False, target)
     
     # TODO Page après upload, sidebar needs update
     def __success_upload(self, item):
         target = ['<br><form action = '
-                  + self._get_url_for('/graphs_upload/')
-                  + ' method = "POST" '
-                  + 'enctype = "multipart/form-data"> '
-                  + '<input type = "file" name = "file" accept=".json" title ="upload file"/> '
-                  + '<input type = "submit"/> '
-                  + '</form><br>'
-                  + '<h5><i class="fa fa-check-square-o" style="color: green;"></i>'
-                  + ' ' + item + ' a été téléversé avec succès </h5>']
+            + self._get_url_for('/graphs_upload/')
+            + ' method = "POST" '
+            + 'enctype = "multipart/form-data"> '
+            + '<input type = "file" name = "file" accept=".json" title ="upload file"/> '
+            + '<input type = "submit"/> '
+            + '</form><br>'
+            + '<h5><i class="fa fa-check-square-o" style="color: green;"></i>'
+            + ' ' + item + ' a été téléversé avec succès </h5>']
         return Component.main_renderer.render(False, target)
     
     def __graphs_upload(self):
@@ -79,13 +79,13 @@ class Upload(Component):
         
     def add_all_endpoints(self):
         self._add_endpoint(endpoint='/', 
-                           endpoint_name='/',  
-                           handler=self.__get_graphs, 
-                           methods=['GET','POST'])
+            endpoint_name='/',  
+            handler=self.__get_graphs, 
+            methods=['GET','POST'])
         self._add_endpoint(endpoint='/graphs_upload/', 
-                           endpoint_name='/graphs_upload/',
-                           handler=self.__graphs_upload, 
-                           methods=['GET','POST'])
+            endpoint_name='/graphs_upload/',
+            handler=self.__graphs_upload, 
+            methods=['GET','POST'])
     
     def get_description(self):
         return "Téléverser des fichiers graphs"

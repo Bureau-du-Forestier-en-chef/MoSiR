@@ -6,6 +6,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 from ..blueprint_component import Component
 
+
+# TODO More usefull stats
 class Stats(Component):
     def __init__(self):
         Component.__init__(self, __class__.__name__, __name__)
@@ -31,20 +33,22 @@ class Stats(Component):
                         stash.append('<p>' + name + '</p>')
                         stash.append('<div class="w3-grey">')
                         stash.append('<div class="w3-container w3-center w3-padding w3-'
-                                     + color
-                                     + '" style="width:'
-                                     + totalstr
-                                     + '">'
-                                     + totalstr
-                                     + '</div>')
+                            + color
+                            + '" style="width:'
+                            + totalstr
+                            + '">'
+                            + totalstr
+                            + '</div>')
                         stash.append('</div>')
             stash.append('</div>')
         stash.append("<hr>")
         return Component.main_renderer.render(False, stash)
     
     def add_all_endpoints(self):
-        self._add_endpoint(endpoint= '/', endpoint_name= '/', 
-                           handler= self.__get_stats, methods= ['GET'])
+        self._add_endpoint(endpoint='/',
+            endpoint_name='/', 
+            handler=self.__get_stats, 
+            methods=['GET'])
 
     def get_description(self):
         return "Obtenez le nombre de feuilles et branches du graph"

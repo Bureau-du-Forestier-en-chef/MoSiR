@@ -29,10 +29,10 @@ class Miroerror(werkzeug.exceptions.HTTPException):
         self.__ID = MiroException.GetItemID()
         self.__BOARD = Board
         self.__LOCATION = ("https://miro.com/app/board/" 
-                           + Board
-                           +"/?moveToWidget=" 
-                           + str(self.__ID) 
-                           + "&cot=14")
+            + Board
+            +"/?moveToWidget=" 
+            + str(self.__ID) 
+            + "&cot=14")
         self.description = str(MiroException)
 
     def get_body(self, environ):
@@ -42,10 +42,11 @@ class Miroerror(werkzeug.exceptions.HTTPException):
         return [('Content-Type', 'text/plain; charset=UTF-8')]
     
     def get_response(self, environ):
-        return make_response(render_template("miro_error.html",
-                                             Traces= self.__TraceBack,
-                                             Description= self.description,
-                                             MiroUrl= self.__LOCATION), 200)
+        return make_response(render_template(
+            "miro_error.html",
+            Traces=self.__TraceBack,
+            Description=self.description,
+            MiroUrl=self.__LOCATION), 200)
     
     def get_description(self, environ):
         return self.description
@@ -95,59 +96,57 @@ class Mirowrapper(Component):
             f.writelines(lignes)
         
         return render_template("home.html", 
-                redirect_url= self._get_url_for(self.__REDIRECT_URI + "/authorize"),
-                key_changed= True,
-                CLIENT_ID= CLIENT_ID,
-                CLIENT_SECRET= CLIENT_SECRET)
+            redirect_url=self._get_url_for(self.__REDIRECT_URI + "/authorize"),
+            key_changed=True,
+            CLIENT_ID=CLIENT_ID,
+            CLIENT_SECRET=CLIENT_SECRET)
         
     def __get_home(self):
         if request.method == 'POST':
             return self.__change_miro_keys()
         else:    
             return render_template("home.html",
-                redirect_url= self._get_url_for(self.__REDIRECT_URI + "/authorize"))
+                redirect_url=self._get_url_for(self.__REDIRECT_URI + "/authorize"))
     
     def __authorization_redirect(self):
-        AuthorizationCode = request.args.get("code", default= "")
+        AuthorizationCode = request.args.get("code", default="")
         URL = (self.__BASEAPIMIRO
-               + "v1/oauth/token?" 
-               + "grant_type=authorization_code" 
-               + "&client_id="
-               + self.__CLIENTID 
-               + "&client_secret="
-               + self.__CLIENTSECRET 
-               + "&code=" 
-               + AuthorizationCode  
-               + "&redirect_uri="
-               + self._get_url_for(self.__REDIRECT_URI))
-        headers = {
-            "Accept": "application/json"
-        }
-        response = self.__Session.post(URL, headers= headers)
+            + "v1/oauth/token?" 
+            + "grant_type=authorization_code" 
+            + "&client_id="
+            + self.__CLIENTID 
+            + "&client_secret="
+            + self.__CLIENTSECRET 
+            + "&code=" 
+            + AuthorizationCode  
+            + "&redirect_uri="
+            + self._get_url_for(self.__REDIRECT_URI))
+        headers = {"Accept": "application/json"}
+        response = self.__Session.post(URL, headers=headers)
         token = response.json()
         self.__AccessToken__ = token.get("access_token")
         self.__RefreshToken__ = token.get("refresh_token")
         self.__ExpireIn__= token.get("expires_in")
         if self.__ExpireIn__ is None:
             self.__ExpireIn__ = 0        
-        self.__ExpireDate__ = datetime.now() + timedelta(seconds= self.__ExpireIn__)
+        self.__ExpireDate__ = datetime.now() + timedelta(seconds=self.__ExpireIn__)
         self.__TeamId__ = token.get("team_id")
         return redirect(self._get_url_for(self.__REDIRECT_URI + "/board_selection"))
     
     def __authorize(self):
         url = (self.__BASEMIRO
-               + "oauth/authorize?" 
-               + "response_type=code" 
-               + "&client_id=" 
-               + self.__CLIENTID 
-               + "&redirect_uri="
-               + self._get_url_for(self.__REDIRECT_URI))
+            + "oauth/authorize?" 
+            + "response_type=code" 
+            + "&client_id=" 
+            + self.__CLIENTID 
+            + "&redirect_uri="
+            + self._get_url_for(self.__REDIRECT_URI))
         return redirect(url)
     
     def __get_boards_info(self) -> dict:
         url = self.__BASEAPIMIRO + "v2/boards"
         headers = {"accept": "application/json", 'Authorization': f'Bearer {self.__AccessToken__ }'}
-        BoardInfo = self._get_json(self.__Session.get(url, headers= headers))["data"]
+        BoardInfo = self._get_json(self.__Session.get(url, headers=headers))["data"]
         return BoardInfo
     
     def __get_boardids(self) -> dict:
@@ -165,8 +164,8 @@ class Mirowrapper(Component):
         self.__BoardGraphs = self.__get_boardids()
         BOARDNAMES = self.__get_sorted_board_names()
         return render_template("board_selection.html",
-                               Boards= BOARDNAMES,
-                               select_url= self._get_url_for("/wp_selected"))
+            Boards=BOARDNAMES,
+            select_url=self._get_url_for("/wp_selected"))
     
     def __wp_selected(self):
         NewBoards = {}
@@ -180,13 +179,13 @@ class Mirowrapper(Component):
         headers = {'Accept': 'application/json','Authorization': f'Bearer {self.__AccessToken__ }'}
         UrlCall += "?limit=50"
         Nodedata = []
-        BaseRequest = self._get_json(self.__Session.get(UrlCall, headers= headers))
+        BaseRequest = self._get_json(self.__Session.get(UrlCall, headers=headers))
         Nodedata += BaseRequest["data"]
         if "cursor" in BaseRequest:
             CursorReturned = BaseRequest["cursor"]
             while CursorReturned is not None:
                 NewURL = UrlCall + "&cursor=" + CursorReturned
-                Request = self._get_json(self.__Session.get(NewURL, headers= headers))
+                Request = self._get_json(self.__Session.get(NewURL, headers=headers))
                 CursorReturned = None
                 if "cursor" in Request:
                     CursorReturned = Request["cursor"]
@@ -195,17 +194,19 @@ class Mirowrapper(Component):
     
     def __get_board_items(self, BoardId: str):
         Component.clear_users_data(os.path.join(os.path.dirname(os.path.abspath(__file__)), 
-                                        "..", "uploads"))
-        return self.__get_board_elementsbyid(self.__BASEAPIMIRO
-                                             + "v2/boards/" 
-                                             + BoardId 
-                                             + "/items")
+            "..", "uploads"))
+        return self.__get_board_elementsbyid(
+            self.__BASEAPIMIRO
+            + "v2/boards/" 
+            + BoardId 
+            + "/items")
     
     def __get_board_connectors(self, BoardId: str):
-        return self.__get_board_elementsbyid(self.__BASEAPIMIRO
-                                             + "v2/boards/" 
-                                             + BoardId 
-                                             + "/connectors")
+        return self.__get_board_elementsbyid(
+            self.__BASEAPIMIRO
+            + "v2/boards/" 
+            + BoardId 
+            + "/connectors")
     
     def __write_graphs(self, GRAPHNAMES) -> None:
         GraphsDict = {}
@@ -223,11 +224,12 @@ class Mirowrapper(Component):
                 red;'>{e}</span></h5>")
 
     # FIXME useless
+    """
     def __graphs_download(self):
         return send_file(os.path.join(self._get_uploads_folder(),
                                       self.__GRAPHSNAME), 
                                       as_attachment= True)
-    # FIXME Useless
+    
     def __graphs_menu(self):
         GraphInfo = []
         for Generator in self.__GrapGenerators:
@@ -236,6 +238,7 @@ class Mirowrapper(Component):
             if STATS["Nodes"]["Size"] > 0:
                 GraphInfo.append((GRAPHNAME,STATS))
         return render_template("graphs_menu.html", GraphStats= GraphInfo)
+    """
     
     def __build_generator(self, GraphName: str) -> Mirogenerator:
         try:
@@ -264,20 +267,29 @@ class Mirowrapper(Component):
         return redirect(self.get_exit_html())
     
     def add_all_endpoints(self):
-        self._add_endpoint(endpoint= '/', endpoint_name= '/', 
-                           handler= self.__get_home, methods= ['GET', 'POST'])
-        self._add_endpoint(endpoint= self.__REDIRECT_URI, endpoint_name= self.__REDIRECT_URI,
-                           handler= self.__authorization_redirect, methods= ['GET','POST'])
-        self._add_endpoint(endpoint= self.__REDIRECT_URI + '/authorize', 
-                           endpoint_name= self.__REDIRECT_URI + '/authorize',
-                           handler= self.__authorize, methods= ['GET','POST'])
-        self._add_endpoint(endpoint= self.__REDIRECT_URI + '/board_selection', 
-                           endpoint_name= self.__REDIRECT_URI + '/board_selection',
-                           handler= self.__board_selection)
-        self._add_endpoint(endpoint= '/wp_selected', endpoint_name='/wp_selected', 
-                           handler= self.__wp_selected, methods= ['GET','POST'])
-        self._add_endpoint(endpoint= '/graph_generation', endpoint_name= '/graph_generation', 
-                           handler= self.__graph_generation, methods= ['GET','POST'])
+        self._add_endpoint(endpoint='/', 
+            endpoint_name='/', 
+            handler=self.__get_home, 
+            methods=['GET', 'POST'])
+        self._add_endpoint(endpoint=self.__REDIRECT_URI, 
+            endpoint_name=self.__REDIRECT_URI,
+            handler=self.__authorization_redirect, 
+            methods=['GET','POST'])
+        self._add_endpoint(endpoint=self.__REDIRECT_URI + '/authorize', 
+            endpoint_name=self.__REDIRECT_URI + '/authorize',
+            handler=self.__authorize, 
+            methods=['GET','POST'])
+        self._add_endpoint(endpoint=self.__REDIRECT_URI + '/board_selection', 
+            endpoint_name=self.__REDIRECT_URI + '/board_selection',
+            handler=self.__board_selection)
+        self._add_endpoint(endpoint='/wp_selected', 
+            endpoint_name='/wp_selected', 
+            handler=self.__wp_selected, 
+            methods=['GET','POST'])
+        self._add_endpoint(endpoint='/graph_generation',
+            endpoint_name='/graph_generation', 
+            handler=self.__graph_generation, 
+            methods=['GET','POST'])
         
     def get_description(self):
         return "Générer des graphs de produits du bois à partir de Miro"

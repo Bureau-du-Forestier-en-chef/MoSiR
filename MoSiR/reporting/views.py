@@ -70,28 +70,28 @@ class Reporting(Component):
             stash.append('<tr>')
             stash.append('<th>')
             stash.append('<select name="Noeud d\'entrée" title="Noeud d\'entrée" id="Node_'
-                         + generator.get_graph_name()
-                         + '">')
+                + generator.get_graph_name()
+                + '">')
             for node in generator.get_first_node_names():
                 stash.append('<option value="'
-                             + node 
-                             + '">'
-                             + node
-                             + '</option>')
+                    + node 
+                    + '">'
+                    + node
+                    + '</option>')
             stash.append('</th>')
             stash.append('<th> <input type = "number" name="Période~'
-                         + generator.get_graph_name() 
-                         + '" title="Période" min ="0" id="Period_'
-                         + generator.get_graph_name()
-                         + '"/></th>')
+                + generator.get_graph_name() 
+                + '" title="Période" min ="0" id="Period_'
+                + generator.get_graph_name()
+                + '"/></th>')
             stash.append('<th> <input type = "number" name="Quantitée" title="Quantitée"'
-                         + 'min ="0" id="Quantity_'
-                         + generator.get_graph_name()
-                         + '"/></th>')
+                + 'min ="0" id="Quantity_'
+                + generator.get_graph_name()
+                + '"/></th>')
             stash.append('<th>')
             stash.append('<button class="w3-button w3-dark-grey" type = "button" onclick=addcinputs("'
-                         + generator.get_graph_name()
-                         + '")>Enregistrer la période <j class="fa fa-plus-circle"></j></button>')
+                + generator.get_graph_name()
+                + '")>Enregistrer la période <j class="fa fa-plus-circle"></j></button>')
             stash.append('</th>')
             stash.append('</tr>')
             stash.append('</table>')
@@ -116,33 +116,33 @@ class Reporting(Component):
                     stash.append('<td>{}</td>'.format(node))
                     stash.append('<th>')
                     stash.append('<select name="Dégradation" title="Dégradation" id="Decay_'
-                                + generator.get_graph_name() + '~' + node
-                                + '" onchange="checkTypes(); setdecay(this)">')
+                        + generator.get_graph_name() + '~' + node
+                        + '" onchange="checkTypes(); setdecay(this)">')
                     for decay in self.__get_decay_types():
                         stash.append('<option value="'
-                                     + decay 
-                                     + '">'
-                                     + decay
-                                     + '</option>')
+                            + decay 
+                            + '">'
+                            + decay
+                            + '</option>')
                     stash.append('</th>')
                     stash.append('<td><input type="number" min="1" max="500" name="halflife_value~'
-                                 + generator.get_graph_name() + '~' + node
-                                 + '" id="halflife_value~'
-                                 + generator.get_graph_name() + '~' + node
-                                 + '" onchange="setdecay(this)" step="any" required'
-                                 + '></td>')
+                        + generator.get_graph_name() + '~' + node
+                        + '" id="halflife_value~'
+                        + generator.get_graph_name() + '~' + node
+                        + '" onchange="setdecay(this)" step="any" required'
+                        + '></td>')
                     stash.append('<td><input type="number" max="500" name="alpha_value~'
-                                 + generator.get_graph_name() + '~' + node
-                                 + '" id="alpha_value~'
-                                 + generator.get_graph_name() + '~' + node
-                                 + '" onchange="setdecay(this); validateInput(this)" step="any" required'
-                                 + '></td>')
+                        + generator.get_graph_name() + '~' + node
+                        + '" id="alpha_value~'
+                        + generator.get_graph_name() + '~' + node
+                        + '" onchange="setdecay(this); validateInput(this)" step="any" required'
+                        + '></td>')
                     stash.append('<td><input type="number" max="500" name="beta_value~'
-                                 + generator.get_graph_name() + '~' + node 
-                                 + '" id="beta_value~'
-                                 + generator.get_graph_name() + '~' + node
-                                 + '" onchange="setdecay(this); validateInput(this)" step="any" required'
-                                 + '"></td>')
+                        + generator.get_graph_name() + '~' + node 
+                        + '" id="beta_value~'
+                        + generator.get_graph_name() + '~' + node
+                        + '" onchange="setdecay(this); validateInput(this)" step="any" required'
+                        + '"></td>')
                     stash.append('<td><input type="hidden" name="rowData~'
                         + generator.get_graph_name() + '~' + node
                         + '" id="rowData~'
@@ -210,57 +210,57 @@ class Reporting(Component):
                 + '</tr>')
             stash.append('<tr>')
             stash.append('<td> <input type = "text" size="10" name="Nom~'
-                         + generator.get_graph_name()
-                         + '" title="Nom" min ="1" id="Output_'
-                         + generator.get_graph_name()+'"/></td>')
+                + generator.get_graph_name()
+                + '" title="Nom" min ="1" id="Output_'
+                + generator.get_graph_name()+'"/></td>')
             stash.append('<td>')
             stash.append('<div id="drop_list_' 
-                         + generator.get_graph_name()
-                         + '" class="dropdown-check-list" tabindex="100">')
+                + generator.get_graph_name()
+                + '" class="dropdown-check-list" tabindex="100">')
             stash.append('<span class="anchor" onclick=dropdown("'
-                         + generator.get_graph_name()
-                         + '")>Noeuds</span>')
+                + generator.get_graph_name()
+                + '")>Noeuds</span>')
             stash.append('<ul id="drop_list_ul_'
-                         + generator.get_graph_name()
-                         + '" class="items">')
+                + generator.get_graph_name()
+                + '" class="items">')
             for node in generator.get_node_names():
                 stash.append('<li><input type="checkbox"/>'
-                             + node + '</li>')
+                    + node + '</li>')
             stash.append('</ul>')
             stash.append('</div>')
             stash.append('</td>')
             stash.append('<td>')
             stash.append('<select name="Type de flux" title="Type de flux" id="out_type_'
-                         + generator.get_graph_name() + '">')
+                + generator.get_graph_name() + '">')
             for unit in self.__get_outputs_types():
                 stash.append('<option value="' + unit + '">' + unit + '</option>')
             stash.append('</select>')
             stash.append('</td>')
             stash.append('<td>')
             stash.append('<select name="Cumulatif" title="Cumulatif" id="cumulative_'
-                         + generator.get_graph_name() + '">')
+                + generator.get_graph_name() + '">')
             for unit in self.__get_cumulative():
                 stash.append('<option value="' + unit + '">' + unit + '</option>')
             stash.append('</select>')
             stash.append('</td>')
             stash.append('<td>')
             stash.append('<select name="Regroupement" title="Regroupement" id="sum_'
-                         + generator.get_graph_name()+'">')
+                + generator.get_graph_name()+'">')
             for unit in self.__get_sum():
                 stash.append('<option value="' + unit + '">' + unit + '</option>')
             stash.append('</select>')
             stash.append('</td>')
             stash.append('<td>')
             stash.append('<select name="Unité" title="Unité" id="out_unit_'
-                         + generator.get_graph_name() + '">')
+                + generator.get_graph_name() + '">')
             for unit in self.__get_outputs_units():
                 stash.append('<option value="' + unit + '">' + unit + '</option>')
             stash.append('</select>')
             stash.append('</td>')
             stash.append('<td>')
             stash.append('<button class="w3-button w3-dark-grey" type="button" onclick=addcoutputs("'
-                         + generator.get_graph_name() 
-                         + '")>Enregistrer la sortie <j class="fa fa-plus-circle"></j></button>')
+                + generator.get_graph_name() 
+                + '")>Enregistrer la sortie <j class="fa fa-plus-circle"></j></button>')
             stash.append('</td>')
             stash.append('</tr>')
             stash.append('</table>')
@@ -275,14 +275,14 @@ class Reporting(Component):
         for output in self._get_reporting_files():
             jsonname = pathlib.Path(output).stem
             htmltarget = self._get_url_for("/json_provider/<filename>",
-                                           filename= jsonname + '.json')
+                filename=jsonname + '.json')
             stash.append('<button class="w3-button w3-dark-grey" id='
-                         + htmltarget
-                         +'  type="button" onclick=fillcoutputs("'
-                         + htmltarget
-                         + '")> Ajouter '
-                         + jsonname
-                         +' <i class="fa fa-arrow-right"></i></button>')
+                + htmltarget
+                +'  type="button" onclick=fillcoutputs("'
+                + htmltarget
+                + '")> Ajouter '
+                + jsonname
+                +' <i class="fa fa-arrow-right"></i></button>')
         return stash
     
     def __build_cinputs_biomass_buttons(self) -> list[str]:
@@ -291,14 +291,14 @@ class Reporting(Component):
         for input in self._get_inputs_files():
             jsonname = pathlib.Path(input).stem
             htmltarget = self._get_url_for("/json_provider/<filename>", 
-                                           filename=jsonname + '.json')
+                filename=jsonname + '.json')
             stash.append('<button class="w3-button w3-dark-grey" id='
-                         + htmltarget 
-                         + '  type="button" onclick=fillcinputs("'
-                         + htmltarget
-                         + '")> Ajouter '
-                         + jsonname
-                         + ' <i class="fa fa-arrow-right"></i></button>')
+                + htmltarget 
+                + '  type="button" onclick=fillcinputs("'
+                + htmltarget
+                + '")> Ajouter '
+                + jsonname
+                + ' <i class="fa fa-arrow-right"></i></button>')
         return stash
     
     def __build_cdecay_button(self) -> list[str]:
@@ -307,14 +307,14 @@ class Reporting(Component):
         for input in self._get_inputs_files():
             jsonname = pathlib.Path(input).stem
             htmltarget = self._get_url_for("/json_provider/<filename>", 
-                                           filename=jsonname + '.json')
+                filename=jsonname + '.json')
             stash.append('<button class="w3-button w3-dark-grey" id='
-                         + htmltarget + '_decay' 
-                         + '  type="button" onclick=fillcdecay("'
-                         + htmltarget
-                         + '")> Ajouter '
-                         + jsonname
-                         + ' <i class="fa fa-arrow-right"></i></button>')
+                + htmltarget + '_decay' 
+                + '  type="button" onclick=fillcdecay("'
+                + htmltarget
+                + '")> Ajouter '
+                + jsonname
+                + ' <i class="fa fa-arrow-right"></i></button>')
         return stash
     
     def __get_decay_types(self) -> list[str]:
@@ -508,14 +508,14 @@ class Reporting(Component):
             fid = 0 
             for name in reader.fieldnames[1:-1]:
                 all_data.append({'x':[],'y':[],"name":name,
-                                 'marker' : {'color':'rgb('
-                                             + str(pallet[fid][0])
-                                             + ','
-                                             + str(pallet[fid][1]) 
-                                             + ','
-                                             + str(pallet[fid][2])
-                                             + ')'},
-                                 'type':'bar'})
+                    'marker' : {'color':'rgb('
+                    + str(pallet[fid][0])
+                    + ','
+                    + str(pallet[fid][1]) 
+                    + ','
+                    + str(pallet[fid][2])
+                    + ')'},
+                    'type':'bar'})
                 fid += 1
             for row in reader:
                 fid = 0
@@ -554,17 +554,17 @@ class Reporting(Component):
 
     def add_all_endpoints(self) -> None:
         self._add_endpoint(endpoint='/', 
-                           endpoint_name='/', 
-                           handler=self.__get_inputs, 
-                           methods=['GET', 'POST'])
+            endpoint_name='/', 
+            handler=self.__get_inputs, 
+            methods=['GET', 'POST'])
         self._add_endpoint(endpoint='/report', 
-                           endpoint_name='/report', 
-                           handler=self.__report,
-                           methods=['GET', 'POST'])
+            endpoint_name='/report', 
+            handler=self.__report,
+            methods=['GET', 'POST'])
         self._add_endpoint(endpoint='/json_provider/<filename>', 
-                           endpoint_name='/json_provider/<filename>',
-                           handler=self.__json_provider, 
-                           methods=['GET', 'POST'])
+            endpoint_name='/json_provider/<filename>',
+            handler=self.__json_provider, 
+            methods=['GET', 'POST'])
     
     def get_description(self) -> str:
         return "Calculer les émissions générées"

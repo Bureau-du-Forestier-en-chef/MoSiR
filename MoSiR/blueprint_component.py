@@ -31,24 +31,26 @@ class Main_renderer:
     def render(self, description: bool = False, allvariables: list[str] = []) -> str:
         if not description:
             return render_template("main.html",
-                    variables=allvariables, entries=self.__entries)
+                variables=allvariables, entries=self.__entries)
         else:
             return render_template("main.html",
-                    descriptions=self.__descriptions,
-                    variables=allvariables, entries=self.__entries)
+                descriptions=self.__descriptions,
+                variables=allvariables, 
+                entries=self.__entries)
     
 class Component(ABC, Blueprint):
     main_renderer = Main_renderer()
 
     def __init__(self, name: str, import_name: str):
          Blueprint.__init__(self, name.lower(), import_name, 
-            url_prefix = "/" + name.lower(), template_folder = "templates",
+            url_prefix = "/" + name.lower(), 
+            template_folder = "templates",
             static_folder ='static')
          self._entries = []
          self._descriptions = ""
 
     def _add_endpoint(self, endpoint = None, endpoint_name = None, 
-                      handler = None, methods = ['GET']):
+            handler = None, methods = ['GET']):
         self.add_url_rule(endpoint, endpoint_name, Endpointaction(handler), methods=methods)
 
     def _get_json(self, response: Response) -> dict:
@@ -95,9 +97,10 @@ class Component(ABC, Blueprint):
                 graphnames = list(json_file.keys())
                 graphfile = False
                 for graph_name in graphnames:
-                    if isinstance(json_file[graph_name], dict) and "Nodes" in json_file[graph_name] and "Edges" in json_file[graph_name]:
-                        graphfile  = True
-                        break
+                    if isinstance(json_file[graph_name], dict) and "Nodes" in json_file[graph_name] \
+                        and "Edges" in json_file[graph_name]:
+                            graphfile  = True
+                            break
                 if graphfile:
                     locations.append(os.path.join(graphs_folder, element))
         return locations
@@ -147,8 +150,8 @@ class Component(ABC, Blueprint):
             graphnames = list(json_file.keys())
             graphnames.sort()
             for graph_name in graphnames:
-                all_graphs.append(Dictgenerator(graph_name,json_file[graph_name]["Nodes"],
-                                                json_file[graph_name]["Edges"]))
+                all_graphs.append(Dictgenerator(graph_name, json_file[graph_name]["Nodes"],
+                    json_file[graph_name]["Edges"]))
         return all_graphs
     
     def get_entry_extension(self) -> str:

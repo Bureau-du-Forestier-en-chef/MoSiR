@@ -13,16 +13,16 @@ class Visualization(Component):
     def __init__(self):
         Component.__init__(self, __class__.__name__, __name__)
         Component.clear_users_data(
-            os.path.join(os.path.dirname(os.path.abspath(__file__)),"templates"))
+            os.path.join(os.path.dirname(os.path.abspath(__file__)), "templates"))
     
     def __generate_graphshtml(self) -> list[str]:
         HTMLsandnames = []
         for Generator in self.read_graphs_json():
             NEWHTML = Htmlanimation(Generator.to_dict(),
-                                    "Temp_" + Generator.get_graph_name())
+                "Temp_" + Generator.get_graph_name())
             target_html = NEWHTML.GetNetWork(0, str(self.get_user_ip()))
             htmltarget = self._get_url_for("/graphrendering/<graphname>", 
-                                           graphname = Generator.get_graph_name())
+                graphname = Generator.get_graph_name())
             HTMLsandnames.append(("Visualiser "+ Generator.get_graph_name(), htmltarget))
         return HTMLsandnames
     
@@ -41,14 +41,14 @@ class Visualization(Component):
         return render_template(TARGET)
     
     def add_all_endpoints(self):
-        self._add_endpoint(endpoint = '/', 
-                           endpoint_name = '/',
-                           handler = self.__graphs_selection,
-                           methods = ['GET'])
-        self._add_endpoint(endpoint = '/graphrendering/<graphname>',
-                           endpoint_name = '/graphrendering/<graphname>',
-                           handler = self.__graphrendering,
-                           methods = ['GET'])
+        self._add_endpoint(endpoint='/', 
+            endpoint_name='/',
+            handler=self.__graphs_selection,
+            methods=['GET'])
+        self._add_endpoint(endpoint='/graphrendering/<graphname>',
+            endpoint_name='/graphrendering/<graphname>',
+            handler=self.__graphrendering,
+            methods=['GET'])
         
     def get_description(self):
         return "Visualiser les graphes existant"
