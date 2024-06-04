@@ -116,7 +116,7 @@ Une version de MoSiR, sous format d'application portable, est disponible dans l'
    ![miro_creation_1](https://github.com/Landry-G/MoSiR_images/blob/main/miro_creation_1.gif)  
 
 4. Naviguer vers "URL de l'application" et entrer http://localhost:3000
-5. Dans la section, "Rediriger l'URI pour OAuth2.0, entrer ces trois adresses:
+5. Dans la section, "Rediriger l'URI pour OAuth2.0", entrer ces trois adresses:
    <pre>
    http://localhost:3000/redirect
    https://miro.com/app-install-completed
