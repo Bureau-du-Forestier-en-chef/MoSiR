@@ -119,7 +119,7 @@ Une version de MoSiR, sous format d'application portable, est disponible dans l'
 5. Dans la section, "Rediriger l'URI pour OAuth2.0, entrer ces trois adresses:
    <pre>http://localhost:3000/redirect<br>
    https://miro.com/app-install-completed<br>
-   http://localhost:3000/mirowrapper/redirect </pre>
+   http://localhost:3000/mirowrapper/redirect</pre>
    Pour la dernière adresse, sélectionner comme option `Utiliser cet URI pour l'autorisation SDK`
 6. Cocher l'option `boards:read` dans les Autorisations
 7. Finalement, cliquer sur `Installer l'application et obtenir le jeton OAuth`. L'installation est nécessaire, mais le jeton ne sera pas utilisé ultérieurement.
