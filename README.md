@@ -427,7 +427,7 @@ MoSiR a besoin d'informations requises et demandées à l'utilisateur pour fonct
 	
 # Signaler une erreur
 
-Si vous rencontrez une erreur, la manière à privilégier est par l'entremise des [Issues] sur GitHub. Sur la page des `Issues` de MoSiR, cliquer sur `New issue`. Il est nécessaire de donner le plus d'informations possible pour reproduire l'erreur que vous rencontrez. Pour faire des suggestions d'amélioration, se référer à la section <a href="#Développements futurs">Développements futurs</a>.
+Si vous rencontrez une erreur, la manière à privilégier est par l'entremise des [Issues] sur GitHub. Sur la page des `Issues` de MoSiR, cliquer sur `New issue`. Il est nécessaire de donner le plus d'informations possible pour reproduire l'erreur que vous rencontrez. Pour faire des suggestions d'amélioration, se référer à la section <a href="#développements-futurs">Développements futurs</a>.
 
 [Issues]: https://github.com/Bureau-du-Forestier-en-chef/MoSiR/issues
 
