@@ -59,7 +59,7 @@ class Upload(Component):
                                 style='color: red;'></i> It is not possible to import more \
                                 than one graph at once in this MoSiR version</h4><br><h5> \
                                 <span style='color: red;'></span></h5>"
-                        graph = gg.GraphFactory(Dict= content_dict)
+                        graph = gg.GraphFactory(Dict=content_dict)
                         gv.main(graph)
                     except Exception as e:
                         message = f"<h4><i class='fa fa-exclamation-triangle' \

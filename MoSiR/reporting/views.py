@@ -403,11 +403,12 @@ class Reporting(Component):
                 if graph_name not in data["Output"]:
                     data["Output"][graph_name] = {}
                 if output_name not in data["Output"][graph_name]:
-                    data["Output"][graph_name][output_name] = {"Nodes_name": None,
-                                                               "Type": None,
-                                                               "Cumulative": None, 
-                                                               "Summarize": None, 
-                                                               "Unit": None}
+                    data["Output"][graph_name][output_name] = {
+                        "Nodes_name": None,
+                        "Type": None,
+                        "Cumulative": None, 
+                        "Summarize": None, 
+                        "Unit": None}
                 elif(target_key == 'Nodes_name'):
                     data["Output"][graph_name][output_name]["Nodes_name"] = value.split(",")
                 elif(target_key == 'Type'):

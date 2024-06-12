@@ -481,8 +481,7 @@ class PoolNode(ProportionNode):
             dans une noeud (self) à un temps donnée (time)
         '''
         try:
-            warnings.warn('Le résultat est le même que le cumulatif des flux in', stacklevel = 2)
-            return self.get_flux_in(graph, time, cumulative= True)
+            return self.get_flux_in(graph, time, cumulative=True)
         except RecursionError:
             raise me.RecursionNode("Un maximum de demande a été effectué. \
                                  Une boucle entre des ProportionNode est présente")    

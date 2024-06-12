@@ -194,7 +194,7 @@ def debugg_graph_06(graph: gg.GraphFactory):
     for name in graph.get_graph_name:
         if name in graph_name:
             raise me.GraphError(' '.join((f"Le graphe {name} est présent plus \
-                                d'une fois dans le fichier JSON").split()))
+                d'une fois dans le fichier JSON").split()))
         else:
             graph_name.append(name)
 
@@ -212,7 +212,7 @@ def debugg_graph_07(graph: gg.GraphFactory):
                     no_edges.append(node.NAME)
         if len(no_edges) > 0:
             warnings.warn(f'Le ou les noeuds suivants ont aucun edge: {no_edges}',
-                          stacklevel=2)
+                stacklevel=2)
 
 # Vérifier si des PoolNode ont aucun edges entrant
 def debugg_graph_08(graph: gg.GraphFactory):
@@ -228,7 +228,7 @@ def debugg_graph_08(graph: gg.GraphFactory):
                     no_edges.append(node.NAME)
         if len(no_edges) > 0:
             warnings.warn(f'Le ou les noeuds suivants ont aucun edge: {no_edges}',
-                          stacklevel=2)
+                stacklevel=2)
 
 """# Vérifier que les graphes contiennent au moins une node
 def debugg_graph_09(graph: gg.GraphFactory):
