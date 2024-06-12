@@ -93,7 +93,7 @@ Une version de MoSiR, sous format d'application portable, est disponible dans l'
 
 1. Naviguer vers [Releases](https://github.com/Bureau-du-Forestier-en-chef/MoSiR/releases)
 2. Sélectionner la dernière version à jour de MoSiR
-3. Télécharger le fichier `MoSiR.dist.7z` et le décompresser à l'endroit souhaité.
+3. Télécharger le fichier `MoSiR.dist.zip` et le décompresser à l'endroit souhaité.
 4. Dans le dossier `MoSiR.dist`, ouvrir le fichier `MoSiR.exe`.
 5. MoSiR devrait s'ouvrir dans votre navigateur web par défaut dans les instants suivants.
 
