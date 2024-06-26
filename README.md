@@ -31,7 +31,7 @@
 </p>
 
 <p align="justify"> 
-MoSiR est également un calculateur sous forme de package python, dédié au suivi du devenir du carbone dans l'architecture du réseau précédemment chargée. MoSiR permet de simuler et de prédire le devenir du carbone dans le réseau, offrant ainsi une perspective claire sur les flux et les stocks de carbone dans le système étudié. Le calculateur MoSiR est également capable d'évaluer l'effet radiatif des émissions de carbone dans l'atmosphère et, si l'utilisateur le souhaite, il peut fournir l'effet radiatif complet des émissions provenant des produits du bois.
+MoSiR est également un calculateur sous forme de package Python, dédié au suivi du devenir du carbone dans l'architecture du réseau précédemment chargée. MoSiR permet de simuler et de prédire le devenir du carbone dans le réseau, offrant ainsi une perspective claire sur les flux et les stocks de carbone dans le système étudié. Le calculateur MoSiR est également capable d'évaluer l'effet radiatif des émissions de carbone dans l'atmosphère et, si l'utilisateur le souhaite, il peut fournir l'effet radiatif complet des émissions provenant des produits du bois.
 </p>
 
 <p align="justify"> 
@@ -58,7 +58,7 @@ MoSiR est hautement adaptable et permet ainsi de réaliser des analyses, quelle 
 
 <details><summary><b>En bref, comment ça fonctionne? :mag:</b></summary> <br>
 <p align = "justify">
-MoSiR comporte deux volets: un calculateur et une interface web. MoSiR est à la base un calculateur sous forme de package python. Une application utilisant une interface web a été effectuée pour faciliter son utilisation sans devoir passer par python. L'interface MoSiR utilise de même la plateforme Miro pour faciliter la création de réseau de produit du bois. Miro est une application en ligne qui permet à l'utilisateur de travailler sur des tableaux blancs facilitant notamment la mise en place de processus collaboratifs, tels que la gestion et la cartographie de projet. MoSiR a la capacité de venir lire un tableau de Miro pour en extraire les informations nécessaires pour bâtir un graphe (un réseau de nœud attaché par des liens).  
+MoSiR comporte deux volets: un calculateur et une interface web. MoSiR est à la base un calculateur sous forme de package Python. Une application utilisant une interface web a été effectuée pour faciliter son utilisation sans devoir passer par Python. L'interface MoSiR utilise de même la plateforme Miro pour faciliter la création de réseau de produit du bois. Miro est une application en ligne qui permet à l'utilisateur de travailler sur des tableaux blancs facilitant notamment la mise en place de processus collaboratifs, tels que la gestion et la cartographie de projet. MoSiR a la capacité de venir lire un tableau de Miro pour en extraire les informations nécessaires pour bâtir un graphe (un réseau de nœud attaché par des liens).  
 </p>
 <p align = "justify">
 L'utilisateur a la possibilité de bâtir dans Miro un graphe pouvant contenir autant de nœud que souhaité, dont certains peuvent gérer du recyclage ou de la dégradation selon une loi exponentielle, gamma ou chi-square. Dans cette application, l'utilisateur peut importer depuis Miro ou depuis son ordinateur le graphe souhaité et lancer une commande au calculateur de MoSiR. Celui-ci peut calculer 3 informations: le flux de matière qui entre dans un noeud, qui sort d'un noeud et la matière qui reste dans celui-ci (stock).  Il est possible d'y inscrire les intrants pour les noeuds de départ, les temps de demi-vie pour les noeuds de dégradation et l'information que vous souhaitez extraire. Essentiellement, il s'agit de questionner les noeuds qui vous intéresse, choisir si vous voulez les flux entrants, sortants ou les stocks, le cumulatif sur la période demandée et la sommation des résultats si plusieurs noeuds ont été sélectionnés. Finalement, vous pouvez choisir l'unité des extrants. MoSiR vous demande d'abord les unités de vos intrants, pour que celui-ci soit capable de faire la transformation nécessaire. Si le nom de vos noeuds contiennent le nom d'un gaz comme CO2, CO, CH4 ou N2O, MoSiR peut également faire la transformation de ces quantités de carbone en tonne équivalente de CO2 ou même en forçage radiatif. De plus amples détails sont disponibles dans la section <a href="#Directives">Directives</a>.
@@ -70,13 +70,13 @@ L'utilisateur a la possibilité de bâtir dans Miro un graphe pouvant contenir a
 
 # Installation
 <p align="justify"> 
-  L'installation peut se faire sous deux formats: en tant que package python ou comme une application indépendante. Dans les deux cas, si l'utilisateur souhaite passer par Miro pour transformer ses graphes en fichier JSON, il est nécessaire de se créer un compte Miro et de générer une clé d'application.
+  L'installation peut se faire sous deux formats: en tant que package Python ou comme une application indépendante. Dans les deux cas, si l'utilisateur souhaite passer par Miro pour transformer ses graphes en fichier JSON, il est nécessaire de se créer un compte Miro et de générer une clé d'application.
 </p>
 
 ### <b>Étape 1</b>: Installer MoSiR
-<details><summary><b>En tant que package python</b></summary> <br>
+<details><summary><b>En tant que package Python</b></summary> <br>
 
-MoSiR peut être installé sous forme de package python, à l'intérieur d'un environnement python 3. Pour ce faire, [pip] et [git] sont nécessaire avant de procéder à l'installation. 
+MoSiR peut être installé sous forme de package Python, à l'intérieur d'un environnement Python 3. Pour ce faire, [pip] et [git] sont nécessaire avant de procéder à l'installation. 
 
 1. Dans un terminal, activer l'environnement désiré, puis entrer cette ligne de commande:
    ```python
@@ -146,7 +146,7 @@ Si votre installation est en version standalone, les clés d'identification se r
    ```
   `MoSiR.dist` est le dossier que vous avez téléchargé depuis GitHub. Le fichier `.env` peut être ouvert avec un logiciel de traitement de fichier texte comme Bloc-notes.
 <p align="justify"> 
-  Si votre installation est un package python, la clé se retrouve ici dans votre environnement conda. Par exemple, dans mon environnement nommé `MoSiR`, mes clés d'environnements se retrouvent ici:
+  Si votre installation est un package Python, la clé se retrouve ici dans votre environnement conda. Par exemple, dans mon environnement nommé `MoSiR`, mes clés d'environnements se retrouvent ici:
 </p>
 
    ```python
@@ -178,8 +178,8 @@ L'installation est complétée, vous pouvez désormais utiliser MoSiR! :tada:
 > [!TIP] 
 > Pour apprendre facilement MoSiR, il est recommandé de passer par l'interface web.
 
-<details><summary><b>Comment l'utiliser en package python</b></summary><br>
-Le calculateur de MoSiR peut être directement appelé depuis un script python sans passer par l'interface web. Par exemple:
+<details><summary><b>Comment l'utiliser en package Python</b></summary><br>
+Le calculateur de MoSiR peut être directement appelé depuis un script Python sans passer par l'interface web. Par exemple:
   
 ```python
   from MoSiR import mosir_calculator
@@ -385,7 +385,7 @@ Il y a donc dans MoSiR l'option de choisir son équation de dégradation (expone
 
 Un fichier Excel pour déterminer manuellement l'alpha et le bêta est disponible sous `MoSiR\gamma_distribution\gamma_decay.xlsx` autant dans le GitHub que dans l'application portable. 
 
-Le calcul de dégradation dans python s'effectue avec le package `Scipy` dans le module `stats` et la fonction `gamma.cdf`. Voir la [documentation](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.gamma.html) pour plus de détails.
+Le calcul de dégradation dans Python s'effectue avec le package `Scipy` dans le module `stats` et la fonction `gamma.cdf`. Voir la [documentation](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.gamma.html) pour plus de détails.
 
 </details> 
 
