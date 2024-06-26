@@ -84,7 +84,7 @@ MoSiR peut être installé sous forme de package Python, à l'intérieur d'un en
    ```
    Pour installer une version spécifique de MoSiR, listé sous les différents [tag], simplement ajouter à fin @tag. Par exemple :
    ```python
-   pip install git+https://github.com/Bureau-du-Forestier-en-chef/MoSiR@v1.0.0-lightweight
+   pip install git+https://github.com/Bureau-du-Forestier-en-chef/MoSiR@v1.0.0
    ```
 Pour vérifier quelles versions sont disponibles, consultez la page [Releases](https://github.com/Bureau-du-Forestier-en-chef/MoSiR/releases). Il est préférable d'utiliser la dernière version à jour.
 </details>
@@ -104,7 +104,7 @@ Une version de MoSiR, sous format d'application portable, est disponible dans l'
 </details>
 
 > [!NOTE]
-> Les étapes subséquentes sont nécessaires pour importer des graphiques depuis Miro. Si votre installation est une version "lightweight" ou si vous souhaitez importer vos graphiques directement à partir d'un fichier JSON, les étapes suivantes d'installation ne sont pas obligatoires pour faire fonctionner le reste du package ou de l'application MoSiR. 
+> Les étapes subséquentes sont nécessaires pour importer des graphiques depuis Miro. Si vous souhaitez seulement importer vos graphiques directement à partir d'un fichier JSON, les étapes suivantes d'installation ne sont pas obligatoires pour faire fonctionner le reste du package ou de l'application MoSiR. 
 
 ### <b>Étape 2</b>: Création d'un compte Miro et d'une clé d'application
 <details><summary><b>Procédure sur Miro</b></summary>
