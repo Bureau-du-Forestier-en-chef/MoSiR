@@ -5,7 +5,6 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 """
 import json
-import warnings
 from scipy.stats import gamma
 from MoSiR import networkx_graph as wp
 from MoSiR import mosir_exceptions as me
@@ -244,38 +243,45 @@ class ProportionNode(IndustrialNode):
     """
     def __init__(self, NAME: str):
         super().__init__(NAME)
-        self.__pn_cache = Caching()
+        self.__pn_cache_out = Caching()
+        self.__pn_cache_in = Caching()
     
-    def past_carbon(self):
-        return self.__pn_cache
+    def past_out_carbon(self):
+        return self.__pn_cache_out
+    
+    def past_in_carbon(self):
+        return self.__pn_cache_in
     
     def get_flux_out(self, graph: WPGraph, time: int, cumulative: bool = False) -> float:
         if cumulative == False:
-            if time in self.past_carbon().flux_cache:
-                return self.past_carbon().get_flux_cache(time)
+            if time in self.past_out_carbon().flux_cache:
+                return self.past_out_carbon().get_flux_cache(time)
             flux_out = self.get_flux_in(graph, time, cumulative)
-            self.past_carbon().set_flux_cache(time, flux_out)
+            self.past_out_carbon().set_flux_cache(time, flux_out)
             return flux_out
         if cumulative == True:
             total = 0
             for timestep in range(time + 1):
-                if timestep in self.past_carbon().flux_cache:
-                    total += self.past_carbon().get_flux_cache(timestep)
+                if timestep in self.past_out_carbon().flux_cache:
+                    total += self.past_out_carbon().get_flux_cache(timestep)
                     continue
                 flux_out = self.get_flux_in(graph, timestep, cumulative)
-                self.past_carbon().set_flux_cache(timestep, flux_out)
+                self.past_out_carbon().set_flux_cache(timestep, flux_out)
                 total += flux_out
             return total
         
     def get_flux_in(self, graph: WPGraph, time: int, cumulative: bool = False) -> float:
         total = 0
         if cumulative == False:
+            if time in self.past_in_carbon().flux_cache:
+                return self.past_in_carbon().get_flux_cache(time)
             for parent in graph.get_predecessors(self):
                 proportion_parent = self._get_value_time(graph.get_edge_proportions(parent, self), time)
                 if proportion_parent == 0:
                     continue
                 parent_carbon = parent.get_flux_out(graph, time, cumulative)
                 total += proportion_parent * parent_carbon
+            self.past_in_carbon().set_flux_cache(time, total)
             return total
         else:
             for timestep in range(time + 1):
@@ -317,10 +323,18 @@ class DecayNode(ProportionNode):
         self._decay = decay
         self._alpha_value = None
         self._beta_value = None
-        self.__dn_cache = Caching()
+        self.__dn_cache_out = Caching()
+        self.__dn_cache_in = Caching()
+        self.__dn_cache_gamma = Caching()
     
-    def past_carbon(self):
-        return self.__dn_cache
+    def past_out_carbon(self):
+        return self.__dn_cache_out
+    
+    def past_in_carbon(self):
+        return self.__dn_cache_in
+    
+    def past_gamma_proportion(self):
+        return self.__dn_cache_gamma
         
     @property
     def alpha(self):
@@ -338,27 +352,68 @@ class DecayNode(ProportionNode):
     def beta(self, beta):
        self._beta_value = beta
     
+    def get_decay_proportion(self, time, alpha, beta):
+        """Donne la dégradation cumulative à un timestep
+
+        Donne le pourcentage de dégradation à un temps, un alpha et
+        un beta donné. Représente le pourcentage de la dégradation cumulative
+        entre le temps 0 et le temps X demandé.
+
+        Args:
+            time (_type_): _description_
+            alpha (_type_): _description_
+            beta (_type_): _description_
+        """
+        if time in self.past_gamma_proportion().flux_cache:
+            decay_proportion = self.past_gamma_proportion().get_flux_cache(time)
+        else:
+            decay_proportion = gamma.cdf(time, alpha, scale=beta)
+            self.past_gamma_proportion().set_flux_cache(time, decay_proportion)
+
+        return decay_proportion
+
+    def get_annual_decay_proportion(self, time, alpha, beta):
+        """Donne la dégradation entre deux timesteps
+
+        Donne le pourcentage de dégradation entre deux temps.
+        Par exemple, le pourcentage de dégradation qui occure entre le temps
+        8 et 9 d'un noeud de dégradation à un alpha et beta donnés.
+
+        Args:
+            time (_type_): _description_
+            alpha (_type_): _description_
+            beta (_type_): _description_
+        """
+        decay_proportion_now = self.get_decay_proportion(time, alpha, beta)
+        decay_proportion_before = self.get_decay_proportion(time - 1, alpha, beta)
+        decay_proportion = decay_proportion_now - decay_proportion_before
+
+        return decay_proportion
+    
     def get_flux_out(self, graph: WPGraph, time: int, cumulative: bool = False) -> float:
         total = 0
         if cumulative == False:
-            if time in self.past_carbon().flux_cache:
-                return self.past_carbon().get_flux_cache(time)
+            # Cache of flux
+            if time in self.past_out_carbon().flux_cache:
+                return self.past_out_carbon().get_flux_cache(time)
             for timestep in range(time):   
                 flux_in = self.get_flux_in(graph, timestep, cumulative)
+                time_between = time - timestep
                 if flux_in == 0: 
                     continue
-                decay_proportion = gamma.cdf(time - timestep, self.alpha, scale=self.beta) \
-                    - gamma.cdf(time - timestep - 1, self.alpha, scale=self.beta)
+                decay_proportion = self.get_annual_decay_proportion(
+                    time_between, self.alpha, self.beta)
                 total += flux_in * decay_proportion
-            self.past_carbon().set_flux_cache(time, total)
+            self.past_out_carbon().set_flux_cache(time, total)
             return total
         else:
             for timestep in range(time):  
-                flux_in = self.get_flux_in(graph, timestep, cumulative= False)
+                flux_in = self.get_flux_in(graph, timestep, cumulative=False)
+                time_between = time - timestep
                 if flux_in == 0:
                     continue
-                decay_proportion = gamma.cdf(
-                    time - timestep, self.alpha, scale=self.beta)
+                decay_proportion = self.get_decay_proportion(
+                    time_between, self.alpha, self.beta)
                 total += flux_in * decay_proportion
             return total
         
@@ -369,7 +424,7 @@ class DecayNode(ProportionNode):
             return Annual
         else: 
             for Year in range(time + 1): 
-                Annual = super().get_flux_in(graph, Year, cumulative= False)
+                Annual = super().get_flux_in(graph, Year, cumulative=False)
                 total += Annual
             return total 
     
@@ -396,10 +451,11 @@ class DecayNode(ProportionNode):
             total = 0
             for timestep in range(time + 1): 
                 annual = self.get_flux_in(graph, timestep, cumulative= False)
+                time_between = time - timestep
                 if annual == 0:
                     continue
-                decay_proportion = 1 - gamma.cdf(
-                    time - timestep, self.alpha, scale=self.beta)
+                decay_proportion = 1 - self.get_decay_proportion(
+                    time_between, self.alpha, self.beta)
                 total += annual * decay_proportion
             return total
         except RecursionError:

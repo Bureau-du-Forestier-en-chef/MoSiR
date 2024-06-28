@@ -133,9 +133,17 @@ def output_creation(graph: gg.GraphFactory, import_data: ip.ImportData,
                             Options valides: CO2, CO, N2O, CH4. Exemple '{col} CH4'")
             elif report_unit == 'w/m2':
                 C = data['Cumulative']
-                RF = pd.read_excel(os.path.join(os.path.dirname(os.path.abspath(__file__)), \
-                                                "radiative_forcing", "Dynco2_Base.xlsx")).\
-                    sort_values(by = 'Year').to_dict(orient = 'list')
+                file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 
+                    "radiative_forcing", "Dynco2_Base.csv")
+                try:
+                    # If file is save from EN excel
+                    RF = pd.read_csv(file_path, sep=',').sort_values(by='Year').to_dict(orient='list')
+                except pd.errors.ParserError:
+                    try:
+                        # If file is save from a FR excel
+                        RF = pd.read_csv(file_path, sep=';').sort_values(by='Year').to_dict(orient='list')
+                    except Exception as e:
+                        print("Erreur lors de la lecture du fichier DynCO:", e)
 
                 # On formate les outputs en radiatif
                 cr.rad_formatting(dt, RF, cumulative = C)

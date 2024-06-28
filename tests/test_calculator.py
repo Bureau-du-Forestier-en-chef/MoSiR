@@ -8,11 +8,12 @@ import os
 import pytest
 import warnings
 import pandas as pd
-from MoSiR import networkx_graph as wp
-from MoSiR import gamma_function as gf
-from MoSiR import graph_generator as gg
-from MoSiR import mosir_exceptions as me
-from MoSiR import carbon_to_radiatif as cr
+from MoSiR import (
+    networkx_graph as wp,
+    gamma_function as gf,
+    graph_generator as gg,
+    mosir_exceptions as me,
+    carbon_to_radiatif as cr)
 
 MOSIR_TOLERENCE = 0.0001
 
@@ -172,9 +173,20 @@ def test_04_radiatif():
         'CO': CO
     }
 
-    RF = pd.read_excel(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", 
-                                    "MoSiR", "radiative_forcing", "Dynco2_Base.xlsx")).\
-        sort_values(by='Year').drop('Unit', axis=1).to_dict(orient='list')
+    file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 
+        "..", "MoSiR", "radiative_forcing", "Dynco2_Base.csv")
+    try:
+        # If file is save from EN excel
+        RF = pd.read_csv(file_path, sep=',').sort_values(by='Year').\
+            drop('Unit', axis=1).to_dict(orient='list')
+    except pd.errors.ParserError:
+        try:
+            # If file is save from a FR excel
+            RF = pd.read_csv(file_path, sep=';').sort_values(by='Year').\
+                drop('Unit', axis=1).to_dict(orient='list')
+        except Exception as e:
+            print("Erreur lors de la lecture du fichier DynCO:", e)
+    
     cr.rad_formatting(test_03, RF, cumulative = False)
     assert test_03 == RF, "Not the same RF as DynCo"
 
