@@ -24,4 +24,5 @@ MoSiR/BFECGCBM
 htmlcov/
 .coverage
 README_package.md
+tests/profiler
 # MoSiR/mirowrapper/mirowrapper.env
