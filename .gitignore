@@ -8,6 +8,7 @@ MoSiR/uploads/*
 !MoSiR/uploads/keepme.txt
 MoSiR/__pycache__/
 tests/__pycache__/
+tests/profiler
 build/
 MoSiR.egg-info/
 __pycache__/
