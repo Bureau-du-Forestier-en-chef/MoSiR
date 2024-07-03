@@ -12,7 +12,7 @@ class Jsonparser:
     @staticmethod
     def write(JsonLocation: str, Values: dict) -> None:
          with open(JsonLocation, 'w') as JsonFile:
-            json.dump(Values, JsonFile)
+            json.dump(Values, JsonFile, indent=4)
 
 class Htmlparser:
     @staticmethod

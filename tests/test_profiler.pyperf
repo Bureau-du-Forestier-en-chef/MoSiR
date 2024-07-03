@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<ProfilingTarget xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <StandaloneTarget>
+    <PythonInterpreter>
+      <Id>CondaEnv|CondaEnv|py39</Id>
+    </PythonInterpreter>
+    <WorkingDirectory>C:\Users\Admlocal\Documents\MoSiR\tests\profiler</WorkingDirectory>
+    <Script>C:\Users\Admlocal\Documents\MoSiR\tests\profiler\test_profiler.py</Script>
+    <Arguments />
+  </StandaloneTarget>
+  <UseVTune>false</UseVTune>
+</ProfilingTarget>

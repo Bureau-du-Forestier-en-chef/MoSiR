@@ -27,7 +27,9 @@ if %ErrorLevel% == 1 (
     --company-name="Bureau du Forestier en chef" ^
     --product-name=MoSiR ^
     --product-version=1.0.0 ^
-    --copyright="Gouvernement du Québec" ^
+    --file-version=1.0.0 ^
+    --file-description="Standalone application of MoSiR, a Python package for the carbon fate of wood products"
+    --copyright="LiLiQ-R-1.1" ^
     --output-dir=. ^
     ..\MoSiR.py
 

@@ -72,7 +72,7 @@ class Upload(Component):
                         return Component.main_renderer.render(False, stash)
             # Save json
             with open(os.path.join(self._get_uploads_folder(), content.filename), "w") as f:
-                json.dump(content_dict, f)
+                json.dump(content_dict, f, indent=4)
 
             return redirect(self.get_exit_html())
             #return self.__success_upload(content.filename)

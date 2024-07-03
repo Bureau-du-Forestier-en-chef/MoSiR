@@ -8,17 +8,20 @@ import os
 import requests
 import werkzeug
 import traceback
-from flask import request
-from flask import redirect
-from flask import send_file
-from flask import make_response
-from flask import render_template
+from flask import (
+    request,
+    redirect,
+    make_response,
+    render_template
+    )
 from datetime import datetime
 from datetime import timedelta
 from dotenv import load_dotenv
-from MoSiR import graph_generator as gg
-from MoSiR import mosir_exceptions as me
-from MoSiR import graph_verificator as gv
+from MoSiR import (
+    graph_generator as gg,
+    mosir_exceptions as me,
+    graph_verificator as gv
+    )
 from .miro_generator import Mirogenerator
 from ..blueprint_component import Component
 
