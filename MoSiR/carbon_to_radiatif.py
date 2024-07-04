@@ -16,7 +16,7 @@ def main(raw_args = None):
             radiative forcing')
     parser.add_argument('--Input', '-I',
         dest = 'I',
-        type = str,                
+        type = list[float],                
         required = True,
         help = "Liste d'émissions de carbone en kgC en ordre chronologique")
     parser.add_argument('--Gas', '-G',
@@ -33,11 +33,14 @@ def main(raw_args = None):
     args = parser.parse_args(raw_args)
 
     # Transformer un string en liste
+    """ TODO clean up ici
     if args.I[0] == '[' and args.I[-1] == ']':
         colonne = [float(i) for i in args.I[1:-1].split(',')]
     else:
         raise me.InvalidOption("L'option -I doit être le string d'une liste \
             (ex: '[1,2,3]')")
+    """
+    colonne = args.I
     gaz = args.G
 
     file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 
