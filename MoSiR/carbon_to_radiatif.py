@@ -33,11 +33,7 @@ def main(raw_args = None):
     args = parser.parse_args(raw_args)
 
     # Transformer un string en liste
-    if args.I[0] == '[' and args.I[-1] == ']':
-        colonne = [float(i) for i in args.I[1:-1].split(',')]
-    else:
-        raise me.InvalidOption("L'option -I doit être le string d'une liste \
-            (ex: '[1,2,3]')")
+    colonne = args.I
     gaz = args.G
 
     file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 
@@ -60,7 +56,7 @@ def main(raw_args = None):
         raise me.InvalidOption("L'option -C doit être True ou False")
 
     result = rad_convolve(colonne, gaz, RF, cumulative)
-    return print(result)
+    return result
 
 def rad_convolve(colonne: list[float], gaz: str, RF: dict, cumulative: bool = False) -> list[float]:
     """Fonction servant à transformer une liste d'émissions d'un gaz (en kgC)
