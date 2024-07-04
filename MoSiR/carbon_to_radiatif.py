@@ -16,7 +16,7 @@ def main(raw_args = None):
             radiative forcing')
     parser.add_argument('--Input', '-I',
         dest = 'I',
-        type = str,                
+        type = list[float],                
         required = True,
         help = "Liste d'émissions de carbone en kgC en ordre chronologique")
     parser.add_argument('--Gas', '-G',
@@ -32,7 +32,6 @@ def main(raw_args = None):
     
     args = parser.parse_args(raw_args)
 
-    # Transformer un string en liste
     colonne = args.I
     gaz = args.G
 
