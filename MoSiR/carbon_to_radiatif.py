@@ -63,7 +63,7 @@ def main(raw_args = None):
         raise me.InvalidOption("L'option -C doit être True ou False")
 
     result = rad_convolve(colonne, gaz, RF, cumulative)
-    return print(result)
+    return result
 
 def rad_convolve(colonne: list[float], gaz: str, RF: dict, cumulative: bool = False) -> list[float]:
     """Fonction servant à transformer une liste d'émissions d'un gaz (en kgC)
