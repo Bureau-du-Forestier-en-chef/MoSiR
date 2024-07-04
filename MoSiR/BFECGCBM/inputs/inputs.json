@@ -1,0 +1,16 @@
+{"Inputs": {
+    "Example": {
+        "Harvested Biomass": {
+            "1": 115.0, 
+            "2": 125.0, 
+            "3": 135.0}
+            }
+        }, 
+"Decay": {
+    "Example": {
+        "Sawnwood": {"Gamma": 33.5}, 
+        "Panels": {"Custom": {"alpha": 27.91, "beta": 1.0}}, 
+        "Cardboard": {"Exponential": 5.0}
+        }
+    }, 
+"Unit": "tC"}

@@ -431,6 +431,15 @@ def test_14_multiple_top():
             == E14.get_flux_in(test_14, timestep, cumulative=True), \
             'Sum cumulative flux out of C14 and D14 != Flux in of E14'
         
+<<<<<<< HEAD
+        assert C14.get_flux_in(test_14, timestep, cumulative= True) \
+            == C14.get_flux_out(test_14, timestep, cumulative= True), \
+            'C14 flux in != cumulative flux out'
+        
+        assert D14.get_flux_in(test_14, timestep, cumulative= True) \
+            == D14.get_flux_out(test_14, timestep, cumulative= True), \
+            'D14 flux in != cumulative cumulative flux out'
+=======
         assert A14._get_quantity_time(timestep) \
             == A14.get_flux_out(test_14, timestep, cumulative=False), \
             'A14 _get_quantity_time != flux out'
@@ -446,6 +455,7 @@ def test_14_multiple_top():
         assert D14.get_flux_in(test_14, timestep, cumulative=True) \
             == D14.get_flux_out(test_14, timestep, cumulative=True), \
             'D14 cumulative flux in != cumulative flux out'
+>>>>>>> version-1.0.0
         
         assert E14.get_stock(test_14, timestep) \
             == E14.get_flux_in(test_14, timestep, cumulative=True), \

@@ -1,10 +1,4 @@
-Flask
-flask-cors
-pyvis
-Requests
 networkx
-python_dotenv
-werkzeug
 pandas
 openpyxl
 seaborn
