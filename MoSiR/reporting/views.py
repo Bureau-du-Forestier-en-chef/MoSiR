@@ -12,7 +12,7 @@ from flask import jsonify
 from flask import request
 from flask import Response
 from .. import utilities
-from .. import mosir_calculator
+from .. import mosir_calculator as mc
 from ..blueprint_component import Component
 
 class Reporting(Component):
@@ -529,7 +529,8 @@ class Reporting(Component):
     
     def __run_mosir(self, graphsjson: str, inputsjson: str, reportjson: str):
         try:
-            mosir_calculator.main(['-G', graphsjson, '-D', inputsjson, '-R', reportjson, '-E', self._get_uploads_folder()])
+            mc.run_calculator(graphsjson, inputsjson, reportjson, self._get_uploads_folder())
+            #mc.main(['-G', graphsjson, '-D', inputsjson, '-R', reportjson, '-E', self._get_uploads_folder()])
         except Exception as e:
             return f"<h4><i class='fa fa-exclamation-triangle' \
                 style='color: red;'></i> Error in calculator:\

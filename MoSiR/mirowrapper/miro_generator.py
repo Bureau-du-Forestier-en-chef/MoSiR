@@ -15,17 +15,19 @@ class ItemBuilder:
 
     def __GetFromRegex(self, BaseName: str, Descriptor: str) -> re.Match:
         CompiledRegex = re.compile("(?:(.+)|)("
-                                   + Descriptor
-                                   + ")([\s\t]*)(\[)([\s\t]*)(\d+\.?\d*)([\s\t]*)(\])(?:(.+)|)")
+            + Descriptor
+            + ")([\s\t]*)(\[)([\s\t]*)(\d+\.?\d*)([\s\t]*)(\])(?:(.+)|)")
         return CompiledRegex.match(BaseName)
     
+    # TODO seems useless
     def __GetValue(self, BaseName: str, Descriptor: str) -> float:
         RESULT = self.__GetFromRegex(BaseName, Descriptor)
         if RESULT:
             return float(RESULT.group(6))
         else:
             return 1.0
-        
+    
+    # TODO seems useless
     def __GetName(self, BaseName: str, Descriptors: list) -> str:
         Name = copy.deepcopy(BaseName)
         for Descriptor in Descriptors:
@@ -98,9 +100,9 @@ class Mirogenerator(Generator):
         ToNodeId = int(Connector["endItem"]["id"])
         if FromNodeId == ToNodeId:
             raise(mosir_exceptions.Miroerror("Edge id "
-                                             + str(EdgeID)
-                                             +" has the same source and target node "
-                                             + str(FromNodeId), EdgeID))
+                + str(EdgeID)
+                +" has the same source and target node "
+                + str(FromNodeId), EdgeID))
         Holder = {"From": FromNodeId, "To": ToNodeId, "Values": [1.0]}
         OtherData = self.__EDGEBUILDER.GetDescription(Connector)
         Holder.update(OtherData)
@@ -153,12 +155,12 @@ class Mirogenerator(Generator):
         try:
             WorkableString = utilities.Htmlparser.get_string_from_html(
                 Item["data"]["content"].replace("%", ""))
-            Values = [float(value)/100 for value in WorkableString.split(",")]
+            Values = [round(float(value)/100, 9) for value in WorkableString.split(",")]
         except:
             MESSAGE = "Cannot get edge value for edge id " + Item["id"] + " on Item " + str(Item)
             raise(mosir_exceptions.Miroerror(MESSAGE, Item["id"]))
         return Values
-    
+
     def __GetEdgeValues(self) -> dict:
         TagLocation = {}
         for Item in self.__ItemsData:
@@ -283,7 +285,7 @@ class Mirogenerator(Generator):
         ENDMESSAGE = "After Edges fork simplification got " + str(len(self._edges)) + " Edges"
         self.__LogStatus(ENDMESSAGE)
 
-    def __ValidateEdge(self, EdgeId: int, EdgeItems: {}) -> None:
+    def __ValidateEdge(self, EdgeId: int, EdgeItems: dict) -> None:
         if EdgeItems["From"] not in self._nodes or EdgeItems["To"] not in self._nodes:
             TOID = EdgeItems["To"]
             FROMID = EdgeItems["From"]
