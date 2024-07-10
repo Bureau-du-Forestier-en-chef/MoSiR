@@ -87,7 +87,6 @@ def debugg_graph_01(graph: gg.GraphFactory):
 
 # On test si la somme des edges sortant de chaque node est égale à 100%
 def debugg_graph_02(graph: gg.GraphFactory, overflow: dict[str, list[str]]):
-    MOSIR_TOLERENCE = 0.0001
     # total des Edges 
     for graph_name in graph.get_graph_name:
         G2 = graph.get_graph(graph_name)
@@ -98,9 +97,10 @@ def debugg_graph_02(graph: gg.GraphFactory, overflow: dict[str, list[str]]):
                 if successors.NAME in overflow[graph_name]:
                     continue
                 total += node._get_value_time(G2.get_edge_proportions(node, successors), 0)
+            total = round(total, 10)
             if total == 0:
                 no_edges.append(node.NAME)
-            elif abs(total - 1) > MOSIR_TOLERENCE:
+            elif abs(total - 1) > 0:
                 raise me.EdgeError(' '.join((f"La somme des edges sortant de \
                     {node.NAME} n'est pas égale à 100% ({total * 100})").split())) 
         if len(no_edges) > 0:   
@@ -136,10 +136,10 @@ def debugg_graph_04(graph: gg.GraphFactory, overflow: list[str]):
         for node in G4.nodes():
             if type(node) == gg.TopNode:
                 node.time = list(range(time + 1))
-                node.quantities = [1] * (time + 1)
+                node.quantities = [100] * (time + 1)
             elif type(node) == gg.DecayNode:
                 node.alpha = 1
-                node.beta = 7.21347398
+                node.beta = 50
 
         carbon_input = 0
         for timestep in range(time + 1):
@@ -156,7 +156,7 @@ def debugg_graph_04(graph: gg.GraphFactory, overflow: list[str]):
                     with warnings.catch_warnings():
                         warnings.simplefilter('ignore')
                         in_system += node.get_stock(G4, timestep)
-            if carbon_input > in_system - MOSIR_TOLERENCE and carbon_input < in_system + MOSIR_TOLERENCE :
+            if in_system > carbon_input - MOSIR_TOLERENCE and in_system < carbon_input + MOSIR_TOLERENCE :
                 continue
             else:
                 raise me.QuantityError(' '.join((f"Graphe : {G4.get_name} La \

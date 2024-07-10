@@ -187,7 +187,7 @@ def test_04_radiatif():
         except Exception as e:
             print("Erreur lors de la lecture du fichier DynCO:", e)
     
-    cr.rad_formatting(test_03, RF, cumulative = False)
+    cr.rad_formatting(test_03, cumulative = False)
     assert test_03 == RF, "Not the same RF as DynCo"
 
 # Test avec le micrograph 1 ---------------------------------------------------

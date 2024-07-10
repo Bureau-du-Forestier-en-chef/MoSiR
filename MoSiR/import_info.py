@@ -6,6 +6,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 """
 import json
 from MoSiR import gamma_function as gf
+from MoSiR import mosir_exceptions as me
 
 # Json -----------------------------------------------------------------------
 
@@ -13,6 +14,12 @@ class ImportData():
     def __init__(self, directory):
         with open(directory, "r") as f: 
             self._DATA = json.load(f)
+            if not self._DATA['Inputs']:
+                raise me.QuantityError("Il n'y a pas de valeurs de flux \
+                    d'enregistré comme intrants dans le graphe. Veuillez \
+                    cliquer sur 'Enregistrer la période' une fois qu'une \
+                    valeur a été inscrite. Sinon, modifier manuellement votre \
+                    fichier JSON pour y inscrire des valeurs de flux.")
             
     def get_unit(self):
         return self._DATA['Unit']

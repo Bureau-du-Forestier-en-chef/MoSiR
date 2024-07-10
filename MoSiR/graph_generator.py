@@ -367,7 +367,7 @@ class DecayNode(ProportionNode):
         if time in self.past_gamma_proportion().flux_cache:
             decay_proportion = self.past_gamma_proportion().get_flux_cache(time)
         else:
-            decay_proportion = gamma.cdf(time, alpha, scale=beta)
+            decay_proportion = float(gamma.cdf(time, alpha, scale=beta))
             self.past_gamma_proportion().set_flux_cache(time, decay_proportion)
 
         return decay_proportion
