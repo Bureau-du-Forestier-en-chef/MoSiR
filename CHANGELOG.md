@@ -1,7 +1,7 @@
 # Journal des modifications
 Tous les changements notables appliqués au projet seront notés ici.
 
-## Non publié
+## v1.0.1 (2024-07-10)
 ### Nouveautés
 * Message d'erreur si aucun flux en intrant n'est inscrit dans le JSON ou dans le tableau de l'interface lors de la simulation.
 * Les pourcentages inscrits dans Miro sur un pense-bête sont maintenant limités à une précision de 8 chiffres après la virgule. Dû à une particularité propre à Python, il est nécessaire d'arrondir les pourcentages pour obtenir un cumulatif de 100% dans les liens sortants. Si un pense-bête a plus de 8 chiffres après la virgule, celui-ci sera arrondi par MoSiR. 
