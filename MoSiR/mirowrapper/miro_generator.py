@@ -14,9 +14,9 @@ class ItemBuilder:
         self.__DATA = utilities.Jsonparser.read(JsonLocation)
 
     def __GetFromRegex(self, BaseName: str, Descriptor: str) -> re.Match:
-        CompiledRegex = re.compile("(?:(.+)|)("
+        CompiledRegex = re.compile(r"(?:(.+)|)("
             + Descriptor
-            + ")([\s\t]*)(\[)([\s\t]*)(\d+\.?\d*)([\s\t]*)(\])(?:(.+)|)")
+            + r")([\s\t]*)(\[)([\s\t]*)(\d+\.?\d*)([\s\t]*)(\])(?:(.+)|)")
         return CompiledRegex.match(BaseName)
     
     # TODO seems useless
