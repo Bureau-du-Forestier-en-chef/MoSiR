@@ -28,7 +28,7 @@ if %ErrorLevel% == 1 (
     --product-name=MoSiR ^
     --product-version=1.0.1 ^
     --file-version=1.0.1 ^
-    --file-description="Standalone application of MoSiR, a Python package for the carbon fate of wood products"
+    --file-description="Standalone application of MoSiR, a Python package for the carbon fate of wood products" ^
     --copyright="LiLiQ-R-1.1" ^
     --output-dir=. ^
     ..\MoSiR.py
