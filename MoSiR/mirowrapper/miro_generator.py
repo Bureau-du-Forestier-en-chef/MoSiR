@@ -155,7 +155,7 @@ class Mirogenerator(Generator):
         try:
             WorkableString = utilities.Htmlparser.get_string_from_html(
                 Item["data"]["content"].replace("%", ""))
-            Values = [round(float(value)/100, 9) for value in WorkableString.split(",")]
+            Values = [round(float(value)/100, 10) for value in WorkableString.split(",")]
         except:
             MESSAGE = "Cannot get edge value for edge id " + Item["id"] + " on Item " + str(Item)
             raise(mosir_exceptions.Miroerror(MESSAGE, Item["id"]))

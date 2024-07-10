@@ -97,7 +97,7 @@ def debugg_graph_02(graph: gg.GraphFactory, overflow: dict[str, list[str]]):
                 if successors.NAME in overflow[graph_name]:
                     continue
                 total += node._get_value_time(G2.get_edge_proportions(node, successors), 0)
-            total = round(total, 9)
+            total = round(total, 10)
             if total == 0:
                 no_edges.append(node.NAME)
             elif abs(total - 1) > 0:
