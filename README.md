@@ -76,13 +76,13 @@ L'utilisateur a la possibilité de bâtir dans Miro un graphe pouvant contenir a
 ### <b>Étape 1</b>: Installer MoSiR
 <details><summary><b>En tant que package Python</b></summary> <br>
 
-MoSiR peut être installé sous forme de package Python, à l'intérieur d'un environnement Python 3. Pour ce faire, [pip] et [git] sont nécessaire avant de procéder à l'installation. 
+MoSiR peut être installé sous forme de package Python, à l'intérieur d'un environnement Python 3. Pour ce faire, [pip] et [git] sont nécessaires avant de procéder à l'installation. 
 
 1. Dans un terminal, activer l'environnement désiré, puis entrer cette ligne de commande:
    ```python
    pip install git+https://github.com/Bureau-du-Forestier-en-chef/MoSiR
    ```
-   Pour installer une version spécifique de MoSiR, listé sous les différents [tag], simplement ajouter à fin @tag. Par exemple :
+   Pour installer une version spécifique de MoSiR, listée sous les différents [tag], simplement ajouter à la fin @tag. Par exemple :
    ```python
    pip install git+https://github.com/Bureau-du-Forestier-en-chef/MoSiR@v1.0.0-lightweight
    ```
@@ -186,9 +186,9 @@ Le calculateur de MoSiR peut être directement appelé depuis un script Python s
   mosir_calculator.main(['-G', graph_json, '-D', input_json, '-R', report_json, '-E', export_folder])
 ```
 
-Pour fonctionner, le calculateur a besoin d'un fichier `JSON` pour le graphe, un pour les intrants, un pour le report et le chemin vers l'endroit où seront les extrants.
+Pour fonctionner, le calculateur a besoin d'un fichier `JSON` pour le graphe, un pour les intrants, un pour le rapport et le chemin vers l'endroit où seront les extrants.
 
-Pour un nouvel utilisateur, il serait recommandé d'utiliser d'abord l'interface Miro, car celui-ci vous génère automatiquement des fichiers `JSON` pour le graphe, les intrants et le report. Ces fichiers générés par l'application sont disponibles dans l'onglet `Télécharger` une fois que vous avez importé votre graphe et rempli l'onglet `Calculer`. Ces `JSON` pourront agir par la suite comme modèle pour la structure du fichier. Il existe également des fichiers en exemple dans le Github de MoSiR sous `example\Inputs`.
+Pour un nouvel utilisateur, il serait recommandé d'utiliser d'abord l'interface Miro, car celui-ci vous génère automatiquement des fichiers `JSON` pour le graphe, les intrants et le rapport. Ces fichiers générés par l'application sont disponibles dans l'onglet `Télécharger` une fois que vous avez importé votre graphe et rempli l'onglet `Calculer`. Ces `JSON` pourront agir par la suite comme modèle pour la structure du fichier. Il existe également des fichiers en exemple dans le Github de MoSiR sous `example\Inputs`.
 </details>
 
 <details><summary><b>Comment l'utiliser avec Miro et l'interface web</b></summary><br>
