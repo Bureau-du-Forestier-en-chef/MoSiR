@@ -99,7 +99,6 @@ def output_creation(graph: gg.GraphFactory, import_data: ip.ImportData,
             G = graph.get_graph(graph_name)
             for node in G.nodes():
                 if node.NAME in nodes_name:
-                    NAME = node.NAME
                     for timestep in range(time + 1):
                         if out_type == 'Flux in':
                             result = node.get_flux_in(G, timestep, cumulative = cumu)
