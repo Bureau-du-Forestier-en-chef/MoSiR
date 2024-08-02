@@ -222,7 +222,7 @@ class Mirowrapper(Component):
             self._write_graphs_json(GraphsDict, GRAPHNAMES)
         except Exception as e:
             raise me.GraphError(f"<h4><i class='fa fa-exclamation-triangle' \
-                style='color: red;'></i> Il y a une erreur avec le graph\
+                style='color: red;'></i> Il y a une erreur avec le graphe\
                 importé:</h4><br><h5><span style='color: \
                 red;'>{e}</span></h5>")
 

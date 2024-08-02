@@ -83,7 +83,7 @@ class IndustrialNode(metaclass = ABCMeta): # aller voir la doc ABC
         LOCALNAME (str): Le nom du noeud
     """
     def __init__(self, LOCALNAME: str):
-        self._NAME = str(LOCALNAME)
+        self._NAME = str(" ".join(LOCALNAME.strip().split()))
         
     def _get_value_time(self, values: list[float], time: int) -> float:
         """ _get_value_time Documentation

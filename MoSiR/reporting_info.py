@@ -99,6 +99,7 @@ def output_creation(graph: gg.GraphFactory, import_data: ip.ImportData,
             G = graph.get_graph(graph_name)
             for node in G.nodes():
                 if node.NAME in nodes_name:
+                    NAME = node.NAME
                     for timestep in range(time + 1):
                         if out_type == 'Flux in':
                             result = node.get_flux_in(G, timestep, cumulative = cumu)
@@ -139,15 +140,15 @@ def output_creation(graph: gg.GraphFactory, import_data: ip.ImportData,
             if summarize == 'Combined':
                 dt['Combined'] = [sum(i) for i in zip(*[dt[col] for col in dt if col != 'Time'])]
                 # La boucle suivante fait la même chose que la ligne précédente
-                # dt['Combined'] = []
-                # for i in range(time + 1):
-                #     sum = 0
-                #     for col in dt:
-                #         if col == 'Time':
-                #             continue
-                #         else:
-                #             sum += dt[col][i]
-                #     dt['Combined'].append(sum)
+                """dt['Combined'] = []
+                for i in range(time + 1):
+                    sum = 0
+                    for col in dt:
+                        if col == 'Time':
+                            continue
+                        else:
+                            sum += dt[col][i]
+                    dt['Combined'].append(sum)"""
 
                 # Nouveau dt avec seulement Time et Combined
                 dt = {k: dt[k] for k in ('Time', 'Combined')}
@@ -159,7 +160,7 @@ def output_creation(graph: gg.GraphFactory, import_data: ip.ImportData,
             if ext == '.csv':
                 if directory[-1] == '/':
                     pd.DataFrame(dt).to_csv(directory + graph_name + '~' + output_name + ext,
-                              index= False, sep = ',')
+                              index= False, sep= ',')
                 elif directory[-1] != '/':
                     pd.DataFrame(dt).to_csv(directory + '/' + graph_name + '~' + output_name + ext,
                                 index= False, sep= ',')

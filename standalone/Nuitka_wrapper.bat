@@ -16,7 +16,7 @@ CHOICE /c 12 /m "Entrer le choix souhaité:"
 if %ErrorLevel% == 1 (
     conda activate MoSiR
     pip install ..\. 
-    <nul set /p "=Le wrapping de l'application va commencer, cela peut prendre environ 30 minutes avec un bon processeur. L'installation se fera dans %CD%. Peser sur une touche pour continuer"
+    <nul set /p "=Le wrapping de l'application va commencer. L'installation se fera dans %CD%. Peser sur une touche pour continuer"
     pause >nul
     python -m nuitka ^
     --standalone ^
