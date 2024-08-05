@@ -36,15 +36,7 @@ def main(raw_args = None):
 
     args = parser.parse_args(raw_args)
 
-    Graph = gg.GraphFactory(args.G)
-    Import = ip.ImportData(args.D)
-    Report = rp.ReportData(args.R) 
- 
-    # Add imports to graph
-    ip.add_import(Graph, Import)
-
-    # Reporting
-    rp.output_creation(Graph, Import, Report, args.E)
+    run_calculator(args.G, args.I, args.R, args.E)
 
 def run_calculator(Graphe: str, Import: str, Report: str, Output: str):
     """Fonction pour rouler le calculateur de MoSiR, sans parser

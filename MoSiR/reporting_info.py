@@ -75,10 +75,20 @@ def output_creation(graph: gg.GraphFactory, import_data: ip.ImportData,
         info = output[graph_name]
         for output_name in info:
             data = info[output_name]
-            nodes_name = data['Nodes_name']
             out_type = data['Type']
             summarize = data['Summarize']
             report_unit = data['Unit']
+            nodes_name = data['Nodes_name']
+            G = graph.get_graph(graph_name)
+
+            # Check if nodes name are also in graph
+            for name in nodes_name: 
+                if name in G.get_nodes_names():
+                    continue
+                else:
+                    raise me.NodeError(f"Le nom de noeud '{name}' dans le fichier \
+                        report ne se retrouve pas dans le graphe importé.")
+
             if type(data['Cumulative']) == bool:
                 if report_unit == 'w/m2':
                     cumu = False
@@ -96,7 +106,6 @@ def output_creation(graph: gg.GraphFactory, import_data: ip.ImportData,
             dt.update({node_name: [] for node_name in nodes_name})
 
             # On produit les outputs par graph
-            G = graph.get_graph(graph_name)
             for node in G.nodes():
                 if node.NAME in nodes_name:
                     for timestep in range(time + 1):

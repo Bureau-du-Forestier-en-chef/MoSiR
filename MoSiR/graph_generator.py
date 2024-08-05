@@ -574,7 +574,6 @@ class GraphFactory():
         self._GRAPHNAME = []
         self._GRAPHS = []
         
-        graph_num = 0
         keys = list(self.get_data.keys())
         keys.sort()
         for graph in keys:
@@ -597,6 +596,7 @@ class GraphFactory():
                             going into it) cannot also be identified as a recycling \
                             or decay node. Node name: {node_data['Name']}") 
                     new_node =  TopNode(node_data['Name'])
+                    self.get_graph(graph).add_topnode_name(node_data['Name'])
                 elif int(node_id) in _LASTNODES:
                     if node_data['Decay'] > 0 or node_data['Recycling'] > 0:
                         raise me.GraphError(f"Node at the bottom (a node without an edge \
@@ -611,14 +611,13 @@ class GraphFactory():
                 elif node_data['Recycling'] == 1: 
                     new_node = RecyclingNode(node_data['Name'])
                 else: new_node = ProportionNode(node_data['Name'])
-                self._GRAPHS[graph_num].add_node(new_node)
+                self.get_graph(graph).add_node(new_node)
                 node_map[int(node_id)] = new_node        
 
             for edge_id, edge_data in _EDGES.items():
                 From = node_map[edge_data['From']]
                 To = node_map[edge_data['To']]
-                self._GRAPHS[graph_num].add_edge(From, To, edge_data['Values'])  
-            graph_num += 1     
+                self.get_graph(graph).add_edge(From, To, edge_data['Values'])     
     
     @property
     def get_graph_name(self) -> list[str]:
@@ -639,4 +638,4 @@ class GraphFactory():
     
     @get_data.setter
     def get_data(self, input):
-        raise me.ConstError("Data from graphs can't be changed outside Miro") 
+        raise me.ConstError("Data from graphs can't be changed outside Miro")

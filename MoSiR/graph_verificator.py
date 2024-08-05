@@ -245,7 +245,7 @@ def debugg_graph_08(graph: gg.GraphFactory):
             warnings.warn(f'Le ou les nœuds suivants ont aucun edge: {no_edges}',
                 stacklevel=2)
 
-"""# Vérifier que les graphes contiennent au moins une node
+# Vérifier que les graphes contiennent au moins une node
 def debugg_graph_09(graph: gg.GraphFactory):
     for name in graph.get_graph_name:
         G9 = graph.get_graph(name)
@@ -259,7 +259,7 @@ def debugg_graph_10(graph: gg.GraphFactory):
         G10 = graph.get_graph(name)
         if len(G10.edges()) == 0:
             raise me.GraphError(' '.join((f"Le graphe {name} ne contient pas \
-                d'edges. Un minimum de 1 edge est requis").split())) """
+                d'edges. Un minimum de 1 edge est requis").split()))
 
 # Véfirier que les gg.RecyclingNode ont toujours un edge qui rentre et un qui sort
 def debugg_graph_11(graph: gg.GraphFactory):

@@ -5,8 +5,10 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 """
 import json
-from MoSiR import gamma_function as gf
-from MoSiR import mosir_exceptions as me
+from MoSiR import (
+    gamma_function as gf,
+    graph_generator as gg,
+    mosir_exceptions as me)
 
 # Json -----------------------------------------------------------------------
 
@@ -24,16 +26,32 @@ class ImportData():
     def get_unit(self):
         return self._DATA['Unit']
     
-    def get_flux_data(self, graph_name: str):
+    def get_flux_data(self, graph_name: str) -> dict:
+        """Return the flux data of a graph
+
+        Args:
+            graph_name (str): the graph name
+
+        Returns:
+            _type_: a dictionnary
+        """
         return self._DATA['Inputs'][graph_name]
     
     def get_decay_data(self, graph_name: str):
         return self._DATA['Decay'][graph_name]
     
-    def get_flux_name(self, graph_name: str):
+    def get_flux_name(self, graph_name: str) -> list:
+        """Return the name of nodes with flux input
+
+        Args:
+            graph_name (str): the graph name
+
+        Returns:
+            list: list of node names
+        """
         return [i for i in self.get_flux_data(graph_name)]
     
-    def get_decay_name(self, graph_name: str):
+    def get_decay_name(self, graph_name: str) -> str:
         try:
             decay_name = [i for i in self.get_decay_data(graph_name)]
         except:
@@ -63,9 +81,18 @@ class ImportData():
                 node_name, decay_type, halflife_value).find_param()
         return alpha_value, beta_value
 
-def add_import(graph, import_data):
+def add_import(graph: gg.GraphFactory, import_data):
     for graph_name in graph.get_graph_name:
         G = graph.get_graph(graph_name)
+
+        # Check if the nodes in import is also in graph
+        for node_name in import_data.get_flux_name(graph_name):
+            if node_name in G.get_topnode_name():
+                continue
+            else:
+                raise me.NodeError(f"Le nom de noeud '{node_name}' dans le fichier \
+                    import ne se retrouve pas dans le graphe importé.")
+
         for node in G.nodes():
             if node.NAME in import_data.get_flux_name(graph_name):
                 time, quantities = import_data.get_flux_input(graph_name, node.NAME)
