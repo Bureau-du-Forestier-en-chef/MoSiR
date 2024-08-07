@@ -22,7 +22,7 @@
 MoSiR (Modèle de Simulation en Réseau), is a powerful tool designed by the Bureau du forestier en chef (BFEC) to facilitate the modeling and simulation of carbon fate in wood products from forestry operations. MoSiR calculates the actual climate impact of emissions associated with wood products throughout their life cycle and end-of-life, by enabling the user to use complex network architectures and associated input data in an automated way. MoSiR's web interface serves as a bridge between the creation and simulation of conceptual models for carbon trajectories in wood products and the calculation of their actual impact on climate. This interface is easily accessible from any web browser. MoSiR's web interface is distinguished by its ability to load user-created Miro maps and convert them into a JSON file that can be read by MoSiR's calculator. The MoSiR Web interface facilitates a seamless transition to the ECU, while preserving the integrity of previously constructed data and architectural properties.
 </p>
 
-## En bref, comment ça fonctionne? :mag:
+## In brief :mag:
 <p align = "justify">
 MoSiR has two components: a calculator and a web interface. MoSiR is basically a calculator in the form of a Python package. An application using a web interface has been created to facilitate its use without having to use Python. The MoSiR interface also uses the Miro platform to facilitate the creation of wood product networks. Miro is an online application that allows users to work on whiteboards, facilitating collaborative processes such as project management and mapping. MoSiR has the ability to read a Miro table and extract the information needed to build a graph (a network of nodes attached by links).  
 </p>
@@ -32,7 +32,7 @@ The user can build a graph in Miro that can contain any number of nodes, some of
 
  ![mosir_example](https://github.com/Landry-G/MoSiR_images/blob/main/mosir_example.gif)
  
-# Signaler une erreur
+# Report a bug
 
 If you encounter an error, the preferred way is via [Issues] on GitHub. Sur la page des `Issues` de MoSiR, cliquer sur `New issue`. On the MoSiR `Issues` page, click on `New issue`. You need to provide as much information as possible to reproduce the error you are encountering. To make suggestions for improvement, please refer to the [future developments](https://github.com/Bureau-du-Forestier-en-chef/MoSiR/wiki/D%C3%A9veloppements-futurs) section.
 
