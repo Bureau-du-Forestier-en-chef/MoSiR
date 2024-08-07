@@ -203,7 +203,7 @@ Les nœuds sont utilisés comme fourche où la matière peut diverger selon diff
 </p>
 
 <p align = "justify">
-Avec les nœuds par défaut, la matière s'écoule à l'intérieur du graphe la même année qu'un intrant entre dans un nœud du début, il n'y a donc pas de matière qui s'accumule dans les nœuds transitoires, seulement les derniers nœuds à la fin du graphe se retrouvent à collecter indéfiniment la matière qui rentre dans ceux-ci. MoSiR offre l'opportunité d'identifier des nœuds comme étant du recyclage ou des nœuds avec un temps de demi-vie. Ces nœuds ont pour but de retenir la matière et de l'écouler d'une manière précise. Les nœuds de recyclage, identifiés par une couleur verte de remplissage, retiennent la matière pendant 1 an et la libère par la suite à son ou ses nœuds enfants. Pour les nœuds de dégradation, la matière libérée tiendra compte du temps de demi-vie et du type de dégradation choisi. Un nœud de dégradation est identifé en ayant son contour en pointillé, peu importe l'épaisseur. Les détails des différents types de dégradation sont expliqués dans la section Directive.
+Avec les nœuds par défaut, la matière s'écoule à l'intérieur du graphe la même année qu'un intrant entre dans un nœud du début, il n'y a donc pas de matière qui s'accumule dans les nœuds transitoires, seulement les derniers nœuds à la fin du graphe se retrouvent à collecter indéfiniment la matière qui rentre dans ceux-ci. MoSiR offre l'opportunité d'identifier des nœuds comme étant du recyclage ou des nœuds avec un temps de demi-vie. Ces nœuds ont pour but de retenir la matière et de l'écouler d'une manière précise. Les nœuds de recyclage, identifiés par une couleur verte de remplissage, retiennent la matière pendant 1 an et la libèrent par la suite à son ou ses nœuds enfants. Pour les nœuds de dégradation, la matière libérée tiendra compte du temps de demi-vie et du type de dégradation choisi. Un nœud de dégradation est identifié en ayant son contour en pointillé, peu importe l'épaisseur. Les détails des différents types de dégradation sont expliqués dans la section Directive.
 </p>
 
 ![creation_graph_2](https://github.com/Landry-G/MoSiR_images/blob/main/creation_graph_2.gif)
@@ -213,7 +213,7 @@ Dans cet exemple, trois nœuds ont été identifiés comme un nœud avec de la d
 </p>
 
 <p align = "justify">
-Par défaut, MoSiR va s'assurer que la quantité de matière dans le graphe est toujours égale à la somme des intrants à chaque période. Conséquemment, l'ensemble des liens sortant d'un nœud doit être égal à 100%. Si l'utilisateur veut représenter un flux additionnel qui n'est pas pris en compte par les intrants de son graphe, l'utilisateur doit identifier différemment le lien grâce à un code de couleur (#17df23). On caractérise ces liens comme étant du débordement (overflow). Par exemple, l'utilisateur pourrait représenter la création de N2O lors de la combustion d'un produit ou bien représenter les émissions de transport ou de récolte, si ceux-ci peuvent se rattacher à un pourcentage de flux de matière. Ce carbone n'étant pas du carbone biogénique, il est comptabilisé comme un flux supplémentaire, c'est-à-dire un flux de débordement Dans notre exemple, on pourrait déterminer que pour chaque tonne de carbone circulant dans notre graphe, 1% de N2O est créé avec le nœud Bioenergy et 5% sont créés pour les émissions de transport avec le nœud d'entrée. À des fins de comptabilisation, un nœud ne peut recevoir un mélange de lien normal et de débordement. Il n’y a pas de limite quant au nombre de nœuds pouvant recevoir du débordement.
+Par défaut, MoSiR va s'assurer que la quantité de matière dans le graphe est toujours égale à la somme des intrants à chaque période. Conséquemment, l'ensemble des liens sortant d'un nœud doit être égal à 100%. Si l'utilisateur veut représenter un flux additionnel qui n'est pas pris en compte par les intrants de son graphe, l'utilisateur doit identifier différemment le lien grâce à un code de couleur (#17df23). On caractérise ces liens comme étant du débordement (overflow). Par exemple, l'utilisateur pourrait représenter la création de N2O lors de la combustion d'un produit ou bien représenter les émissions de transport ou de récolte, si ceux-ci peuvent se rattacher à un pourcentage de flux de matière. Ce carbone n'étant pas du carbone biogénique, il est comptabilisé comme un flux supplémentaire, c'est-à-dire un flux de débordement. Dans notre exemple, on pourrait déterminer que pour chaque tonne de carbone circulant dans notre graphe, 1% de N2O est créé avec le nœud Bioenergy et 5% sont créés pour les émissions de transport avec le nœud d'entrée. À des fins de comptabilisation, un nœud ne peut recevoir un mélange de lien normal et de débordement. Il n’y a pas de limite quant au nombre de nœuds pouvant recevoir du débordement.
 </p>
 
 ![creation_graph_3](https://github.com/Landry-G/MoSiR_images/blob/main/creation_graph_3.gif)
@@ -332,13 +332,13 @@ Deuxièmement, on doit y lister toutes les valeurs de dégradation pour nos nœu
 ### JSON de report
 <p align = "justify">
 Finalement, le troisième et dernier fichier JSON, est pour le calculateur (report). Dans celui-ci, plusieurs informations sont nécessaires. On y retrouve les informations pour produire les extrants ("Output"), les valeurs de PRG (utile dans la transformation en tCO2eq), l'horizon de simulation (100 ans dans notre cas), et le type de fichier produit pour les résultats (seulement csv de disponible pour l'instant dans l'interface, mais peut être en JSON dans le package python).
-Pour l'information sur les extrants ("Output"), le nom du graphe doit être d'abord mentionné. Par la suite, on peut y lister autant de demandes de sorties souhaitées, pourvu que celle-ci soient identifiées par un nom unique sans espace (Output_1, Output_2 et Output_3 à l'occurrence). Dans chacune des sorties, cinq informations doivent être listées: 	
+Pour l'information sur les extrants ("Output"), le nom du graphe doit être d'abord mentionné. Par la suite, on peut y lister autant de demandes de sorties souhaitées, pourvu que celle-ci soit identifiée par un nom unique sans espace (Output_1, Output_2 et Output_3 à l'occurrence). Dans chacune des sorties, cinq informations doivent être listées: 	
 </p>
 
 * Le nom des nœuds sous le format de liste : ["Nom 1", "Nom 2", "Nom 3"]
 * Le type de flux recherché (entrant, sortant ou les stock) en anglais: "Flux in", "Flux out", "Stock"
 * Si les résultats sont présentés de manière cumulative (true) ou annuelle (false)
-* Si les résultats sont agrégés par nœuds ("Per node") qui ont été listé ou combiné tout ensemble ("Combined")
+* Si les résultats sont agrégés par nœuds ("Per node") qui ont été listés ou combinés tout ensemble ("Combined")
 * Les unités pour les résultats sortants ("kgC", "tC", "w/m2", "tCO2eq").
 
 Si les unités des résultats sont en w/m2 ou en tCO2eq, un nom de gaz doit être présent dans chaque nœud listé (CO2, CO, N2O, CH4).
@@ -420,7 +420,7 @@ D'autres idées ont été soulevées, mais elles ne figurent pas en ce moment co
 
 - __Gestion d'autres GES__ <br>
   	Par défaut dans sa version 1.0, MoSiR est capable de réaliser la comptabilisation en tCO2eq et en W/m2 des gaz à effet de serre suivant : CO2 / CH4 / N2O.
-Si ces trois GES devraient suffirent à la grande majorité des utilisateurs, des rajouts pourraient être faits selon des besoins particuliers.
+Si ces trois GES devaient suffire à la grande majorité des utilisateurs, des rajouts pourraient être faits selon des besoins particuliers.
 
 - __Optimisation de l'utilisation des produits du bois__ <br>
   	Mosir n'est dans sa version 1.0 qu'un outil permettant de suivre le devenir de la matière dans une architecture de flux et de réaliser en parallèle une lecture carbone et/ou climatiques des émissions de GES.
@@ -437,3 +437,4 @@ Si vous rencontrez une erreur, la manière à privilégier est par l'entremise d
 MoSiR is a [LiLiQ-R 1.1](https://github.com/gcyr/FMT/blob/master/LICENSES/EN/LILIQ-R11EN.pdf) licensed library.
 
 [![License](http://img.shields.io/:license-liliqR11-blue.svg?style=flat-square)](https://forge.gouv.qc.ca/licence/liliq-v1-1/#r%C3%A9ciprocit%C3%A9-liliq-r)
+

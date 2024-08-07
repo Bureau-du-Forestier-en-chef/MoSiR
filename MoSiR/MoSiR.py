@@ -25,7 +25,7 @@ if "NUITKA_ONEFILE_PARENT" in os.environ:
    if os.path.exists(splash_filename):
       os.unlink(splash_filename)
 
-def run_server():
+def main():
    """Pour démarrer l'API"""
    base_url = "http://localhost"
    port = 3000
@@ -42,4 +42,4 @@ def run_server():
    server.run()
 
 if __name__ == '__main__':
-   run_server()
+   main()

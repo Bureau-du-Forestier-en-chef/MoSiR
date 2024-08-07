@@ -71,7 +71,6 @@ class Mirowrapper(Component):
         self.__GrapGenerators = []
         self.__Session = requests.Session()
         self.__GRAPHSNAME = 'Graphs.json'
-    
 
     #TODO faire un get set pour mes client ID
     def __change_miro_keys(self):

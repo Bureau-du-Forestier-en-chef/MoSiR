@@ -38,7 +38,11 @@ setup(
     author_email = 'gabriel.landry@fec.gouv.qc.ca',
     url = 'https://github.com/Bureau-du-Forestier-en-chef/MoSiR',
     license = license,
-    scripts = ['MoSiR.py'],
+    entry_points = {
+        'console_scripts': [
+            'MoSiR=MoSiR.MoSiR:main',
+        ],
+    },
     packages = find_packages(exclude = ('tests', 'docs', 'image', 'standalone', 'examples')),
     install_requires = reqs,
     package_data = {'MoSiR': ['mirowrapper/**','static/**','templates/*', 
