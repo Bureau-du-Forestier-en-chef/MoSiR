@@ -1,3 +1,5 @@
+<a href = "https://github.com/Bureau-du-Forestier-en-chef/MoSiR/blob/master/README_fr.md"><img src = "https://img.shields.io/badge/FR-Cliquer_ici_pour_la version_française-blue?style=flat-square" height="25" /></a>
+
 <!-- HEADER -->
 <h1 align="center">
   <br>
@@ -12,33 +14,33 @@
   <br>
 <h4>
 
-### Pour la documentation complète de MoSiR, veuillez consulter le [Wiki](https://github.com/Bureau-du-Forestier-en-chef/MoSiR/wiki) du Github.
+### For full MoSiR documentation, please visit the Github [Wiki](https://github.com/Bureau-du-Forestier-en-chef/MoSiR/wiki).
 
 <!-- TEXTE -->
 # Description
 <p align="justify"> 
-  MoSiR (Modèle de Simulation en Réseau), est un outil puissant conçu par le Bureau du forestier en chef (BFEC) pour faciliter la modélisation et la simulation du devenir du carbone dans les produits du bois issus de l'exploitation forestière. MoSiR permet de calculer l'impact climatique réel des émissions associées aux produits du bois tout au long de leur durée de vie et de leur fin de vie en permettant à l'utilisateur d'utiliser des architectures de réseau complexes et des données d'entrée associées de manière automatisée. L'interface web de MoSiR sert de passerelle entre la création et la simulation de modèles conceptuels pour les trajectoires du carbone dans les produits du bois et le calcul de leur impact réel sur le climat. Cette interface est facilement accessible à partir de n'importe quel navigateur web. L'interface Web de MoSiR se distingue par sa capacité à charger les cartes Miro créées par l'utilisateur et à les convertir en un fichier JSON qui peut être lu par le calculateur de MoSiR. L'interface Web MoSiR facilite une transition transparente vers le calculateur tout en préservant l'intégrité des données et des propriétés architecturales précédemment construites.
+MoSiR (Modèle de Simulation en Réseau), is a powerful tool designed by the Bureau du forestier en chef (BFEC) to facilitate the modeling and simulation of carbon fate in wood products from forestry operations. MoSiR calculates the actual climate impact of emissions associated with wood products throughout their life cycle and end-of-life, by enabling the user to use complex network architectures and associated input data in an automated way. MoSiR's web interface serves as a bridge between the creation and simulation of conceptual models for carbon trajectories in wood products and the calculation of their actual impact on climate. This interface is easily accessible from any web browser. MoSiR's web interface is distinguished by its ability to load user-created Miro maps and convert them into a JSON file that can be read by MoSiR's calculator. The MoSiR Web interface facilitates a seamless transition to the ECU, while preserving the integrity of previously constructed data and architectural properties.
 </p>
 
 ## En bref, comment ça fonctionne? :mag:
 <p align = "justify">
-MoSiR comporte deux volets: un calculateur et une interface web. MoSiR est à la base un calculateur sous forme de package Python. Une application utilisant une interface web a été effectuée pour faciliter son utilisation sans devoir passer par Python. L'interface MoSiR utilise de même la plateforme Miro pour faciliter la création de réseau de produit du bois. Miro est une application en ligne qui permet à l'utilisateur de travailler sur des tableaux blancs facilitant notamment la mise en place de processus collaboratifs, tels que la gestion et la cartographie de projet. MoSiR a la capacité de venir lire un tableau de Miro pour en extraire les informations nécessaires pour bâtir un graphe (un réseau de nœud attaché par des liens).  
+MoSiR has two components: a calculator and a web interface. MoSiR is basically a calculator in the form of a Python package. An application using a web interface has been created to facilitate its use without having to use Python. The MoSiR interface also uses the Miro platform to facilitate the creation of wood product networks. Miro is an online application that allows users to work on whiteboards, facilitating collaborative processes such as project management and mapping. MoSiR has the ability to read a Miro table and extract the information needed to build a graph (a network of nodes attached by links).  
 </p>
 <p align = "justify">
-L'utilisateur a la possibilité de bâtir dans Miro un graphe pouvant contenir autant de nœud que souhaité, dont certains peuvent gérer du recyclage ou de la dégradation selon une loi exponentielle, gamma ou chi-square. Dans cette application, l'utilisateur peut importer depuis Miro ou depuis son ordinateur le graphe souhaité et lancer une commande au calculateur de MoSiR. Celui-ci peut calculer 3 informations: le flux de matière qui entre dans un nœud, qui sort d'un nœud et la matière qui reste dans celui-ci (stock).  Il est possible d'y inscrire les intrants pour les nœuds de départ, les temps de demi-vie pour les nœuds de dégradation et l'information que vous souhaitez extraire. Essentiellement, il s'agit de questionner les nœuds qui vous intéresse, choisir si vous voulez les flux entrants, sortants ou les stocks, le cumulatif sur la période demandée et la sommation des résultats si plusieurs nœuds ont été sélectionnés. Finalement, vous pouvez choisir l'unité des extrants. MoSiR vous demande d'abord les unités de vos intrants, pour que celui-ci soit capable de faire la transformation nécessaire. Si le nom de vos nœuds contiennent le nom d'un gaz comme CO2, CO, CH4 ou N2O, MoSiR peut également faire la transformation de ces quantités de carbone en tonne équivalente de CO2 ou même en forçage radiatif. De plus amples détails sont disponibles dans le Wiki du Github.
+The user can build a graph in Miro that can contain any number of nodes, some of which can manage recycling or degradation according to exponential, gamma or chi-square distributions. In this application, users can import the desired graph from Miro or from their own computer, and then issue a command to the MoSiR calculator. It can calculate 3 items of information: the flow of material into a node, the flow of material out of a node, and the material remaining in the node (stock).  You can enter inputs for starting nodes, half-life times for degradation nodes and the information you wish to extract. Essentially, it's a matter of querying the nodes you're interested in, choosing whether you want flux in, flux out or stocks, the cumulative over the requested period and the summation of results if several nodes have been selected. Finally, you can choose the unit of output. MoSiR first asks you for the units of your inputs, so that it can make the necessary transformation. If your node names contain the name of a gas such as CO2, CO, CH4 or N2O, MoSiR can also transform these carbon quantities into equivalent tons of CO2 or even radiative forcing. Further details are available in the Github Wiki.
 </p>
 
  ![mosir_example](https://github.com/Landry-G/MoSiR_images/blob/main/mosir_example.gif)
  
 # Signaler une erreur
 
-Si vous rencontrez une erreur, la manière à privilégier est par l'entremise des [Issues] sur GitHub. Sur la page des `Issues` de MoSiR, cliquer sur `New issue`. Il est nécessaire de donner le plus d'informations possible pour reproduire l'erreur que vous rencontrez. Pour faire des suggestions d'amélioration, se référer à la section [développements futurs](https://github.com/Bureau-du-Forestier-en-chef/MoSiR/wiki/D%C3%A9veloppements-futurs).
+If you encounter an error, the preferred way is via [Issues] on GitHub. Sur la page des `Issues` de MoSiR, cliquer sur `New issue`. On the MoSiR `Issues` page, click on `New issue`. You need to provide as much information as possible to reproduce the error you are encountering. To make suggestions for improvement, please refer to the [future developments](https://github.com/Bureau-du-Forestier-en-chef/MoSiR/wiki/D%C3%A9veloppements-futurs) section.
 
 [Issues]: https://github.com/Bureau-du-Forestier-en-chef/MoSiR/issues
 
 # License
 
-MoSiR utilise la licence [LiLiQ-R 1.1](https://github.com/Bureau-du-Forestier-en-chef/MoSiR/blob/master/LICENSES/FR/LiLiQ-R11.pdf).
+MoSiR uses the [LiLiQ-R 1.1](https://github.com/Bureau-du-Forestier-en-chef/MoSiR/blob/master/LICENSES/EN/LiLiQ-R11EN.pdf) license.
 
 [![License](http://img.shields.io/:license-liliqR11-blue.svg?style=flat-square)](https://forge.gouv.qc.ca/licence/liliq-v1-1/#r%C3%A9ciprocit%C3%A9-liliq-r)
 
