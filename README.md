@@ -1,5 +1,4 @@
 <a href = "https://github.com/Bureau-du-Forestier-en-chef/MoSiR/blob/master/README_fr.md"><img src = "https://img.shields.io/badge/FR-Cliquer_ici_pour_la version_française-blue?style=flat-square" height="25" /></a>
-
 <!-- HEADER -->
 <h1 align="center">
   <br>
