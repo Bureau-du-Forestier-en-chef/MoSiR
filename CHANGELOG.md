@@ -15,6 +15,7 @@ Tous les changements notables appliqués au projet seront notés ici.
 ### Changements
 * Le calculateur n'est plus appelé par un parser dans l'API, mais par une fonction importée. Le parser reste disponible pour appeler le calculateur dans une console et la fonction `run_calculator` est également possible pour être inclus directement dans un script python.
 * Les espaces vides de trop dans les noms de nœud sont automatiquement supprimés (espace double entre les mots ou avant et après le nom).
+* La documentation de MoSiR se retouve maintenant dans l'onglet Wiki du github.
 
 ### Corrections
 * La tolérance de 0.0001 sur le test de la somme des liens sortants a été a enlevée.
