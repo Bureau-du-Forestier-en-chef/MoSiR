@@ -19,7 +19,12 @@ class DecayTypeOptimizer:
             self.beta = 1
         elif self.decay_type == "Chi-square":
             self.beta = 2
-
+        self.opt_failed = f"L'optimisation du noeud de dégradation \
+            {self.node_name} avec un temps de demi-vie de {self.value} \
+            a échoué. Veuillez utiliser le fichier Excel pour calculer \
+            manuellement le alpha et beta et l'inscrire comme dégration \
+            'Custom'. Le fichier est sous MoSiR/gamma_distribution/gamma_decay.xlsx"
+        
     def objective(self, param: float) -> float:
         """Set up param à optimiser tout dépendant ce qu'on recherche
         Param is unknow
@@ -30,6 +35,9 @@ class DecayTypeOptimizer:
         Returns:
             float: _description_
         """
+        if hasattr(self, 'alpha') and hasattr(self, 'beta'):
+            raise me.DecayError(f"Optimization of {self.node_name} decay \
+                values when alpha and beta are already present")
         if hasattr(self, 'alpha'):
             cdf_value = gamma.cdf(self.value, self.alpha, scale=param)
         elif hasattr(self, 'beta'):
@@ -56,8 +64,7 @@ class DecayTypeOptimizer:
             bounds = (self.value * 0.25, self.value * 0.9)
         result = minimize_scalar(self.objective, bounds=bounds)
         if result.success == False:
-            raise me.DecayError(f"Optimization of {self.node_name} decay \
-                values (half-life of {self.value}) unsuccessfull")
+            raise me.DecayError(self.opt_failed)
         if hasattr(self, 'alpha'):
             alpha_value = self.alpha
             beta_value = result.x
@@ -66,6 +73,5 @@ class DecayTypeOptimizer:
             beta_value = self.beta
         # Test
         if round(gamma.cdf(self.value, alpha_value, scale=beta_value), 4) != 0.5000:
-            raise me.DecayError(f"Optimization of {self.node_name} decay \
-                values (half-life of {self.value}) unsuccessfull")
+            raise me.DecayError(self.opt_failed)
         return alpha_value, beta_value

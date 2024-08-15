@@ -316,10 +316,10 @@ class DecayNode(ProportionNode):
     Returns:
         DecayNode: Un objet de la classe DecayNode
     """
-    def __init__(self, NAME: str, decay: int):
+    def __init__(self, NAME: str, decay: bool):
         super().__init__(NAME)
-        if not isinstance(decay, int) or decay <= 0:
-            raise ValueError("Decay value must be a positive integer.")
+        if not isinstance(decay, bool):
+            raise ValueError("La valeur de Decay doit être 'true' ou 'false'.")
         self._decay = decay
         self._alpha_value = None
         self._beta_value = None
@@ -591,24 +591,24 @@ class GraphFactory():
             node_map = {}
             for node_id, node_data in _NODES.items():
                 if int(node_id) in _TOPNODES: 
-                    if node_data['Decay'] > 0 or node_data['Recycling'] > 0:
+                    if node_data['Decay'] == True or node_data['Recycling'] == True:
                         raise me.GraphError(f"Node at the top (a node without an edge \
                             going into it) cannot also be identified as a recycling \
                             or decay node. Node name: {node_data['Name']}") 
                     new_node =  TopNode(node_data['Name'])
                     self.get_graph(graph).add_topnode_name(node_data['Name'])
                 elif int(node_id) in _LASTNODES:
-                    if node_data['Decay'] > 0 or node_data['Recycling'] > 0:
+                    if node_data['Decay'] == True or node_data['Recycling'] == True:
                         raise me.GraphError(f"Node at the bottom (a node without an edge \
                             going out of it) cannot also be identified as a recycling \
                             or decay node. Node name: {node_data['Name']}")  
                     new_node = PoolNode(node_data['Name'])
-                elif node_data["Decay"] > 0:
-                    if node_data["Recycling"] > 0:
+                elif node_data["Decay"] == True:
+                    if node_data["Recycling"] == True:
                         raise me.GraphError(f"A node cannot be both a recycling and \
                             decay node. Node name: {node_data['Name']}")
-                    new_node = DecayNode(node_data['Name'], int(node_data['Decay']))
-                elif node_data['Recycling'] == 1: 
+                    new_node = DecayNode(node_data['Name'], node_data['Decay'])
+                elif node_data['Recycling'] == True: 
                     new_node = RecyclingNode(node_data['Name'])
                 else: new_node = ProportionNode(node_data['Name'])
                 self.get_graph(graph).add_node(new_node)

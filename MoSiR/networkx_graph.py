@@ -60,7 +60,7 @@ class WPGraph():
             me.NodeError: Un noeud ne peut avoir le même nom qu'un
                 noeud déjà présent
         """
-        if node.NAME in self.get_nodes_names:
+        if node.NAME in self.get_nodes_names():
             raise me.NodeError(f"At least two nodes have the same name: '{node.NAME}'.\
                 Nodes must have an unique name")
         self._graph.add_node(node)

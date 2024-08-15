@@ -26,4 +26,5 @@ htmlcov/
 .coverage
 README_package.md
 tests/profiler
+MoSiR.py
 # MoSiR/mirowrapper/mirowrapper.env

@@ -57,16 +57,16 @@ class ItemBuilder:
         DataHolder = {}
         if "Describe" in self.__DATA and self.__DATA["Describe"]:
             for Type, DescribeItem in self.__DATA["Describe"].items():
-                DataHolder[Type] = 1.0                                           
+                DataHolder[Type] = True                                           
                 for keys, AllValues in DescribeItem.items():
                     TempItem = copy.deepcopy(Item)
                     for key in keys.split('/'):
                         if key in TempItem:
                             TempItem = TempItem[key]
                         else:
-                            DataHolder[Type] = 0.0
+                            DataHolder[Type] = False
                     if not TempItem in AllValues:
-                        DataHolder[Type] = 0.0
+                        DataHolder[Type] = False
             if "data" in Item and "content" in Item["data"]:
                 Name = utilities.Htmlparser.get_string_from_html(
                     Item["data"]["content"]).replace(',', '')
