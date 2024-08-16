@@ -31,7 +31,7 @@ if %ErrorLevel% == 1 (
     --file-description="Standalone application of MoSiR, a Python package for the carbon fate of wood products" ^
     --copyright="LiLiQ-R-1.1" ^
     --output-dir=. ^
-    ..MoSiR.py
+    ../MoSiR.py
 
     <nul set /p "=L'installation est complétée, peser sur une touche pour fermer"
     pause >nul
