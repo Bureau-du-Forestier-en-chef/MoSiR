@@ -567,8 +567,12 @@ class GraphFactory():
         if DIR is None and Dict is not None:
             self._DATA = Dict
         if DIR is not None and Dict is None:
-            with open(self._DIRECTORY, "r") as files: 
-                self._DATA = json.load(files)
+            try:
+                with open(self._DIRECTORY, "r") as files: 
+                    self._DATA = json.load(files)
+            except:
+                raise me.InvalidOption(f"Le chemin {DIR}, n'est pas \
+                    valide. Impossible d'ouvrir le graphe")
         if DIR is None and Dict is None:
             raise me.InvalidOption("No dictionary or directory specified")
         self._GRAPHNAME = []
@@ -608,6 +612,7 @@ class GraphFactory():
                         raise me.GraphError(f"A node cannot be both a recycling and \
                             decay node. Node name: {node_data['Name']}")
                     new_node = DecayNode(node_data['Name'], node_data['Decay'])
+                    self.get_graph(graph).add_decaynode_name(node_data['Name'])
                 elif node_data['Recycling'] == True: 
                     new_node = RecyclingNode(node_data['Name'])
                 else: new_node = ProportionNode(node_data['Name'])

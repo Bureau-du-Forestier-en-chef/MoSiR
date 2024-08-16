@@ -12,13 +12,19 @@ from MoSiR import (
 # Json -----------------------------------------------------------------------
 
 class ImportData():
-    def __init__(self, directory: str, testing = False):
-        try:
-            with open(directory, "r") as f: 
-                self._DATA = json.load(f)  
-        except:
-            raise me.InvalidOption(f"Le chemin {directory}, n'est pas \
-                valide. Impossible d'ouvrir les données d'import")
+    def __init__(self, directory: str=None, Dict: dict=None):
+        if directory is None and Dict is not None:
+            self._DATA = Dict
+        if directory is not None and Dict is None:
+            try:
+                with open(directory, "r") as f: 
+                    self._DATA = json.load(f)  
+            except:
+                raise me.InvalidOption(f"Le chemin {directory}, n'est pas \
+                    valide. Impossible d'ouvrir les données d'import")
+        if directory is None and Dict is None:
+            raise me.InvalidOption("Un directory ou dictionnaire doit être \
+                spécifié")
         if not self._DATA['Inputs']:
             raise me.QuantityError("Il n'y a pas de valeurs de flux \
                 d'enregistré comme intrants dans le graphe. Veuillez \
@@ -28,9 +34,9 @@ class ImportData():
             
     def get_unit(self):
         unit = self._DATA['Unit']
-        if unit not in ['kC', 'tC']:
+        if unit not in ['kgC', 'tC']:
             raise me.InvalidOption(f"{unit} n'est pas une unité valide. Les \
-                options possibles sont 'kC' ou 'tC'")
+                options possibles sont 'kgC' ou 'tC'")
         return unit
     
     def get_flux_data(self, graph_name: str) -> dict:
@@ -45,24 +51,6 @@ class ImportData():
                 si le nom de graphe est bon et si des noeuds sont présents.")
         return data
     
-    def get_decay_data(self, graph_name: str):
-        decay_data = self._DATA['Decay']
-        if len(decay_data) == 0:
-            raise me.DecayError(f"Il n'y a pas de données pour les noeuds \
-                de dégradation dans le fichier import")
-
-        try: 
-            data = decay_data[graph_name]
-        except:
-            raise me.InvalidOption(f"Le nom de graphe {graph_name} n'est pas \
-                présent dans le fichier import")
-        
-        if len(data) == 0:
-            raise me.QuantityError(f"Il n'y a aucun noeud de listé sous le \
-                nom de graphe {graph_name}")
-
-        return data
-    
     def get_flux_name(self, graph_name: str) -> list:
         """Return the name of nodes with flux input
 
@@ -74,17 +62,10 @@ class ImportData():
         """
         return [i for i in self.get_flux_data(graph_name)]
     
-    def get_decay_name(self, graph_name: str) -> str:
-        try:
-            decay_name = [i for i in self.get_decay_data(graph_name)]
-        except:
-            decay_name = []
-        return decay_name 
-    
     def get_flux_input(self, graph_name: str, node_name: str): 
         intrant = self.get_flux_data(graph_name)
         try:  
-            intrant[node_name]
+            intrant = intrant[node_name]
         except:
             raise me.InvalidOption(f"{node_name} n'est pas un nom de noeud \
                 présent dans le fichier d'inputs")
@@ -107,6 +88,31 @@ class ImportData():
 
         return time, quantities
     
+    def get_decay_data(self, graph_name: str):
+        decay_data = self._DATA['Decay']
+        if len(decay_data) == 0:
+            raise me.DecayError(f"Il n'y a pas de données pour les noeuds \
+                de dégradation dans le fichier import")
+
+        try: 
+            data = decay_data[graph_name]
+        except:
+            raise me.InvalidOption(f"Le nom de graphe {graph_name} n'est pas \
+                présent dans le fichier import")
+        
+        if len(data) == 0:
+            raise me.QuantityError(f"Il n'y a aucun noeud de listé sous le \
+                nom de graphe {graph_name}")
+
+        return data
+    
+    def get_decay_name(self, graph_name: str) -> str:
+        try:
+            decay_name = [i for i in self.get_decay_data(graph_name)]
+        except:
+            decay_name = []
+        return decay_name 
+    
     def get_decay_input(self, graph_name: str, node_name: str):
         intrant = self.get_decay_data(graph_name)[node_name]
         if list(intrant.keys())[0] == "Custom":
@@ -118,20 +124,31 @@ class ImportData():
             alpha_value, beta_value = gf.DecayTypeOptimizer(
                 node_name, decay_type, halflife_value).find_param()
         else:
-            raise me.InvalidOption
+            raise me.InvalidOption(f"{list(intrant.keys())[0]} n'est pas une \
+                dégradation valide. Choix possibles: Custom, Exponential, Gamma ou Chi-square")
         return alpha_value, beta_value
 
-def add_import(graph: gg.GraphFactory, import_data):
+def add_import(graph: gg.GraphFactory, import_data: ImportData):
     for graph_name in graph.get_graph_name:
         G = graph.get_graph(graph_name)
 
-        # Check if the nodes in import is also in graph
+        # Check if the nodes in inputs is also in graph
         for node_name in import_data.get_flux_name(graph_name):
-            if node_name in G.get_topnode_name():
-                continue
-            else:
+            if node_name not in G.get_topnode_name():
                 raise me.NodeError(f"Le nom de noeud '{node_name}' dans le fichier \
-                    import ne se retrouve pas dans le graphe importé.")
+                    import (listé sous 'Inputs') ne se retrouve pas dans le graphe importé.")
+        
+        # Check if the nodes in decay is also in graph
+        for decay_node_name in import_data.get_decay_name(graph_name):
+            if decay_node_name not in G.get_decaynode_names():
+                raise me.NodeError(f"Le nom de noeud '{decay_node_name}' dans le fichier \
+                    import (listé sous 'Decay') ne se retrouve pas dans le graphe importé.")
+        
+        # Check if all decay nodes of graph are listed in import json
+        for decay_node_name in G.get_decaynode_names():
+            if decay_node_name not in import_data.get_decay_name(graph_name):
+                raise me.NodeError(f"Le noeud '{decay_node_name}' dans le graph \
+                    ne se retrouve pas dans les noeuds du JSON d'import sous 'Decay'.")
 
         for node in G.nodes():
             if node.NAME in import_data.get_flux_name(graph_name):

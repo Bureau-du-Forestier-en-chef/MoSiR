@@ -72,6 +72,7 @@ class DecayTypeOptimizer:
             alpha_value = result.x
             beta_value = self.beta
         # Test
-        if round(gamma.cdf(self.value, alpha_value, scale=beta_value), 4) != 0.5000:
+        test_fifty = round(gamma.cdf(self.value, alpha_value, scale=beta_value), 4)
+        if test_fifty != 0.5000:
             raise me.DecayError(self.opt_failed)
         return alpha_value, beta_value

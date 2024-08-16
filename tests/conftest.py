@@ -243,3 +243,58 @@ def input_json():
         "..", "examples", "Inputs", "Inputs.json")
     exemple_import = ii.ImportData(file_path)
     return exemple_import
+
+@pytest.fixture
+def input_dict():
+    inputs = {
+        "Inputs": {    
+            "Example": {
+                "Harvested Biomass": {
+                    "1": 115.0, 
+                    "2": 125.0, 
+                    "3": 135.0}
+                }
+            }, 
+        "Decay": {    
+            "Example": {
+                "Sawnwood": {"Gamma": 33.5}, 
+                "Panels": {"Custom": {"alpha": 27.91, "beta": 1.0}}, 
+                "Cardboard": {"Exponential": 5.0}
+                }
+            }, 
+        "Unit": "tC"}
+    return inputs
+
+@pytest.fixture
+def graph_factory_1():
+    graph_dict = {"Example": {
+        "Nodes": {
+            "1": {
+                "Decay": False,
+                "Recycling": False,
+                "Name": "Harvested Biomass"},
+            "2": {
+                "Decay": False,
+                "Recycling": False,
+                "Name": "Bioenergy"}
+        },
+        "Edges": {
+            "3": {
+                "From": 1,
+                "To": 2,
+                "Values": [
+                    1
+                ],
+                "Overflow": False}
+            }
+        }
+    }
+    graph_factory = gg.GraphFactory(Dict=graph_dict)
+    return graph_factory
+
+@pytest.fixture
+def graph_factory_2():
+    file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 
+        "..", "examples", "Inputs", "Graph.json")
+    graph = gg.GraphFactory(file_path)
+    return graph

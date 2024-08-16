@@ -25,7 +25,7 @@ class WPGraph():
             raise me.ConstError("Graph name can't be empty")
         self._NAME = str(KEY)
         self._TOPNODE_NAMES = []
-        #self._NODES_NAMES = []
+        self._DECAYNODE_NAMES = []
 
     def get_nodes_names(self) -> list[str]:
         """Retourne le nom de tous les noeuds sous forme de liste
@@ -49,6 +49,12 @@ class WPGraph():
             list[str]: Une liste des noms de noeuds
         """
         return self._TOPNODE_NAMES
+        
+    def add_decaynode_name(self, name):
+        self._DECAYNODE_NAMES.append(name)
+
+    def get_decaynode_names(self) -> list[str]:
+        return self._DECAYNODE_NAMES
 
     def add_node(self, node):
         """Ajoute un noeud au graphe
