@@ -11,6 +11,7 @@ Tous les changements notables appliqués au projet seront notés ici.
 * Nouveau test pour vérifier si le nom des noeuds dans les intrants correspondent à un noeud dans le graphe.
 * Nouveau test pour vérifier si le nom des noeuds dans le report correspondent à un noeud dans le graphe.
 * Une cache pour le niveau de dégradation a été ajoutée, ce qui accélère le calculateur.
+* Nouveaux tests pour vérifier le fichier JSON des imports
 
 ### Changements
 * Le calculateur n'est plus appelé par un parser dans l'API, mais par une fonction importée. Le parser reste disponible pour appeler le calculateur dans une console et la fonction `run_calculator` est également possible pour être inclus directement dans un script python.
