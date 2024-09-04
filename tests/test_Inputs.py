@@ -1,5 +1,5 @@
 """
-Inputs test for MoSiR
+Inputs tests for MoSiR
 
 Copyright (c) 2023 Gouvernement du Québec
 SPDX-License-Identifier: LiLiQ-R-1.1
@@ -15,10 +15,10 @@ def test_wrong_path():
     with pytest.raises(me.InvalidOption):
         ii.ImportData("Not_a_dir")
 
-def test_no_unit(input_json):
-    input_json._DATA['Unit'] = "Not a valid unit"
+def test_no_unit(import_data):
+    import_data._DATA['Unit'] = "Not a valid unit"
     with pytest.raises(me.InvalidOption):
-        input_json.get_unit()
+        import_data.get_unit()
 
 def test_nothing_in_Inputs(input_dict):
     inputs = input_dict
@@ -27,23 +27,23 @@ def test_nothing_in_Inputs(input_dict):
     with pytest.raises(me.QuantityError):
         ii.ImportData(Dict=inputs)
 
-def test_no_flux_data(input_json):
-    input_json._DATA['Inputs']['Example'] = {}
+def test_no_flux_data(import_data):
+    import_data._DATA['Inputs']['Example'] = {}
     with pytest.raises(me.QuantityError):
-        input_json.get_flux_data('Example')
+        import_data.get_flux_data('Example')
 
-def test_not_a_graph_name(input_json):
+def test_not_a_graph_name(import_data):
     with pytest.raises(me.InvalidOption):
-        input_json.get_flux_data('Not a graph name')
+        import_data.get_flux_data('Not a graph name')
 
-def test_no_influx(input_json):
-    input_json._DATA['Inputs']['Example']['Harvested Biomass'] = {}
+def test_no_influx(import_data):
+    import_data._DATA['Inputs']['Example']['Harvested Biomass'] = {}
     with pytest.raises(me.QuantityError):
-        input_json.get_flux_input('Example', 'Harvested Biomass')
+        import_data.get_flux_input('Example', 'Harvested Biomass')
 
-def test_not_a_node_name(input_json):
+def test_not_a_node_name(import_data):
     with pytest.raises(me.InvalidOption):
-        input_json.get_flux_input('Example', 'Not a node name')
+        import_data.get_flux_input('Example', 'Not a node name')
 
 def test_no_decay_in_graph(graph_factory_1, input_dict):
     inputs = input_dict

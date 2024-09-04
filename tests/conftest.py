@@ -238,7 +238,7 @@ def graph_05():
     return graph_05, A, B, C, D, E
 
 @pytest.fixture
-def input_json():
+def import_data():
     file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 
         "..", "examples", "Inputs", "Inputs.json")
     exemple_import = ii.ImportData(file_path)
@@ -277,7 +277,7 @@ def graph_factory_1():
                 "Decay": False,
                 "Recycling": False,
                 "Name": "Bioenergy"}
-        },
+            },
         "Edges": {
             "3": {
                 "From": 1,
@@ -298,3 +298,145 @@ def graph_factory_2():
         "..", "examples", "Inputs", "Graph.json")
     graph = gg.GraphFactory(file_path)
     return graph
+
+@pytest.fixture
+def report_dict():
+    report = {
+        "Output": {
+            "Example": {
+                "Output_1": {
+                    "Nodes_name": ["CO2 emissions", "CO2 emissions from transport", "N2O emissions"], 
+                    "Type": "Flux in", 
+                    "Cumulative": True, 
+                    "Summarize": "Combined", 
+                    "Unit": "w/m2"}, 
+                "Output_2": {
+                    "Nodes_name": ["CO2 emissions", "CO2 emissions from transport", "N2O emissions"], 
+                    "Type": "Flux in", 
+                    "Cumulative": False, 
+                    "Summarize": "Per node", 
+                    "Unit": "tCO2eq"}, 
+                "Output_3": {
+                    "Nodes_name": ["Cardboard", "Panels", "Sawnwood"], 
+                    "Type": "Stock", 
+                    "Cumulative": False, 
+                    "Summarize": "Per node", 
+                    "Unit": "tC"}
+                }
+            }, 
+        "PRG": {"CH4": 28, "N2O": 265}, 
+        "Time": 100, 
+        "Output file extension": ".csv"
+        }
+    return report
+
+@pytest.fixture
+def graph_no_topnode():
+    graph_dict = {"Example": {
+        "Nodes": {
+            "1": {
+                "Decay": False,
+                "Recycling": False,
+                "Name": "1"},
+            "2": {
+                "Decay": False,
+                "Recycling": False,
+                "Name": "2"},
+            "3": {
+                "Decay": False,
+                "Recycling": False,
+                "Name": "3"}
+            },
+        "Edges": {
+            "1": {
+                "From": 1,
+                "To": 2,
+                "Values": [1],
+                "Overflow": False},
+            "2": {
+                "From": 2,
+                "To": 3,
+                "Values": [1],
+                "Overflow": False},
+            "3": {
+                "From": 3,
+                "To": 1,
+                "Values": [1],
+                "Overflow": False}
+            }
+        }
+    }
+    graph_factory = gg.GraphFactory(Dict=graph_dict)
+    return graph_factory
+
+@pytest.fixture
+def graph_no_lastnode():
+    graph_dict = {"Example": {
+        "Nodes": {
+            "1": {
+                "Decay": False,
+                "Recycling": False,
+                "Name": "1"},
+            "2": {
+                "Decay": False,
+                "Recycling": False,
+                "Name": "2"},
+            "3": {
+                "Decay": False,
+                "Recycling": False,
+                "Name": "3"}
+            },
+        "Edges": {
+            "1": {
+                "From": 1,
+                "To": 2,
+                "Values": [1],
+                "Overflow": False},
+            "2": {
+                "From": 2,
+                "To": 3,
+                "Values": [1],
+                "Overflow": False},
+            "3": {
+                "From": 3,
+                "To": 2,
+                "Values": [1],
+                "Overflow": False}
+            }
+        }
+    }
+    graph_factory = gg.GraphFactory(Dict=graph_dict)
+    return graph_factory
+
+@pytest.fixture
+def graph_JSON():
+    graph_dict = {"Example": {
+        "Nodes": {
+            "1": {
+                "Decay": False,
+                "Recycling": False,
+                "Name": "1"},
+            "2": {
+                "Decay": False,
+                "Recycling": False,
+                "Name": "2"},
+            "3": {
+                "Decay": False,
+                "Recycling": False,
+                "Name": "3"}
+            },
+        "Edges": {
+            "1": {
+                "From": 1,
+                "To": 2,
+                "Values": [1],
+                "Overflow": False},
+            "2": {
+                "From": 2,
+                "To": 3,
+                "Values": [1],
+                "Overflow": False}
+            }
+        }
+    }
+    return graph_dict

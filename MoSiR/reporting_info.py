@@ -7,17 +7,38 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 import os
 import json
 import pandas as pd
-from MoSiR import import_info as ip
-from MoSiR import graph_generator as gg
-from MoSiR import mosir_exceptions as me
-from MoSiR import carbon_to_radiatif as cr
+from MoSiR import (
+    import_info as ip,
+    graph_generator as gg,
+    mosir_exceptions as me,
+    carbon_to_radiatif as cr)
 
 # Json -----------------------------------------------------------------------
 
 class ReportData():
-    def __init__(self, directory):
-        with open(directory, "r") as f: 
-            self._DATA = json.load(f)
+    def __init__(self, directory: str=None, Dict: dict=None):
+        if directory is None and Dict is not None:
+            self._DATA = Dict
+        if directory is not None and Dict is None:
+            try:
+                with open(directory, "r") as f: 
+                    self._DATA = json.load(f)  
+            except:
+                raise me.InvalidOption(f"Le chemin {directory}, n'est pas \
+                    valide. Impossible d'ouvrir les données du report")
+        if directory is None and Dict is None:
+            raise me.InvalidOption("Un directory ou dictionnaire doit être \
+                spécifié")
+        for item in ["Output", "PRG", "Time", "Output file extension"]:
+            if not self._DATA[item]:
+                raise me.InvalidOption(f"Il n'y a pas d'informations dans la \
+                    section {item} du fichier json du report. Le calculateur \
+                    est arrêté. Veuillez vous référer à la documentation pour y \
+                    inscrire les informations nécessaires (Output, PRG, Time, \
+                    Output file extension)")
+        self.validate_time()
+        self.validate_extension()
+        self.validate_PRG()
             
     def get_data(self):
         return self._DATA
@@ -26,7 +47,29 @@ class ReportData():
         return [i for i in self.get_data()]
     
     def get_output_data(self, output_name: str):
-        return self._DATA[output_name]
+        return self.get_data()[output_name]
+    
+    def validate_time(self):
+        time = self.get_output_data("Time")
+        if not isinstance(time, int) or time < 1:
+            raise me.InvalidOption("Le temps de simulation dans le report (Time)\
+                doit être un chiffre entier de 1 ou plus.")
+    
+    def validate_extension(self):
+        ext = self.get_output_data("Output file extension")
+        if ext not in [".csv", ".json"]:
+            raise me.InvalidOption("Les extensions possibles pour le report \
+                sont '.csv' ou '.json'")
+        
+    def validate_PRG(self):
+        PRG = self.get_output_data("PRG")
+        for key, value in PRG.items():
+            if key not in ["CH4", "N2O"]:
+                raise me.InvalidOption(f"Les gaz possibles pour le PRG dans le fichier\
+                    report sont CH4 ou N2O. {key} n'est pas valide")
+            if not isinstance(value, (int, float)) or value == 0:
+                raise me.InvalidOption(f"La valeur du PRG pour {key} ne peut pas \
+                    être de 0")
 
 def unit_change(number: float, from_unit: str, to_unit: str) -> float:
     if number == 0:
@@ -72,6 +115,10 @@ def output_creation(graph: gg.GraphFactory, import_data: ip.ImportData,
     input_unit = import_data.get_unit().lower()
     
     for graph_name in output:
+        if graph_name not in graph.get_graph_name:
+            raise me.GraphError(f"Le nom de graphe spécifié dans le report \
+                ({graph_name}) ne correspond pas à un nom de graphe dans le JSON \
+                de graphe ({graph.get_graph_name}).")
         info = output[graph_name]
         for output_name in info:
             data = info[output_name]
@@ -161,8 +208,8 @@ def output_creation(graph: gg.GraphFactory, import_data: ip.ImportData,
                 # Nouveau dt avec seulement Time et Combined
                 dt = {k: dt[k] for k in ('Time', 'Combined')}
             elif summarize != 'Per node':
-                raise me.InvalidOption(f"Should be 'Per node' or 'Combined'\
-                    and not {summarize}")
+                raise me.InvalidOption(f"Les choix de regroupement des résultats sont \
+                    'Per node' ou 'Combined'. {summarize} n'est pas valide.")
 
             dt['Unit'] = report_unit
             if ext == '.csv':
