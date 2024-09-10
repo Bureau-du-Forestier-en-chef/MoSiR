@@ -67,7 +67,7 @@ class ReportData():
             if key not in ["CH4", "N2O"]:
                 raise me.InvalidOption(f"Les gaz possibles pour le PRG dans le fichier\
                     report sont CH4 ou N2O. {key} n'est pas valide")
-            if not isinstance(value, (int, float)) or value == 0:
+            if not isinstance(value, (int, float)) or value <= 0:
                 raise me.InvalidOption(f"La valeur du PRG pour {key} ne peut pas \
                     être de 0")
 

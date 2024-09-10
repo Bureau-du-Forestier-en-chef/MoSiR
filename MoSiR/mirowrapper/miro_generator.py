@@ -95,7 +95,7 @@ class Mirogenerator(Generator):
     def __ItemToNode(self, Item) -> dict:
         return self.__NODEBUILDER.GetDescription(Item)
     
-    def __ConnectorToEdge(self, EdgeID: int, Connector) -> dict:
+    def __ConnectorToEdge(self, EdgeID, Connector) -> dict:
         FromNodeId = int(Connector["startItem"]["id"])
         ToNodeId = int(Connector["endItem"]["id"])
         if FromNodeId == ToNodeId:
@@ -132,7 +132,7 @@ class Mirogenerator(Generator):
         self._nodes = {}
         for Item in self.__ItemsData:
             if (self.__IsNode(Item)):
-                NodeId = int(Item["id"])
+                NodeId = Item["id"]
                 self._nodes[NodeId] = self.__ItemToNode(Item)
                 if "position" in Item:
                     self._nodes[NodeId]["X"] = (Item["position"]["x"] / 10)
@@ -145,7 +145,7 @@ class Mirogenerator(Generator):
         self._edges = {}
         for Connector in self.__ConnectorsData:
             if self.__IsEdge(Connector):
-                EdgeId = int(Connector["id"])
+                EdgeId = Connector["id"]
                 self._edges[EdgeId] = self.__ConnectorToEdge(EdgeId, Connector)
         ENDMESSAGE = "Found " + str(len(self._edges)) + " Potential Edges"
         self.__LogStatus(ENDMESSAGE)
@@ -286,7 +286,7 @@ class Mirogenerator(Generator):
         self.__LogStatus(ENDMESSAGE)
 
     def __ValidateEdge(self, EdgeId: int, EdgeItems: dict) -> None:
-        if EdgeItems["From"] not in self._nodes or EdgeItems["To"] not in self._nodes:
+        if str(EdgeItems["From"]) not in self._nodes or str(EdgeItems["To"]) not in self._nodes:
             TOID = EdgeItems["To"]
             FROMID = EdgeItems["From"]
             ToITEM = None
@@ -331,12 +331,12 @@ class Mirogenerator(Generator):
         ConnectedNodes = set()
         Tonodes = set()
         for EdgeItems in self._edges.values():
-            ConnectedNodes.add(EdgeItems["From"])
-            ConnectedNodes.add(EdgeItems["To"])
-            Tonodes.add(EdgeItems["To"])
+            ConnectedNodes.add(str(EdgeItems["From"]))
+            ConnectedNodes.add(str(EdgeItems["To"]))
+            Tonodes.add(str(EdgeItems["To"]))
         NodestoKeep = {}
-        for NodeId,NodeItems in self._nodes.items():
-            if NodeId in  ConnectedNodes:
+        for NodeId, NodeItems in self._nodes.items():
+            if NodeId in ConnectedNodes:
                 NodestoKeep[NodeId] = NodeItems
                 if NodeId not in Tonodes:
                     MESSAGE = ("Node named "

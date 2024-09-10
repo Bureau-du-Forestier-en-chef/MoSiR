@@ -26,3 +26,15 @@ def test_pourc_not_100(graph_JSON):
     graph_factory = gg.GraphFactory(Dict=graph)
     with pytest.raises(me.EdgeError):
         gv.debugg_graph_02(graph_factory, overflow={'Example': []})
+
+def test_overflow_mixed(graph_overflow_mixed):
+    with pytest.raises(me.EdgeError):
+        gv.debugg_graph_03(graph_overflow_mixed)
+
+def test_quantity_created(graph_JSON, graph_factory_2):
+    graph = graph_JSON
+    graph["Example"]["Edges"]["1"]["Overflow"] = True
+    graph_factory = gg.GraphFactory(Dict=graph)
+    g_f_2 = graph_factory_2
+    with pytest.raises(me.EdgeError):
+        gv.debugg_graph_03_1(graph_factory, overflow={'Example': ['N2']})

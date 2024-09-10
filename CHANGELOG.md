@@ -11,13 +11,14 @@ Tous les changements notables appliqués au projet seront notés ici.
 * Nouveau test pour vérifier si le nom des noeuds dans les intrants correspondent à un noeud dans le graphe.
 * Nouveau test pour vérifier si le nom des noeuds dans le report correspondent à un noeud dans le graphe.
 * Une cache pour le niveau de dégradation a été ajoutée, ce qui accélère le calculateur.
-* Nouveaux tests pour vérifier le fichier JSON des imports
-* Nouveaux tests pour vérifier le fichier JSON de report
+* Nouveaux tests pour vérifier le fichier JSON des imports.
+* Nouveaux tests pour vérifier le fichier JSON de report.
 
 ### Changements
 * Le calculateur n'est plus appelé par un parser dans l'API, mais par une fonction importée. Le parser reste disponible pour appeler le calculateur dans une console et la fonction `run_calculator` est également possible pour être inclus directement dans un script python.
 * Les espaces vides de trop dans les noms de nœud sont automatiquement supprimés (espace double entre les mots ou avant et après le nom).
 * Les noms de noeuds dans Miro qui sont écrit en gras, italique, surlignés, soulignés ou barrés sont transformés pour être sans style. Du code html pouvait parfois être gardé dans les JSON involontairement. 
+* Dans le fichier JSON du graphe, les noeuds de dégradation (decay) et de recyclage (Recycling) sont identifié grâce à "true" ou "false" au lieu de "1" ou "0".
 * La documentation de MoSiR se retouve maintenant dans l'onglet Wiki du github.
 
 ### Corrections

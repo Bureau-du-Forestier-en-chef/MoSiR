@@ -415,15 +415,15 @@ def graph_JSON():
             "1": {
                 "Decay": False,
                 "Recycling": False,
-                "Name": "1"},
+                "Name": "N1"},
             "2": {
                 "Decay": False,
                 "Recycling": False,
-                "Name": "2"},
+                "Name": "N2"},
             "3": {
                 "Decay": False,
                 "Recycling": False,
-                "Name": "3"}
+                "Name": "N3"}
             },
         "Edges": {
             "1": {
@@ -440,3 +440,37 @@ def graph_JSON():
         }
     }
     return graph_dict
+
+@pytest.fixture
+def graph_overflow_mixed():
+    graph_dict = {"Example": {
+        "Nodes": {
+            "1": {
+                "Decay": False,
+                "Recycling": False,
+                "Name": "1"},
+            "2": {
+                "Decay": False,
+                "Recycling": False,
+                "Name": "2"},
+            "3": {
+                "Decay": False,
+                "Recycling": False,
+                "Name": "3"}
+            },
+        "Edges": {
+            "1": {
+                "From": 1,
+                "To": 3,
+                "Values": [1],
+                "Overflow": False},
+            "2": {
+                "From": 2,
+                "To": 3,
+                "Values": [1],
+                "Overflow": True},
+            }
+        }
+    }
+    graph_factory = gg.GraphFactory(Dict=graph_dict)
+    return graph_factory

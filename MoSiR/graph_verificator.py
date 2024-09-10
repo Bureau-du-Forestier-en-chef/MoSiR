@@ -36,7 +36,7 @@ def main(graph: gg.GraphFactory):
         overflow_name[graph_name] = []
         for edges_id in EDGES:
             for key, values in EDGES.items():
-                if values.get('Overflow') == 1 and values.get('To') not in overflow_id:
+                if values.get('Overflow') == True and values.get('To') not in overflow_id:
                     overflow_id.append(values.get('To'))
         for key, values in NODES.items():
             if int(key) in overflow_id:
@@ -46,7 +46,7 @@ def main(graph: gg.GraphFactory):
     debugg_graph_01(graph_copy)
     debugg_graph_02(graph_copy, overflow=overflow_name)
     debugg_graph_03(graph_copy)
-    debugg_graph_03_1(graph_copy, overflow=overflow_id)
+    debugg_graph_03_1(graph_copy, overflow=overflow_name)
     debugg_graph_04(graph_copy, overflow=overflow_name)
     debugg_graph_05(graph_copy)
     debugg_graph_06(graph_copy)
@@ -126,16 +126,16 @@ def debugg_graph_03(graph: gg.GraphFactory):
                     reçoit des edges avec et sans overflow")
             
 # On test si une node overflow a un edge sortant normal
-def debugg_graph_03_1(graph: gg.GraphFactory, overflow: list):
+def debugg_graph_03_1(graph: gg.GraphFactory, overflow: dict[str, list[str]]):
     # Test de overflow
     for graph_name in graph.get_data:
         G3_1 = graph.get_data.get(graph_name)
         NODES = G3_1.get('Nodes', {})
         EDGES = G3_1.get('Edges', {})
         for edgesID, value in EDGES.items():
-            if value['From'] in overflow:
-                if value['Overflow'] == 0:
-                    raise me.EdgeError(f"Le noeud {NODES[value['From']]['Name']} \
+            if NODES[str(value["From"])]['Name'] in overflow[graph_name]:
+                if value['Overflow'] == False:
+                    raise me.EdgeError(f"Le noeud {NODES[str(value['From'])]['Name']} \
                         reçoit des liens avec débordement et a des liens sortants \
                         sans débordement. La comptabilisation des flux sera erronée.")
 
