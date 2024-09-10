@@ -19,6 +19,7 @@ class ItemBuilder:
             + r")([\s\t]*)(\[)([\s\t]*)(\d+\.?\d*)([\s\t]*)(\])(?:(.+)|)")
         return CompiledRegex.match(BaseName)
     
+    """
     # TODO seems useless
     def __GetValue(self, BaseName: str, Descriptor: str) -> float:
         RESULT = self.__GetFromRegex(BaseName, Descriptor)
@@ -39,7 +40,8 @@ class ItemBuilder:
                 if RESULT.group(9) is not None:
                     Name += RESULT.group(9)
         return Name
-    
+    """ 
+
     def IsItem(self, Item: dict, Choice: str = "Choose") -> bool:
         if Choice in self.__DATA and self.__DATA[Choice]:
             for keys, ChooseItem in self.__DATA[Choice].items():
@@ -151,13 +153,38 @@ class Mirogenerator(Generator):
         self.__LogStatus(ENDMESSAGE)
 
     def __GetEdgeConnectorValues(self, Item: dict) -> float:
-        Values = []
         try:
             WorkableString = utilities.Htmlparser.get_string_from_html(
                 Item["data"]["content"].replace("%", ""))
-            Values = [round(float(value)/100, 10) for value in WorkableString.split(",")]
+            if ":" not in WorkableString:
+                Values = [round(float(value)/100, 10) for value in WorkableString.split(",")]
+            else:
+                """ Si les valeurs sont fournis en dictionnaires, les transformer en liste.
+                """
+                splited_values = WorkableString.split(",")
+                Values = {}
+                for x in splited_values:
+                    time, value = x.split(":")
+                    Values[int(time)] = round(float(value)/100, 10)
+                if not any(time == 0 for time in Values.keys()):
+                    MESSAGE = "L'année 0 doit être spécifié dans les proportions de votre pense-bête.\
+                        Par exemple, 0: 100%. "
+                    raise MESSAGE
+                
+                """
+                sorted_keys = sorted(dict_values.keys())
+                for i in range(len(sorted_keys)):
+                       start_time = sorted_keys[i]
+                       value = dict_values[start_time]
+                       if i + 1 < len(sorted_keys):
+                           end_time = sorted_keys[i + 1]
+                       else:
+                           end_time = start_time + 1 
+                       Values.extend([value] * (end_time - start_time))
+                """
         except:
-            MESSAGE = "Cannot get edge value for edge id " + Item["id"] + " on Item " + str(Item)
+            if not MESSAGE:
+                MESSAGE = "Cannot get edge value for edge id " + Item["id"] + " on Item " + str(Item)
             raise(mosir_exceptions.Miroerror(MESSAGE, Item["id"]))
         return Values
 

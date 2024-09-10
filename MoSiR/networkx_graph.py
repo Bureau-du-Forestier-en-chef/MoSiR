@@ -71,7 +71,7 @@ class WPGraph():
                 Nodes must have an unique name")
         self._graph.add_node(node)
     
-    def add_edge(self, node_from, node_to, proportions: list[float]):
+    def add_edge(self, node_from, node_to, proportions: list[float] | dict):
         """Ajoute un lien entre deux noeuds dans le graphe
 
         Args:
@@ -83,15 +83,20 @@ class WPGraph():
             me.EdgeError: Une proportion doit être entre 0 et 1
             me.EdgeError: Un lien ne peut s'attacher entre deux noeuds identiques
         """
-        if any(x < 0 or x > 1 for x in proportions):
-            raise me.EdgeError(f"Proportion must be between 0 and 1. \
-                Error between {node_from.NAME} to {node_to.NAME}")
+        if isinstance(proportions, list):
+            if any(x < 0 or x > 1 for x in proportions):
+                raise me.EdgeError(f"Proportion must be between 0 and 1. \
+                    Error between {node_from.NAME} to {node_to.NAME}")
+        if isinstance(proportions, dict):
+            if any(x < 0 or x > 1 for x in proportions.values()):
+                raise me.EdgeError(f"Proportion must be between 0 and 1. \
+                    Error between {node_from.NAME} to {node_to.NAME}")
         if node_from == node_to:
             raise me.EdgeError(f"Can't create an edge from {node_from.NAME} to itself")
         self._graph.add_edge(node_from, node_to, proportion=proportions)
     
     def get_edge_proportions(self, node_from, node_to) -> list[float]:
-        """Retourne la proportion entre deux noeuds
+        """Retourne la liste proportion entre deux noeuds
 
         Args:
             node_from (_type_): Noeud de départ

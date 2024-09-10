@@ -94,20 +94,23 @@ def debugg_graph_02(graph: gg.GraphFactory, overflow: dict[str, list[str]]):
         G2 = graph.get_graph(graph_name)
         no_edges = []
         for node in G2.nodes():
-            total = 0
+            # On regarde d'abord combien de valeur il y a dans le pense-bête
+            proportion_length = []
             for successors in G2.get_successors(node):
-                if successors.NAME in overflow[graph_name]:
-                    continue
-                total += node._get_value_time(G2.get_edge_proportions(node, successors), 0)
-            total = round(total, 10)
-            if total == 0:
-                no_edges.append(node.NAME)
-            elif abs(total - 1) > 0:
-                raise me.EdgeError(' '.join((f"La somme des liens sortants de \
-                    {node.NAME} n'est pas égale à 100% ({total * 100})").split())) 
-        if len(no_edges) > 0:   
-            warnings.warn(f'Le ou les nœuds suivants ont aucun lien sortant: {no_edges}',
-                stacklevel=2)
+                proportion_length.append(len(G2.get_edge_proportions(node, successors)))
+
+            # On regarde si on respecte le 100%
+            if len(proportion_length) > 0:
+                for timestep in range(max(proportion_length)):
+                    total = 0
+                    for successors in G2.get_successors(node):
+                        if successors.NAME in overflow[graph_name]:
+                            continue
+                        total += node._get_value_time(G2.get_edge_proportions(node, successors), timestep)
+                    total = round(total, 10)
+                    if total != 1:
+                        raise me.EdgeError(f"La somme des liens sortants de \
+                            {node.NAME} n'est pas égale à 100% ({total * 100} au temps {timestep})")
 
 # On test si une node reçoit des edges avec et sans overflow
 def debugg_graph_03(graph: gg.GraphFactory):

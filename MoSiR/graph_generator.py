@@ -85,12 +85,12 @@ class IndustrialNode(metaclass = ABCMeta): # aller voir la doc ABC
     def __init__(self, LOCALNAME: str):
         self._NAME = str(" ".join(LOCALNAME.strip().split()))
         
-    def _get_value_time(self, values: list[float], time: int) -> float:
+    def _get_value_time(self, values: list[float] | dict, time: int) -> float:
         """ _get_value_time Documentation
 
         La fonction _get_value_time sert à trouver une proportion dans à
-        un edge à un temps donné dans une liste de proportion. Si le temps
-        demandé est plus grand que la longueur de la liste, la dernière 
+        un edge à un temps donné dans une liste de proportion ou d'un dictionnaire. 
+        Si le temps demandé est plus grand que la longueur de la liste, la dernière 
         proportion de la liste est retournée. Est utilisé strictement pour
         les proportions. Pour connaitre les quantités de carbone à un temps 
         donné, utiliser la fonction _get_quantity_time.
@@ -102,7 +102,16 @@ class IndustrialNode(metaclass = ABCMeta): # aller voir la doc ABC
         Returns:
             float: _description_
         """
-        return values[min(time, len(values) - 1)]
+        try:
+            if isinstance(values, list):
+                result = values[min(time, len(values) - 1)]
+            if isinstance(values, dict):
+                timestep =  max([i for i in values.keys() if int(i) <= time])
+                result = values[timestep]
+        except:
+            raise me.EdgeError(f"Le temps {time} n'a pas été retrouvé dans les\
+                proportion {values} du noeud {self.NAME}")
+        return result
     
     @property
     def NAME(self):
