@@ -248,7 +248,7 @@ def debugg_graph_08(graph: gg.GraphFactory):
             warnings.warn(f'Le ou les nœuds suivants ont aucun edge: {no_edges}',
                 stacklevel=2)
 
-# Vérifier que les graphes contiennent au moins une node
+# Vérifier que les graphes contiennent au moins deux nodes
 def debugg_graph_09(graph: gg.GraphFactory):
     for name in graph.get_graph_name:
         G9 = graph.get_graph(name)
