@@ -170,18 +170,6 @@ class Mirogenerator(Generator):
                     MESSAGE = "L'année 0 doit être spécifié dans les proportions de votre pense-bête.\
                         Par exemple, 0: 100%. "
                     raise MESSAGE
-                
-                """
-                sorted_keys = sorted(dict_values.keys())
-                for i in range(len(sorted_keys)):
-                       start_time = sorted_keys[i]
-                       value = dict_values[start_time]
-                       if i + 1 < len(sorted_keys):
-                           end_time = sorted_keys[i + 1]
-                       else:
-                           end_time = start_time + 1 
-                       Values.extend([value] * (end_time - start_time))
-                """
         except:
             if not MESSAGE:
                 MESSAGE = "Cannot get edge value for edge id " + Item["id"] + " on Item " + str(Item)
@@ -255,18 +243,47 @@ class Mirogenerator(Generator):
         self.__LogStatus(ENDMESSAGE)
         return Forks
     
-    def __multiplyValues(self, FirstList: list[float], SecondList: list[float]) -> list[float]:
-        NEWSIZE = max(len(FirstList), len(SecondList))
-        NewList = []
-        for Valid in range(0,NEWSIZE):
-            FirstValue = FirstList[-1]
-            SecondValue = SecondList[-1]
-            if len(FirstList) > Valid:
-                FirstValue = FirstList[Valid]
-            if len(SecondList) > Valid:
-                SecondValue = SecondList[Valid]
-            NewList.append(FirstValue*SecondValue)
-        return NewList
+    def __edgeListToDict(self, list_to_change: list[float]) -> dict: 
+        new_dict = {0: list_to_change[0]}
+        for i, value in enumerate(list_to_change[1:], start=1):
+            if value != list(new_dict.values())[-1]:
+                new_dict[i] = value
+        return new_dict
+    
+    def __edgeDictToList(self, dict_to_change: dict) -> list[float]:
+        if isinstance(dict_to_change, dict):
+            new_list = []
+            sorted_keys = sorted(dict_to_change.keys())
+            for i in range(len(sorted_keys)):
+                   start_time = sorted_keys[i]
+                   value = dict_to_change[start_time]
+                   if i + 1 < len(sorted_keys):
+                       end_time = sorted_keys[i + 1]
+                   else:
+                       end_time = start_time + 1 
+                   new_list.extend([value] * (end_time - start_time))
+        elif isinstance(dict_to_change, list):
+            new_list = dict_to_change
+        else:
+            raise mosir_exceptions.EdgeError()
+        return new_list
+
+    def __multiplyValues(self, First: list[float] | dict, Second: list[float] | dict) -> list[float]:
+        FirstList = self.__edgeDictToList(First)
+        SecondList = self.__edgeDictToList(Second)
+        if isinstance(FirstList, list) and isinstance(SecondList, list):
+            NEWSIZE = max(len(FirstList), len(SecondList))
+            NewList = []
+            for Valid in range(NEWSIZE):
+                FirstValue = FirstList[-1]
+                SecondValue = SecondList[-1]
+                if len(FirstList) > Valid:
+                    FirstValue = FirstList[Valid]
+                if len(SecondList) > Valid:
+                    SecondValue = SecondList[Valid]
+                NewList.append(round(FirstValue * SecondValue, 10))
+        NewDict = self.__edgeListToDict(NewList)
+        return NewDict
     
     def __GetMaxId(self) -> int:
         MaxedgeId = 0

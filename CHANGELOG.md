@@ -4,13 +4,13 @@ Tous les changements notables appliqués au projet seront notés ici.
 ## À venir dans la prochaine version
 * Davantage de tests de validation pour intercepter de possibles erreurs.
 
-## v1.0.1 (2024-09-10)
+## v1.0.1 (2024-09-12)
 ### Nouveautés
 * Message d'erreur si aucun flux en intrant n'est inscrit dans le JSON ou dans le tableau de l'interface lors de la simulation.
 * Message d'erreur si un nœud ayant du débordement a un edge sortant sans débordement.
 * Les pourcentages inscrits dans Miro sur un pense-bête sont maintenant limités à une précision de 8 chiffres après la virgule. Dû à une particularité propre à Python, il est nécessaire d'arrondir les pourcentages pour obtenir un cumulatif de 100% dans les liens sortants. Si un pense-bête a plus de 8 chiffres après la virgule, celui-ci sera arrondi par MoSiR. 
 * Les JSON qui sont créés par MoSiR ont maintenant une indentation dans les données pour clarifier la structure du fichier.
-* Il est maintenant possible de faire une énumération de proportions changeantes dans un pense-bête. Dans un cas où la ventilation de votre graphe change avec le temps, il est possible de préciser le changement de proportion dans le temps plutôt que de refaire une deuxième analyse. Les précisions sont le wiki du GitHub. 
+* Il est maintenant possible de faire une énumération de proportions changeantes dans un pense-bête. Dans un cas où la ventilation de votre graphe change avec le temps, il est possible de préciser le changement de proportion dans un pense-bête plutôt que de refaire une deuxième analyse. Les précisions sont le wiki du GitHub. 
 * Nouveau test pour vérifier les espaces vides de trop dans les noms de nœud.
 * Nouveau test pour vérifier si le nom des nœuds dans les intrants correspond à un nœud dans le graphe.
 * Nouveau test pour vérifier si le nom des nœuds dans le report correspond à un nœud dans le graphe.
