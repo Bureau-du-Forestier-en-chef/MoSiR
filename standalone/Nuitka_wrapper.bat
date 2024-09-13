@@ -26,8 +26,8 @@ if %ErrorLevel% == 1 (
     --windows-icon-from-ico=..\MoSiR\static\image\MoSiR-logo_2.png ^
     --company-name="Bureau du Forestier en chef" ^
     --product-name=MoSiR ^
-    --product-version=1.0.1 ^
-    --file-version=1.0.1 ^
+    --product-version=1.1.0 ^
+    --file-version=1.1.0 ^
     --file-description="Standalone application of MoSiR, a Python package for the carbon fate of wood products" ^
     --copyright="LiLiQ-R-1.1" ^
     --output-dir=. ^
