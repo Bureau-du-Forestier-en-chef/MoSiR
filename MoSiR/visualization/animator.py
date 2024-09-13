@@ -19,9 +19,15 @@ class Htmlanimation:
         return utilities.Jsonparser.read(File)
     
     def __GetEdgeWeigth(self, EdgeData: dict, Time: int) -> float:
-        Value = int(EdgeData["Values"][-1]* 100)
-        if Time < len(EdgeData["Values"]):
-            Value = int(EdgeData["Values"][Time] * 100)
+        Value = EdgeData["Values"]
+        if isinstance(Value, list):
+            if Time < len(Value):
+                Value = int(Value[Time] * 100)
+            else:
+                Value = int(Value[-1] * 100)
+        if isinstance(Value, dict):
+            timestep = max([i for i in Value.keys() if int(i) <= Time])
+            Value = Value[timestep]
         return Value
     
     def __GetColor(self, TypeofItem: str, NodeItem: dict) -> str:

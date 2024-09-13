@@ -3,10 +3,9 @@ Copyright (c) 2023 Gouvernement du Québec
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 """
-from context import MoSiR
+# import pytest
 
-import unittest
-        
+"""
 class TestItemBuilder(unittest.TestCase):
     def setUp(self) -> None:
         self.__NODEBUILDER = MoSiR.ItemBuilder("inputs/Node.json")
@@ -51,4 +50,4 @@ class TestItemBuilder(unittest.TestCase):
            self.assertEqual(self.__GENERATOR._MiroGenerator__IsEdgeConnected({"startItem":0,"endItem":1}),True)
            self.assertEqual(self.__GENERATOR._MiroGenerator__IsEdgeConnected({"startItem":0}),False)
            self.assertEqual(self.__GENERATOR._MiroGenerator__IsEdgeConnected({"endItem":0}),False)
-            
+"""

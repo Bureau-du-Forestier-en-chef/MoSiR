@@ -1,4 +1,6 @@
 """
+Fichier des exceptions possibles dans MoSiR.
+
 Copyright (c) 2023 Gouvernement du Québec
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -48,4 +50,6 @@ class GraphError(Exception):
 class DecayError(Exception):
     def __init__(self, message: str):    
         super().__init__(message)
+
+
         

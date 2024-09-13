@@ -8,17 +8,20 @@ import os
 import requests
 import werkzeug
 import traceback
-from flask import request
-from flask import redirect
-from flask import send_file
-from flask import make_response
-from flask import render_template
+from flask import (
+    request,
+    redirect,
+    make_response,
+    render_template
+    )
 from datetime import datetime
 from datetime import timedelta
 from dotenv import load_dotenv
-from MoSiR import graph_generator as gg
-from MoSiR import mosir_exceptions as me
-from MoSiR import graph_verificator as gv
+from MoSiR import (
+    graph_generator as gg,
+    mosir_exceptions as me,
+    graph_verificator as gv
+    )
 from .miro_generator import Mirogenerator
 from ..blueprint_component import Component
 
@@ -68,7 +71,6 @@ class Mirowrapper(Component):
         self.__GrapGenerators = []
         self.__Session = requests.Session()
         self.__GRAPHSNAME = 'Graphs.json'
-    
 
     #TODO faire un get set pour mes client ID
     def __change_miro_keys(self):
@@ -219,7 +221,7 @@ class Mirowrapper(Component):
             self._write_graphs_json(GraphsDict, GRAPHNAMES)
         except Exception as e:
             raise me.GraphError(f"<h4><i class='fa fa-exclamation-triangle' \
-                style='color: red;'></i> Il y a une erreur avec le graph\
+                style='color: red;'></i> Il y a une erreur avec le graphe\
                 importé:</h4><br><h5><span style='color: \
                 red;'>{e}</span></h5>")
 

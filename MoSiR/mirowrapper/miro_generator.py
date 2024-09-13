@@ -14,18 +14,21 @@ class ItemBuilder:
         self.__DATA = utilities.Jsonparser.read(JsonLocation)
 
     def __GetFromRegex(self, BaseName: str, Descriptor: str) -> re.Match:
-        CompiledRegex = re.compile("(?:(.+)|)("
-                                   + Descriptor
-                                   + ")([\s\t]*)(\[)([\s\t]*)(\d+\.?\d*)([\s\t]*)(\])(?:(.+)|)")
+        CompiledRegex = re.compile(r"(?:(.+)|)("
+            + Descriptor
+            + r")([\s\t]*)(\[)([\s\t]*)(\d+\.?\d*)([\s\t]*)(\])(?:(.+)|)")
         return CompiledRegex.match(BaseName)
     
+    """
+    # TODO seems useless
     def __GetValue(self, BaseName: str, Descriptor: str) -> float:
         RESULT = self.__GetFromRegex(BaseName, Descriptor)
         if RESULT:
             return float(RESULT.group(6))
         else:
             return 1.0
-        
+    
+    # TODO seems useless
     def __GetName(self, BaseName: str, Descriptors: list) -> str:
         Name = copy.deepcopy(BaseName)
         for Descriptor in Descriptors:
@@ -37,7 +40,8 @@ class ItemBuilder:
                 if RESULT.group(9) is not None:
                     Name += RESULT.group(9)
         return Name
-    
+    """ 
+
     def IsItem(self, Item: dict, Choice: str = "Choose") -> bool:
         if Choice in self.__DATA and self.__DATA[Choice]:
             for keys, ChooseItem in self.__DATA[Choice].items():
@@ -55,16 +59,16 @@ class ItemBuilder:
         DataHolder = {}
         if "Describe" in self.__DATA and self.__DATA["Describe"]:
             for Type, DescribeItem in self.__DATA["Describe"].items():
-                DataHolder[Type] = 1.0                                           
+                DataHolder[Type] = True                                           
                 for keys, AllValues in DescribeItem.items():
                     TempItem = copy.deepcopy(Item)
                     for key in keys.split('/'):
                         if key in TempItem:
                             TempItem = TempItem[key]
                         else:
-                            DataHolder[Type] = 0.0
+                            DataHolder[Type] = False
                     if not TempItem in AllValues:
-                        DataHolder[Type] = 0.0
+                        DataHolder[Type] = False
             if "data" in Item and "content" in Item["data"]:
                 Name = utilities.Htmlparser.get_string_from_html(
                     Item["data"]["content"]).replace(',', '')
@@ -93,14 +97,14 @@ class Mirogenerator(Generator):
     def __ItemToNode(self, Item) -> dict:
         return self.__NODEBUILDER.GetDescription(Item)
     
-    def __ConnectorToEdge(self, EdgeID: int, Connector) -> dict:
+    def __ConnectorToEdge(self, EdgeID, Connector) -> dict:
         FromNodeId = int(Connector["startItem"]["id"])
         ToNodeId = int(Connector["endItem"]["id"])
         if FromNodeId == ToNodeId:
             raise(mosir_exceptions.Miroerror("Edge id "
-                                             + str(EdgeID)
-                                             +" has the same source and target node "
-                                             + str(FromNodeId), EdgeID))
+                + str(EdgeID)
+                +" has the same source and target node "
+                + str(FromNodeId), EdgeID))
         Holder = {"From": FromNodeId, "To": ToNodeId, "Values": [1.0]}
         OtherData = self.__EDGEBUILDER.GetDescription(Connector)
         Holder.update(OtherData)
@@ -130,7 +134,7 @@ class Mirogenerator(Generator):
         self._nodes = {}
         for Item in self.__ItemsData:
             if (self.__IsNode(Item)):
-                NodeId = int(Item["id"])
+                NodeId = Item["id"]
                 self._nodes[NodeId] = self.__ItemToNode(Item)
                 if "position" in Item:
                     self._nodes[NodeId]["X"] = (Item["position"]["x"] / 10)
@@ -143,22 +147,35 @@ class Mirogenerator(Generator):
         self._edges = {}
         for Connector in self.__ConnectorsData:
             if self.__IsEdge(Connector):
-                EdgeId = int(Connector["id"])
+                EdgeId = Connector["id"]
                 self._edges[EdgeId] = self.__ConnectorToEdge(EdgeId, Connector)
         ENDMESSAGE = "Found " + str(len(self._edges)) + " Potential Edges"
         self.__LogStatus(ENDMESSAGE)
 
     def __GetEdgeConnectorValues(self, Item: dict) -> float:
-        Values = []
         try:
             WorkableString = utilities.Htmlparser.get_string_from_html(
                 Item["data"]["content"].replace("%", ""))
-            Values = [float(value)/100 for value in WorkableString.split(",")]
+            if ":" not in WorkableString:
+                Values = [round(float(value)/100, 10) for value in WorkableString.split(",")]
+            else:
+                """ Si les valeurs sont fournis en dictionnaires, les transformer en liste.
+                """
+                splited_values = WorkableString.split(",")
+                Values = {}
+                for x in splited_values:
+                    time, value = x.split(":")
+                    Values[int(time)] = round(float(value)/100, 10)
+                if not any(time == 0 for time in Values.keys()):
+                    MESSAGE = "L'année 0 doit être spécifié dans les proportions de votre pense-bête.\
+                        Par exemple, 0: 100%. "
+                    raise MESSAGE
         except:
-            MESSAGE = "Cannot get edge value for edge id " + Item["id"] + " on Item " + str(Item)
+            if not MESSAGE:
+                MESSAGE = "Cannot get edge value for edge id " + Item["id"] + " on Item " + str(Item)
             raise(mosir_exceptions.Miroerror(MESSAGE, Item["id"]))
         return Values
-    
+
     def __GetEdgeValues(self) -> dict:
         TagLocation = {}
         for Item in self.__ItemsData:
@@ -226,18 +243,47 @@ class Mirogenerator(Generator):
         self.__LogStatus(ENDMESSAGE)
         return Forks
     
-    def __multiplyValues(self, FirstList: list[float], SecondList: list[float]) -> list[float]:
-        NEWSIZE = max(len(FirstList), len(SecondList))
-        NewList = []
-        for Valid in range(0,NEWSIZE):
-            FirstValue = FirstList[-1]
-            SecondValue = SecondList[-1]
-            if len(FirstList) > Valid:
-                FirstValue = FirstList[Valid]
-            if len(SecondList) > Valid:
-                SecondValue = SecondList[Valid]
-            NewList.append(FirstValue*SecondValue)
-        return NewList
+    def __edgeListToDict(self, list_to_change: list[float]) -> dict: 
+        new_dict = {0: list_to_change[0]}
+        for i, value in enumerate(list_to_change[1:], start=1):
+            if value != list(new_dict.values())[-1]:
+                new_dict[i] = value
+        return new_dict
+    
+    def __edgeDictToList(self, dict_to_change: dict) -> list[float]:
+        if isinstance(dict_to_change, dict):
+            new_list = []
+            sorted_keys = sorted(dict_to_change.keys())
+            for i in range(len(sorted_keys)):
+                   start_time = sorted_keys[i]
+                   value = dict_to_change[start_time]
+                   if i + 1 < len(sorted_keys):
+                       end_time = sorted_keys[i + 1]
+                   else:
+                       end_time = start_time + 1 
+                   new_list.extend([value] * (end_time - start_time))
+        elif isinstance(dict_to_change, list):
+            new_list = dict_to_change
+        else:
+            raise mosir_exceptions.EdgeError()
+        return new_list
+
+    def __multiplyValues(self, First: list[float] | dict, Second: list[float] | dict) -> list[float]:
+        FirstList = self.__edgeDictToList(First)
+        SecondList = self.__edgeDictToList(Second)
+        if isinstance(FirstList, list) and isinstance(SecondList, list):
+            NEWSIZE = max(len(FirstList), len(SecondList))
+            NewList = []
+            for Valid in range(NEWSIZE):
+                FirstValue = FirstList[-1]
+                SecondValue = SecondList[-1]
+                if len(FirstList) > Valid:
+                    FirstValue = FirstList[Valid]
+                if len(SecondList) > Valid:
+                    SecondValue = SecondList[Valid]
+                NewList.append(round(FirstValue * SecondValue, 10))
+        NewDict = self.__edgeListToDict(NewList)
+        return NewDict
     
     def __GetMaxId(self) -> int:
         MaxedgeId = 0
@@ -283,8 +329,8 @@ class Mirogenerator(Generator):
         ENDMESSAGE = "After Edges fork simplification got " + str(len(self._edges)) + " Edges"
         self.__LogStatus(ENDMESSAGE)
 
-    def __ValidateEdge(self, EdgeId: int, EdgeItems: {}) -> None:
-        if EdgeItems["From"] not in self._nodes or EdgeItems["To"] not in self._nodes:
+    def __ValidateEdge(self, EdgeId: int, EdgeItems: dict) -> None:
+        if str(EdgeItems["From"]) not in self._nodes or str(EdgeItems["To"]) not in self._nodes:
             TOID = EdgeItems["To"]
             FROMID = EdgeItems["From"]
             ToITEM = None
@@ -329,12 +375,12 @@ class Mirogenerator(Generator):
         ConnectedNodes = set()
         Tonodes = set()
         for EdgeItems in self._edges.values():
-            ConnectedNodes.add(EdgeItems["From"])
-            ConnectedNodes.add(EdgeItems["To"])
-            Tonodes.add(EdgeItems["To"])
+            ConnectedNodes.add(str(EdgeItems["From"]))
+            ConnectedNodes.add(str(EdgeItems["To"]))
+            Tonodes.add(str(EdgeItems["To"]))
         NodestoKeep = {}
-        for NodeId,NodeItems in self._nodes.items():
-            if NodeId in  ConnectedNodes:
+        for NodeId, NodeItems in self._nodes.items():
+            if NodeId in ConnectedNodes:
                 NodestoKeep[NodeId] = NodeItems
                 if NodeId not in Tonodes:
                     MESSAGE = ("Node named "

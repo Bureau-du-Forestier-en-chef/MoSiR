@@ -5,7 +5,6 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 """
 import json
-import warnings
 from scipy.stats import gamma
 from MoSiR import networkx_graph as wp
 from MoSiR import mosir_exceptions as me
@@ -84,14 +83,14 @@ class IndustrialNode(metaclass = ABCMeta): # aller voir la doc ABC
         LOCALNAME (str): Le nom du noeud
     """
     def __init__(self, LOCALNAME: str):
-        self._NAME = str(LOCALNAME)
+        self._NAME = str(" ".join(LOCALNAME.strip().split()))
         
-    def _get_value_time(self, values: list[float], time: int) -> float:
+    def _get_value_time(self, values: list[float] | dict, time: int) -> float:
         """ _get_value_time Documentation
 
         La fonction _get_value_time sert à trouver une proportion dans à
-        un edge à un temps donné dans une liste de proportion. Si le temps
-        demandé est plus grand que la longueur de la liste, la dernière 
+        un edge à un temps donné dans une liste de proportion ou d'un dictionnaire. 
+        Si le temps demandé est plus grand que la longueur de la liste, la dernière 
         proportion de la liste est retournée. Est utilisé strictement pour
         les proportions. Pour connaitre les quantités de carbone à un temps 
         donné, utiliser la fonction _get_quantity_time.
@@ -103,7 +102,16 @@ class IndustrialNode(metaclass = ABCMeta): # aller voir la doc ABC
         Returns:
             float: _description_
         """
-        return values[min(time, len(values) - 1)]
+        try:
+            if isinstance(values, list):
+                result = values[min(time, len(values) - 1)]
+            if isinstance(values, dict):
+                timestep =  max([i for i in values.keys() if int(i) <= time])
+                result = values[timestep]
+        except:
+            raise me.EdgeError(f"Le temps {time} n'a pas été retrouvé dans les\
+                proportion {values} du noeud {self.NAME}")
+        return result
     
     @property
     def NAME(self):
@@ -244,38 +252,45 @@ class ProportionNode(IndustrialNode):
     """
     def __init__(self, NAME: str):
         super().__init__(NAME)
-        self.__pn_cache = Caching()
+        self.__pn_cache_out = Caching()
+        self.__pn_cache_in = Caching()
     
-    def past_carbon(self):
-        return self.__pn_cache
+    def past_out_carbon(self):
+        return self.__pn_cache_out
+    
+    def past_in_carbon(self):
+        return self.__pn_cache_in
     
     def get_flux_out(self, graph: WPGraph, time: int, cumulative: bool = False) -> float:
         if cumulative == False:
-            if time in self.past_carbon().flux_cache:
-                return self.past_carbon().get_flux_cache(time)
+            if time in self.past_out_carbon().flux_cache:
+                return self.past_out_carbon().get_flux_cache(time)
             flux_out = self.get_flux_in(graph, time, cumulative)
-            self.past_carbon().set_flux_cache(time, flux_out)
+            self.past_out_carbon().set_flux_cache(time, flux_out)
             return flux_out
         if cumulative == True:
             total = 0
             for timestep in range(time + 1):
-                if timestep in self.past_carbon().flux_cache:
-                    total += self.past_carbon().get_flux_cache(timestep)
+                if timestep in self.past_out_carbon().flux_cache:
+                    total += self.past_out_carbon().get_flux_cache(timestep)
                     continue
                 flux_out = self.get_flux_in(graph, timestep, cumulative)
-                self.past_carbon().set_flux_cache(timestep, flux_out)
+                self.past_out_carbon().set_flux_cache(timestep, flux_out)
                 total += flux_out
             return total
         
     def get_flux_in(self, graph: WPGraph, time: int, cumulative: bool = False) -> float:
         total = 0
         if cumulative == False:
+            if time in self.past_in_carbon().flux_cache:
+                return self.past_in_carbon().get_flux_cache(time)
             for parent in graph.get_predecessors(self):
                 proportion_parent = self._get_value_time(graph.get_edge_proportions(parent, self), time)
                 if proportion_parent == 0:
                     continue
                 parent_carbon = parent.get_flux_out(graph, time, cumulative)
                 total += proportion_parent * parent_carbon
+            self.past_in_carbon().set_flux_cache(time, total)
             return total
         else:
             for timestep in range(time + 1):
@@ -310,17 +325,25 @@ class DecayNode(ProportionNode):
     Returns:
         DecayNode: Un objet de la classe DecayNode
     """
-    def __init__(self, NAME: str, decay: int):
+    def __init__(self, NAME: str, decay: bool):
         super().__init__(NAME)
-        if not isinstance(decay, int) or decay <= 0:
-            raise ValueError("Decay value must be a positive integer.")
+        if not isinstance(decay, bool):
+            raise ValueError("La valeur de Decay doit être 'true' ou 'false'.")
         self._decay = decay
         self._alpha_value = None
         self._beta_value = None
-        self.__dn_cache = Caching()
+        self.__dn_cache_out = Caching()
+        self.__dn_cache_in = Caching()
+        self.__dn_cache_gamma = Caching()
     
-    def past_carbon(self):
-        return self.__dn_cache
+    def past_out_carbon(self):
+        return self.__dn_cache_out
+    
+    def past_in_carbon(self):
+        return self.__dn_cache_in
+    
+    def past_gamma_proportion(self):
+        return self.__dn_cache_gamma
         
     @property
     def alpha(self):
@@ -338,27 +361,68 @@ class DecayNode(ProportionNode):
     def beta(self, beta):
        self._beta_value = beta
     
+    def get_decay_proportion(self, time, alpha, beta):
+        """Donne la dégradation cumulative à un timestep
+
+        Donne le pourcentage de dégradation à un temps, un alpha et
+        un beta donné. Représente le pourcentage de la dégradation cumulative
+        entre le temps 0 et le temps X demandé.
+
+        Args:
+            time (_type_): _description_
+            alpha (_type_): _description_
+            beta (_type_): _description_
+        """
+        if time in self.past_gamma_proportion().flux_cache:
+            decay_proportion = self.past_gamma_proportion().get_flux_cache(time)
+        else:
+            decay_proportion = float(gamma.cdf(time, alpha, scale=beta))
+            self.past_gamma_proportion().set_flux_cache(time, decay_proportion)
+
+        return decay_proportion
+
+    def get_annual_decay_proportion(self, time, alpha, beta):
+        """Donne la dégradation entre deux timesteps
+
+        Donne le pourcentage de dégradation entre deux temps.
+        Par exemple, le pourcentage de dégradation qui occure entre le temps
+        8 et 9 d'un noeud de dégradation à un alpha et beta donnés.
+
+        Args:
+            time (_type_): _description_
+            alpha (_type_): _description_
+            beta (_type_): _description_
+        """
+        decay_proportion_now = self.get_decay_proportion(time, alpha, beta)
+        decay_proportion_before = self.get_decay_proportion(time - 1, alpha, beta)
+        decay_proportion = decay_proportion_now - decay_proportion_before
+
+        return decay_proportion
+    
     def get_flux_out(self, graph: WPGraph, time: int, cumulative: bool = False) -> float:
         total = 0
         if cumulative == False:
-            if time in self.past_carbon().flux_cache:
-                return self.past_carbon().get_flux_cache(time)
+            # Cache of flux
+            if time in self.past_out_carbon().flux_cache:
+                return self.past_out_carbon().get_flux_cache(time)
             for timestep in range(time):   
                 flux_in = self.get_flux_in(graph, timestep, cumulative)
+                time_between = time - timestep
                 if flux_in == 0: 
                     continue
-                decay_proportion = gamma.cdf(time - timestep, self.alpha, scale=self.beta) \
-                    - gamma.cdf(time - timestep - 1, self.alpha, scale=self.beta)
+                decay_proportion = self.get_annual_decay_proportion(
+                    time_between, self.alpha, self.beta)
                 total += flux_in * decay_proportion
-            self.past_carbon().set_flux_cache(time, total)
+            self.past_out_carbon().set_flux_cache(time, total)
             return total
         else:
             for timestep in range(time):  
-                flux_in = self.get_flux_in(graph, timestep, cumulative= False)
+                flux_in = self.get_flux_in(graph, timestep, cumulative=False)
+                time_between = time - timestep
                 if flux_in == 0:
                     continue
-                decay_proportion = gamma.cdf(
-                    time - timestep, self.alpha, scale=self.beta)
+                decay_proportion = self.get_decay_proportion(
+                    time_between, self.alpha, self.beta)
                 total += flux_in * decay_proportion
             return total
         
@@ -369,7 +433,7 @@ class DecayNode(ProportionNode):
             return Annual
         else: 
             for Year in range(time + 1): 
-                Annual = super().get_flux_in(graph, Year, cumulative= False)
+                Annual = super().get_flux_in(graph, Year, cumulative=False)
                 total += Annual
             return total 
     
@@ -396,10 +460,11 @@ class DecayNode(ProportionNode):
             total = 0
             for timestep in range(time + 1): 
                 annual = self.get_flux_in(graph, timestep, cumulative= False)
+                time_between = time - timestep
                 if annual == 0:
                     continue
-                decay_proportion = 1 - gamma.cdf(
-                    time - timestep, self.alpha, scale=self.beta)
+                decay_proportion = 1 - self.get_decay_proportion(
+                    time_between, self.alpha, self.beta)
                 total += annual * decay_proportion
             return total
         except RecursionError:
@@ -511,14 +576,17 @@ class GraphFactory():
         if DIR is None and Dict is not None:
             self._DATA = Dict
         if DIR is not None and Dict is None:
-            with open(self._DIRECTORY, "r") as files: 
-                self._DATA = json.load(files)
+            try:
+                with open(self._DIRECTORY, "r") as files: 
+                    self._DATA = json.load(files)
+            except:
+                raise me.InvalidOption(f"Le chemin {DIR}, n'est pas \
+                    valide. Impossible d'ouvrir le graphe")
         if DIR is None and Dict is None:
             raise me.InvalidOption("No dictionary or directory specified")
         self._GRAPHNAME = []
         self._GRAPHS = []
         
-        graph_num = 0
         keys = list(self.get_data.keys())
         keys.sort()
         for graph in keys:
@@ -536,33 +604,34 @@ class GraphFactory():
             node_map = {}
             for node_id, node_data in _NODES.items():
                 if int(node_id) in _TOPNODES: 
-                    if node_data['Decay'] > 0 or node_data['Recycling'] > 0:
+                    if node_data['Decay'] == True or node_data['Recycling'] == True:
                         raise me.GraphError(f"Node at the top (a node without an edge \
                             going into it) cannot also be identified as a recycling \
                             or decay node. Node name: {node_data['Name']}") 
                     new_node =  TopNode(node_data['Name'])
+                    self.get_graph(graph).add_topnode_name(node_data['Name'])
                 elif int(node_id) in _LASTNODES:
-                    if node_data['Decay'] > 0 or node_data['Recycling'] > 0:
+                    if node_data['Decay'] == True or node_data['Recycling'] == True:
                         raise me.GraphError(f"Node at the bottom (a node without an edge \
                             going out of it) cannot also be identified as a recycling \
                             or decay node. Node name: {node_data['Name']}")  
                     new_node = PoolNode(node_data['Name'])
-                elif node_data["Decay"] > 0:
-                    if node_data["Recycling"] > 0:
+                elif node_data["Decay"] == True:
+                    if node_data["Recycling"] == True:
                         raise me.GraphError(f"A node cannot be both a recycling and \
                             decay node. Node name: {node_data['Name']}")
-                    new_node = DecayNode(node_data['Name'], int(node_data['Decay']))
-                elif node_data['Recycling'] == 1: 
+                    new_node = DecayNode(node_data['Name'], node_data['Decay'])
+                    self.get_graph(graph).add_decaynode_name(node_data['Name'])
+                elif node_data['Recycling'] == True: 
                     new_node = RecyclingNode(node_data['Name'])
                 else: new_node = ProportionNode(node_data['Name'])
-                self._GRAPHS[graph_num].add_node(new_node)
+                self.get_graph(graph).add_node(new_node)
                 node_map[int(node_id)] = new_node        
 
             for edge_id, edge_data in _EDGES.items():
                 From = node_map[edge_data['From']]
                 To = node_map[edge_data['To']]
-                self._GRAPHS[graph_num].add_edge(From, To, edge_data['Values'])  
-            graph_num += 1     
+                self.get_graph(graph).add_edge(From, To, edge_data['Values'])     
     
     @property
     def get_graph_name(self) -> list[str]:
@@ -583,4 +652,4 @@ class GraphFactory():
     
     @get_data.setter
     def get_data(self, input):
-        raise me.ConstError("Data from graphs can't be changed outside Miro") 
+        raise me.ConstError("Data from graphs can't be changed outside Miro")

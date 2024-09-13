@@ -8,9 +8,13 @@ import argparse as ap
 from MoSiR import import_info as ip
 from MoSiR import reporting_info as rp   
 from MoSiR import graph_generator as gg
-from MoSiR import graph_verificator as gv
 
 def main(raw_args = None):
+    """Fonction parser du calculateur de MoSiR
+
+    Args:
+        raw_args (_type_, optional): _description_. Defaults to None.
+    """
     parser = ap.ArgumentParser(
         description = 'Process input and output for the MoSiR calculator')
     parser.add_argument('--GraphFileDirectory', '-G',
@@ -32,18 +36,26 @@ def main(raw_args = None):
 
     args = parser.parse_args(raw_args)
 
-    Graph = gg.GraphFactory(args.G)
-    Import = ip.ImportData(args.D)
-    Report = rp.ReportData(args.R) 
+    run_calculator(args.G, args.I, args.R, args.E)
+
+def run_calculator(Graphe: str, Import: str, Report: str, Output: str):
+    """Fonction pour rouler le calculateur de MoSiR, sans parser
+
+    Args:
+        Graphe (str): Localisation du fichier JSON du graphe
+        Import (str): Localisation du fichier JSON du import
+        Report (str): Localisation du fichier JSON du report
+        Output (str): Localisation où les extrants seront produits
+    """
+    Graph_processed = gg.GraphFactory(Graphe)
+    Import_processed = ip.ImportData(Import)
+    Report_processed = rp.ReportData(Report) 
  
     # Add imports to graph
-    ip.add_import(Graph, Import)
-
-    # La vérification est faite à l'importation
-    # gv.main(Graph)
+    ip.add_import(Graph_processed, Import_processed)
 
     # Reporting
-    rp.output_creation(Graph, Import, Report, args.E)
+    rp.output_creation(Graph_processed, Import_processed, Report_processed, Output)
 
 if __name__ == "__main__":
     main()

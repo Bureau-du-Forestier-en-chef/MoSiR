@@ -189,7 +189,9 @@ function appendcinputs(graph_name, period, quantity, node) {
 	if (isInteger(period) && parseFloat(quantity) && node) {
     	var table = document.getElementById("cinputs_" + graph_name);
       var table_actual_period = document.getElementById("Period_" + graph_name);
+      var table_actual_quantity = document.getElementById("Quantity_" + graph_name);
       table_actual_period.value = +table_actual_period.value + 1;
+      table_actual_quantity.value = 0;
     	var key = graph_name + '~' + node + '~' + period
     	var row = table.insertRow(table.rows.length-1);
     	var all_data = [node, period, quantity];
@@ -322,6 +324,7 @@ function addcinputs(graph_name) {
         alert("Cette période existe déjà pour ce noeud!");
         return;
     } else if (quantity.trim() !== "" && !isNaN(quantity) && Number(quantity) >= 0) {
+        // TODO faire un checkup que la valeur est pas 0 avant
         lastPeriod.push({node: node, period: period});
     }
     appendcinputs(graph_name, period, quantity, node);

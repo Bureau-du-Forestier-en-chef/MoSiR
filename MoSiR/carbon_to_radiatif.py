@@ -10,13 +10,13 @@ import pandas as pd
 import argparse as ap
 from MoSiR import mosir_exceptions as me
 
-def main(raw_args = None):
+def main(raw_args = None) -> list[float]:
     parser = ap.ArgumentParser(
         description = 'Process input and transform carbon emissions to \
             radiative forcing')
     parser.add_argument('--Input', '-I',
         dest = 'I',
-        type = str,                
+        type = list[float],                
         required = True,
         help = "Liste d'émissions de carbone en kgC en ordre chronologique")
     parser.add_argument('--Gas', '-G',
@@ -32,16 +32,17 @@ def main(raw_args = None):
     
     args = parser.parse_args(raw_args)
 
-    # Transformer un string en liste
+    """ Transformer un string en liste
     if args.I[0] == '[' and args.I[-1] == ']':
         colonne = [float(i) for i in args.I[1:-1].split(',')]
     else:
         raise me.InvalidOption("L'option -I doit être le string d'une liste \
             (ex: '[1,2,3]')")
+    """
+    
+    colonne = args.I
     gaz = args.G
-    RF = pd.read_excel(os.path.join(os.path.dirname(os.path.abspath(__file__)), \
-        "radiative_forcing", "Dynco2_Base.xlsx")).sort_values(by = 'Year')\
-        .to_dict(orient = 'list')
+
     if args.C in ['True', 'true']:
         cumulative = True
     elif args.C in ['False', 'false']:
@@ -49,10 +50,10 @@ def main(raw_args = None):
     else:
         raise me.InvalidOption("L'option -C doit être True ou False")
 
-    result = rad_convolve(colonne, gaz, RF, cumulative)
-    return print(result)
+    result = rad_convolve(colonne, gaz, cumulative)
+    return result
 
-def rad_convolve(colonne: list[float], gaz: str, RF: dict, cumulative: bool = False) -> list[float]:
+def rad_convolve(colonne: list[float], gaz: str, cumulative: bool = False) -> list[float]:
     """Fonction servant à transformer une liste d'émissions d'un gaz (en kgC)
     en forçage radiatif (en w/m2). Change dabord les unités pour la masse 
     correspondante du gaz. Multiplie par la suite cette valeur au facteur
@@ -62,7 +63,6 @@ def rad_convolve(colonne: list[float], gaz: str, RF: dict, cumulative: bool = Fa
     Args:
         colonne (list): Émissions en kgC d'un gaz
         gaz (str): Nom du gaz (CO2, CO, CH4 ou N2O)
-        RF (dict): Table des FC de DynCO
         cumulative (bool, optional):  Defaults to False.
 
     Raises:
@@ -84,6 +84,18 @@ def rad_convolve(colonne: list[float], gaz: str, RF: dict, cumulative: bool = Fa
         raise me.InvalidOption(f"{gaz} n'est pas dans les options de gaz \
             pour un calcul en radiatif")
         
+    file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 
+        "radiative_forcing", "Dynco2_Base.csv")
+    try:
+        # If file is save from EN excel
+        RF = pd.read_csv(file_path, sep=',').sort_values(by='Year').to_dict(orient='list')
+    except pd.errors.ParserError:
+        try:
+            # If file is save from a FR excel
+            RF = pd.read_csv(file_path, sep=';').sort_values(by='Year').to_dict(orient='list')
+        except Exception as e:
+            print("Erreur lors de la lecture du fichier DynCO:", e)
+
     FC = RF[gaz][0:len(colonne)]
     rad = list(np.convolve(result, FC)[0:len(colonne)])
     
@@ -93,14 +105,13 @@ def rad_convolve(colonne: list[float], gaz: str, RF: dict, cumulative: bool = Fa
         result = rad 
     return result
 
-def rad_formatting(data: dict, RF: dict, cumulative: bool = False):
+def rad_formatting(data: dict, cumulative: bool = False):
     """Fonction qui survole un dict et change toutes les colonnes
     nommées comme un gaz (CO, CO2, CH4, N2O) et transforme leur unité
     en forçage radiatif grâce à la fonction rad_convolve.
 
     Args:
         data (dict): Un tableau sous forme de dictionnaire
-        RF (dict): Les facteur de DynCO2
         cumulative (bool, optional): Defaults to False.
 
     Raises:
@@ -123,13 +134,13 @@ def rad_formatting(data: dict, RF: dict, cumulative: bool = False):
                 raise me.TimeStepError("La colonne {col} représentant le temps \
                     dans le dataframe n'est pas en ordre")
         elif 'CO2' in col:
-            data[col] = list(rad_convolve(data[col], 'CO2', RF, cumulative = cumulative))
+            data[col] = list(rad_convolve(data[col], 'CO2', cumulative = cumulative))
         elif 'CH4' in col:
-            data[col] = list(rad_convolve(data[col], 'CH4', RF, cumulative = cumulative))
+            data[col] = list(rad_convolve(data[col], 'CH4', cumulative = cumulative))
         elif 'CO' in col and 'CO2' not in col:
-            data[col] = list(rad_convolve(data[col], 'CO', RF, cumulative = cumulative))   
+            data[col] = list(rad_convolve(data[col], 'CO', cumulative = cumulative))   
         elif 'N2O' in col:
-            data[col] = list(rad_convolve(data[col], 'N2O', RF, cumulative = cumulative))
+            data[col] = list(rad_convolve(data[col], 'N2O', cumulative = cumulative))
         else:
             raise me.InvalidOption(f"Il n'y a pas de gaz reconnu dans {col}. \
                 Le nom du noeud doit contenir en majuscule et séparé par des \

@@ -15,3 +15,4 @@ from . import reporting_info as reporting_info
 from . import mosir_calculator as mosir_calculator
 from . import mosir_exceptions as mosir_exceptions
 from . import carbon_to_radiatif as carbon_to_radiatif
+from . import MoSiR as MoSiR

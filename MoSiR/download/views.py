@@ -26,7 +26,7 @@ class Download(Component):
     
     def __graphs_download(self, filename: str):
         return send_file(os.path.join(self._get_uploads_folder(), 
-                                      filename), as_attachment= True)
+            filename), as_attachment= True)
     
     def add_all_endpoints(self):
         self._add_endpoint(endpoint='/', 
