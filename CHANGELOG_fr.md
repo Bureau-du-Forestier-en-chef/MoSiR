@@ -3,6 +3,7 @@ Tous les changements notables appliqués au projet seront notés ici.
 
 ## À venir dans la prochaine version
 * Davantage de tests de validation pour intercepter de possibles erreurs.
+* Interface en anglais
 
 ## v1.1.0 (2024-09-13)
 ### Nouveautés
