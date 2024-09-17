@@ -38,7 +38,7 @@ Si vous rencontrez une erreur, la manière à privilégier est par l'entremise d
 
 [Issues]: https://github.com/Bureau-du-Forestier-en-chef/MoSiR/issues
 
-# License
+# Licence
 
 MoSiR utilise la licence [LiLiQ-R 1.1](https://github.com/Bureau-du-Forestier-en-chef/MoSiR/blob/master/LICENSES/FR/LiLiQ-R11.pdf).
 
