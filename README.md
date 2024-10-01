@@ -33,7 +33,7 @@ The user can build a graph in Miro that can contain any number of nodes, some of
  
 # Report a bug
 
-If you encounter an error, the preferred way is via [Issues] on GitHub. Sur la page des `Issues` de MoSiR, cliquer sur `New issue`. On the MoSiR `Issues` page, click on `New issue`. You need to provide as much information as possible to reproduce the error you are encountering. To make suggestions for improvement, please refer to the [future developments](https://github.com/Bureau-du-Forestier-en-chef/MoSiR/wiki/D%C3%A9veloppements-futurs) section.
+If you encounter an error, the preferred way is via [Issues] on GitHub. On the MoSiR `Issues` page, click on `New issue`. You need to provide as much information as possible to reproduce the error you are encountering. To make suggestions for improvement, please refer to the [future developments](https://github.com/Bureau-du-Forestier-en-chef/MoSiR/wiki/D%C3%A9veloppements-futurs) section.
 
 [Issues]: https://github.com/Bureau-du-Forestier-en-chef/MoSiR/issues
 
