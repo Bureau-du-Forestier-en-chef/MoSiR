@@ -6,7 +6,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 import os
 import tempfile
 from MoSiR.views import Flaskwrapper
-# from MoSiR.stats.views import stats # TODO Trouver une utilité
+# from MoSiR.stats.views import stats
 from MoSiR.upload.views import upload
 from MoSiR.download.views import download
 from MoSiR.reporting.views import reporting
