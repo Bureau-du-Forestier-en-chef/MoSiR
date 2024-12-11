@@ -1,4 +1,4 @@
-# Change log
+# Change log TEST
 All notable changes applied to the project will be noted here.
 
 ## Coming in next versions
