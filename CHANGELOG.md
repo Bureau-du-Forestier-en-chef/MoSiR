@@ -1,9 +1,10 @@
 # Change log
 All notable changes applied to the project will be noted here.
 
-## Coming in the next version
+## Coming in next versions
 * More validation tests to catch possible errors.
-* Interface in english.
+* Interface in english
+* The feature of performing multiple calculations for the same architecture when the user has more than one input file.
 
 ## v1.1.0 (2024-09-13)
 ### New features
