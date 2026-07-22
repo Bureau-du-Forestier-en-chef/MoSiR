@@ -34,8 +34,26 @@ L'utilisateur a la possibilité de bâtir dans Miro un graphe pouvant contenir a
 
 # Tests et couverture
 
-![Tests](https://img.shields.io/badge/tests-481_r%C3%A9ussis-brightgreen?style=flat-square)
+[![CI](https://github.com/Bureau-du-Forestier-en-chef/MoSiR/actions/workflows/tests.yml/badge.svg)](https://github.com/Bureau-du-Forestier-en-chef/MoSiR/actions/workflows/tests.yml)
+
+<!-- coverage-badges:start -->
+![Tests](https://img.shields.io/badge/tests-518_r%C3%A9ussis-brightgreen?style=flat-square)
 ![Couverture](https://img.shields.io/badge/couverture-86%25-brightgreen?style=flat-square)
+<!-- coverage-badges:end -->
+
+Les deux badges et le tableau ci-dessous sont **générés**, pas écrits à la
+main. Après une modification du code ou l'ajout de tests, les rafraîchir en
+double-cliquant sur `update_coverage.bat` (Windows), ou depuis un terminal :
+
+```bash
+python -m pytest --cov=MoSiR --cov-report=json:coverage.json --update-readme
+```
+
+La commande réécrit `README.md` et `README_fr.md`, et ne touche qu'aux zones
+comprises entre les marqueurs `<!-- coverage-… -->`. Remplacer
+`--update-readme` par `--check-readme` pour vérifier sans écrire : c'est ce que
+lance la CI, donc un push aux chiffres périmés est refusé. Les deux drapeaux
+exigent la suite complète et refusent d'écrire depuis une exécution partielle.
 
 La suite de tests s'exécute dans l'environnement conda décrit par
 `environment.yml` :
@@ -57,11 +75,12 @@ Le badge ci-dessus donne la couverture globale. Le calculateur lui-même — la
 partie utilisable comme simple import Python, indépendamment de l'interface
 web — se détaille ainsi :
 
+<!-- coverage-table:start -->
 | Module | Couverture |
 | --- | --- |
-| `networkx_graph.py` | 100 % |
-| `graph_verificator.py` | 100 % |
 | `generators.py` | 100 % |
+| `graph_verificator.py` | 100 % |
+| `networkx_graph.py` | 100 % |
 | `utilities.py` | 100 % |
 | `gamma_function.py` | 98 % |
 | `import_info.py` | 98 % |
@@ -70,6 +89,9 @@ web — se détaille ainsi :
 | `mosir_calculator.py` | 95 % |
 | `mosir_exceptions.py` | 91 % |
 | `carbon_to_radiatif.py` | 84 % |
+
+Chiffres mesurés sur MoSiR 1.1.0 avec Python 3.12.
+<!-- coverage-table:end -->
 
 La couche d'interface web (`views.py`, `blueprint_component.py`, `MoSiR.py`)
 n'a pas encore de tests automatisés : c'est elle qui tire le chiffre global
@@ -84,9 +106,6 @@ références et relire le diff avant de commiter :
 ```bash
 MOSIR_REGEN_REFERENCE=1 python -m pytest tests/test_Characterization.py
 ```
-
-Chiffres mesurés sur MoSiR 1.1.0 avec Python 3.12. Relancer les commandes
-ci-dessus pour les mettre à jour.
 
 # Signaler une erreur
 

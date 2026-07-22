@@ -33,8 +33,26 @@ The user can build a graph in Miro that can contain any number of nodes, some of
 
 # Tests and coverage
 
-![Tests](https://img.shields.io/badge/tests-481_passed-brightgreen?style=flat-square)
+[![CI](https://github.com/Bureau-du-Forestier-en-chef/MoSiR/actions/workflows/tests.yml/badge.svg)](https://github.com/Bureau-du-Forestier-en-chef/MoSiR/actions/workflows/tests.yml)
+
+<!-- coverage-badges:start -->
+![Tests](https://img.shields.io/badge/tests-518_passed-brightgreen?style=flat-square)
 ![Coverage](https://img.shields.io/badge/coverage-86%25-brightgreen?style=flat-square)
+<!-- coverage-badges:end -->
+
+The two badges and the table below are **generated**, not hand-written. After
+changing the code or adding tests, refresh them by double-clicking
+`update_coverage.bat` (Windows), or from any shell:
+
+```bash
+python -m pytest --cov=MoSiR --cov-report=json:coverage.json --update-readme
+```
+
+The command rewrites both `README.md` and `README_fr.md`, and only ever touches
+the regions between the `<!-- coverage-… -->` markers. Replace `--update-readme`
+with `--check-readme` to verify without writing; that is what the CI runs, so a
+push carrying out-of-date figures is rejected. Both flags require the full
+suite: they refuse to write from a partial run.
 
 The test suite runs in the conda environment described by `environment.yml`:
 
@@ -55,11 +73,12 @@ The badge above reports overall coverage. The calculator itself — the part
 usable as a plain Python import, independently of the web interface — breaks
 down as follows:
 
+<!-- coverage-table:start -->
 | Module | Coverage |
 | --- | --- |
-| `networkx_graph.py` | 100% |
-| `graph_verificator.py` | 100% |
 | `generators.py` | 100% |
+| `graph_verificator.py` | 100% |
+| `networkx_graph.py` | 100% |
 | `utilities.py` | 100% |
 | `gamma_function.py` | 98% |
 | `import_info.py` | 98% |
@@ -68,6 +87,9 @@ down as follows:
 | `mosir_calculator.py` | 95% |
 | `mosir_exceptions.py` | 91% |
 | `carbon_to_radiatif.py` | 84% |
+
+Figures measured on MoSiR 1.1.0 with Python 3.12.
+<!-- coverage-table:end -->
 
 The web interface layer (`views.py`, `blueprint_component.py`, `MoSiR.py`) has
 no automated tests yet and is what keeps the overall figure below the
@@ -82,9 +104,6 @@ committing:
 ```bash
 MOSIR_REGEN_REFERENCE=1 python -m pytest tests/test_Characterization.py
 ```
-
-Figures measured on MoSiR 1.1.0 with Python 3.12. Re-run the commands above to
-refresh them.
 
 # Report a bug
 

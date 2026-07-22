@@ -4,6 +4,8 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 """
 import os
+import pathlib
+import platform
 import pytest
 import pandas as pd
 from MoSiR import (
@@ -13,6 +15,7 @@ from MoSiR import (
     import_info as ii,
     reporting_info as ri,
 )
+from tests import coverage_docs
 
 """ Coverage
 pytest --cov=MoSiR tests/
@@ -20,6 +23,93 @@ pytest --cov=MoSiR tests/
 
 EXAMPLES_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)),
     "..", "examples", "Inputs")
+
+ROOT = pathlib.Path(__file__).resolve().parents[1]
+COVERAGE_JSON = ROOT / "coverage.json"
+
+
+# Chiffres de couverture des README ------------------------------------------
+# Volontairement opt-in: un `pytest` normal ne doit jamais modifier de
+# fichier suivi par git. Voir README section "Tests and coverage".
+
+def pytest_addoption(parser):
+    group = parser.getgroup("MoSiR")
+    group.addoption("--update-readme", action="store_true", default=False,
+        help="Réécrit les chiffres de couverture dans les README. "
+             "Exige --cov-report=json:coverage.json")
+    group.addoption("--check-readme", action="store_true", default=False,
+        help="Échoue si les chiffres des README sont périmés, sans les "
+             "modifier. Exige --cov-report=json:coverage.json")
+
+
+def pytest_sessionfinish(session, exitstatus):
+    config = session.config
+    update = config.getoption("--update-readme")
+    check = config.getoption("--check-readme")
+    if not (update or check):
+        return
+
+    reporter = config.pluginmanager.get_plugin("terminalreporter")
+
+    def report(message):
+        if reporter is not None:
+            reporter.write_line(message)
+
+    # Garde-fous: sans eux, une exécution partielle inscrirait son propre
+    # compte de tests dans les README, et une exécution sans --cov
+    # réutiliserait un coverage.json périmé d'un run précédent.
+    problems = []
+    if config.getoption("file_or_dir"):
+        problems.append("lancer la suite complète, sans chemin en argument")
+    if not getattr(config.option, "cov_source", None):
+        problems.append("--cov=MoSiR est requis")
+    if not COVERAGE_JSON.is_file():
+        problems.append(f"--cov-report=json:{COVERAGE_JSON.name} est requis")
+
+    if problems:
+        report("[README] Chiffres non traités: " + " ; ".join(problems))
+        report("[README] Utiliser `make docs-coverage` ou `make docs-check`")
+        session.exitstatus = 1
+        return
+
+    # Sur échec des tests, les chiffres ne veulent rien dire: ne pas écrire.
+    if update and exitstatus != 0:
+        report("[README] Tests en échec: chiffres non réécrits")
+        return
+
+    data = coverage_docs.load_coverage(COVERAGE_JSON)
+    tests = session.testscollected
+    version = _package_version()
+    python = ".".join(platform.python_version_tuple()[:2])
+
+    stale = []
+    for name in coverage_docs.LOCALES:
+        path = ROOT / name
+        current, newline = coverage_docs.read_markdown(path)
+        updated = coverage_docs.apply(current, name, tests, data, version, python)
+        if updated == current:
+            continue
+        if update:
+            coverage_docs.write_markdown(path, updated, newline)
+            report(f"[README] {name} mis à jour")
+        else:
+            stale.append(name)
+
+    if check and stale:
+        report(f"[README] Chiffres périmés dans {', '.join(stale)}: "
+               "lancer `make docs-coverage`")
+        session.exitstatus = 1
+    elif update:
+        report(f"[README] {tests} tests, "
+               f"{coverage_docs.total_percent(data)}% de couverture")
+
+
+def _package_version() -> str:
+    from importlib.metadata import version, PackageNotFoundError
+    try:
+        return version("MoSiR")
+    except PackageNotFoundError:
+        return "inconnue"
 
 @pytest.fixture
 def MOSIR_TOLERENCE():

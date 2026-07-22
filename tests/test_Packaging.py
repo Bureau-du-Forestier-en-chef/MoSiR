@@ -191,19 +191,19 @@ def test_readmes_announce_the_same_figures(readmes):
             f"{name} annonce {numbers[name]} au lieu de {reference}"
 
 
-def test_announced_test_count_matches_reality(readmes, request):
-    """Le nombre de tests annoncé dans les badges doit être le vrai.
+@pytest.mark.parametrize("name", README_FILES)
+def test_generated_blocks_are_delimited(name, readmes):
+    """Les zones générées doivent rester encadrées par leurs marqueurs.
 
-    Se met à jour en relançant la suite: si ce test échoue, corriger les
-    badges des deux README avec le nombre indiqué dans le message.
+    Sans eux, --update-readme ne sait plus quoi remplacer et échoue.
+    La fraîcheur des chiffres eux-mêmes est vérifiée par --check-readme,
+    pas ici: elle demande une exécution complète avec couverture.
     """
-    collected = request.session.testscollected or len(request.session.items)
-    announced = re.search(r"badge/tests-(\d+)", readmes["README.md"])
+    from tests import coverage_docs
 
-    assert announced, "Badge du nombre de tests introuvable dans README.md"
-    assert int(announced.group(1)) == collected, (
-        f"Les README annoncent {announced.group(1)} tests, "
-        f"la suite en compte {collected}. Mettre à jour les deux badges.")
+    for marker in (coverage_docs.BADGES_MARKER, coverage_docs.TABLE_MARKER):
+        assert f"<!-- {marker}:start -->" in readmes[name]
+        assert f"<!-- {marker}:end -->" in readmes[name]
 
 
 @pytest.mark.parametrize("name", README_FILES)

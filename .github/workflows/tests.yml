@@ -1,0 +1,45 @@
+# Suite de tests de MoSiR.
+#
+# L'environnement est monté depuis environment.yml, donc chaque exécution
+# valide aussi ce fichier : si une dépendance ne se résout plus depuis
+# conda-forge seul, la CI le signale.
+#
+# Le job ne corrige jamais les README : il refuse un push dont les
+# chiffres de couverture sont périmés et renvoie vers `make docs-coverage`.
+name: Tests
+
+on:
+  push:
+    branches: [master, dev]
+  pull_request:
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        # Requis pour que l'environnement conda soit activé dans chaque étape
+        shell: bash -el {0}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Monter l'environnement conda
+        uses: mamba-org/setup-micromamba@v2
+        with:
+          environment-file: environment.yml
+          cache-environment: true
+
+      - name: Suite de tests et couverture
+        run: |
+          python -m pytest \
+            --cov=MoSiR \
+            --cov-report=json:coverage.json \
+            --cov-report=term
+
+      - name: Vérifier que les chiffres des README sont à jour
+        run: |
+          python -m pytest \
+            --cov=MoSiR \
+            --cov-report=json:coverage.json \
+            --check-readme

@@ -24,6 +24,7 @@ standalone/MoSiR.build
 MoSiR/BFECGCBM
 htmlcov/
 .coverage
+coverage.json
 README_package.md
 tests/profiler
 MoSiR.py

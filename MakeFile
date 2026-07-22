@@ -1,13 +1,22 @@
+# Les recettes doivent être indentées par une TABULATION, jamais par des
+# espaces, sinon make échoue avec "missing separator".
+
 init:
-    conda env create -f environment.yml
+	conda env create -f environment.yml
 
 update:
-    conda env update -f environment.yml --prune
+	conda env update -f environment.yml --prune
 
 test:
-    python -m pytest
+	python -m pytest
 
 coverage:
-    python -m pytest --cov=MoSiR --cov-report=term-missing
+	python -m pytest --cov=MoSiR --cov-report=term-missing
 
-.PHONY: init update test coverage
+docs-coverage:
+	python -m pytest --cov=MoSiR --cov-report=json:coverage.json --update-readme
+
+docs-check:
+	python -m pytest --cov=MoSiR --cov-report=json:coverage.json --check-readme
+
+.PHONY: init update test coverage docs-coverage docs-check

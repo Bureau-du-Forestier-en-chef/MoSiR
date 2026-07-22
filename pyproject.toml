@@ -18,9 +18,8 @@ readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "LiLiQ-R-1.1" }
 authors = [
-    { name = "Gabriel Landry", email = "gabriel.landry@fec.gouv.qc.ca" },
-    { name = "Guillaume Cyr" },
-    { name = "Marc-Alexandre Martel" },
+    { name = "Gabriel Landry" }, 
+    { email = "gabriel.landry@fec.gouv.qc.ca" },
 ]
 
 dependencies = [
