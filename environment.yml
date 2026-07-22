@@ -16,6 +16,10 @@ name: MoSiR
 
 channels:
   - conda-forge
+  # 'nodefaults' neutralise le canal Anaconda 'defaults' hérité de
+  # ~/.condarc. Sans lui, la résolution dépend de la configuration de
+  # chaque poste et n'est donc pas reproductible.
+  - nodefaults
 
 dependencies:
   # Python : la syntaxe `list[float] | dict` des annotations exige 3.10+
@@ -28,6 +32,7 @@ dependencies:
   - werkzeug >=2.2
   - requests >=2.28
   - python-dotenv >=0.21
+  - pyvis >=0.3
 
   # --- Calculateur ---
   - networkx >=2.8
@@ -42,10 +47,7 @@ dependencies:
   - pyyaml >=6.0
 
   - pip:
-      # Le canal Anaconda 'defaults' ne fournit que pyvis 0.2.0. Le
-      # déclarer côté conda faisait installer 0.2.0 puis le remplacer
-      # aussitôt par 0.3.2. Paquet Python pur : pip est sa place.
-      - pyvis >=0.3
-
-      # Installe MoSiR en mode éditable depuis pyproject.toml
+      # Installe MoSiR en mode éditable depuis pyproject.toml : les
+      # modifications du code source sont prises en compte sans
+      # réinstaller.
       - --editable .

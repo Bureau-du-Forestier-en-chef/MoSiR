@@ -246,17 +246,39 @@ def test_value_time_with_dict_uses_the_latest_defined_step():
     assert node._get_value_time(proportions, 5) == 0.5
 
 
-def test_value_time_with_dict_compares_keys_as_strings():
-    """Comportement actuel: les clés sont comparées alphabétiquement.
+def test_value_time_with_dict_compares_keys_numerically():
+    """Les clés viennent du JSON en texte et doivent être comparées en nombres.
 
-    Avec les clés "0", "5" et "10", au temps 10 c'est "5" qui gagne
-    ("5" > "10" en ordre lexicographique) au lieu de "10".
-    Sans impact aujourd'hui car GraphFactory ne produit que des listes.
-    TODO: comparer les clés numériquement dans _get_value_time.
+    Régression historique: la comparaison était lexicographique, donc au
+    temps 10 la clé "5" l'emportait sur "10" ("5" > "10" en ordre
+    alphabétique) et une mauvaise proportion était appliquée.
     """
     node = gg.ProportionNode('A')
     proportions = {"0": 0.1, "5": 0.5, "10": 1.0}
-    assert node._get_value_time(proportions, 10) == 0.5
+
+    assert node._get_value_time(proportions, 0) == 0.1
+    assert node._get_value_time(proportions, 4) == 0.1
+    assert node._get_value_time(proportions, 5) == 0.5
+    assert node._get_value_time(proportions, 9) == 0.5
+    assert node._get_value_time(proportions, 10) == 1.0
+    assert node._get_value_time(proportions, 999) == 1.0
+
+
+def test_value_time_with_dict_crossing_a_power_of_ten():
+    """Cas qui échouait: les paliers à deux chiffres et plus."""
+    node = gg.ProportionNode('A')
+    proportions = {"0": 0.2, "9": 0.4, "10": 0.6, "100": 0.8}
+
+    assert node._get_value_time(proportions, 9) == 0.4
+    assert node._get_value_time(proportions, 10) == 0.6
+    assert node._get_value_time(proportions, 99) == 0.6
+    assert node._get_value_time(proportions, 100) == 0.8
+
+
+def test_value_time_with_dict_before_the_first_step_raises():
+    node = gg.ProportionNode('A')
+    with pytest.raises(me.EdgeError):
+        node._get_value_time({"5": 0.5}, 0)
 
 
 # Sémantique des types de noeuds ---------------------------------------------

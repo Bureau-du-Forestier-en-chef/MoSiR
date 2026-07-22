@@ -31,7 +31,63 @@ L'utilisateur a la possibilité de bâtir dans Miro un graphe pouvant contenir a
 </p>
 
  ![mosir_example](https://github.com/Landry-G/MoSiR_images/blob/main/mosir_example.gif)
- 
+
+# Tests et couverture
+
+![Tests](https://img.shields.io/badge/tests-481_r%C3%A9ussis-brightgreen?style=flat-square)
+![Couverture](https://img.shields.io/badge/couverture-86%25-brightgreen?style=flat-square)
+
+La suite de tests s'exécute dans l'environnement conda décrit par
+`environment.yml` :
+
+```bash
+conda activate MoSiR
+python -m pytest
+```
+
+Pour mesurer la couverture :
+
+```bash
+python -m pytest --cov=MoSiR --cov-report=term-missing
+```
+
+Ajouter `--cov-report=html` pour un rapport navigable sous `htmlcov/index.html`.
+
+Le badge ci-dessus donne la couverture globale. Le calculateur lui-même — la
+partie utilisable comme simple import Python, indépendamment de l'interface
+web — se détaille ainsi :
+
+| Module | Couverture |
+| --- | --- |
+| `networkx_graph.py` | 100 % |
+| `graph_verificator.py` | 100 % |
+| `generators.py` | 100 % |
+| `utilities.py` | 100 % |
+| `gamma_function.py` | 98 % |
+| `import_info.py` | 98 % |
+| `graph_generator.py` | 96 % |
+| `reporting_info.py` | 96 % |
+| `mosir_calculator.py` | 95 % |
+| `mosir_exceptions.py` | 91 % |
+| `carbon_to_radiatif.py` | 84 % |
+
+La couche d'interface web (`views.py`, `blueprint_component.py`, `MoSiR.py`)
+n'a pas encore de tests automatisés : c'est elle qui tire le chiffre global
+sous le niveau du calculateur.
+
+`tests/test_Characterization.py` fige les résultats numériques du calculateur
+par rapport à des fichiers de référence conservés dans `tests/reference/`.
+Toute modification d'une valeur calculée le fait échouer, ce qui protège le
+modèle lors des refontes. Après un changement volontaire, régénérer les
+références et relire le diff avant de commiter :
+
+```bash
+MOSIR_REGEN_REFERENCE=1 python -m pytest tests/test_Characterization.py
+```
+
+Chiffres mesurés sur MoSiR 1.1.0 avec Python 3.12. Relancer les commandes
+ci-dessus pour les mettre à jour.
+
 # Signaler une erreur
 
 Si vous rencontrez une erreur, la manière à privilégier est par l'entremise des [Issues] sur GitHub. Sur la page des `Issues` de MoSiR, cliquer sur `New issue`. Il est nécessaire de donner le plus d'informations possible pour reproduire l'erreur que vous rencontrez. Pour faire des suggestions d'amélioration, se référer à la section [développements futurs](https://github.com/Bureau-du-Forestier-en-chef/MoSiR/wiki/D%C3%A9veloppements-futurs).

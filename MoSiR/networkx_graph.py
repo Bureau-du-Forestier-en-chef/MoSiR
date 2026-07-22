@@ -140,6 +140,14 @@ class WPGraph():
     
     def nodes(self):
         return self._graph.nodes()
+
+    def edges(self):
+        """Retourne tous les liens du graphe
+
+        Returns:
+            _type_: tous les liens sous forme de paires (départ, arrivée)
+        """
+        return self._graph.edges()
     
     @property
     def get_name(self):

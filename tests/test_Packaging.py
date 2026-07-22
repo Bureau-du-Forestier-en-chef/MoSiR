@@ -155,6 +155,78 @@ def test_declared_package_data_exists(relative_path):
         f"MoSiR/{relative_path} est déclaré comme package-data mais absent"
 
 
+# Documentation ---------------------------------------------------------------
+README_FILES = ["README.md", "README_fr.md"]
+
+
+@pytest.fixture(scope="module")
+def readmes():
+    return {name: (ROOT / name).read_text(encoding="utf-8") for name in README_FILES}
+
+
+@pytest.mark.parametrize("name", README_FILES)
+def test_readme_documents_coverage(name, readmes):
+    """Les deux README doivent décrire comment mesurer la couverture."""
+    content = readmes[name]
+    assert "--cov=MoSiR" in content
+    assert "python -m pytest" in content
+
+
+def test_readmes_announce_the_same_figures(readmes):
+    """Une mise à jour dans un seul des deux README doit échouer.
+
+    Sans ce garde-fou, la version anglaise et la version française
+    finissent par annoncer des chiffres différents.
+    """
+    numbers = {}
+    for name, content in readmes.items():
+        numbers[name] = {
+            "tests": re.findall(r"badge/tests-(\d+)", content),
+            "coverage": re.findall(r"-(\d+)%25", content),
+        }
+
+    reference = numbers[README_FILES[0]]
+    for name in README_FILES[1:]:
+        assert numbers[name] == reference, \
+            f"{name} annonce {numbers[name]} au lieu de {reference}"
+
+
+def test_announced_test_count_matches_reality(readmes, request):
+    """Le nombre de tests annoncé dans les badges doit être le vrai.
+
+    Se met à jour en relançant la suite: si ce test échoue, corriger les
+    badges des deux README avec le nombre indiqué dans le message.
+    """
+    collected = request.session.testscollected or len(request.session.items)
+    announced = re.search(r"badge/tests-(\d+)", readmes["README.md"])
+
+    assert announced, "Badge du nombre de tests introuvable dans README.md"
+    assert int(announced.group(1)) == collected, (
+        f"Les README annoncent {announced.group(1)} tests, "
+        f"la suite en compte {collected}. Mettre à jour les deux badges.")
+
+
+@pytest.mark.parametrize("name", README_FILES)
+def test_readme_paths_exist(name, readmes):
+    """Les chemins cités dans la documentation doivent exister."""
+    for cited in ("environment.yml", "tests/test_Characterization.py",
+                  "tests/reference/"):
+        assert cited in readmes[name], f"{cited} n'est plus mentionné dans {name}"
+        assert (ROOT / cited).exists(), f"{cited} est cité dans {name} mais absent"
+
+
+@pytest.mark.parametrize("name", README_FILES)
+def test_documented_regeneration_variable_matches_the_code(name, readmes):
+    """Le nom de la variable d'environnement doit suivre le code."""
+    from tests import test_Characterization as characterization
+
+    variable = "MOSIR_REGEN_REFERENCE"
+    assert variable in readmes[name]
+    source = (ROOT / "tests" / "test_Characterization.py").read_text(encoding="utf-8")
+    assert f'environ.get("{variable}")' in source
+    assert hasattr(characterization, "REGENERATE")
+
+
 def test_package_data_patterns_are_declared(pyproject):
     """Les répertoires de données réellement utilisés sont couverts par un motif."""
     patterns = pyproject["tool"]["setuptools"]["package-data"]["MoSiR"]

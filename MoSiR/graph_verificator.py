@@ -52,8 +52,10 @@ def main(graph: gg.GraphFactory):
     debugg_graph_06(graph_copy)
     debugg_graph_07(graph_copy)
     debugg_graph_08(graph_copy)
-    #debugg_graph_09(graph) Executé à même graph_generator.py
-    #debugg_graph_10(graph) Executé à même graph_generator.py
+    # 09 et 10 font double emploi avec graph_generator.py, mais restent
+    # utiles pour un graphe construit autrement que par GraphFactory
+    debugg_graph_09(graph_copy)
+    debugg_graph_10(graph_copy)
     debugg_graph_11(graph_copy)
     debugg_graph_12(graph_copy)
     debugg_graph_13(graph_copy)

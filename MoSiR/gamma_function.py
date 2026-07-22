@@ -19,6 +19,10 @@ class DecayTypeOptimizer:
             self.beta = 1
         elif self.decay_type == "Chi-square":
             self.beta = 2
+        else:
+            raise me.InvalidOption(f"'{self.decay_type}' n'est pas un type de \
+                dégradation valide pour le noeud {self.node_name}. Choix \
+                possibles: Exponential, Gamma ou Chi-square")
         self.opt_failed = f"L'optimisation du noeud de dégradation \
             {self.node_name} avec un temps de demi-vie de {self.value} \
             a échoué. Veuillez utiliser le fichier Excel pour calculer \

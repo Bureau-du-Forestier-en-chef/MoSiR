@@ -36,7 +36,7 @@ def main(raw_args = None):
 
     args = parser.parse_args(raw_args)
 
-    run_calculator(args.G, args.I, args.R, args.E)
+    run_calculator(args.G, args.D, args.R, args.E)
 
 def run_calculator(Graphe: str, Import: str, Report: str, Output: str):
     """Fonction pour rouler le calculateur de MoSiR, sans parser

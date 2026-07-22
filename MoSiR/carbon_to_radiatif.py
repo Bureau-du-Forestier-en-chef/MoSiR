@@ -127,11 +127,11 @@ def rad_formatting(data: dict, cumulative: bool = False):
             longueur = range(start, finish + 1)
             # Vérifier si les années sont complètes
             if not (set(data[col]) == set(longueur)):
-                raise me.TimeStepError('La colonne {col} représentant le temps \
+                raise me.TimeStepError(f'La colonne {col} représentant le temps \
                     dans le dataframe a des entrées manquantes')
             # Vérifier si les années sont en ordre
             if not (sorted(data[col]) == list(data[col])):
-                raise me.TimeStepError("La colonne {col} représentant le temps \
+                raise me.TimeStepError(f"La colonne {col} représentant le temps \
                     dans le dataframe n'est pas en ordre")
         elif 'CO2' in col:
             data[col] = list(rad_convolve(data[col], 'CO2', cumulative = cumulative))

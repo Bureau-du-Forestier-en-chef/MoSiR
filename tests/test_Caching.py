@@ -79,16 +79,21 @@ def test_negative_timestep_is_rejected_on_read(cache):
 
 
 def test_direct_assignment_to_flux_cache_is_blocked(cache):
-    """Le cache ne doit pas pouvoir être remplacé directement.
+    """Le cache ne peut être modifié que via set_flux_cache.
 
-    Comportement actuel: le setter est déclaré `def flux_cache(self)`
-    sans paramètre de valeur, donc Python lève TypeError avant que le
-    me.ConstError prévu ne soit atteint. La protection fonctionne, mais
-    l'erreur remontée n'est pas celle documentée.
-    TODO: corriger la signature du setter pour lever me.ConstError.
+    Régression historique: le setter était déclaré `def flux_cache(self)`
+    sans paramètre de valeur, donc Python levait TypeError avant même
+    d'atteindre le me.ConstError prévu.
     """
-    with pytest.raises((TypeError, me.ConstError)):
+    with pytest.raises(me.ConstError):
         cache.flux_cache = {1: 1.0}
+
+
+def test_blocked_assignment_leaves_the_cache_intact(cache):
+    cache.set_flux_cache(1, 5.0)
+    with pytest.raises(me.ConstError):
+        cache.flux_cache = {}
+    assert cache.get_flux_cache(1) == 5.0
 
 
 # Interrupteur global --------------------------------------------------------

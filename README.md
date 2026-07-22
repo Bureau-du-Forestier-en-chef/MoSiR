@@ -30,7 +30,62 @@ The user can build a graph in Miro that can contain any number of nodes, some of
 </p>
 
  ![mosir_example](https://github.com/Landry-G/MoSiR_images/blob/main/mosir_example.gif)
- 
+
+# Tests and coverage
+
+![Tests](https://img.shields.io/badge/tests-481_passed-brightgreen?style=flat-square)
+![Coverage](https://img.shields.io/badge/coverage-86%25-brightgreen?style=flat-square)
+
+The test suite runs in the conda environment described by `environment.yml`:
+
+```bash
+conda activate MoSiR
+python -m pytest
+```
+
+To measure coverage:
+
+```bash
+python -m pytest --cov=MoSiR --cov-report=term-missing
+```
+
+Add `--cov-report=html` for a browsable report under `htmlcov/index.html`.
+
+The badge above reports overall coverage. The calculator itself — the part
+usable as a plain Python import, independently of the web interface — breaks
+down as follows:
+
+| Module | Coverage |
+| --- | --- |
+| `networkx_graph.py` | 100% |
+| `graph_verificator.py` | 100% |
+| `generators.py` | 100% |
+| `utilities.py` | 100% |
+| `gamma_function.py` | 98% |
+| `import_info.py` | 98% |
+| `graph_generator.py` | 96% |
+| `reporting_info.py` | 96% |
+| `mosir_calculator.py` | 95% |
+| `mosir_exceptions.py` | 91% |
+| `carbon_to_radiatif.py` | 84% |
+
+The web interface layer (`views.py`, `blueprint_component.py`, `MoSiR.py`) has
+no automated tests yet and is what keeps the overall figure below the
+calculator's own level.
+
+`tests/test_Characterization.py` locks the numerical results of the calculator
+against reference files stored in `tests/reference/`. Any change to a computed
+value makes it fail, which is what protects the model during refactoring. After
+an intentional change, regenerate the references and review the diff before
+committing:
+
+```bash
+MOSIR_REGEN_REFERENCE=1 python -m pytest tests/test_Characterization.py
+```
+
+Figures measured on MoSiR 1.1.0 with Python 3.12. Re-run the commands above to
+refresh them.
+
 # Report a bug
 
 If you encounter an error, the preferred way is via [Issues] on GitHub. Sur la page des `Issues` de MoSiR, cliquer sur `New issue`. On the MoSiR `Issues` page, click on `New issue`. You need to provide as much information as possible to reproduce the error you are encountering. To make suggestions for improvement, please refer to the [future developments](https://github.com/Bureau-du-Forestier-en-chef/MoSiR/wiki/D%C3%A9veloppements-futurs) section.

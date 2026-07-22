@@ -47,7 +47,7 @@ class Caching():
             return self.__flux_cache
     
     @flux_cache.setter
-    def flux_cache(self):
+    def flux_cache(self, value_input):
         raise me.ConstError("Cache must be modify with set_flux_cache")
 
     def set_flux_cache(self, timestep: int, value: float):
@@ -106,7 +106,9 @@ class IndustrialNode(metaclass = ABCMeta): # aller voir la doc ABC
             if isinstance(values, list):
                 result = values[min(time, len(values) - 1)]
             if isinstance(values, dict):
-                timestep =  max([i for i in values.keys() if int(i) <= time])
+                # key=int : les clés arrivent en texte depuis le JSON et
+                # doivent être comparées numériquement, sinon "5" > "10"
+                timestep = max((i for i in values.keys() if int(i) <= time), key=int)
                 result = values[timestep]
         except:
             raise me.EdgeError(f"Le temps {time} n'a pas été retrouvé dans les\

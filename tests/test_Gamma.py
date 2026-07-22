@@ -108,14 +108,24 @@ def test_objective_rejects_having_both_alpha_and_beta():
         optimizer.objective(1.0)
 
 
-def test_unknown_decay_type_is_not_validated_at_construction():
-    """Comportement actuel: un type inconnu ne lève rien au constructeur.
+@pytest.mark.parametrize("bad_type", [
+    "Not a decay type", "exponential", "GAMMA", "Chi square", "", None,
+])
+def test_unknown_decay_type_is_rejected_at_construction(bad_type):
+    """Un type invalide doit échouer tout de suite, avec un message clair.
 
-    L'échec survient seulement dans find_param, sans message utile.
-    TODO: DecayTypeOptimizer devrait lever me.InvalidOption ici.
+    Régression historique: le constructeur acceptait n'importe quoi et
+    l'échec ne survenait que dans find_param, sous forme d'un
+    UnboundLocalError incompréhensible pour l'utilisateur.
     """
-    optimizer = gf.DecayTypeOptimizer("N", "Not a decay type", 10)
-    assert not hasattr(optimizer, "alpha")
-    assert not hasattr(optimizer, "beta")
-    with pytest.raises(UnboundLocalError):
-        optimizer.find_param()
+    with pytest.raises(me.InvalidOption):
+        gf.DecayTypeOptimizer("Sawnwood", bad_type, 10)
+
+
+def test_unknown_decay_type_message_names_the_node_and_the_options():
+    with pytest.raises(me.InvalidOption) as excinfo:
+        gf.DecayTypeOptimizer("Sawnwood", "Lineaire", 10)
+    message = " ".join(str(excinfo.value).split())
+    assert "Sawnwood" in message
+    assert "Lineaire" in message
+    assert "Exponential" in message

@@ -300,16 +300,33 @@ def test_graph_with_two_nodes_is_accepted(graph_factory_2):
     gv.debugg_graph_09(graph_factory_2)
 
 
-def test_debugg_graph_10_is_not_usable(graph_factory_2):
-    """debugg_graph_10 appelle WPGraph.edges(), qui n'existe pas.
+def test_graph_with_edges_is_accepted(graph_factory_2):
+    """Régression historique: debugg_graph_10 appelait WPGraph.edges(),
 
-    C'est pourquoi il est commenté dans gv.main(). Ce test verrouille le
-    constat: si WPGraph gagne une méthode edges(), il faudra réactiver
-    ce contrôle.
-    TODO: ajouter WPGraph.edges() puis remettre debugg_graph_10 dans main().
+    qui n'existait pas. Le contrôle plantait en AttributeError et avait
+    donc été désactivé dans gv.main().
     """
-    with pytest.raises(AttributeError):
-        gv.debugg_graph_10(graph_factory_2)
+    gv.debugg_graph_10(graph_factory_2)
+
+
+def test_graph_without_edge_is_rejected():
+    graph = wp.WPGraph("Example")
+    graph.add_node(gg.TopNode("Debut"))
+    graph.add_node(gg.PoolNode("Fin"))
+
+    with pytest.raises(me.GraphError):
+        gv.debugg_graph_10(factory_with_graph(graph))
+
+
+def test_graph_edges_are_exposed():
+    graph = wp.WPGraph("Example")
+    start, end = gg.TopNode("Debut"), gg.PoolNode("Fin")
+    graph.add_node(start)
+    graph.add_node(end)
+    graph.add_edge(start, end, proportions=[1])
+
+    assert len(graph.edges()) == 1
+    assert (start, end) in graph.edges()
 
 
 # 11 / 12 / 15 - Noeuds intermédiaires reliés des deux côtés ------------------

@@ -72,22 +72,37 @@ def test_run_calculator_rejects_missing_files(examples_dir, tmp_path, broken):
 
 
 # main() ---------------------------------------------------------------------
-def test_main_is_broken_by_a_wrong_argument_name(example_arguments):
-    """BUG: main() lit args.I alors que le dest déclaré est 'D'.
+def test_main_produces_the_outputs(example_arguments, tmp_path):
+    """La ligne de commande doit produire les mêmes extrants que l'API.
 
-    mosir_calculator.py:39 appelle run_calculator(args.G, args.I, ...)
-    mais --DataFileDirectory est déclaré avec dest='D'. La ligne de
-    commande `MoSiR -G ... -D ... -R ... -E ...` échoue donc toujours
-    avec AttributeError. Seul run_calculator (appelé directement par
-    l'interface web) fonctionne.
-
-    Ce test verrouille le bug: il passera au rouge dès qu'il sera
-    corrigé, ce qui signalera qu'il faut le remplacer par une vraie
-    vérification de bout en bout.
-    TODO: remplacer args.I par args.D dans mosir_calculator.main().
+    Régression historique: main() lisait args.I alors que le dest déclaré
+    pour --DataFileDirectory est 'D', ce qui faisait échouer tout appel
+    en ligne de commande avec AttributeError.
     """
-    with pytest.raises(AttributeError, match="'I'"):
-        mc.main(example_arguments)
+    mc.main(example_arguments)
+
+    assert sorted(p.name for p in tmp_path.iterdir()) == [
+        "Example~Output_1.csv",
+        "Example~Output_2.csv",
+        "Example~Output_3.csv",
+    ]
+
+
+def test_main_matches_run_calculator(example_arguments, examples_dir, tmp_path):
+    """Les deux points d'entrée doivent donner exactement le même résultat."""
+    direct = tmp_path / "direct"
+    direct.mkdir()
+
+    mc.main(example_arguments)
+    mc.run_calculator(
+        os.path.join(examples_dir, "Graph.json"),
+        os.path.join(examples_dir, "Inputs.json"),
+        os.path.join(examples_dir, "Reports.json"),
+        str(direct),
+    )
+
+    for produced in direct.iterdir():
+        assert produced.read_bytes() == (tmp_path / produced.name).read_bytes()
 
 
 @pytest.mark.parametrize("dropped", ["-G", "-D", "-R", "-E"])
