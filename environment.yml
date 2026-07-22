@@ -1,0 +1,51 @@
+# Environnement conda de MoSiR
+#
+# Création de l'environnement :
+#     conda env create -f environment.yml
+#     conda activate MoSiR
+#
+# Mise à jour après une modification de ce fichier :
+#     conda env update -f environment.yml --prune
+#
+# Le nom 'MoSiR' est celui attendu par standalone/Nuitka_wrapper.bat.
+#
+# Les dépendances applicatives sont déclarées ici ET dans pyproject.toml
+# (section [project] dependencies). Les deux listes doivent rester
+# identiques : tests/test_Packaging.py échoue si elles divergent.
+name: MoSiR
+
+channels:
+  - conda-forge
+
+dependencies:
+  # Python : la syntaxe `list[float] | dict` des annotations exige 3.10+
+  - python >=3.10,<3.13
+  - pip
+
+  # --- Interface web ---
+  - flask >=2.2
+  - flask-cors >=3.0
+  - werkzeug >=2.2
+  - requests >=2.28
+  - python-dotenv >=0.21
+
+  # --- Calculateur ---
+  - networkx >=2.8
+  - numpy >=1.23
+  - pandas >=1.5
+  - scipy >=1.10
+  - seaborn >=0.12
+
+  # --- Développement et tests ---
+  - pytest >=7.1
+  - pytest-cov >=4.0
+  - pyyaml >=6.0
+
+  - pip:
+      # Le canal Anaconda 'defaults' ne fournit que pyvis 0.2.0. Le
+      # déclarer côté conda faisait installer 0.2.0 puis le remplacer
+      # aussitôt par 0.3.2. Paquet Python pur : pip est sa place.
+      - pyvis >=0.3
+
+      # Installe MoSiR en mode éditable depuis pyproject.toml
+      - --editable .

@@ -5,20 +5,57 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 """
 import os
 import pytest
+import pandas as pd
 from MoSiR import (
     networkx_graph as wp,
     graph_generator as gg,
     gamma_function as gf,
     import_info as ii,
+    reporting_info as ri,
 )
 
 """ Coverage
 pytest --cov=MoSiR tests/
 """
 
+EXAMPLES_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+    "..", "examples", "Inputs")
+
 @pytest.fixture
 def MOSIR_TOLERENCE():
     return 0.0001
+
+@pytest.fixture(autouse=True)
+def reset_caching_state():
+    """Empêche un test qui ferme le cache de contaminer les suivants.
+
+    Caching.cache_open est un attribut de classe, donc global à tout le
+    processus pytest.
+    """
+    yield
+    gg.Caching.set_is_open(True)
+
+@pytest.fixture
+def examples_dir():
+    return EXAMPLES_DIR
+
+@pytest.fixture
+def rad_factors():
+    """Facteurs de forçage radiatif DynCO2, lus comme le fait MoSiR."""
+    file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+        "..", "MoSiR", "radiative_forcing", "Dynco2_Base.csv")
+    try:
+        # Si le fichier a été enregistré depuis un Excel EN
+        return pd.read_csv(file_path, sep=',').sort_values(by='Year').\
+            to_dict(orient='list')
+    except pd.errors.ParserError:
+        # Si le fichier a été enregistré depuis un Excel FR
+        return pd.read_csv(file_path, sep=';').sort_values(by='Year').\
+            to_dict(orient='list')
+
+@pytest.fixture
+def report_data(report_dict):
+    return ri.ReportData(Dict=report_dict)
 
 @pytest.fixture
 def graph_01():
@@ -474,3 +511,61 @@ def graph_overflow_mixed():
     }
     graph_factory = gg.GraphFactory(Dict=graph_dict)
     return graph_factory
+
+# Chaîne complète graphe -> intrants -> reporting -----------------------------
+# Petit cas de bout en bout, assez simple pour être vérifié à la main et
+# assez complet pour exercer les trois unités d'extrant (tC, tCO2eq, w/m2).
+
+@pytest.fixture
+def e2e_graph_dict():
+    return {"Example": {
+        "Nodes": {
+            "1": {"Decay": False, "Recycling": False, "Name": "Harvested Biomass"},
+            "2": {"Decay": True, "Recycling": False, "Name": "Sawnwood"},
+            "3": {"Decay": False, "Recycling": False, "Name": "CO2 emissions"},
+            "4": {"Decay": False, "Recycling": False, "Name": "CH4 emissions"},
+            },
+        "Edges": {
+            "1": {"From": 1, "To": 2, "Values": [1], "Overflow": False},
+            "2": {"From": 2, "To": 3, "Values": [0.5], "Overflow": False},
+            "3": {"From": 2, "To": 4, "Values": [0.5], "Overflow": False},
+            }
+        }
+    }
+
+@pytest.fixture
+def e2e_input_dict():
+    return {
+        "Inputs": {"Example": {"Harvested Biomass": {"0": 100.0}}},
+        "Decay": {"Example": {"Sawnwood": {"Exponential": 10.0}}},
+        "Unit": "tC"}
+
+@pytest.fixture
+def e2e_report_dict():
+    return {
+        "Output": {"Example": {
+            "Stocks": {
+                "Nodes_name": ["Sawnwood"],
+                "Type": "Stock",
+                "Cumulative": False,
+                "Summarize": "Per node",
+                "Unit": "tC"},
+            "Emissions": {
+                "Nodes_name": ["CO2 emissions", "CH4 emissions"],
+                "Type": "Flux in",
+                "Cumulative": True,
+                "Summarize": "Per node",
+                "Unit": "tCO2eq"},
+            }},
+        "PRG": {"CH4": 28, "N2O": 265},
+        "Time": 10,
+        "Output file extension": ".csv"}
+
+@pytest.fixture
+def e2e_setup(e2e_graph_dict, e2e_input_dict, e2e_report_dict):
+    """Retourne (graph, import_data, report_data) prêts pour output_creation."""
+    graph = gg.GraphFactory(Dict=e2e_graph_dict)
+    import_data = ii.ImportData(Dict=e2e_input_dict)
+    report_data = ri.ReportData(Dict=e2e_report_dict)
+    ii.add_import(graph, import_data)
+    return graph, import_data, report_data

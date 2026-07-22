@@ -1,1 +1,9 @@
-recursive-include package *
+include README.md
+include README_fr.md
+include CHANGELOG.md
+include CHANGELOG_fr.md
+include environment.yml
+recursive-include LICENSES *
+recursive-include MoSiR *
+recursive-exclude MoSiR *.pyc
+global-exclude __pycache__
