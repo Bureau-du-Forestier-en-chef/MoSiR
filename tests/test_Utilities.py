@@ -11,6 +11,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 import json
 import pytest
 from MoSiR import utilities as ut
+from MoSiR import mosir_exceptions as me
 
 
 # Htmlparser -----------------------------------------------------------------
@@ -109,3 +110,44 @@ def test_json_write_overwrites(tmp_path):
     ut.Jsonparser.write(str(target), {"first": 1})
     ut.Jsonparser.write(str(target), {"second": 2})
     assert json.loads(target.read_text(encoding="utf-8")) == {"second": 2}
+
+
+# JsonData -------------------------------------------------------------------
+# Base commune du chargement JSON, partagée par GraphFactory, ImportData et
+# ReportData. Ces trois classes exposaient l'accès aux données de trois
+# façons différentes (propriété, méthode, aucune); c'est unifié ici.
+
+def test_jsondata_exposes_the_loaded_dict():
+    payload = {"Example": {"Nodes": {}}}
+    assert ut.JsonData(Dict=payload).get_data is payload
+
+
+def test_jsondata_get_data_is_read_only():
+    data = ut.JsonData(Dict={"a": 1})
+    with pytest.raises(me.ConstError):
+        data.get_data = {"b": 2}
+
+
+def test_jsondata_requires_a_source():
+    with pytest.raises(me.InvalidOption):
+        ut.JsonData()
+
+
+def test_jsondata_invalid_path_raises():
+    with pytest.raises(me.InvalidOption):
+        ut.JsonData("chemin/qui/nexiste/pas.json")
+
+
+def test_dict_takes_priority_over_directory():
+    """Un dict fourni l'emporte, le chemin n'est alors jamais ouvert."""
+    payload = {"depuis": "dict"}
+    assert ut.JsonData("chemin/ignore.json", Dict=payload).get_data is payload
+
+
+def test_all_json_data_subclasses_share_get_data(graph_factory_1, import_data,
+                                                 report_data):
+    """GraphFactory, ImportData et ReportData exposent get_data pareillement."""
+    for source in (graph_factory_1, import_data, report_data):
+        assert source.get_data is source._DATA
+        with pytest.raises(me.ConstError):
+            source.get_data = {}

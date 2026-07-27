@@ -37,8 +37,8 @@ L'utilisateur a la possibilité de bâtir dans Miro un graphe pouvant contenir a
 [![CI](https://github.com/Bureau-du-Forestier-en-chef/MoSiR/actions/workflows/tests.yml/badge.svg)](https://github.com/Bureau-du-Forestier-en-chef/MoSiR/actions/workflows/tests.yml)
 
 <!-- coverage-badges:start -->
-![Tests](https://img.shields.io/badge/tests-518_r%C3%A9ussis-brightgreen?style=flat-square)
-![Couverture](https://img.shields.io/badge/couverture-86%25-brightgreen?style=flat-square)
+![Tests](https://img.shields.io/badge/tests-530_r%C3%A9ussis-brightgreen?style=flat-square)
+![Couverture](https://img.shields.io/badge/couverture-85%25-brightgreen?style=flat-square)
 <!-- coverage-badges:end -->
 
 Les deux badges et le tableau ci-dessous sont **générés**, pas écrits à la

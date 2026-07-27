@@ -6,6 +6,23 @@ Tous les changements notables appliqués au projet seront notés ici.
 * Interface en anglais
 * La possibilité d'effectuer plusieurs calculs pour la même architecture lorsque l'utilisateur a plusieurs fichiers d'intrants.
 
+## v2.0 (en développement)
+Cette version est en cours de développement dans la branche `dev`; d'autres changements viendront s'ajouter ci-dessous.
+
+### Nouveautés
+* Nouveaux tests verrouillant les corrections ci-dessous, ainsi que le comportement du cache et le chargement des fichiers JSON.
+
+### Changements
+* Le chargement des fichiers JSON (graphe, intrants et reporting) est regroupé dans une classe de base commune. Les trois types de fichiers sont lus de la même manière et exposent leurs données de façon uniforme.
+* Réorganisation interne du calculateur afin de réduire la duplication de code: la logique des calculs cumulatifs et la lecture des flux entrants sont partagées entre les types de nœuds. Les résultats du calculateur restent identiques.
+* Le vérificateur de graphe a été simplifié: les contrôles effectués avant un calcul partagent maintenant un même parcours des graphes et des nœuds.
+* Chaque type de nœud n'alloue plus que les caches qu'il utilise réellement.
+* Retrait de code inutilisé: classe interne vide, méthode et champ jamais utilisés, imports superflus.
+
+### Corrections
+* Correction du flux sortant cumulatif d'un nœud de transition: dans certains cas, le carbone était compté en double, puis faussait les résultats non cumulatifs du même nœud.
+* La désactivation du cache interne ne provoque plus d'erreur; le calculateur recalcule alors les valeurs sans les conserver en mémoire, pour des résultats identiques.
+
 ## v1.1.0 (2024-09-13)
 ### Nouveautés
 * Il est maintenant possible de faire une énumération de proportions changeantes dans un pense-bête. Dans un cas où la ventilation de votre graphe change avec le temps, il est possible de préciser le changement de proportion dans un pense-bête plutôt que de refaire une deuxième analyse. Les précisions sont le wiki du GitHub (sous "Comment utiliser MoSiR avec Miro et l'interface web"). 

@@ -11,6 +11,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 """
 import pytest
 from MoSiR import (
+    networkx_graph as wp,
     graph_generator as gg,
     mosir_exceptions as me,
 )
@@ -122,6 +123,19 @@ def test_is_open_is_shared_between_instances():
     assert second.flux_cache is None
 
 
+def test_is_cached_is_false_while_the_cache_is_closed(cache):
+    """is_cached ne consulte jamais flux_cache (None quand fermé)."""
+    cache.set_flux_cache(1, 5.0)
+    assert cache.is_cached(1) is True
+
+    gg.Caching.set_is_open(False)
+    assert cache.is_cached(1) is False  # ne doit pas lever sur None
+
+    gg.Caching.set_is_open(True)
+    assert cache.is_cached(1) is True
+    assert cache.is_cached(99) is False
+
+
 # Isolation des caches par noeud ---------------------------------------------
 def test_each_node_has_independent_caches():
     """Les caches d'entrée et de sortie d'un noeud sont distincts."""
@@ -166,3 +180,79 @@ def test_cached_flux_matches_recomputed_flux(graph_03, MOSIR_TOLERENCE):
 
     for cached, fresh in zip(with_cache, without_cache):
         assert abs(cached - fresh) < MOSIR_TOLERENCE
+
+
+def test_disabling_the_cache_keeps_the_same_results(graph_03, MOSIR_TOLERENCE):
+    """set_is_open(False) doit ralentir le calcul, pas le changer.
+
+    Régression: les noeuds testaient `time in cache.flux_cache`, or
+    flux_cache vaut None quand le cache est fermé, ce qui levait un
+    TypeError au lieu de recalculer.
+    """
+    graph, G, H = graph_03
+    with_cache = [H.get_flux_in(graph, t) for t in range(16)]
+
+    gg.Caching.set_is_open(False)
+    without_cache = [H.get_flux_in(graph, t) for t in range(16)]
+
+    for cached, fresh in zip(with_cache, without_cache):
+        assert abs(cached - fresh) < MOSIR_TOLERENCE
+
+
+# Cumul et fraîcheur du cache ------------------------------------------------
+# Régression: ProportionNode.get_flux_out propageait `cumulative` au calcul
+# annuel, donc chaque année du cumul ajoutait un cumul au lieu d'un flux
+# annuel. Le total n'était juste que si le cache avait déjà été rempli année
+# par année par des appels non cumulatifs, et le cumul écrivait ses propres
+# valeurs dans le cache annuel. Les tests de calcul ne le voyaient pas: ils
+# interrogent toujours le noeud en non cumulatif d'abord.
+
+def transition_graph():
+    """A -> C -> E, sans dégradation: le flux traverse C tel quel.
+
+    Chaque test rebâtit le graphe pour partir d'un cache vide, ce qui est
+    précisément l'état où le cumul était faux.
+    """
+    graph = wp.WPGraph("transition")
+    A = gg.TopNode("A")
+    C = gg.ProportionNode("C")
+    E = gg.PoolNode("E")
+    for node in (A, C, E):
+        graph.add_node(node)
+    graph.add_edge(A, C, proportions=[1])
+    graph.add_edge(C, E, proportions=[1])
+    A.time = [0, 1, 2, 3]
+    A.quantities = [10, 20, 30, 40]
+    return graph, C
+
+
+def test_cumulative_flux_out_is_correct_on_a_cold_cache():
+    """Un cumul demandé seul, sans passage non cumulatif préalable."""
+    graph, C = transition_graph()
+    assert C.get_flux_out(graph, 3, cumulative=True) == 100
+
+
+def test_cumulative_flux_out_series_is_correct_on_a_cold_cache():
+    graph, C = transition_graph()
+    produced = [C.get_flux_out(graph, t, cumulative=True) for t in range(4)]
+    assert produced == [10, 30, 60, 100]
+
+
+def test_cumulative_flux_out_does_not_corrupt_the_annual_cache():
+    """Le cumul ne doit écrire que des flux annuels dans le cache."""
+    graph, C = transition_graph()
+    C.get_flux_out(graph, 3, cumulative=True)
+
+    assert C.past_out_carbon().flux_cache == {0: 10, 1: 20, 2: 30, 3: 40}
+    assert [C.get_flux_out(graph, t) for t in range(4)] == [10, 20, 30, 40]
+
+
+def test_cumulative_flux_out_ignores_the_state_of_the_cache():
+    """Même résultat que le cache ait été rempli avant ou non."""
+    cold_graph, cold = transition_graph()
+    warm_graph, warm = transition_graph()
+    for timestep in range(4):
+        warm.get_flux_out(warm_graph, timestep)
+
+    assert [cold.get_flux_out(cold_graph, t, cumulative=True) for t in range(4)] \
+        == [warm.get_flux_out(warm_graph, t, cumulative=True) for t in range(4)]

@@ -38,22 +38,12 @@ def chain_dict(graph_name="Example", values_1=None, values_2=None,
 
 
 def overflow_map(factory):
-    """Reproduit le relevé des noeuds en débordement fait par gv.main().
+    """Relevé des noeuds en débordement, comme le fait gv.main().
 
     Plusieurs debugg_graph_XX attendent ce dictionnaire en argument; le
     construire ici évite de coder en dur des noms de noeuds.
-    TODO: extraire cette logique de gv.main() pour la partager.
     """
-    result = {}
-    for graph_name in factory.get_data:
-        data = factory.get_data.get(graph_name)
-        nodes = data.get('Nodes', {})
-        edges = data.get('Edges', {})
-        overflow_ids = {values.get('To') for values in edges.values()
-                        if values.get('Overflow') is True}
-        result[graph_name] = [values.get('Name') for key, values in nodes.items()
-                              if int(key) in overflow_ids]
-    return result
+    return gv.get_overflow_names(factory)
 
 
 def factory_with_graph(custom_graph, graph_name="Example"):

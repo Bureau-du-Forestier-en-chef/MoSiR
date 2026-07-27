@@ -78,11 +78,7 @@ class Component(ABC, Blueprint):
     def _write_graphs_json(self, GraphsDict: dict, GRAPHSNAMES: list[str]) -> None:
         utilities.Jsonparser.write(os.path.join(self._get_uploads_folder(), GRAPHSNAMES), GraphsDict)
 
-    def clear_data(extension: str, folder: str) -> None:
-        for element in os.listdir(folder):
-            if element.endswith(extension):
-                 os.remove(os.path.join(folder,element))
-
+    @staticmethod
     def clear_users_data(folder) -> None:
         for element in os.listdir(folder):
             if os.path.isdir(os.path.join(folder, element)):

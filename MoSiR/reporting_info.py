@@ -4,31 +4,37 @@ Copyright (c) 2023 Gouvernement du Québec
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 """
-import os
 import json
 import pandas as pd
 from MoSiR import (
     import_info as ip,
     graph_generator as gg,
     mosir_exceptions as me,
-    carbon_to_radiatif as cr)
+    carbon_to_radiatif as cr,
+    utilities)
 
 # Json -----------------------------------------------------------------------
 
-class ReportData():
+class ReportData(utilities.JsonData):
+    """ ReportData Documentation
+
+    Donne accès à la description des extrants demandés: quels noeuds
+    rapporter, sous quel type de résultat, dans quelle unité et sur quelle
+    durée. Le chargement du JSON est fait par utilities.JsonData; cette
+    classe valide que la demande est réalisable avant que le calcul ne
+    commence.
+
+    Args:
+        directory (str): Le chemin du fichier JSON du reporting
+        Dict (dict): Le reporting déjà chargé en mémoire
+
+    Returns:
+        ReportData: Un objet de la classe ReportData
+    """
+    SOURCE_NAME = "les données du report"
+
     def __init__(self, directory: str=None, Dict: dict=None):
-        if directory is None and Dict is not None:
-            self._DATA = Dict
-        if directory is not None and Dict is None:
-            try:
-                with open(directory, "r") as f: 
-                    self._DATA = json.load(f)  
-            except:
-                raise me.InvalidOption(f"Le chemin {directory}, n'est pas \
-                    valide. Impossible d'ouvrir les données du report")
-        if directory is None and Dict is None:
-            raise me.InvalidOption("Un directory ou dictionnaire doit être \
-                spécifié")
+        super().__init__(directory, Dict)
         for item in ["Output", "PRG", "Time", "Output file extension"]:
             if not self._DATA[item]:
                 raise me.InvalidOption(f"Il n'y a pas d'informations dans la \
@@ -40,14 +46,13 @@ class ReportData():
         self.validate_extension()
         self.validate_PRG()
             
-    def get_data(self):
-        return self._DATA
-            
+    # get_data (accès aux données JSON) est hérité de utilities.JsonData
+
     def get_output_name(self):
-        return [i for i in self.get_data()]
-    
+        return [i for i in self.get_data]
+
     def get_output_data(self, output_name: str):
-        return self.get_data()[output_name]
+        return self.get_data[output_name]
     
     def validate_time(self):
         time = self.get_output_data("Time")

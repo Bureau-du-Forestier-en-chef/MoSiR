@@ -3,28 +3,34 @@ Copyright (c) 2023 Gouvernement du Québec
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 """
-import json
 from MoSiR import (
     gamma_function as gf,
     graph_generator as gg,
-    mosir_exceptions as me)
+    mosir_exceptions as me,
+    utilities)
 
 # Json -----------------------------------------------------------------------
 
-class ImportData():
+class ImportData(utilities.JsonData):
+    """ ImportData Documentation
+
+    Donne accès aux intrants du calculateur: les flux de matière qui
+    entrent dans chaque TopNode et les paramètres de dégradation de chaque
+    DecayNode. Le chargement du JSON est fait par utilities.JsonData;
+    cette classe valide le contenu et le traduit en valeurs utilisables
+    par le graphe.
+
+    Args:
+        directory (str): Le chemin du fichier JSON des intrants
+        Dict (dict): Les intrants déjà chargés en mémoire
+
+    Returns:
+        ImportData: Un objet de la classe ImportData
+    """
+    SOURCE_NAME = "les données d'import"
+
     def __init__(self, directory: str=None, Dict: dict=None):
-        if directory is None and Dict is not None:
-            self._DATA = Dict
-        if directory is not None and Dict is None:
-            try:
-                with open(directory, "r") as f: 
-                    self._DATA = json.load(f)  
-            except:
-                raise me.InvalidOption(f"Le chemin {directory}, n'est pas \
-                    valide. Impossible d'ouvrir les données d'import")
-        if directory is None and Dict is None:
-            raise me.InvalidOption("Un directory ou dictionnaire doit être \
-                spécifié")
+        super().__init__(directory, Dict)
         if not self._DATA['Inputs']:
             raise me.QuantityError("Il n'y a pas de valeurs de flux \
                 d'enregistré comme intrants dans le graphe. Veuillez \

@@ -36,8 +36,8 @@ The user can build a graph in Miro that can contain any number of nodes, some of
 [![CI](https://github.com/Bureau-du-Forestier-en-chef/MoSiR/actions/workflows/tests.yml/badge.svg)](https://github.com/Bureau-du-Forestier-en-chef/MoSiR/actions/workflows/tests.yml)
 
 <!-- coverage-badges:start -->
-![Tests](https://img.shields.io/badge/tests-518_passed-brightgreen?style=flat-square)
-![Coverage](https://img.shields.io/badge/coverage-86%25-brightgreen?style=flat-square)
+![Tests](https://img.shields.io/badge/tests-530_passed-brightgreen?style=flat-square)
+![Coverage](https://img.shields.io/badge/coverage-85%25-brightgreen?style=flat-square)
 <!-- coverage-badges:end -->
 
 The two badges and the table below are **generated**, not hand-written. After

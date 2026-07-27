@@ -6,6 +6,23 @@ All notable changes applied to the project will be noted here.
 * Interface in english
 * The feature of performing multiple calculations for the same architecture when the user has more than one input file.
 
+## v2.0 (in development)
+This version is being developed on the `dev` branch; more changes will be added below.
+
+### New features
+* New tests locking in the corrections below, as well as the cache behaviour and the JSON file loading.
+
+### Changes
+* Loading of the JSON files (graph, inputs and reporting) is grouped into a shared base class. The three file types are read the same way and expose their data uniformly.
+* Internal reorganization of the calculator to reduce code duplication: the cumulative-calculation logic and the reading of incoming fluxes are shared between node types. The calculator's results are unchanged.
+* The graph verificator has been simplified: the checks performed before a calculation now share a common traversal of graphs and nodes.
+* Each node type now only allocates the caches it actually uses.
+* Removal of unused code: an empty internal class, a method and a field that were never used, and superfluous imports.
+
+### Corrections
+* Fixed the cumulative outgoing flux ("Flux out") of a transition node: in some cases carbon was counted twice and then corrupted the same node's non-cumulative results.
+* Disabling the internal cache no longer raises an error; the calculator then recomputes values without storing them, with identical results.
+
 ## v1.1.0 (2024-09-13)
 ### New features
 * It is now possible to enumerate changing proportions in a post-it. In a case where the breakdown of your graph changes over time, it is possible to specify the proportion change in a post-it rather than redoing a second analysis. The details are on the GitHub wiki (under "How to use MoSiR with Miro and the web interface). 
