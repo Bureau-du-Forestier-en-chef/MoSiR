@@ -37,8 +37,8 @@ L'utilisateur a la possibilité de bâtir dans Miro un graphe pouvant contenir a
 [![CI](https://github.com/Bureau-du-Forestier-en-chef/MoSiR/actions/workflows/tests.yml/badge.svg)](https://github.com/Bureau-du-Forestier-en-chef/MoSiR/actions/workflows/tests.yml)
 
 <!-- coverage-badges:start -->
-![Tests](https://img.shields.io/badge/tests-530_r%C3%A9ussis-brightgreen?style=flat-square)
-![Couverture](https://img.shields.io/badge/couverture-85%25-brightgreen?style=flat-square)
+![Tests](https://img.shields.io/badge/tests-533_r%C3%A9ussis-brightgreen?style=flat-square)
+![Couverture](https://img.shields.io/badge/couverture-86%25-brightgreen?style=flat-square)
 <!-- coverage-badges:end -->
 
 Les deux badges et le tableau ci-dessous sont **générés**, pas écrits à la
@@ -84,11 +84,11 @@ web — se détaille ainsi :
 | `utilities.py` | 100 % |
 | `gamma_function.py` | 98 % |
 | `import_info.py` | 98 % |
-| `graph_generator.py` | 96 % |
 | `reporting_info.py` | 96 % |
+| `graph_generator.py` | 95 % |
 | `mosir_calculator.py` | 95 % |
 | `mosir_exceptions.py` | 91 % |
-| `carbon_to_radiatif.py` | 84 % |
+| `carbon_to_radiatif.py` | 89 % |
 
 Chiffres mesurés sur MoSiR 1.1.0 avec Python 3.12.
 <!-- coverage-table:end -->
