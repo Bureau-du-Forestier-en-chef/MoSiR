@@ -5,10 +5,29 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 """
 import os
+import functools
 import numpy as np
 import pandas as pd
 import argparse as ap
 from MoSiR import mosir_exceptions as me
+
+
+@functools.lru_cache(maxsize=None)
+def _load_radiative_factors() -> dict:
+    """Charge les facteurs de forçage DynCO2, une seule fois par processus.
+
+    Le fichier ne change pas pendant l'exécution; le relire à chaque appel de
+    rad_convolve (une fois par colonne de gaz, pour chaque extrant radiatif)
+    était du gaspillage d'I/O et de parsing.
+    """
+    file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+        "radiative_forcing", "Dynco2_Base.csv")
+    try:
+        # Fichier enregistré depuis un Excel EN
+        return pd.read_csv(file_path, sep=',').sort_values(by='Year').to_dict(orient='list')
+    except pd.errors.ParserError:
+        # Fichier enregistré depuis un Excel FR
+        return pd.read_csv(file_path, sep=';').sort_values(by='Year').to_dict(orient='list')
 
 def main(raw_args = None) -> list[float]:
     parser = ap.ArgumentParser(
@@ -84,18 +103,7 @@ def rad_convolve(colonne: list[float], gaz: str, cumulative: bool = False) -> li
         raise me.InvalidOption(f"{gaz} n'est pas dans les options de gaz \
             pour un calcul en radiatif")
         
-    file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 
-        "radiative_forcing", "Dynco2_Base.csv")
-    try:
-        # If file is save from EN excel
-        RF = pd.read_csv(file_path, sep=',').sort_values(by='Year').to_dict(orient='list')
-    except pd.errors.ParserError:
-        try:
-            # If file is save from a FR excel
-            RF = pd.read_csv(file_path, sep=';').sort_values(by='Year').to_dict(orient='list')
-        except Exception as e:
-            print("Erreur lors de la lecture du fichier DynCO:", e)
-
+    RF = _load_radiative_factors()
     FC = RF[gaz][0:len(colonne)]
     rad = list(np.convolve(result, FC)[0:len(colonne)])
     

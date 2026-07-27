@@ -134,8 +134,9 @@ def output_creation(graph: gg.GraphFactory, import_data: ip.ImportData,
             G = graph.get_graph(graph_name)
 
             # Check if nodes name are also in graph
-            for name in nodes_name: 
-                if name in G.get_nodes_names():
+            graph_node_names = set(G.get_nodes_names())
+            for name in nodes_name:
+                if name in graph_node_names:
                     continue
                 else:
                     raise me.NodeError(f"Le nom de noeud '{name}' dans le fichier \

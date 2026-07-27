@@ -7,6 +7,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 # Les annotations ne sont pas évaluées, ce qui permet d'annoter avec
 # wp.WPGraph malgré l'import circulaire entre les deux modules
 from __future__ import annotations
+import numpy as np
 from scipy.stats import gamma
 from MoSiR import networkx_graph as wp
 from MoSiR import mosir_exceptions as me
@@ -125,7 +126,7 @@ class IndustrialNode(metaclass = ABCMeta): # aller voir la doc ABC
                 proportion {values} du noeud {self.NAME}")
         return result
 
-    def _get_cumulative_total(self, annual, time: int) -> float:
+    def _get_cumulative_total(self, annual, time: int, cache) -> float:
         """ _get_cumulative_total Documentation
 
         La fonction _get_cumulative_total somme une valeur annuelle du temps
@@ -133,17 +134,34 @@ class IndustrialNode(metaclass = ABCMeta): # aller voir la doc ABC
         cumulatives des flux se ramènent à cette somme; elles ne diffèrent
         que par la façon de calculer une seule année.
 
+        Le total est mémoïsé par timestep dans `cache` (un Caching dédié au
+        flux cumulé concerné) et calculé de façon incrémentale: cumul(t) =
+        cumul(t-1) + annuel(t). Une série demandée dans l'ordre (t = 0..T),
+        comme le fait le reporting, passe ainsi de O(T^2) à O(T). La somme
+        reste faite de gauche à droite, donc le résultat est identique au
+        bit près à la version non mémoïsée.
+
         Args:
             annual (callable): La fonction qui donne la valeur d'une seule
                 année, appelée avec le temps en argument
             time (int): La dernière année comprise dans la somme
+            cache (Caching): Le cache propre à ce flux cumulé
 
         Returns:
             float: Le total des valeurs annuelles
         """
-        total = 0
-        for timestep in range(time + 1):
+        if cache.is_cached(time):
+            return cache.get_flux_cache(time)
+        # Reprend depuis le plus grand préfixe déjà en cache (sinon depuis 0).
+        # En accès séquentiel (t croissant), c'est toujours t-1: O(1) par appel.
+        # Cache fermé: is_cached rend toujours False, donc recalcul complet.
+        start = time
+        while start > 0 and not cache.is_cached(start - 1):
+            start -= 1
+        total = cache.get_flux_cache(start - 1) if start > 0 else 0
+        for timestep in range(start, time + 1):
             total += annual(timestep)
+            cache.set_flux_cache(timestep, total)
         return total
 
     @property
@@ -202,6 +220,10 @@ class TopNode(IndustrialNode):
         super().__init__(NAME)
         self._time = []
         self._quantities = []
+        self.__cache_out_cumul = Caching()
+
+    def past_out_carbon_cumul(self):
+        return self.__cache_out_cumul
         
     @property           
     def time(self):
@@ -257,7 +279,8 @@ class TopNode(IndustrialNode):
         if cumulative == False:
             return self._get_quantity_time(time)
         elif cumulative == True:
-            return self._get_cumulative_total(self._get_quantity_time, time)
+            return self._get_cumulative_total(
+                self._get_quantity_time, time, self.past_out_carbon_cumul())
 
     def get_flux_in(self, graph: wp.WPGraph, time: int, cumulative: bool = False) -> float:
         return self.get_flux_out(graph, time, cumulative= cumulative)
@@ -288,12 +311,20 @@ class ProportionNode(IndustrialNode):
         super().__init__(NAME)
         self.__pn_cache_out = Caching()
         self.__pn_cache_in = Caching()
-    
+        self.__pn_cache_out_cumul = Caching()
+        self.__pn_cache_in_cumul = Caching()
+
     def past_out_carbon(self):
         return self.__pn_cache_out
 
     def past_in_carbon(self):
         return self.__pn_cache_in
+
+    def past_out_carbon_cumul(self):
+        return self.__pn_cache_out_cumul
+
+    def past_in_carbon_cumul(self):
+        return self.__pn_cache_in_cumul
 
     def _get_annual_flux_out(self, graph: wp.WPGraph, time: int) -> float:
         """Flux sortant d'une seule année, mis en cache.
@@ -314,7 +345,7 @@ class ProportionNode(IndustrialNode):
         if cumulative == True:
             return self._get_cumulative_total(
                 lambda timestep: self._get_annual_flux_out(graph, timestep),
-                time)
+                time, self.past_out_carbon_cumul())
 
     def get_flux_in(self, graph: wp.WPGraph, time: int, cumulative: bool = False) -> float:
         if cumulative == False:
@@ -332,7 +363,7 @@ class ProportionNode(IndustrialNode):
         else:
             return self._get_cumulative_total(
                 lambda timestep: self.get_flux_in(graph, timestep, cumulative= False),
-                time)
+                time, self.past_in_carbon_cumul())
 
     def get_stock(self, graph: wp.WPGraph, time: int, cumulative: bool = False) -> int:
         return 0
@@ -369,9 +400,39 @@ class DecayNode(ProportionNode):
         # Les caches des flux entrant et sortant viennent de ProportionNode;
         # seul celui des proportions de dégradation est propre au DecayNode
         self.__dn_cache_gamma = Caching()
+        self.__dn_cache_stock = Caching()
+        # Séries vectorisées, étendues à la demande: cdf de la loi gamma et
+        # flux entrant par année. Elles permettent de calculer flux sortant et
+        # stock (des convolutions) par produit scalaire numpy au lieu d'une
+        # boucle Python, ce qui accélère fortement les longs horizons.
+        self._cdf_vec = np.empty(0, dtype=float)
+        self._flux_in_vec = np.empty(0, dtype=float)
 
     def past_gamma_proportion(self):
         return self.__dn_cache_gamma
+
+    def past_stock(self):
+        return self.__dn_cache_stock
+
+    def _extend_decay_vectors(self, graph: wp.WPGraph, time: int):
+        """Étend cdf_vec et flux_in_vec jusqu'à l'indice `time` inclus.
+
+        cdf_vec[k] = P(dégradé au temps k); flux_in_vec[k] = flux entrant à
+        l'année k (mémoïsé par get_flux_in). On ne calcule que les nouveaux
+        indices, donc l'appel en série (t croissant) reste efficace.
+        """
+        n = len(self._cdf_vec)
+        if time >= n:
+            new_cdf = np.asarray(
+                gamma.cdf(np.arange(n, time + 1), self.alpha, scale=self.beta),
+                dtype=float)
+            self._cdf_vec = np.concatenate((self._cdf_vec, new_cdf))
+        m = len(self._flux_in_vec)
+        if time >= m:
+            new_flux = np.fromiter(
+                (self.get_flux_in(graph, s, cumulative=False) for s in range(m, time + 1)),
+                dtype=float, count=(time + 1 - m))
+            self._flux_in_vec = np.concatenate((self._flux_in_vec, new_flux))
         
     @property
     def alpha(self):
@@ -428,33 +489,31 @@ class DecayNode(ProportionNode):
         return decay_proportion
     
     def get_flux_out(self, graph: wp.WPGraph, time: int, cumulative: bool = False) -> float:
-        # La somme porte sur range(time) et pondère chaque année par sa
-        # dégradation: ce n'est pas le cumul de _get_cumulative_total
-        total = 0
+        # flux_out(t) = somme_{s<t} flux_in(s) * dégradation(t-s). C'est une
+        # convolution: calculée par produit scalaire numpy (vectorisé) plutôt
+        # qu'en boucle Python. Ce n'est pas le cumul de _get_cumulative_total
+        # (chaque année est pondérée par sa propre dégradation).
+        if time == 0:
+            if cumulative == False:
+                self.past_out_carbon().set_flux_cache(0, 0.0)
+            return 0.0
+        if cumulative == False and self.past_out_carbon().is_cached(time):
+            return self.past_out_carbon().get_flux_cache(time)
+        self._extend_decay_vectors(graph, time)
+        flux_in = self._flux_in_vec[0:time]        # s = 0 .. time-1
+        cdf = self._cdf_vec
         if cumulative == False:
-            # Cache of flux
-            if self.past_out_carbon().is_cached(time):
-                return self.past_out_carbon().get_flux_cache(time)
-            for timestep in range(time):
-                flux_in = self.get_flux_in(graph, timestep, cumulative)
-                time_between = time - timestep
-                if flux_in == 0:
-                    continue
-                decay_proportion = self.get_annual_decay_proportion(
-                    time_between, self.alpha, self.beta)
-                total += flux_in * decay_proportion
-            self.past_out_carbon().set_flux_cache(time, total)
-            return total
+            # dégradation annuelle: adecay(k) = cdf(k) - cdf(k-1), k = time..1
+            weights = (cdf[1:time + 1] - cdf[0:time])[::-1]
         else:
-            for timestep in range(time):
-                flux_in = self.get_flux_in(graph, timestep, cumulative=False)
-                time_between = time - timestep
-                if flux_in == 0:
-                    continue
-                decay_proportion = self.get_decay_proportion(
-                    time_between, self.alpha, self.beta)
-                total += flux_in * decay_proportion
-            return total
+            # dégradation cumulée: cdf(k), k = time..1
+            weights = cdf[1:time + 1][::-1]
+        total = float(np.dot(flux_in, weights))
+        if total < 0:  # bruit flottant seulement: la somme est non négative
+            total = 0.0
+        if cumulative == False:
+            self.past_out_carbon().set_flux_cache(time, total)
+        return total
 
     def get_stock(self, graph: wp.WPGraph, time: int, cumulative: bool = False) -> float:
         ''' get_stock Documentation
@@ -476,19 +535,21 @@ class DecayNode(ProportionNode):
 
         '''
         try:
-            total = 0
-            for timestep in range(time + 1): 
-                annual = self.get_flux_in(graph, timestep, cumulative= False)
-                time_between = time - timestep
-                if annual == 0:
-                    continue
-                decay_proportion = 1 - self.get_decay_proportion(
-                    time_between, self.alpha, self.beta)
-                total += annual * decay_proportion
+            if self.past_stock().is_cached(time):
+                return self.past_stock().get_flux_cache(time)
+            self._extend_decay_vectors(graph, time)
+            # stock(t) = somme_{s<=t} flux_in(s) * (1 - cdf(t-s)), une
+            # convolution calculée par produit scalaire numpy. survie(k) =
+            # 1 - cdf(k), k = time..0
+            survival = (1.0 - self._cdf_vec[0:time + 1])[::-1]
+            total = float(np.dot(self._flux_in_vec[0:time + 1], survival))
+            if total < 0:  # bruit flottant seulement: la somme est non négative
+                total = 0.0
+            self.past_stock().set_flux_cache(time, total)
             return total
         except RecursionError:
             raise me.RecursionNode("Un maximum de demande a été effectué. \
-                Une boucle entre des ProportionNode est présente")          
+                Une boucle entre des ProportionNode est présente")
 
 class RecyclingNode(ProportionNode):
     """ RecyclingNode Documentation
@@ -519,7 +580,7 @@ class RecyclingNode(ProportionNode):
             # nulle: la somme part d'un float(0) et non d'un entier
             return float(self._get_cumulative_total(
                 lambda timestep: self.get_flux_out(graph, timestep, cumulative= False),
-                time))
+                time, self.past_out_carbon_cumul()))
 
     def get_stock(self, graph: wp.WPGraph, time: int, cumulative: bool = False) -> float:
         return self.get_flux_in(graph, time, cumulative)
@@ -581,12 +642,18 @@ class GraphFactory(utilities.JsonData):
         super().__init__(DIR, Dict)
         self._GRAPHNAME = []
         self._GRAPHS = []
-        
+        # Index nom -> position pour un get_graph en O(1) (au lieu d'un
+        # list.index à chaque appel), très sollicité pendant reporting et
+        # vérification. On indexe la POSITION, pas l'objet, pour rester
+        # cohérent si _GRAPHS[i] est remplacé après coup (fait dans les tests).
+        self._INDEX_BY_NAME = {}
+
         keys = list(self.get_data.keys())
         keys.sort()
         for graph in keys:
             self._GRAPHNAME.append(graph)
             self._GRAPHS.append(wp.WPGraph(graph))
+            self._INDEX_BY_NAME[graph] = len(self._GRAPHS) - 1
             _EDGES = self.get_data[graph].get('Edges', {})
             _NODES = self.get_data[graph].get('Nodes', {})
             if len(_NODES) < 2 or len(_EDGES) == 0:
@@ -637,7 +704,9 @@ class GraphFactory(utilities.JsonData):
         raise me.ConstError("Graph name can't be changed outside Miro")
     
     def get_graph(self, name) -> wp.WPGraph:
-        Names_list = self.get_graph_name
-        Index = Names_list.index(name)
-        return self._GRAPHS[Index]
+        try:
+            return self._GRAPHS[self._INDEX_BY_NAME[name]]
+        except KeyError:
+            # Conserve le ValueError qu'émettait l'ancien list.index(name)
+            raise ValueError(f"'{name}' n'est pas un nom de graphe")
         # get_data (accès aux données JSON) est hérité de utilities.JsonData

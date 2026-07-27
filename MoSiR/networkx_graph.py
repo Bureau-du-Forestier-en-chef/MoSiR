@@ -26,6 +26,12 @@ class WPGraph():
         self._NAME = str(KEY)
         self._TOPNODE_NAMES = []
         self._DECAYNODE_NAMES = []
+        # Ensemble des noms pour un test d'unicité en O(1) à l'ajout, au lieu
+        # d'un O(N) par add_node (donc O(N^2) à la construction du graphe).
+        self._NODE_NAMES = set()
+        # Prédécesseurs par noeud, mémoïsés: la topologie est figée après la
+        # construction et get_flux_in les redemande à chaque (noeud, temps).
+        self._predecessors_cache = {}
 
     def get_nodes_names(self) -> list[str]:
         """Retourne le nom de tous les noeuds sous forme de liste
@@ -66,10 +72,11 @@ class WPGraph():
             me.NodeError: Un noeud ne peut avoir le même nom qu'un
                 noeud déjà présent
         """
-        if node.NAME in self.get_nodes_names():
+        if node.NAME in self._NODE_NAMES:
             raise me.NodeError(f"At least two nodes have the same name: '{node.NAME}'.\
                 Nodes must have an unique name")
         self._graph.add_node(node)
+        self._NODE_NAMES.add(node.NAME)
     
     def add_edge(self, node_from, node_to, proportions: list[float] | dict):
         """Ajoute un lien entre deux noeuds dans le graphe
@@ -94,6 +101,8 @@ class WPGraph():
         if node_from == node_to:
             raise me.EdgeError(f"Can't create an edge from {node_from.NAME} to itself")
         self._graph.add_edge(node_from, node_to, proportion=proportions)
+        # La topologie change: le cache des prédécesseurs n'est plus valide.
+        self._predecessors_cache = {}
     
     def get_edge_proportions(self, node_from, node_to) -> list[float]:
         """Retourne la liste proportion entre deux noeuds
@@ -123,7 +132,11 @@ class WPGraph():
         """
         if type(node) == gg.TopNode:
             warnings.warn("The TopNode has no predecessors")
-        return self._graph.predecessors(node)
+        cached = self._predecessors_cache.get(node)
+        if cached is None:
+            cached = list(self._graph.predecessors(node))
+            self._predecessors_cache[node] = cached
+        return cached
     
     def get_successors(self, node):
         """Retourne tous les noeuds parents
