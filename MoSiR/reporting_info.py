@@ -18,18 +18,17 @@ from MoSiR import (
 class ReportData(utilities.JsonData):
     """ ReportData Documentation
 
-    Donne accès à la description des extrants demandés: quels noeuds
-    rapporter, sous quel type de résultat, dans quelle unité et sur quelle
-    durée. Le chargement du JSON est fait par utilities.JsonData; cette
-    classe valide que la demande est réalisable avant que le calcul ne
-    commence.
+    Gives access to the description of the requested outputs: which nodes to
+    report, under which result type, in which unit and over which duration.
+    The JSON loading is done by utilities.JsonData; this class validates
+    that the request is feasible before the computation starts.
 
     Args:
-        directory (str): Le chemin du fichier JSON du reporting
-        Dict (dict): Le reporting déjà chargé en mémoire
+        directory (str): The path of the reporting JSON file
+        Dict (dict): The reporting already loaded in memory
 
     Returns:
-        ReportData: Un objet de la classe ReportData
+        ReportData: An object of the ReportData class
     """
     SOURCE_NAME = "les données du report"
 
@@ -46,7 +45,7 @@ class ReportData(utilities.JsonData):
         self.validate_extension()
         self.validate_PRG()
             
-    # get_data (accès aux données JSON) est hérité de utilities.JsonData
+    # get_data (access to the JSON data) is inherited from utilities.JsonData
 
     def get_output_name(self):
         return [i for i in self.get_data]
@@ -104,13 +103,13 @@ def unit_change(number: float, from_unit: str, to_unit: str) -> float:
 def output_creation(graph: gg.GraphFactory, import_data: ip.ImportData, 
                    report_data: ReportData, directory: str):
     """
-    Fonction pour créer des outputs des résultats des calculs
-    
+    Function to create outputs from the computation results
+
     Args:
-        graph: La classe graph factory de graphFactory.py
-        Import: La classe ImportData du fichier d'import
-        Report: La classe ReportData 
-        Directory: Le dossier dans lequel les outputs seront enregistrés
+        graph: The graph factory class from graphFactory.py
+        Import: The ImportData class of the import file
+        Report: The ReportData class
+        Directory: The folder in which the outputs will be saved
     """
         
     time = report_data.get_output_data('Time')
@@ -154,11 +153,11 @@ def output_creation(graph: gg.GraphFactory, import_data: ip.ImportData,
                 raise me.InvalidOption(f"Cumulative ({data['Cumulative']}) dans le fichier \
                                     de reporting doit être un booléen, donc soit 'true' ou 'false'")
 
-            # Dictionnaire pour les outputs
+            # Dictionary for the outputs
             dt = {'Time': [i for i in range(time + 1)]}
             dt.update({node_name: [] for node_name in nodes_name})
 
-            # On produit les outputs par graph
+            # We produce the outputs per graph
             for node in G.nodes():
                 if node.NAME in nodes_name:
                     for timestep in range(time + 1):
@@ -175,7 +174,7 @@ def output_creation(graph: gg.GraphFactory, import_data: ip.ImportData,
                         result = unit_change(result, input_unit, report_unit)
                         dt[node.NAME].append(result)
             
-            # On ajuste les outputs selon le reporting
+            # We adjust the outputs according to the reporting
             if report_unit == 'tCO2eq':
                 for col in dt:
                     if col == 'Time':
@@ -195,12 +194,12 @@ def output_creation(graph: gg.GraphFactory, import_data: ip.ImportData,
                             Options valides: CO2, CO, N2O, CH4. Exemple '{col} CH4'")
             elif report_unit == 'w/m2':
                 C = data['Cumulative']
-                # On formate les outputs en radiatif
+                # We format the outputs as radiative forcing
                 cr.rad_formatting(dt, cumulative = C)
 
             if summarize == 'Combined':
                 dt['Combined'] = [sum(i) for i in zip(*[dt[col] for col in dt if col != 'Time'])]
-                # La boucle suivante fait la même chose que la ligne précédente
+                # The following loop does the same thing as the previous line
                 """dt['Combined'] = []
                 for i in range(time + 1):
                     sum = 0
@@ -211,7 +210,7 @@ def output_creation(graph: gg.GraphFactory, import_data: ip.ImportData,
                             sum += dt[col][i]
                     dt['Combined'].append(sum)"""
 
-                # Nouveau dt avec seulement Time et Combined
+                # New dt with only Time and Combined
                 dt = {k: dt[k] for k in ('Time', 'Combined')}
             elif summarize != 'Per node':
                 raise me.InvalidOption(f"Les choix de regroupement des résultats sont \

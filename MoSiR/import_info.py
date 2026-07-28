@@ -14,18 +14,17 @@ from MoSiR import (
 class ImportData(utilities.JsonData):
     """ ImportData Documentation
 
-    Donne accès aux intrants du calculateur: les flux de matière qui
-    entrent dans chaque TopNode et les paramètres de dégradation de chaque
-    DecayNode. Le chargement du JSON est fait par utilities.JsonData;
-    cette classe valide le contenu et le traduit en valeurs utilisables
-    par le graphe.
+    Gives access to the calculator inputs: the material fluxes that enter
+    each TopNode and the decay parameters of each DecayNode. The JSON
+    loading is done by utilities.JsonData; this class validates the content
+    and translates it into values usable by the graph.
 
     Args:
-        directory (str): Le chemin du fichier JSON des intrants
-        Dict (dict): Les intrants déjà chargés en mémoire
+        directory (str): The path of the inputs JSON file
+        Dict (dict): The inputs already loaded in memory
 
     Returns:
-        ImportData: Un objet de la classe ImportData
+        ImportData: An object of the ImportData class
     """
     SOURCE_NAME = "les données d'import"
 
@@ -68,19 +67,19 @@ class ImportData(utilities.JsonData):
         """
         return [i for i in self.get_flux_data(graph_name)]
     
-    def get_flux_input(self, graph_name: str, node_name: str): 
-        intrant = self.get_flux_data(graph_name)
-        try:  
-            intrant = intrant[node_name]
+    def get_flux_input(self, graph_name: str, node_name: str):
+        inputs = self.get_flux_data(graph_name)
+        try:
+            inputs = inputs[node_name]
         except:
             raise me.InvalidOption(f"{node_name} n'est pas un nom de noeud \
                 présent dans le fichier d'inputs")
         time = []
         quantities = []
-        for temps, value in intrant.items():
+        for timestep, value in inputs.items():
             if value == 0:
                 continue
-            time.append(int(temps)) 
+            time.append(int(timestep))
             quantities.append(value)
         
         if len(time) == 0 and len(quantities) == 0:
@@ -120,17 +119,17 @@ class ImportData(utilities.JsonData):
         return decay_name 
     
     def get_decay_input(self, graph_name: str, node_name: str):
-        intrant = self.get_decay_data(graph_name)[node_name]
-        if list(intrant.keys())[0] == "Custom":
-            alpha_value = intrant['Custom']['alpha']
-            beta_value = intrant['Custom']['beta']
-        elif list(intrant.keys())[0] in ['Exponential', 'Gamma', 'Chi-square']:
-            decay_type = list(intrant.keys())[0]
-            halflife_value = intrant[decay_type]
+        inputs = self.get_decay_data(graph_name)[node_name]
+        if list(inputs.keys())[0] == "Custom":
+            alpha_value = inputs['Custom']['alpha']
+            beta_value = inputs['Custom']['beta']
+        elif list(inputs.keys())[0] in ['Exponential', 'Gamma', 'Chi-square']:
+            decay_type = list(inputs.keys())[0]
+            halflife_value = inputs[decay_type]
             alpha_value, beta_value = gf.DecayTypeOptimizer(
                 node_name, decay_type, halflife_value).find_param()
         else:
-            raise me.InvalidOption(f"{list(intrant.keys())[0]} n'est pas une \
+            raise me.InvalidOption(f"{list(inputs.keys())[0]} n'est pas une \
                 dégradation valide. Choix possibles: Custom, Exponential, Gamma ou Chi-square")
         return alpha_value, beta_value
 

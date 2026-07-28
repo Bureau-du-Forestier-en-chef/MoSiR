@@ -1,5 +1,5 @@
 """
-Fichier des exceptions possibles dans MoSiR.
+File of the exceptions that can occur in MoSiR.
 
 Copyright (c) 2023 Gouvernement du Québec
 SPDX-License-Identifier: LiLiQ-R-1.1

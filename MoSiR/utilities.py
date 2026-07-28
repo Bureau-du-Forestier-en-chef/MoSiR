@@ -9,28 +9,27 @@ from MoSiR import mosir_exceptions as me
 class JsonData:
     """ JsonData Documentation
 
-    Classe de base des trois entrées du calculateur: le graphe
-    (GraphFactory), les intrants (ImportData) et le reporting
-    (ReportData). Elle ne fait qu'une seule chose: remplir self._DATA à
-    partir d'un fichier JSON ou d'un dictionnaire déjà en mémoire.
-    L'option dictionnaire existe pour l'interface web, qui reçoit les
-    données sans passer par un fichier.
+    Base class of the three calculator inputs: the graph (GraphFactory),
+    the inputs (ImportData) and the reporting (ReportData). It does only
+    one thing: fill self._DATA from a JSON file or from a dictionary
+    already in memory. The dictionary option exists for the web interface,
+    which receives the data without going through a file.
 
-    Les classes filles définissent SOURCE_NAME, qui n'apparait que dans
-    le message d'erreur, et se chargent de valider le contenu de
-    self._DATA une fois celui-ci chargé.
+    The child classes define SOURCE_NAME, which only appears in the error
+    message, and are responsible for validating the content of self._DATA
+    once it has been loaded.
 
     Args:
-        directory (str): Le chemin du fichier JSON à lire
-        Dict (dict): Les données JSON déjà chargées en mémoire. Prioritaire
-            sur directory si les deux sont fournis.
+        directory (str): The path of the JSON file to read
+        Dict (dict): The JSON data already loaded in memory. Takes priority
+            over directory if both are provided.
 
     Raises:
-        me.InvalidOption: Ni chemin ni dictionnaire n'a été fourni
-        me.InvalidOption: Le chemin ne mène pas à un JSON lisible
+        me.InvalidOption: Neither a path nor a dictionary was provided
+        me.InvalidOption: The path does not lead to a readable JSON
 
     Returns:
-        JsonData: Un objet de la classe JsonData
+        JsonData: An object of the JsonData class
     """
     SOURCE_NAME = "les données"
 

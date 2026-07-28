@@ -11,12 +11,11 @@ from MoSiR import graph_generator as gg
 from MoSiR import mosir_exceptions as me
 
 class WPGraph():
-    """ Class interface avec le package networkx
+    """ Interface class with the networkx package
 
-    Cette classe sert de layer entre les commandes du package
-    networkx et les fonctions qui seront utilisées dans MoSiR.
-    Le but est de faire abstraction du package au cas où il devra
-    être changer ou modifié.
+    This class acts as a layer between the commands of the networkx
+    package and the functions that will be used in MoSiR. The goal is to
+    abstract away the package in case it has to be changed or modified.
     """
     def __init__(self, KEY):
         super().__init__()
@@ -26,36 +25,36 @@ class WPGraph():
         self._NAME = str(KEY)
         self._TOPNODE_NAMES = []
         self._DECAYNODE_NAMES = []
-        # Ensemble des noms pour un test d'unicité en O(1) à l'ajout, au lieu
-        # d'un O(N) par add_node (donc O(N^2) à la construction du graphe).
+        # Set of names for an O(1) uniqueness test on add, instead of an
+        # O(N) test per add_node (so O(N^2) when building the graph).
         self._NODE_NAMES = set()
-        # Prédécesseurs par noeud, mémoïsés: la topologie est figée après la
-        # construction et get_flux_in les redemande à chaque (noeud, temps).
+        # Predecessors per node, memoized: the topology is frozen after the
+        # construction and get_flux_in re-requests them for every (node, time).
         self._predecessors_cache = {}
 
     def get_nodes_names(self) -> list[str]:
-        """Retourne le nom de tous les noeuds sous forme de liste
+        """Returns the name of all the nodes as a list
         """
         return [n.NAME for n in self._graph.nodes()]
-    
-    def add_topnode_name(self, name):
-        """Ajoute le nom d'une TopNode à une liste
 
-        Sert à alimenter self.get_topnode_name
+    def add_topnode_name(self, name):
+        """Adds the name of a TopNode to a list
+
+        Used to feed self.get_topnode_name
 
         Args:
-            name (_type_): Nom du nom
+            name (_type_): The name
         """
         self._TOPNODE_NAMES.append(name)
 
     def get_topnode_name(self) -> list[str]:
-        """Retourne tous les noms des noeuds qui sont TopNode
+        """Returns all the names of the nodes that are TopNode
 
         Returns:
-            list[str]: Une liste des noms de noeuds
+            list[str]: A list of node names
         """
         return self._TOPNODE_NAMES
-        
+
     def add_decaynode_name(self, name):
         self._DECAYNODE_NAMES.append(name)
 
@@ -63,32 +62,32 @@ class WPGraph():
         return self._DECAYNODE_NAMES
 
     def add_node(self, node):
-        """Ajoute un noeud au graphe
+        """Adds a node to the graph
 
         Args:
-            node (_type_): Un noeud à ajouter
+            node (_type_): A node to add
 
         Raises:
-            me.NodeError: Un noeud ne peut avoir le même nom qu'un
-                noeud déjà présent
+            me.NodeError: A node cannot have the same name as a node
+                already present
         """
         if node.NAME in self._NODE_NAMES:
             raise me.NodeError(f"At least two nodes have the same name: '{node.NAME}'.\
                 Nodes must have an unique name")
         self._graph.add_node(node)
         self._NODE_NAMES.add(node.NAME)
-    
+
     def add_edge(self, node_from, node_to, proportions: list[float] | dict):
-        """Ajoute un lien entre deux noeuds dans le graphe
+        """Adds a link between two nodes in the graph
 
         Args:
-            node_from (_type_): Noeud de départ
-            node_to (_type_): Noeud d'arrivé
-            proportions (list[float]): La proportion qui lie les deux noeuds
+            node_from (_type_): Starting node
+            node_to (_type_): Ending node
+            proportions (list[float]): The proportion linking the two nodes
 
         Raises:
-            me.EdgeError: Une proportion doit être entre 0 et 1
-            me.EdgeError: Un lien ne peut s'attacher entre deux noeuds identiques
+            me.EdgeError: A proportion must be between 0 and 1
+            me.EdgeError: A link cannot attach between two identical nodes
         """
         if isinstance(proportions, list):
             if any(x < 0 or x > 1 for x in proportions):
@@ -101,34 +100,34 @@ class WPGraph():
         if node_from == node_to:
             raise me.EdgeError(f"Can't create an edge from {node_from.NAME} to itself")
         self._graph.add_edge(node_from, node_to, proportion=proportions)
-        # La topologie change: le cache des prédécesseurs n'est plus valide.
+        # The topology changes: the predecessors cache is no longer valid.
         self._predecessors_cache = {}
-    
+
     def get_edge_proportions(self, node_from, node_to) -> list[float]:
-        """Retourne la liste proportion entre deux noeuds
+        """Returns the proportion list between two nodes
 
         Args:
-            node_from (_type_): Noeud de départ
-            node_to (_type_): Noeud d'arrivé
+            node_from (_type_): Starting node
+            node_to (_type_): Ending node
 
         Raises:
-            me.EdgeError: Un lien doit exister entre les deux noeuds
+            me.EdgeError: A link must exist between the two nodes
 
         Returns:
-            list[float]: Une liste des proportions
+            list[float]: A list of the proportions
         """
         if not self._graph.has_edge(node_from, node_to):
             raise me.EdgeError(f"Edge from '{node_from.NAME}' to '{node_to.NAME}' doesn't exist")
         return self._graph.get_edge_data(node_from, node_to)["proportion"]
-    
+
     def get_predecessors(self, node):
-        """Retourne tous les noeuds enfants
+        """Returns all the child nodes
 
         Args:
-            node (_type_): Le noeud parent
+            node (_type_): The parent node
 
         Returns:
-            _type_: tous les noeuds enfants
+            _type_: all the child nodes
         """
         if type(node) == gg.TopNode:
             warnings.warn("The TopNode has no predecessors")
@@ -137,35 +136,35 @@ class WPGraph():
             cached = list(self._graph.predecessors(node))
             self._predecessors_cache[node] = cached
         return cached
-    
+
     def get_successors(self, node):
-        """Retourne tous les noeuds parents
+        """Returns all the parent nodes
 
         Args:
-            node (_type_): Le noeud enfant
+            node (_type_): The child node
 
         Returns:
-            _type_: tous les noeuds parents
+            _type_: all the parent nodes
         """
         if type(node) == gg.PoolNode:
-            warnings.warn("PoolNode has no successors") 
+            warnings.warn("PoolNode has no successors")
         return self._graph.successors(node)
-    
+
     def nodes(self):
         return self._graph.nodes()
 
     def edges(self):
-        """Retourne tous les liens du graphe
+        """Returns all the links of the graph
 
         Returns:
-            _type_: tous les liens sous forme de paires (départ, arrivée)
+            _type_: all the links as (start, end) pairs
         """
         return self._graph.edges()
-    
+
     @property
     def get_name(self):
         return self._NAME
-    
+
     @get_name.setter
     def get_name(self, value):
         raise me.ConstError("Graph name can't be changed outside Miro")

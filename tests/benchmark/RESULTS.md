@@ -17,3 +17,4 @@ machines. Reproduire un point de mesure:
 | 2026-07-27 08:08 | 66f7f0c | phase1.1-cumul | e757e957 | Intel64 Family 6 Model 142 Stepping 12, GenuineIntel | 3.12.13 | 2.5.1/1.18.0 | 105/102 | 1000 | 0.002 | 62.398 | 0.424 | 147.32 |
 | 2026-07-27 11:24 | 66f7f0c | phase1-complete | e757e957 | Intel64 Family 6 Model 142 Stepping 12, GenuineIntel | 3.12.13 | 2.5.1/1.18.0 | 105/102 | 1000 | 0.002 | 63.371 | 0.433 | 146.41 |
 | 2026-07-27 11:34 | 66f7f0c | phase2-vectorize | e757e957 | Intel64 Family 6 Model 142 Stepping 12, GenuineIntel | 3.12.13 | 2.5.1/1.18.0 | 105/102 | 1000 | 0.002 | 4.810 | 0.419 | 11.47 |
+| 2026-07-27 13:54 | 9a095f8 | baseline | 2415438e | 13th Gen Intel(R) Core(TM) i9-13900 | 3.12.13 | 2.5.1/1.18.0 | 105/102 | 1000 | 0.001 | 1.617 | 0.229 | 7.06 |

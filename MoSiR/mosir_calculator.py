@@ -10,7 +10,7 @@ from MoSiR import reporting_info as rp
 from MoSiR import graph_generator as gg
 
 def main(raw_args = None):
-    """Fonction parser du calculateur de MoSiR
+    """Parser function of the MoSiR calculator
 
     Args:
         raw_args (_type_, optional): _description_. Defaults to None.
@@ -38,24 +38,24 @@ def main(raw_args = None):
 
     run_calculator(args.G, args.D, args.R, args.E)
 
-def run_calculator(Graphe: str, Import: str, Report: str, Output: str):
-    """Fonction pour rouler le calculateur de MoSiR, sans parser
+def run_calculator(graph_file: str, import_file: str, report_file: str, output_dir: str):
+    """Function to run the MoSiR calculator, without a parser
 
     Args:
-        Graphe (str): Localisation du fichier JSON du graphe
-        Import (str): Localisation du fichier JSON du import
-        Report (str): Localisation du fichier JSON du report
-        Output (str): Localisation où les extrants seront produits
+        graph_file (str): Location of the graph JSON file
+        import_file (str): Location of the import JSON file
+        report_file (str): Location of the report JSON file
+        output_dir (str): Location where the outputs will be produced
     """
-    Graph_processed = gg.GraphFactory(Graphe)
-    Import_processed = ip.ImportData(Import)
-    Report_processed = rp.ReportData(Report) 
- 
+    graph_processed = gg.GraphFactory(graph_file)
+    import_processed = ip.ImportData(import_file)
+    report_processed = rp.ReportData(report_file)
+
     # Add imports to graph
-    ip.add_import(Graph_processed, Import_processed)
+    ip.add_import(graph_processed, import_processed)
 
     # Reporting
-    rp.output_creation(Graph_processed, Import_processed, Report_processed, Output)
+    rp.output_creation(graph_processed, import_processed, report_processed, output_dir)
 
 if __name__ == "__main__":
     main()

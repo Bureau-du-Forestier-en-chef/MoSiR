@@ -79,14 +79,16 @@ web — se détaille ainsi :
 | Module | Couverture |
 | --- | --- |
 | `generators.py` | 100 % |
+| `graph_generator/caching.py` | 100 % |
+| `graph_generator/factory.py` | 100 % |
 | `graph_verificator.py` | 100 % |
 | `networkx_graph.py` | 100 % |
 | `utilities.py` | 100 % |
 | `gamma_function.py` | 98 % |
 | `import_info.py` | 98 % |
 | `reporting_info.py` | 96 % |
-| `graph_generator.py` | 95 % |
 | `mosir_calculator.py` | 95 % |
+| `graph_generator/nodes.py` | 93 % |
 | `mosir_exceptions.py` | 91 % |
 | `carbon_to_radiatif.py` | 89 % |
 

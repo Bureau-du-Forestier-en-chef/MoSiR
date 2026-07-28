@@ -10,26 +10,25 @@ import warnings
 from MoSiR import graph_generator as gg
 from MoSiR import mosir_exceptions as me
 
-# Fonction main qui contient les tests ----------------------------------------
+# Main function that holds the tests -------------------------------------------
 def main(graph: gg.GraphFactory):
-    """Fonction main qui sera connectée au script mosir_calculator.py
+    """Main function that will be connected to the mosir_calculator.py script
 
-    Cette fonction contient les tests qui seront effectués sur le graph
-    avant de faire le calcul. Les tests sont effectués par graph, donc
-    si plusieurs graphes sont présent dans le fichier JSON, les tests seront
-    effectués pour chaque graph. Hope it works
+    This function holds the tests that will be run on the graph before doing
+    the computation. The tests are run per graph, so if several graphs are
+    present in the JSON file, the tests will be run for each graph. Hope it
+    works
 
     Args:
-        graphe (gg.GraphFactory): GraphFactory qui contient les graph
-        à tester
+        graph (gg.GraphFactory): GraphFactory that holds the graphs to test
     """
 
     graph_copy = copy.deepcopy(graph)
 
-    # On récupère les noms des nodes qui ont un overflow
+    # We collect the names of the nodes that have an overflow
     overflow_name = get_overflow_names(graph_copy)
 
-    # On effectue les tests
+    # We run the tests
     debugg_graph_01(graph_copy)
     debugg_graph_02(graph_copy, overflow=overflow_name)
     debugg_graph_03(graph_copy)
@@ -39,8 +38,8 @@ def main(graph: gg.GraphFactory):
     debugg_graph_06(graph_copy)
     debugg_graph_07(graph_copy)
     debugg_graph_08(graph_copy)
-    # 09 et 10 font double emploi avec graph_generator.py, mais restent
-    # utiles pour un graphe construit autrement que par GraphFactory
+    # 09 and 10 overlap with graph_generator.py, but stay useful for a graph
+    # built otherwise than by GraphFactory
     debugg_graph_09(graph_copy)
     debugg_graph_10(graph_copy)
     debugg_graph_11(graph_copy)
@@ -52,25 +51,24 @@ def main(graph: gg.GraphFactory):
     debugg_graph_17(graph_copy)
     debugg_graph_18(graph_copy)
 
-# Parcours partagés -----------------------------------------------------------
-# Tous les contrôles partent du même préambule: parcourir les graphes d'une
-# GraphFactory, puis leurs noeuds. Les générateurs ci-dessous l'écrivent une
-# seule fois. Certains contrôles portent sur le JSON d'origine plutôt que sur
-# le graphe construit, parce qu'ils vérifient justement ce que GraphFactory
-# en a déduit.
+# Shared traversals -----------------------------------------------------------
+# Every check starts from the same preamble: traverse the graphs of a
+# GraphFactory, then their nodes. The generators below write it only once.
+# Some checks operate on the original JSON rather than on the built graph,
+# because they verify precisely what GraphFactory inferred from it.
 
 def get_overflow_names(graph: gg.GraphFactory) -> dict[str, list[str]]:
-    """Relève par graphe le nom des noeuds qui reçoivent un lien en débordement
+    """Collects, per graph, the name of the nodes that receive an overflow link
 
-    Le carbone qui déborde n'est pas soumis aux mêmes règles que le reste:
-    plusieurs contrôles ont besoin de cette liste pour exclure ces noeuds
-    de la règle du 100% et de la comptabilisation de la matière.
+    The overflowing carbon is not subject to the same rules as the rest:
+    several checks need this list to exclude these nodes from the 100% rule
+    and from the material accounting.
 
     Args:
-        graph (gg.GraphFactory): GraphFactory à parcourir
+        graph (gg.GraphFactory): GraphFactory to traverse
 
     Returns:
-        dict[str, list[str]]: Les noms des noeuds en débordement, par graphe
+        dict[str, list[str]]: The names of the overflow nodes, per graph
     """
     overflow_name = {}
     for graph_name, NODES, EDGES in _each_json_graph(graph):
@@ -82,25 +80,25 @@ def get_overflow_names(graph: gg.GraphFactory) -> dict[str, list[str]]:
     return overflow_name
 
 def _each_json_graph(graph: gg.GraphFactory):
-    """Itère sur le JSON d'origine: (nom du graphe, Nodes, Edges)"""
+    """Iterates over the original JSON: (graph name, Nodes, Edges)"""
     for graph_name in graph.get_data:
         data = graph.get_data.get(graph_name)
         yield graph_name, data.get('Nodes', {}), data.get('Edges', {})
 
 def _each_graph(graph: gg.GraphFactory):
-    """Itère sur les graphes construits: (nom du graphe, WPGraph)"""
+    """Iterates over the built graphs: (graph name, WPGraph)"""
     for graph_name in graph.get_graph_name:
         yield graph_name, graph.get_graph(graph_name)
 
 def _each_node(graph: gg.GraphFactory, node_types = None):
-    """Itère sur les noeuds: (nom du graphe, WPGraph, noeud)
+    """Iterates over the nodes: (graph name, WPGraph, node)
 
-    node_types filtre sur le type exact du noeud, sans tenir compte de
-    l'héritage: un DecayNode ne répond pas à un filtre ProportionNode.
+    node_types filters on the exact node type, without taking inheritance
+    into account: a DecayNode does not match a ProportionNode filter.
 
     Args:
-        graph (gg.GraphFactory): GraphFactory à parcourir
-        node_types: Un type de noeud, un tuple de types, ou None pour tous
+        graph (gg.GraphFactory): GraphFactory to traverse
+        node_types: A node type, a tuple of types, or None for all
     """
     if node_types is not None and not isinstance(node_types, tuple):
         node_types = (node_types,)
@@ -110,22 +108,22 @@ def _each_node(graph: gg.GraphFactory, node_types = None):
                 yield graph_name, G, node
 
 def _count(neighbours) -> int:
-    """Compte les voisins retournés par get_successors ou get_predecessors"""
+    """Counts the neighbours returned by get_successors or get_predecessors"""
     return sum(1 for neighbour in neighbours)
 
-# Contrôles déclaratifs -------------------------------------------------------
-# Plusieurs contrôles ne diffèrent que par le type de noeud visé ou par le
-# caractère refusé. Ils partagent ici une seule implémentation.
+# Declarative checks ----------------------------------------------------------
+# Several checks differ only by the targeted node type or by the refused
+# character. They share a single implementation here.
 
 def _check_node_is_connected_both_ways(graph: gg.GraphFactory, node_type):
-    """Un noeud intermédiaire doit avoir au moins un lien de chaque côté
+    """An intermediate node must have at least one link on each side
 
     Args:
-        graph (gg.GraphFactory): GraphFactory à vérifier
-        node_type: Le type de noeud visé, qui donne aussi son nom au message
+        graph (gg.GraphFactory): GraphFactory to check
+        node_type: The targeted node type, which also names the message
 
     Raises:
-        me.NodeError: Le noeud n'a aucun lien entrant ou aucun lien sortant
+        me.NodeError: The node has no incoming link or no outgoing link
     """
     for graph_name, G, node in _each_node(graph, node_type):
         if _count(G.get_successors(node)) == 0 or \
@@ -135,12 +133,12 @@ def _check_node_is_connected_both_ways(graph: gg.GraphFactory, node_type):
                 ne peut pas être au début ou à la fin d'un graph").split()))
 
 def _warn_nodes_without_edge(graph: gg.GraphFactory, node_type, neighbours):
-    """Avertit quand des noeuds d'un type n'ont aucun lien du côté attendu
+    """Warns when nodes of a type have no link on the expected side
 
     Args:
-        graph (gg.GraphFactory): GraphFactory à vérifier
-        node_type: Le type de noeud visé
-        neighbours: Fonction (WPGraph, noeud) qui donne les voisins à compter
+        graph (gg.GraphFactory): GraphFactory to check
+        node_type: The targeted node type
+        neighbours: Function (WPGraph, node) that gives the neighbours to count
     """
     for graph_name, G in _each_graph(graph):
         no_edges = []
@@ -153,15 +151,15 @@ def _warn_nodes_without_edge(graph: gg.GraphFactory, node_type, neighbours):
 
 def _check_graph_name_character(graph: gg.GraphFactory, character: str,
                                 explanation: str):
-    """Refuse un caractère dans le nom d'un graphe
+    """Refuses a character in a graph name
 
     Args:
-        graph (gg.GraphFactory): GraphFactory à vérifier
-        character (str): Le caractère interdit
-        explanation (str): La fin du message d'erreur
+        graph (gg.GraphFactory): GraphFactory to check
+        character (str): The forbidden character
+        explanation (str): The end of the error message
 
     Raises:
-        me.GraphError: Le nom du graphe contient le caractère interdit
+        me.GraphError: The graph name contains the forbidden character
     """
     for name in graph.get_graph_name:
         if character in name:
@@ -169,9 +167,9 @@ def _check_graph_name_character(graph: gg.GraphFactory, character: str,
                 peut pas avoir {explanation}").split()))
 
 # Tests -----------------------------------------------------------------------
-# On test si on a bien un first et un last node
+# We test whether we have a first and a last node
 def debugg_graph_01(graph: gg.GraphFactory):
-    # Présence de first et last node
+    # Presence of first and last node
     for graph_name, NODES, EDGES in _each_json_graph(graph):
         TOPNODES = set([int(ID) for ID in NODES]) - \
             set([data['To'] for keys, data in EDGES.items()])
@@ -189,16 +187,16 @@ def debugg_graph_01(graph: gg.GraphFactory):
                 seulement sur des noeuds de demi-vie ou de recyclage").split()),
                 stacklevel=2)
 
-# On test si la somme des edges sortant de chaque node est égale à 100%
+# We test whether the sum of the edges leaving each node equals 100%
 def debugg_graph_02(graph: gg.GraphFactory, overflow: dict[str, list[str]]):
-    # total des Edges
+    # total of the Edges
     for graph_name, G2, node in _each_node(graph):
-        # On regarde d'abord combien de valeur il y a dans le pense-bête
+        # We first look at how many values there are in the reminder
         proportion_length = []
         for successors in G2.get_successors(node):
             proportion_length.append(len(G2.get_edge_proportions(node, successors)))
 
-        # On regarde si on respecte le 100%
+        # We check whether we respect the 100%
         if len(proportion_length) > 0:
             for timestep in range(max(proportion_length)):
                 total = 0
@@ -211,9 +209,9 @@ def debugg_graph_02(graph: gg.GraphFactory, overflow: dict[str, list[str]]):
                     raise me.EdgeError(f"La somme des liens sortants de \
                         {node.NAME} n'est pas égale à 100% ({total * 100} au temps {timestep})")
 
-# On test si une node reçoit des edges avec et sans overflow
+# We test whether a node receives edges with and without overflow
 def debugg_graph_03(graph: gg.GraphFactory):
-    # Test de overflow
+    # Overflow test
     for graph_name, NODES, EDGES in _each_json_graph(graph):
         for nodeID in NODES:
             overflow = []
@@ -224,9 +222,9 @@ def debugg_graph_03(graph: gg.GraphFactory):
                 raise me.EdgeError(f"Le noeud {NODES[nodeID]['Name']} \
                     reçoit des edges avec et sans overflow")
 
-# On test si une node overflow a un edge sortant normal
+# We test whether an overflow node has a normal outgoing edge
 def debugg_graph_03_1(graph: gg.GraphFactory, overflow: dict[str, list[str]]):
-    # Test de overflow
+    # Overflow test
     for graph_name, NODES, EDGES in _each_json_graph(graph):
         for edgesID, value in EDGES.items():
             if NODES[str(value["From"])]['Name'] in overflow[graph_name]:
@@ -235,14 +233,14 @@ def debugg_graph_03_1(graph: gg.GraphFactory, overflow: dict[str, list[str]]):
                         reçoit des liens avec débordement et a des liens sortants \
                         sans débordement. La comptabilisation des flux sera erronée.")
 
-# On test si la quantité total en input est égale à la quantité total dans le système
+# We test whether the total input quantity equals the total quantity in the system
 def debugg_graph_04(graph: gg.GraphFactory, overflow: dict[str, list[str]]):
     MOSIR_TOLERENCE = 0.0001
     time = 15
     # total input versus in system
     for name, G4 in _each_graph(graph):
 
-        # On ajoute les inputs
+        # We add the inputs
         for node in G4.nodes():
             if type(node) == gg.TopNode:
                 node.time = list(range(time + 1))
@@ -274,7 +272,7 @@ def debugg_graph_04(graph: gg.GraphFactory, overflow: dict[str, list[str]]):
                     {timestep} n'est pas égale au total présent dans le \
                     système ({in_system})").split()))
 
-# On regarde si le graphe a des edges qui forme une boucle entre des ProportionNode
+# We check whether the graph has edges forming a loop between ProportionNode
 def debugg_graph_05(graph: gg.GraphFactory):
     for name, G5, node in _each_node(graph, gg.ProportionNode):
         #visited = set()
@@ -295,7 +293,7 @@ def debugg_graph_05(graph: gg.GraphFactory):
                 if type(successor) == gg.ProportionNode:
                     stack.append((successor, path + [current_node]))
 
-# Vérifier si le gg.GraphFactory n'a pas deux graphe avec le même nom
+# Check whether the gg.GraphFactory does not have two graphs with the same name
 def debugg_graph_06(graph: gg.GraphFactory):
     graph_name = []
     for name in graph.get_graph_name:
@@ -305,40 +303,40 @@ def debugg_graph_06(graph: gg.GraphFactory):
         else:
             graph_name.append(name)
 
-# Vérifier si des TopNode ont aucun edges sortant
+# Check whether some TopNode have no outgoing edge
 def debugg_graph_07(graph: gg.GraphFactory):
     _warn_nodes_without_edge(graph, gg.TopNode,
         lambda G, node: G.get_successors(node))
 
-# Vérifier si des PoolNode ont aucun edges entrant
+# Check whether some PoolNode have no incoming edge
 def debugg_graph_08(graph: gg.GraphFactory):
     _warn_nodes_without_edge(graph, gg.PoolNode,
         lambda G, node: G.get_predecessors(node))
 
-# Vérifier que les graphes contiennent au moins deux nodes
+# Check that the graphs contain at least two nodes
 def debugg_graph_09(graph: gg.GraphFactory):
     for name, G9 in _each_graph(graph):
         if len(G9.nodes()) < 2:
             raise me.GraphError(' '.join((f"Le graphe {name} ne contient pas \
                 assez de nodes. Un minimum de 2 nodes est requis").split()))
 
-# Vérifier qu'il y a au moins un edge dans le graph
+# Check that there is at least one edge in the graph
 def debugg_graph_10(graph: gg.GraphFactory):
     for name, G10 in _each_graph(graph):
         if len(G10.edges()) == 0:
             raise me.GraphError(' '.join((f"Le graphe {name} ne contient pas \
                 d'edges. Un minimum de 1 edge est requis").split()))
 
-# Véfirier que les gg.RecyclingNode ont toujours un edge qui rentre et un qui sort
+# Check that the gg.RecyclingNode always have an incoming and an outgoing edge
 def debugg_graph_11(graph: gg.GraphFactory):
     _check_node_is_connected_both_ways(graph, gg.RecyclingNode)
 
-# Vérifier si les ProportionNode ont toujours un edge qui rentre et un qui sort
+# Check that the ProportionNode always have an incoming and an outgoing edge
 def debugg_graph_12(graph: gg.GraphFactory):
     _check_node_is_connected_both_ways(graph, gg.ProportionNode)
 
-# Vérifier qu'aucune RecyclingNode ou DecayNode n'a un edge qui va vers une
-    # node de type TopNode
+# Check that no RecyclingNode or DecayNode has an edge going to a
+    # TopNode-type node
 def debugg_graph_13(graph: gg.GraphFactory):
     for name, G13, node in _each_node(graph, (gg.DecayNode, gg.RecyclingNode)):
         for successor in G13.get_successors(node):
@@ -348,16 +346,17 @@ def debugg_graph_13(graph: gg.GraphFactory):
                     de type TopNode").split()))
 
 def is_gas_present_in_name(string: str):
-    """Fonction qui regarde si une chaines de charactère contient un des gaz. Le gaz
-    doit être isolé des autres charactères par des espaces (ex: 'CO2 emission'
-    est valide et non 'CO2_emissions') et en majuscule (ex: CO2 et non co2 ou Co2)
-    Les gaz possible sont CO2, CH4, CO et N2O
+    """Function that checks whether a string contains one of the gases. The
+    gas must be isolated from the other characters by spaces (e.g. 'CO2
+    emission' is valid and not 'CO2_emissions') and in uppercase (e.g. CO2
+    and not co2 or Co2). The possible gases are CO2, CH4, CO and N2O
 
     Args:
-        string (str): Chaine de charactère à vérifier
+        string (str): String to check
 
     Returns:
-        bool: True si un des gaz est présent en majuscule et isolé et False sinon
+        bool: True if one of the gases is present in uppercase and isolated,
+        False otherwise
     """
     gas = ['CO2', 'CH4', 'CO', 'N2O']
     string_split = string.split(" ")
@@ -381,7 +380,7 @@ def debugg_graph_14(graph: gg.GraphFactory):
     for name, G14, node in _each_node(graph, gg.PoolNode):
         is_gas_present_in_name(node.NAME)
 
-# Vérifier que les gg.DecayNode ont toujours un edge qui rentre et un qui sort
+# Check that the gg.DecayNode always have an incoming and an outgoing edge
 def debugg_graph_15(graph: gg.GraphFactory):
     _check_node_is_connected_both_ways(graph, gg.DecayNode)
 
@@ -391,13 +390,13 @@ def debugg_graph_16(graph: gg.GraphFactory):
 def debugg_graph_17(graph: gg.GraphFactory):
     _check_graph_name_character(graph, "~", "le caratère '~' dans son nom")
 
-# Vérifier s'il y a des espaces de trop, pas implémenté pour l'instant
+# Check whether there are extra spaces, not implemented for now
 def debugg_graph_18(graph: gg.GraphFactory):
     for name, G18, node in _each_node(graph):
         original_name = node.NAME
-        # Supprimer les espaces en début et en fin de chaîne
+        # Remove leading and trailing spaces
         stripped_name = original_name.strip()
-        # Supprimer les espaces superflus entre les mots
+        # Remove superfluous spaces between words
         no_extra_spaces_name = " ".join(stripped_name.split())
         if original_name != no_extra_spaces_name:
             raise me.NodeError(f"Le nœud {original_name} a \

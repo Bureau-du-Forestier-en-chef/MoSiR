@@ -361,9 +361,46 @@ def _git_commit() -> str:
         return "?"
 
 
+def _cpu_brand() -> str:
+    """Nom commercial du CPU avec sa fréquence (ex. « Intel(R) Core(TM)
+    i5-7200U CPU @ 2.50GHz »).
+
+    ``platform.processor()`` renvoie sur Windows une chaîne générique
+    (« Intel64 Family 6 Model 142 Stepping 12, GenuineIntel ») qui ne dit
+    rien sur la vitesse du processeur. On interroge donc la source native
+    de chaque OS et on ne retombe sur ``platform.processor()`` qu'en dernier
+    recours.
+    """
+    system = platform.system()
+    try:
+        if system == "Windows":
+            import winreg
+            with winreg.OpenKey(
+                winreg.HKEY_LOCAL_MACHINE,
+                r"HARDWARE\DESCRIPTION\System\CentralProcessor\0") as key:
+                name, _ = winreg.QueryValueEx(key, "ProcessorNameString")
+                if name:
+                    return " ".join(name.split())
+        elif system == "Linux":
+            with open("/proc/cpuinfo", encoding="utf-8") as fh:
+                for line in fh:
+                    if line.lower().startswith("model name"):
+                        return line.split(":", 1)[1].strip()
+        elif system == "Darwin":
+            out = subprocess.run(
+                ["sysctl", "-n", "machdep.cpu.brand_string"],
+                capture_output=True, text=True, timeout=5)
+            name = out.stdout.strip()
+            if name:
+                return name
+    except Exception:
+        pass
+    return platform.processor() or platform.machine()
+
+
 def machine_metadata() -> dict:
     node = platform.node()
-    cpu = platform.processor() or platform.machine()
+    cpu = _cpu_brand()
     fingerprint = hashlib.sha1(
         f"{node}|{cpu}|{platform.platform()}".encode()).hexdigest()[:8]
     return {

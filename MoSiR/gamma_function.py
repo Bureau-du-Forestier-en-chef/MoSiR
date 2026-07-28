@@ -30,8 +30,8 @@ class DecayTypeOptimizer:
             'Custom'. Le fichier est sous MoSiR/gamma_distribution/gamma_decay.xlsx"
         
     def objective(self, param: float) -> float:
-        """Set up param à optimiser tout dépendant ce qu'on recherche
-        Param is unknow
+        """Sets up the param to optimize depending on what we are looking for
+        Param is unknown
 
         Args:
             param (_type_): Alpha or beta (float)
@@ -49,16 +49,15 @@ class DecayTypeOptimizer:
         return abs(cdf_value - 0.5)
 
     def find_param(self) -> tuple[float, float]:
-        """Permet d'optimiser la valeur manquante
-        Avec des hautes valeurs, l'optimisateur a de la difficulté à
-        trouver la réponse. Il faut donc pointer un intervalle de possibilités
-        avec bounds.  
+        """Optimizes the missing value
+        With high values, the optimizer has trouble finding the answer. We
+        must therefore point to a range of possibilities with bounds.
 
         Raises:
-            me.DecayError: Advenant que l'optimisation échoue
+            me.DecayError: In case the optimization fails
 
         Returns:
-            tuple[float, float]: Combinaison alpha, beta
+            tuple[float, float]: alpha, beta combination
         """
         if self.decay_type == "Exponential":
             bounds = (self.value * 0.5, self.value * 2)

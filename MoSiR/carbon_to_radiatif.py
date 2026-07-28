@@ -14,19 +14,19 @@ from MoSiR import mosir_exceptions as me
 
 @functools.lru_cache(maxsize=None)
 def _load_radiative_factors() -> dict:
-    """Charge les facteurs de forçage DynCO2, une seule fois par processus.
+    """Loads the DynCO2 forcing factors, only once per process.
 
-    Le fichier ne change pas pendant l'exécution; le relire à chaque appel de
-    rad_convolve (une fois par colonne de gaz, pour chaque extrant radiatif)
-    était du gaspillage d'I/O et de parsing.
+    The file does not change during execution; re-reading it on each call to
+    rad_convolve (once per gas column, for each radiative output) was a waste
+    of I/O and parsing.
     """
     file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
         "radiative_forcing", "Dynco2_Base.csv")
     try:
-        # Fichier enregistré depuis un Excel EN
+        # File saved from an EN Excel
         return pd.read_csv(file_path, sep=',').sort_values(by='Year').to_dict(orient='list')
     except pd.errors.ParserError:
-        # Fichier enregistré depuis un Excel FR
+        # File saved from a FR Excel
         return pd.read_csv(file_path, sep=';').sort_values(by='Year').to_dict(orient='list')
 
 def main(raw_args = None) -> list[float]:
@@ -35,7 +35,7 @@ def main(raw_args = None) -> list[float]:
             radiative forcing')
     parser.add_argument('--Input', '-I',
         dest = 'I',
-        type = list[float],                
+        type = list[float],
         required = True,
         help = "Liste d'émissions de carbone en kgC en ordre chronologique")
     parser.add_argument('--Gas', '-G',
@@ -47,20 +47,20 @@ def main(raw_args = None) -> list[float]:
         dest = 'C',
         type = str,
         required = True,
-        help = 'Si le résultat doit être cumulatif ou non') 
-    
+        help = 'Si le résultat doit être cumulatif ou non')
+
     args = parser.parse_args(raw_args)
 
-    """ Transformer un string en liste
+    """ Transform a string into a list
     if args.I[0] == '[' and args.I[-1] == ']':
         colonne = [float(i) for i in args.I[1:-1].split(',')]
     else:
         raise me.InvalidOption("L'option -I doit être le string d'une liste \
             (ex: '[1,2,3]')")
     """
-    
-    colonne = args.I
-    gaz = args.G
+
+    series = args.I
+    gas = args.G
 
     if args.C in ['True', 'true']:
         cumulative = True
@@ -69,75 +69,74 @@ def main(raw_args = None) -> list[float]:
     else:
         raise me.InvalidOption("L'option -C doit être True ou False")
 
-    result = rad_convolve(colonne, gaz, cumulative)
+    result = rad_convolve(series, gas, cumulative)
     return result
 
-def rad_convolve(colonne: list[float], gaz: str, cumulative: bool = False) -> list[float]:
-    """Fonction servant à transformer une liste d'émissions d'un gaz (en kgC)
-    en forçage radiatif (en w/m2). Change dabord les unités pour la masse 
-    correspondante du gaz. Multiplie par la suite cette valeur au facteur
-    retrouvé dans DynCO2. La fonction utilise numpy.convolve pour itérer 
-    sur les deux listes.
+def rad_convolve(series: list[float], gas: str, cumulative: bool = False) -> list[float]:
+    """Function that transforms a list of emissions of a gas (in kgC) into
+    radiative forcing (in w/m2). First changes the units to the mass
+    corresponding to the gas. Then multiplies this value by the factor found
+    in DynCO2. The function uses numpy.convolve to iterate over the two
+    lists.
 
     Args:
-        colonne (list): Émissions en kgC d'un gaz
-        gaz (str): Nom du gaz (CO2, CO, CH4 ou N2O)
+        series (list): Emissions in kgC of a gas
+        gas (str): Gas name (CO2, CO, CH4 or N2O)
         cumulative (bool, optional):  Defaults to False.
 
     Raises:
-        me.InvalidOption: Les gas disponibles pour l'instant sont: CO2, CO, CH4, N2O
+        me.InvalidOption: The gases available for now are: CO2, CO, CH4, N2O
 
     Returns:
-        list: Une liste des émissions en forçage radiatif. L'ordre des entrées 
-        correspond au moment d'émissions
+        list: A list of the emissions as radiative forcing. The order of the
+        entries matches the moment of emission
     """
-    masse = {
+    mass = {
         'CO2': 3.6667,
         'CO': 2.6666,
         'CH4': 1.3333}
-    if gaz == 'N2O':
-        result = colonne
-    elif gaz in masse:
-        result = [i * masse[gaz] for i in colonne]
+    if gas == 'N2O':
+        result = series
+    elif gas in mass:
+        result = [i * mass[gas] for i in series]
     else:
-        raise me.InvalidOption(f"{gaz} n'est pas dans les options de gaz \
+        raise me.InvalidOption(f"{gas} n'est pas dans les options de gaz \
             pour un calcul en radiatif")
-        
+
     RF = _load_radiative_factors()
-    FC = RF[gaz][0:len(colonne)]
-    rad = list(np.convolve(result, FC)[0:len(colonne)])
-    
+    FC = RF[gas][0:len(series)]
+    rad = list(np.convolve(result, FC)[0:len(series)])
+
     if cumulative == True:
         result = np.cumsum(rad)
     elif cumulative == False:
-        result = rad 
+        result = rad
     return result
 
 def rad_formatting(data: dict, cumulative: bool = False):
-    """Fonction qui survole un dict et change toutes les colonnes
-    nommées comme un gaz (CO, CO2, CH4, N2O) et transforme leur unité
-    en forçage radiatif grâce à la fonction rad_convolve.
+    """Function that goes over a dict and changes every column named like a
+    gas (CO, CO2, CH4, N2O) and transforms their unit into radiative forcing
+    using the rad_convolve function.
 
     Args:
-        data (dict): Un tableau sous forme de dictionnaire
+        data (dict): A table as a dictionary
         cumulative (bool, optional): Defaults to False.
 
     Raises:
-        me.TimeStepError: Il n'y doit pas y avoir des années manquantes
-        dans les inputs. Si aucune émissions est présente, un 0 devrait être 
-        associé à cette année.
+        me.TimeStepError: There must be no missing years in the inputs. If no
+        emission is present, a 0 should be associated with that year.
     """
     for col in data:
-        if col.lower() in ['time', 'timestep', 'temps', 
+        if col.lower() in ['time', 'timestep', 'temps',
                            'year', 'years', 'année', 'années']:
             start = min(data[col])
             finish = max(data[col])
-            longueur = range(start, finish + 1)
-            # Vérifier si les années sont complètes
-            if not (set(data[col]) == set(longueur)):
+            length = range(start, finish + 1)
+            # Check whether the years are complete
+            if not (set(data[col]) == set(length)):
                 raise me.TimeStepError(f'La colonne {col} représentant le temps \
                     dans le dataframe a des entrées manquantes')
-            # Vérifier si les années sont en ordre
+            # Check whether the years are in order
             if not (sorted(data[col]) == list(data[col])):
                 raise me.TimeStepError(f"La colonne {col} représentant le temps \
                     dans le dataframe n'est pas en ordre")
@@ -146,7 +145,7 @@ def rad_formatting(data: dict, cumulative: bool = False):
         elif 'CH4' in col:
             data[col] = list(rad_convolve(data[col], 'CH4', cumulative = cumulative))
         elif 'CO' in col and 'CO2' not in col:
-            data[col] = list(rad_convolve(data[col], 'CO', cumulative = cumulative))   
+            data[col] = list(rad_convolve(data[col], 'CO', cumulative = cumulative))
         elif 'N2O' in col:
             data[col] = list(rad_convolve(data[col], 'N2O', cumulative = cumulative))
         else:
