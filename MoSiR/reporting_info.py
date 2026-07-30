@@ -41,31 +41,28 @@ class ReportData(utilities.JsonData):
                     est arrêté. Veuillez vous référer à la documentation pour y \
                     inscrire les informations nécessaires (Output, PRG, Time, \
                     Output file extension)")
-        self.validate_time()
-        self.validate_extension()
-        self.validate_PRG()
+        self._validate_time()
+        self._validate_extension()
+        self._validate_PRG()
             
     # get_data (access to the JSON data) is inherited from utilities.JsonData
-
-    def get_output_name(self):
-        return [i for i in self.get_data]
 
     def get_output_data(self, output_name: str):
         return self.get_data[output_name]
     
-    def validate_time(self):
+    def _validate_time(self):
         time = self.get_output_data("Time")
         if not isinstance(time, int) or time < 1:
             raise me.InvalidOption("Le temps de simulation dans le report (Time)\
                 doit être un chiffre entier de 1 ou plus.")
     
-    def validate_extension(self):
+    def _validate_extension(self):
         ext = self.get_output_data("Output file extension")
         if ext not in [".csv", ".json"]:
             raise me.InvalidOption("Les extensions possibles pour le report \
                 sont '.csv' ou '.json'")
         
-    def validate_PRG(self):
+    def _validate_PRG(self):
         PRG = self.get_output_data("PRG")
         for key, value in PRG.items():
             if key not in ["CH4", "N2O"]:

@@ -84,9 +84,9 @@ down as follows:
 | `utilities.py` | 100% |
 | `gamma_function.py` | 98% |
 | `import_info.py` | 98% |
-| `reporting_info.py` | 96% |
+| `reporting_info.py` | 97% |
 | `mosir_calculator.py` | 95% |
-| `graph_generator/nodes.py` | 93% |
+| `graph_generator/nodes.py` | 94% |
 | `mosir_exceptions.py` | 91% |
 | `carbon_to_radiatif.py` | 89% |
 

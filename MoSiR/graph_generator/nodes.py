@@ -59,7 +59,8 @@ class IndustrialNode(metaclass = ABCMeta): # see the ABC documentation
                 proportion {values} du noeud {self.NAME}")
         return result
 
-    def _get_cumulative_total(self, annual, time: int, cache) -> float:
+    @staticmethod
+    def _get_cumulative_total(annual, time: int, cache) -> float:
         """ _get_cumulative_total Documentation
 
         The _get_cumulative_total function sums an annual value from time 0
@@ -155,7 +156,7 @@ class TopNode(IndustrialNode):
         self._quantities = []
         self.__cache_out_cumul = Caching()
 
-    def past_out_carbon_cumul(self):
+    def _past_out_carbon_cumul(self):
         return self.__cache_out_cumul
 
     @property
@@ -212,7 +213,7 @@ class TopNode(IndustrialNode):
             return self._get_quantity_time(time)
         elif cumulative == True:
             return self._get_cumulative_total(
-                self._get_quantity_time, time, self.past_out_carbon_cumul())
+                self._get_quantity_time, time, self._past_out_carbon_cumul())
 
     def get_flux_in(self, graph: wp.WPGraph, time: int, cumulative: bool = False) -> float:
         return self.get_flux_out(graph, time, cumulative= cumulative)
@@ -252,10 +253,10 @@ class ProportionNode(IndustrialNode):
     def past_in_carbon(self):
         return self.__pn_cache_in
 
-    def past_out_carbon_cumul(self):
+    def _past_out_carbon_cumul(self):
         return self.__pn_cache_out_cumul
 
-    def past_in_carbon_cumul(self):
+    def _past_in_carbon_cumul(self):
         return self.__pn_cache_in_cumul
 
     def _get_annual_flux_out(self, graph: wp.WPGraph, time: int) -> float:
@@ -277,7 +278,7 @@ class ProportionNode(IndustrialNode):
         if cumulative == True:
             return self._get_cumulative_total(
                 lambda timestep: self._get_annual_flux_out(graph, timestep),
-                time, self.past_out_carbon_cumul())
+                time, self._past_out_carbon_cumul())
 
     def get_flux_in(self, graph: wp.WPGraph, time: int, cumulative: bool = False) -> float:
         if cumulative == False:
@@ -295,7 +296,7 @@ class ProportionNode(IndustrialNode):
         else:
             return self._get_cumulative_total(
                 lambda timestep: self.get_flux_in(graph, timestep, cumulative= False),
-                time, self.past_in_carbon_cumul())
+                time, self._past_in_carbon_cumul())
 
     def get_stock(self, graph: wp.WPGraph, time: int, cumulative: bool = False) -> int:
         return 0
@@ -343,7 +344,7 @@ class DecayNode(ProportionNode):
     def past_gamma_proportion(self):
         return self.__dn_cache_gamma
 
-    def past_stock(self):
+    def _past_stock(self):
         return self.__dn_cache_stock
 
     def _extend_decay_vectors(self, graph: wp.WPGraph, time: int):
@@ -402,24 +403,6 @@ class DecayNode(ProportionNode):
 
         return decay_proportion
 
-    def get_annual_decay_proportion(self, time, alpha, beta):
-        """Gives the decay between two timesteps
-
-        Gives the decay percentage between two times. For example, the decay
-        percentage that occurs between time 8 and 9 of a decay node at a
-        given alpha and beta.
-
-        Args:
-            time (_type_): _description_
-            alpha (_type_): _description_
-            beta (_type_): _description_
-        """
-        decay_proportion_now = self.get_decay_proportion(time, alpha, beta)
-        decay_proportion_before = self.get_decay_proportion(time - 1, alpha, beta)
-        decay_proportion = decay_proportion_now - decay_proportion_before
-
-        return decay_proportion
-
     def get_flux_out(self, graph: wp.WPGraph, time: int, cumulative: bool = False) -> float:
         # flux_out(t) = sum_{s<t} flux_in(s) * decay(t-s). This is a
         # convolution: computed by numpy dot product (vectorized) rather
@@ -467,8 +450,8 @@ class DecayNode(ProportionNode):
 
         '''
         try:
-            if self.past_stock().is_cached(time):
-                return self.past_stock().get_flux_cache(time)
+            if self._past_stock().is_cached(time):
+                return self._past_stock().get_flux_cache(time)
             self._extend_decay_vectors(graph, time)
             # stock(t) = sum_{s<=t} flux_in(s) * (1 - cdf(t-s)), a convolution
             # computed by numpy dot product. survival(k) = 1 - cdf(k),
@@ -477,7 +460,7 @@ class DecayNode(ProportionNode):
             total = float(np.dot(self._flux_in_vec[0:time + 1], survival))
             if total < 0:  # floating-point noise only: the sum is non-negative
                 total = 0.0
-            self.past_stock().set_flux_cache(time, total)
+            self._past_stock().set_flux_cache(time, total)
             return total
         except RecursionError:
             raise me.RecursionNode("Un maximum de demande a été effectué. \
@@ -512,7 +495,7 @@ class RecyclingNode(ProportionNode):
             # is zero: the sum starts from a float(0) and not an integer
             return float(self._get_cumulative_total(
                 lambda timestep: self.get_flux_out(graph, timestep, cumulative= False),
-                time, self.past_out_carbon_cumul()))
+                time, self._past_out_carbon_cumul()))
 
     def get_stock(self, graph: wp.WPGraph, time: int, cumulative: bool = False) -> float:
         return self.get_flux_in(graph, time, cumulative)
