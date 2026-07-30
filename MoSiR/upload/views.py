@@ -47,9 +47,8 @@ class Upload(Component):
             content_dict = json.loads(acceptable_string)
             # Wipe cache if it's a new graph uploaded
             for graph_name, values in content_dict.items():  
-                if type(values) is dict and set(values.keys()) == {'Nodes', 'Edges'}:               
-                    Component.clear_users_data(os.path.join(os.path.dirname(
-                        os.path.abspath(__file__)), "..", "uploads"))
+                if type(values) is dict and set(values.keys()) == {'Nodes', 'Edges'}:
+                    Component.clear_users_data(self.get_uploads_root())
                     # On passe le graph verificator s'il y a une erreur
                     message = None
                     try:

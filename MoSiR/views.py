@@ -14,9 +14,25 @@ from .blueprint_component import Component
 from .blueprint_component import Endpointaction
 
 class Flaskwrapper:
-    def __init__(self, base_url: str, host: str, port: int, log: bool = False):
+    def __init__(self, base_url: str, host: str, port: int, log: bool = False,
+                 uploads_root: str = None, shutdown_timer: bool = True,
+                 on_shutdown=None):
+        """
+        Args:
+            uploads_root: racine des dossiers utilisateur. Par défaut
+                MoSiR/uploads; un test peut la rediriger vers un tmp_path
+                pour ne jamais effacer ni écrire de vraies données.
+            shutdown_timer: si False, le minuteur d'inactivité d'une heure
+                n'est jamais armé. À désactiver en test, sinon chaque requête
+                laisse fuir un threading.Timer d'une heure.
+            on_shutdown: fonction appelée par shutdown(). Par défaut
+                os._exit(0); injectable pour qu'un test puisse exercer la
+                fermeture sans tuer le processus pytest.
+        """
         self.__app = Flask(__class__.__name__, root_path= os.path.dirname(os.path.abspath(__file__)))
         CORS(self.__app)
+        self.__shutdown_timer_enabled = shutdown_timer
+        self.__on_shutdown = on_shutdown if on_shutdown is not None else (lambda: os._exit(0))
         self.__app.before_request(self.start_counter)
         if not log:
             self.__log = logging.getLogger('werkzeug')
@@ -26,13 +42,28 @@ class Flaskwrapper:
         self.__port = port
         self.__MAINURL = base_url + ":" + str(port)
         self.__components = []
-        Component.clear_users_data(os.path.join(os.path.dirname(os.path.abspath(__file__)), "uploads"))
+        if uploads_root is not None:
+            Component.set_uploads_root(uploads_root)
+        uploads_folder = Component.get_uploads_root()
+        os.makedirs(uploads_folder, exist_ok=True)
+        Component.clear_users_data(uploads_folder)
         self.__add_all_endpoints()
         self.__start_shutdown_timer = None
         Component.main_renderer.set_description(self.__get_description())
-        
+
+    def get_app(self) -> Flask:
+        """Expose l'app Flask pour obtenir un client de test.
+
+        Sans cet accesseur, un test devrait passer par le name-mangling de
+        __app (Flaskwrapper._Flaskwrapper__app), qui casserait au moindre
+        renommage de l'attribut privé.
+        """
+        return self.__app
+
     def start_counter(self):
         """Timer de 1 heure pour forcer la fermeture du terminal"""
+        if not self.__shutdown_timer_enabled:
+            return
         if self.__start_shutdown_timer is not None:
             self.__start_shutdown_timer.cancel()
         self.__start_shutdown_timer = threading.Timer(3600, self.shutdown)
@@ -96,7 +127,7 @@ class Flaskwrapper:
     def shutdown(self):
         """Pour forcer la fermeture du terminal"""
         print("Server shutting down...")
-        os._exit(0)
+        return self.__on_shutdown()
 
     def run(self, debug: bool = False):
         self.__app.run(host= self.__host, port= self.__port, debug= debug)

@@ -40,6 +40,20 @@ class Main_renderer:
     
 class Component(ABC, Blueprint):
     main_renderer = Main_renderer()
+    # Racine des dossiers utilisateur. None => emplacement par défaut
+    # (MoSiR/uploads). Injectable pour que les tests redirigent le stockage
+    # vers un tmp_path et ne touchent jamais de vraies données utilisateur.
+    _uploads_root = None
+
+    @classmethod
+    def set_uploads_root(cls, path: str) -> None:
+        cls._uploads_root = path
+
+    @classmethod
+    def get_uploads_root(cls) -> str:
+        if cls._uploads_root is not None:
+            return cls._uploads_root
+        return os.path.join(os.path.dirname(os.path.abspath(__file__)), "uploads")
 
     def __init__(self, name: str, import_name: str):
          Blueprint.__init__(self, name.lower(), import_name, 
@@ -70,9 +84,9 @@ class Component(ABC, Blueprint):
         return ip
     
     def _get_uploads_folder(self) -> str:
-        target = os.path.join(os.path.dirname(os.path.abspath(__file__)), "uploads", str(self.get_user_ip()))
+        target = os.path.join(self.get_uploads_root(), str(self.get_user_ip()))
         if not os.path.isdir(target):
-            os.mkdir(target)
+            os.makedirs(target, exist_ok=True)
         return target
     
     def _write_graphs_json(self, GraphsDict: dict, GRAPHSNAMES: list[str]) -> None:

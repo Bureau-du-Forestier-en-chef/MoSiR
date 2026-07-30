@@ -37,8 +37,8 @@ L'utilisateur a la possibilité de bâtir dans Miro un graphe pouvant contenir a
 [![CI](https://github.com/Bureau-du-Forestier-en-chef/MoSiR/actions/workflows/tests.yml/badge.svg)](https://github.com/Bureau-du-Forestier-en-chef/MoSiR/actions/workflows/tests.yml)
 
 <!-- coverage-badges:start -->
-![Tests](https://img.shields.io/badge/tests-533_r%C3%A9ussis-brightgreen?style=flat-square)
-![Couverture](https://img.shields.io/badge/couverture-86%25-brightgreen?style=flat-square)
+![Tests](https://img.shields.io/badge/tests-547_r%C3%A9ussis-brightgreen?style=flat-square)
+![Couverture](https://img.shields.io/badge/couverture-94%25-brightgreen?style=flat-square)
 <!-- coverage-badges:end -->
 
 Les deux badges et le tableau ci-dessous sont **générés**, pas écrits à la
@@ -94,10 +94,6 @@ web — se détaille ainsi :
 
 Chiffres mesurés sur MoSiR 1.1.0 avec Python 3.12.
 <!-- coverage-table:end -->
-
-La couche d'interface web (`views.py`, `blueprint_component.py`, `MoSiR.py`)
-n'a pas encore de tests automatisés : c'est elle qui tire le chiffre global
-sous le niveau du calculateur.
 
 `tests/test_Characterization.py` fige les résultats numériques du calculateur
 par rapport à des fichiers de référence conservés dans `tests/reference/`.

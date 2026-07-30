@@ -1,7 +1,5 @@
 # Configuration du package MoSiR
 #
-# Remplace setup.py + requirements.txt.
-#
 # Les dépendances de [project] dependencies doivent rester identiques à
 # celles de environment.yml : tests/test_Packaging.py échoue si elles
 # divergent.

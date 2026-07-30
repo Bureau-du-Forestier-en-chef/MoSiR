@@ -15,10 +15,6 @@ from MoSiR import mosir_exceptions as me
 @functools.lru_cache(maxsize=None)
 def _load_radiative_factors() -> dict:
     """Loads the DynCO2 forcing factors, only once per process.
-
-    The file does not change during execution; re-reading it on each call to
-    rad_convolve (once per gas column, for each radiative output) was a waste
-    of I/O and parsing.
     """
     file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
         "radiative_forcing", "Dynco2_Base.csv")

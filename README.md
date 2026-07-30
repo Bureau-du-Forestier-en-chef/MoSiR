@@ -36,8 +36,8 @@ The user can build a graph in Miro that can contain any number of nodes, some of
 [![CI](https://github.com/Bureau-du-Forestier-en-chef/MoSiR/actions/workflows/tests.yml/badge.svg)](https://github.com/Bureau-du-Forestier-en-chef/MoSiR/actions/workflows/tests.yml)
 
 <!-- coverage-badges:start -->
-![Tests](https://img.shields.io/badge/tests-533_passed-brightgreen?style=flat-square)
-![Coverage](https://img.shields.io/badge/coverage-86%25-brightgreen?style=flat-square)
+![Tests](https://img.shields.io/badge/tests-547_passed-brightgreen?style=flat-square)
+![Coverage](https://img.shields.io/badge/coverage-94%25-brightgreen?style=flat-square)
 <!-- coverage-badges:end -->
 
 The two badges and the table below are **generated**, not hand-written. After
@@ -92,10 +92,6 @@ down as follows:
 
 Figures measured on MoSiR 1.1.0 with Python 3.12.
 <!-- coverage-table:end -->
-
-The web interface layer (`views.py`, `blueprint_component.py`, `MoSiR.py`) has
-no automated tests yet and is what keeps the overall figure below the
-calculator's own level.
 
 `tests/test_Characterization.py` locks the numerical results of the calculator
 against reference files stored in `tests/reference/`. Any change to a computed
