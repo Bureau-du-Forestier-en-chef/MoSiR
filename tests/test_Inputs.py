@@ -86,6 +86,17 @@ def test_missing_decay(graph_factory_2, input_dict):
     with pytest.raises(me.NodeError):
         ii.add_import(graph_factory_2, import_data)
 
+@pytest.mark.xfail(strict=True, reason=(
+    "D09 — Les paramètres d'une dégradation Custom ne sont pas validés "
+    "(import_info.py:124-125): alpha = 0 est accepté, puis les calculs "
+    "produisent des NaN sans aucun message."))
+def test_custom_decay_with_zero_alpha_is_rejected(graph_factory_2, input_dict):
+    inputs = input_dict
+    inputs['Decay']['Example']["Panels"] = {"Custom": {"alpha": 0, "beta": 1.0}}
+    with pytest.raises(me.DecayError):
+        import_data = ii.ImportData(Dict=inputs)
+        ii.add_import(graph_factory_2, import_data)
+
 
 # Sources de données ---------------------------------------------------------
 def test_requires_a_directory_or_a_dict():

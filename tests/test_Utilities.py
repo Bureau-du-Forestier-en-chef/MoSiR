@@ -9,6 +9,7 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 """
 import json
+import locale
 import pytest
 from MoSiR import utilities as ut
 from MoSiR import mosir_exceptions as me
@@ -136,6 +137,25 @@ def test_jsondata_requires_a_source():
 def test_jsondata_invalid_path_raises():
     with pytest.raises(me.InvalidOption):
         ut.JsonData("chemin/qui/nexiste/pas.json")
+
+
+# Sans encodage précisé, open() prend celui du système: UTF-8 sous Linux,
+# mais souvent cp1252 sous Windows. Le défaut D08 n'apparaît donc que là.
+LOCAL_ENCODING_IS_NOT_UTF8 = (
+    locale.getpreferredencoding(False).lower() not in ("utf-8", "utf8"))
+
+
+@pytest.mark.xfail(LOCAL_ENCODING_IS_NOT_UTF8, strict=True,
+                   raises=AssertionError, reason=(
+    "D08 — JsonData ouvre le fichier sans préciser l'encodage "
+    "(utilities.py:45): sous Windows (cp1252), les noms accentués d'un "
+    "JSON enregistré en UTF-8 sont corrompus."))
+def test_jsondata_reads_accented_names_as_utf8(tmp_path):
+    payload = {"Sciage résineux": "Bois d'œuvre"}
+    path = tmp_path / "accents.json"
+    path.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
+
+    assert ut.JsonData(str(path)).get_data == payload
 
 
 def test_dict_takes_priority_over_directory():

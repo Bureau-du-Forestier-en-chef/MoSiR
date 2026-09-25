@@ -6,13 +6,20 @@ All notable changes applied to the project will be noted here.
 * Interface in english
 * The feature of performing multiple calculations for the same architecture when the user has more than one input file.
 
-## v2.0 (in development)
-This version is being developed on the `dev` branch; more changes will be added below.
+## v2.0 (in development, up to commit 02e7c4b)
+This version is being developed on the `dev` branch; more changes will be added below. The commit hash next to the version marks how far this changelog has been filled in, so the next update can start from the commits that follow it.
 
 ### New features
 * New tests locking in the corrections below, as well as the cache behaviour and the JSON file loading.
+* A benchmark suite (with a reference workload and saved reference samples) now measures the calculator's performance and locks in its numeric results, so a slowdown or a change in output is caught.
+* New automated tests for the web interface: the behaviour of its components and the HTTP contracts they expose.
 
 ### Changes
+* The calculator is now noticeably faster, especially over long time horizons, while producing identical results. The radiative forcing factors are read only once per run; cumulative totals are accumulated incrementally instead of being recomputed from zero each year; a decay node's outgoing flux and stock are computed with vectorized NumPy convolutions rather than Python loops; and graph and node look-ups are now indexed.
+* The `graph_generator` module has been split into a package organized by responsibility (cache, nodes, factory). The public interface is unchanged: `from MoSiR import graph_generator as gg` still exposes the same names.
+* Part of the code (docstrings, comments and some variable names) has been translated from French to English, continuing the move toward an all-English codebase and interface.
+* The web server can now be driven by automated tests: the uploads folder location, the shutdown action and the one-hour inactivity timer are all injectable or can be disabled, so tests never touch real user data nor stop the process.
+* Additional cleanup: some internal helper methods were made private, `_get_cumulative_total` became a static method, and code left unused by the optimizations above was removed (a redundant annual-decay helper and an unused output-name accessor).
 * Loading of the JSON files (graph, inputs and reporting) is grouped into a shared base class. The three file types are read the same way and expose their data uniformly.
 * Internal reorganization of the calculator to reduce code duplication: the cumulative-calculation logic and the reading of incoming fluxes are shared between node types. The calculator's results are unchanged.
 * The graph verificator has been simplified: the checks performed before a calculation now share a common traversal of graphs and nodes.

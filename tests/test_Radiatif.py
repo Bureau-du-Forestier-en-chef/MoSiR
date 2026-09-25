@@ -211,3 +211,13 @@ def test_cli_rejects_invalid_cumulative_flag():
 def test_cli_requires_all_arguments(missing):
     with pytest.raises(SystemExit):
         cr.main(missing)
+
+
+@pytest.mark.xfail(strict=True, raises=TypeError, reason=(
+    "D07 — L'option -I est déclarée type=list[float] "
+    "(carbon_to_radiatif.py:34): argparse transforme « [1,0] » en liste "
+    "de caractères et le calcul échoue."))
+def test_cli_reads_the_emission_series_as_numbers():
+    result = cr.main(["-I", "[1,0]", "-G", "CO2", "-C", "False"])
+
+    assert list(result) == pytest.approx(cr.rad_convolve([1.0, 0.0], "CO2"))

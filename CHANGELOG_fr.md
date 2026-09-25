@@ -6,13 +6,20 @@ Tous les changements notables appliqués au projet seront notés ici.
 * Interface en anglais
 * La possibilité d'effectuer plusieurs calculs pour la même architecture lorsque l'utilisateur a plusieurs fichiers d'intrants.
 
-## v2.0 (en développement)
-Cette version est en cours de développement dans la branche `dev`; d'autres changements viendront s'ajouter ci-dessous.
+## v2.0 (en développement, jusqu'au commit 02e7c4b)
+Cette version est en cours de développement dans la branche `dev`; d'autres changements viendront s'ajouter ci-dessous. Le numéro de commit à côté de la version indique jusqu'où ce changelog a été rempli, afin que la prochaine mise à jour puisse repartir des commits qui le suivent.
 
 ### Nouveautés
 * Nouveaux tests verrouillant les corrections ci-dessous, ainsi que le comportement du cache et le chargement des fichiers JSON.
+* Une suite de tests de performance (avec une charge de référence et des échantillons de résultats enregistrés) mesure maintenant la vitesse du calculateur et verrouille ses résultats numériques, de sorte qu'un ralentissement ou un changement de sortie soit détecté.
+* Nouveaux tests automatisés pour l'interface web: le comportement de ses composants et les contrats HTTP qu'ils exposent.
 
 ### Changements
+* Le calculateur est maintenant nettement plus rapide, surtout sur de longs horizons de temps, tout en produisant des résultats identiques. Les facteurs de forçage radiatif ne sont lus qu'une seule fois par exécution; les totaux cumulatifs sont accumulés de façon incrémentale au lieu d'être recalculés depuis zéro chaque année; le flux sortant et le stock d'un nœud de dégradation sont calculés par des convolutions vectorisées NumPy plutôt qu'en boucles Python; et les recherches de graphes et de nœuds sont maintenant indexées.
+* Le module `graph_generator` a été divisé en un package organisé par responsabilité (cache, nœuds, factory). L'interface publique reste inchangée: `from MoSiR import graph_generator as gg` donne toujours accès aux mêmes noms.
+* Une partie du code (docstrings, commentaires et certains noms de variables) a été traduite du français vers l'anglais, poursuivant la transition vers un code et une interface en anglais.
+* Le serveur web peut maintenant être piloté par des tests automatisés: l'emplacement du dossier des téléversements, l'action de fermeture et le minuteur d'inactivité d'une heure sont injectables ou désactivables, de sorte que les tests ne touchent jamais de vraies données utilisateur ni n'arrêtent le processus.
+* Nettoyage supplémentaire: certaines méthodes internes ont été rendues privées, `_get_cumulative_total` est devenue une méthode statique, et du code devenu inutile à la suite des optimisations ci-dessus a été retiré (une fonction d'aide de dégradation annuelle redondante et un accesseur de nom de sortie non utilisé).
 * Le chargement des fichiers JSON (graphe, intrants et reporting) est regroupé dans une classe de base commune. Les trois types de fichiers sont lus de la même manière et exposent leurs données de façon uniforme.
 * Réorganisation interne du calculateur afin de réduire la duplication de code: la logique des calculs cumulatifs et la lecture des flux entrants sont partagées entre les types de nœuds. Les résultats du calculateur restent identiques.
 * Le vérificateur de graphe a été simplifié: les contrôles effectués avant un calcul partagent maintenant un même parcours des graphes et des nœuds.

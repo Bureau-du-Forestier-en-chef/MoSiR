@@ -36,7 +36,7 @@ The user can build a graph in Miro that can contain any number of nodes, some of
 [![CI](https://github.com/Bureau-du-Forestier-en-chef/MoSiR/actions/workflows/tests.yml/badge.svg)](https://github.com/Bureau-du-Forestier-en-chef/MoSiR/actions/workflows/tests.yml)
 
 <!-- coverage-badges:start -->
-![Tests](https://img.shields.io/badge/tests-547_passed-brightgreen?style=flat-square)
+![Tests](https://img.shields.io/badge/tests-561_passed-brightgreen?style=flat-square)
 ![Coverage](https://img.shields.io/badge/coverage-94%25-brightgreen?style=flat-square)
 <!-- coverage-badges:end -->
 
@@ -85,10 +85,10 @@ down as follows:
 | `gamma_function.py` | 98% |
 | `import_info.py` | 98% |
 | `reporting_info.py` | 97% |
+| `graph_generator/nodes.py` | 95% |
 | `mosir_calculator.py` | 95% |
-| `graph_generator/nodes.py` | 94% |
+| `carbon_to_radiatif.py` | 92% |
 | `mosir_exceptions.py` | 91% |
-| `carbon_to_radiatif.py` | 89% |
 
 Figures measured on MoSiR 1.1.0 with Python 3.12.
 <!-- coverage-table:end -->

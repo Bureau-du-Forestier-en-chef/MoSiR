@@ -138,6 +138,23 @@ def test_overflow_nodes_are_excluded_from_the_100_percent_rule():
     gv.debugg_graph_02(factory, overflow={'Example': ['N4']})
 
 
+@pytest.mark.xfail(strict=True, reason=(
+    "D05 — Pour une proportion en dictionnaire, debugg_graph_02 vérifie les "
+    "années 0 à (nombre de clés - 1), pas les années des clés "
+    "(graph_verificator.py:195-201): une somme de 140 % à partir de "
+    "l'année 10 passe inaperçue."))
+def test_pourc_is_checked_at_every_year_of_a_dict_proportion():
+    graph = chain_dict()
+    graph["Example"]["Nodes"]["4"] = {
+        "Decay": False, "Recycling": False, "Name": "N4"}
+    graph["Example"]["Edges"]["1"]["Values"] = {"0": 0.5, "10": 0.9}
+    graph["Example"]["Edges"]["3"] = {
+        "From": 1, "To": 4, "Values": [0.5], "Overflow": False}
+    factory = gg.GraphFactory(Dict=graph)
+    with pytest.raises(me.EdgeError):
+        gv.debugg_graph_02(factory, overflow={'Example': []})
+
+
 def test_valid_example_respects_the_100_percent_rule(graph_factory_2):
     gv.debugg_graph_02(graph_factory_2, overflow=overflow_map(graph_factory_2))
 
@@ -237,6 +254,50 @@ def test_recycling_node_breaks_the_loop_detection():
         },
     }})
     gv.debugg_graph_05(factory)
+
+
+@pytest.mark.xfail(strict=True, raises=RuntimeError, reason=(
+    "D06 — debugg_graph_05 ne reconnaît une boucle que si elle revient au "
+    "noeud de départ, et ne garde pas la trace des noeuds visités "
+    "(graph_verificator.py:276-294). Une boucle A <-> B atteinte depuis S "
+    "le fait tourner sans fin."))
+def test_loop_check_ends_when_the_loop_does_not_return_to_the_start_node(monkeypatch):
+    """Top -> S -> A <-> B: S est examiné en premier, et la boucle A <-> B
+    ne repasse jamais par S.
+
+    Sans correctif, le vérificateur tournerait sans fin. On limite donc le
+    nombre de recherches de successeurs, pour transformer la boucle infinie
+    en un échec clair.
+    """
+    factory = gg.GraphFactory(Dict={"Example": {
+        "Nodes": {
+            "1": {"Decay": False, "Recycling": False, "Name": "Top"},
+            "2": {"Decay": False, "Recycling": False, "Name": "S"},
+            "3": {"Decay": False, "Recycling": False, "Name": "A"},
+            "4": {"Decay": False, "Recycling": False, "Name": "B"},
+        },
+        "Edges": {
+            "1": {"From": 1, "To": 2, "Values": [1], "Overflow": False},
+            "2": {"From": 2, "To": 3, "Values": [1], "Overflow": False},
+            "3": {"From": 3, "To": 4, "Values": [1], "Overflow": False},
+            "4": {"From": 4, "To": 3, "Values": [1], "Overflow": False},
+        },
+    }})
+
+    original_get_successors = wp.WPGraph.get_successors
+    calls = 0
+
+    def get_successors_with_budget(graph, node):
+        nonlocal calls
+        calls += 1
+        if calls > 1000:
+            raise RuntimeError("debugg_graph_05 ne se termine pas")
+        return original_get_successors(graph, node)
+
+    monkeypatch.setattr(wp.WPGraph, "get_successors", get_successors_with_budget)
+
+    with pytest.raises(me.RecursionNode):
+        gv.debugg_graph_05(factory)
 
 
 # 06 - Pas deux graphes du même nom ------------------------------------------

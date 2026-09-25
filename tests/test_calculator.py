@@ -12,6 +12,7 @@ from MoSiR import (
     networkx_graph as wp,
     gamma_function as gf,
     graph_generator as gg,
+    import_info as ii,
     mosir_exceptions as me,
     carbon_to_radiatif as cr)
 
@@ -207,6 +208,175 @@ def test_multiple_top(graph_05):
         assert E.get_stock(graph_05, timestep) \
             == E.get_flux_in(graph_05, timestep, cumulative=True), \
             'E stock != cumulative flux in'
+
+
+# Bugs connus du moteur -------------------------------------------------------
+# Chaque test de cette section reproduit un défaut décrit dans
+# Documentation/FeuilleDeRoute.md (section A). Il est marqué
+# xfail(strict=True): il échoue tant que le défaut existe, et pytest signale
+# une erreur dès qu'il se met à passer. Au moment du correctif, retirer le
+# marqueur: le test devient le test de régression.
+
+KNOWN_BUG_GRAPH = "Boucle"
+
+
+def _node(name: str, decay: bool = False, recycling: bool = False) -> dict:
+    return {"Decay": decay, "Recycling": recycling, "Name": name}
+
+
+def _edge(origin: int, target: int, proportion: float) -> dict:
+    return {"From": origin, "To": target, "Values": [proportion],
+            "Overflow": False}
+
+
+def _build_graph(nodes: dict, edges: dict, harvest: dict, decays: dict):
+    """Construit un graphe unique et lui applique ses intrants.
+
+    Args:
+        nodes (dict): Les noeuds, au format du JSON de graphe
+        edges (dict): Les liens, au format du JSON de graphe
+        harvest (dict): Les intrants du TopNode "Harvest", {année: quantité}
+        decays (dict): Les paramètres de dégradation, {noeud: paramètres}
+
+    Returns:
+        tuple: Le WPGraph, et un dictionnaire {nom: noeud} pour retrouver les
+        noeuds par leur nom
+    """
+    factory = gg.GraphFactory(Dict={KNOWN_BUG_GRAPH: {
+        "Nodes": nodes, "Edges": edges}})
+    import_data = ii.ImportData(Dict={
+        "Inputs": {KNOWN_BUG_GRAPH: {"Harvest": harvest}},
+        "Decay": {KNOWN_BUG_GRAPH: decays},
+        "Unit": "tC"})
+    ii.add_import(factory, import_data)
+    graph = factory.get_graph(KNOWN_BUG_GRAPH)
+    nodes_by_name = {node.NAME: node for node in graph.nodes()}
+    return graph, nodes_by_name
+
+
+def _cycle_whose_only_delay_is_decay():
+    """Harvest -> Mill -> Products (Decay), puis Products renvoie 50 % vers
+    Mill et 50 % vers Emissions. Aucun RecyclingNode dans la boucle."""
+    nodes = {
+        "1": _node("Harvest"),
+        "2": _node("Mill"),
+        "3": _node("Products", decay=True),
+        "4": _node("Emissions")}
+    edges = {
+        "1": _edge(1, 2, 1.0),
+        "2": _edge(2, 3, 1.0),
+        "3": _edge(3, 2, 0.5),
+        "4": _edge(3, 4, 0.5)}
+    return _build_graph(nodes, edges, harvest={"0": 100.0},
+                        decays={"Products": {"Exponential": 5.0}})
+
+
+def _decay_in_recycling_loop(decay: dict):
+    """Harvest -> Products (Decay), puis Products envoie 30 % vers Recycling
+    et 70 % vers Emissions; Recycling renvoie tout vers Products. Un intrant
+    de 100 chaque année de 0 à 10."""
+    nodes = {
+        "1": _node("Harvest"),
+        "2": _node("Products", decay=True),
+        "3": _node("Recycling", recycling=True),
+        "4": _node("Emissions")}
+    edges = {
+        "1": _edge(1, 2, 1.0),
+        "2": _edge(2, 3, 0.3),
+        "3": _edge(2, 4, 0.7),
+        "4": _edge(3, 2, 1.0)}
+    harvest = {str(year): 100.0 for year in range(11)}
+    return _build_graph(nodes, edges, harvest, decays={"Products": decay})
+
+
+def _recycling_loop_without_decay():
+    """Harvest -> Mill, puis Mill envoie 50 % vers Recycling et 50 % vers
+    Emissions; Recycling renvoie tout vers Mill l'année suivante."""
+    nodes = {
+        "1": _node("Harvest"),
+        "2": _node("Mill"),
+        "3": _node("Recycling", recycling=True),
+        "4": _node("Emissions")}
+    edges = {
+        "1": _edge(1, 2, 1.0),
+        "2": _edge(2, 3, 0.5),
+        "3": _edge(2, 4, 0.5),
+        "4": _edge(3, 2, 1.0)}
+    return _build_graph(nodes, edges, harvest={"0": 100.0}, decays={})
+
+
+@pytest.mark.xfail(strict=True, raises=RecursionError, reason=(
+    "D01 — Un cycle dont le seul délai est un DecayNode lève une "
+    "RecursionError: DecayNode.get_flux_out étend ses vecteurs jusqu'à "
+    "l'année demandée incluse (nodes.py:417), alors que la sortie de "
+    "l'année t ne dépend que des entrées jusqu'à t-1. Régression introduite "
+    "par « Faster run »."))
+def test_cycle_whose_only_delay_is_a_decay_node_keeps_mass_balance(MOSIR_TOLERENCE):
+    graph, nodes = _cycle_whose_only_delay_is_decay()
+
+    for year in range(21):
+        in_system = (nodes["Products"].get_stock(graph, year)
+                     + nodes["Emissions"].get_stock(graph, year))
+        assert in_system == pytest.approx(100.0, abs=MOSIR_TOLERENCE), \
+            f"le carbone récolté doit rester dans le système (année {year})"
+
+
+@pytest.mark.xfail(strict=True, raises=AssertionError, reason=(
+    "D02 — Le stock d'un DecayNode placé dans une boucle de recyclage est "
+    "faux quand on le demande sans passer par les années précédentes: "
+    "_extend_decay_vectors est rappelé pendant sa propre exécution et "
+    "ajoute deux fois les mêmes années (nodes.py:363-368). Régression "
+    "introduite par « Faster run ». Le reporting actuel demande les années "
+    "dans l'ordre et n'est pas touché."))
+def test_decay_stock_does_not_depend_on_the_order_of_the_queries():
+    graph_in_order, nodes_in_order = _decay_in_recycling_loop({"Exponential": 5.0})
+    for year in range(11):
+        stock_in_order = nodes_in_order["Products"].get_stock(graph_in_order, year)
+
+    graph_direct, nodes_direct = _decay_in_recycling_loop({"Exponential": 5.0})
+    stock_direct = nodes_direct["Products"].get_stock(graph_direct, 10)
+
+    assert stock_direct == pytest.approx(stock_in_order, rel=1e-9), \
+        "le stock de l'année 10 ne doit pas dépendre de l'ordre des requêtes"
+
+
+@pytest.mark.xfail(strict=True, raises=AssertionError, reason=(
+    "D03 — Modifier alpha ou beta d'un DecayNode après un calcul ne change "
+    "pas les résultats: les setters n'invalident aucun cache "
+    "(nodes.py:374-384). Le correctif peut aussi choisir de refuser la "
+    "modification; adapter alors ce test."))
+def test_changing_decay_parameters_after_a_calculation_updates_the_results():
+    graph, nodes = _decay_in_recycling_loop({"Custom": {"alpha": 1, "beta": 10}})
+    products = nodes["Products"]
+    for year in range(11):
+        products.get_stock(graph, year)
+    products.beta = 50
+    stock_after_change = products.get_stock(graph, 10)
+
+    fresh_graph, fresh_nodes = _decay_in_recycling_loop(
+        {"Custom": {"alpha": 1, "beta": 50}})
+    for year in range(11):
+        expected_stock = fresh_nodes["Products"].get_stock(fresh_graph, year)
+
+    assert stock_after_change == pytest.approx(expected_stock, rel=1e-9), \
+        "le stock doit refléter le nouveau beta"
+
+
+@pytest.mark.xfail(strict=True, raises=RecursionError, reason=(
+    "D04 — Une requête lointaine qui ne passe pas par les années "
+    "précédentes remonte le temps par récursion, une année à la fois. Dans "
+    "cette boucle de recyclage, la limite de récursion est atteinte vers "
+    "t = 700 (limite de 3000, relevée par jedi que pyvis importe) et vers "
+    "t = 250 avec la limite par défaut de 1000. Le reporting actuel demande "
+    "les années dans l'ordre et n'est pas touché."))
+def test_far_query_in_a_recycling_loop_stays_within_the_recursion_limit():
+    graph, nodes = _recycling_loop_without_decay()
+
+    emissions = nodes["Emissions"].get_flux_in(graph, 1000)
+
+    # Mill reçoit 100 à l'année 0, puis la moitié de ce qu'il a envoyé
+    # l'année précédente: 100 * 0.5**t. Emissions en reçoit la moitié.
+    assert emissions == pytest.approx(100 * 0.5 ** 1001, rel=1e-9)
 
 
 # Vérifier que les tests passent ----------------------------------------------
