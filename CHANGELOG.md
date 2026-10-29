@@ -13,6 +13,7 @@ This version is being developed on the `dev` branch; more changes will be added 
 * New tests locking in the corrections below, as well as the cache behaviour and the JSON file loading.
 * A benchmark suite (with a reference workload and saved reference samples) now measures the calculator's performance and locks in its numeric results, so a slowdown or a change in output is caught.
 * New automated tests for the web interface: the behaviour of its components and the HTTP contracts they expose.
+* SEPM Nord reference case for the upcoming drill-down feature: the graph, inputs with placeholder half-lives and independently verified reference values, in `tests/reference/sepm_nord/`. The scripts that produce them are in `outils/sepm_nord/`.
 
 ### Changes
 * The calculator is now noticeably faster, especially over long time horizons, while producing identical results. The radiative forcing factors are read only once per run; cumulative totals are accumulated incrementally instead of being recomputed from zero each year; a decay node's outgoing flux and stock are computed with vectorized NumPy convolutions rather than Python loops; and graph and node look-ups are now indexed.

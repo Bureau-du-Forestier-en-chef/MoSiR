@@ -30,8 +30,8 @@ On lit l'entrée concernée avant de commencer une tâche et on la met à jour �
   test porte un `xfail(strict=True)` dont le `reason` commence par l'identifiant. Pour voir l'échec
   réel : `python -m pytest --runxfail -k <nom du test>`.
 - Un nouveau défaut s'ajoute avec son test, dans le même changement.
-  Exception du 2026-10-29 : les entrées ajoutées ce jour là (D10, D11, le complément de D02 et les
-  décisions Q) décrivent le test à écrire, et leur issue en contient un code vérifié. Le test entre
+  Exception du 2026-10-29 : les entrées ajoutées ce jour là (D10 à D12, U07, le complément de D02 et
+  les décisions Q) décrivent le test à écrire, et leur issue en contient un code vérifié. Le test entre
   dans le dépôt avec la correction, ou avant elle en `xfail(strict=True)`.
 - Un identifiant est unique sur l'ensemble des trois fichiers. Une entrée ne vit que dans un seul
   fichier : l'index ci dessous dit lequel.
@@ -46,6 +46,8 @@ On lit l'entrée concernée avant de commencer une tâche et on la met à jour �
 
 1. **S01** : régénérer le secret de l'application Miro. C'est une action à faire dans Miro, pas
    dans le code.
+   Dans la même passe, les correctifs d'une ligne des failles de l'exécutable distribué
+   aujourd'hui : U04, U05, et l'écoute sur `127.0.0.1` de S02.
 2. **U06**, puis **E15** et **E16** : la CI est rouge depuis le 30 juillet à cause de U06. Tant
    qu'elle l'est, elle ne protège aucun des changements suivants. L'entrée U06 propose une solution
    d'attente. Ensuite, faire tourner la CI sous Ubuntu, Windows et macOS, et rendre les tests
@@ -58,7 +60,9 @@ On lit l'entrée concernée avant de commencer une tâche et on la met à jour �
    refusent : elles vont dans la v2.0 avec une mention au CHANGELOG.
 5. **F2, lot 1** : le `Workspace`, avec le dossier de données de l'utilisateur et le serveur sur
    `127.0.0.1`.
-6. **F10** : l'éditeur de graphe.
+   Puis **F15** : le cadre commun des pages (barre de navigation, charte, aucune ressource chargée
+   depuis Internet), que toutes les pages suivantes utilisent.
+6. **F14**, puis **F10** : les splits dans le format du graphe, puis l'éditeur de graphe.
 7. **F13**, puis **F11** : le calcul du forage, puis sa page.
 8. **F2, lots 2 à 7** : importer, plan de runs, résultats, intrants en tableau, langue, retrait de
    l'ancien code.
@@ -67,8 +71,39 @@ On lit l'entrée concernée avant de commencer une tâche et on la met à jour �
 11. Ensuite, selon les besoins : F5 (Monte Carlo), F3 (recyclage paramétrable), F4 (classes de
     DHP), F7 (performance), F9 (long terme).
 
-Les défauts D05 à D11 et U00 à U05 se corrigent au fil de l'eau, ou avec le lot de F2 qui les
-traite.
+D12 est un prérequis du forage (F13), puisqu'il empêche de calculer SEPM Nord. Les défauts D05 à D11
+et U07 se corrigent au fil de l'eau. U00 à U03 sont traités par la refonte (F2) : chaque entrée dit
+lequel des lots s'en charge, pour ne pas corriger un code qui va disparaître.
+
+## Compatibilité des fichiers en v2.0
+
+Les schémas de `Graph.json`, `Inputs.json` et `Reports.json`, et les fichiers de résultats, font
+partie de ce que voient les utilisateurs ([règle](CodingStandards.md#compatibilité)).
+
+**Élément clé de la v2.0 : elle lit tous les fichiers des versions précédentes.** L'inverse n'est
+pas demandé : un fichier écrit par la v2.0, par exemple un graphe avec splits, n'a pas à s'ouvrir
+dans la 1.x (décision du 2026-10-29).
+
+| Fichier | Ce qui change en v2.0 | Les anciens fichiers |
+| --- | --- | --- |
+| `Graph.json` | Clé facultative `Splits` pour les rectangles jaunes (F14). L'éditeur (F10) ajoute `X` et `Y` à l'import s'ils manquent. Les annotations vont dans un fichier à part. | Acceptés, mêmes résultats. Ceux qui ont des espaces en trop dans les noms fonctionnent enfin (D12). |
+| `Inputs.json` | Délai de recyclage facultatif, 1 an par défaut (F3) | Acceptés, mêmes résultats |
+| `Reports.json` | Rien dans le format | Acceptés, sauf les trois cas ci dessous |
+| Résultats `<graphe>~<sortie>.csv` ou `.json` | Rien (`write_results`, F1) | Sans objet |
+| Fichier de lecture | Nouveau et facultatif (F11) | Sans objet |
+
+Trois décisions refusent des rapports acceptés jusqu'ici, parce qu'ils donnaient des résultats
+faux ou tronqués. Chacune a sa ligne « Migration » dans la
+[feuille de route du calcul](FeuilleDeRoute_Calcul.md#b-questions-métier-tranchées) : message
+d'erreur qui dit quoi changer, et mention dans les deux CHANGELOG.
+
+1. **Q2** : un stock demandé en cumulatif.
+2. **Q5** : une sortie en W/m² au delà de 2000 ans.
+3. **Q6** : une sortie en tCO2eq ou en W/m² sur un nœud qui n'est pas un gaz à l'atmosphère (nœud
+   intermédiaire, ou gaz collé à d'autres lettres dans le nom).
+
+Les résultats changent aussi pour le CO (Q1) : le forçage radiatif baisse de 12,5 % et les
+tCO2eq augmentent.
 
 ## Dette commune
 
@@ -113,6 +148,7 @@ nettoyage, jamais au milieu d'un autre changement.
 | [D09](FeuilleDeRoute_Calcul.md#d09--des-paramètres-de-dégradation-invalides-donnent-des-nan) | Des paramètres de dégradation invalides donnent des NaN | Calcul |
 | [D10](FeuilleDeRoute_Calcul.md#d10--un-nœud-isolé-produit-une-erreur-de-bilan-de-masse-trompeuse) | Un nœud isolé produit une erreur de bilan de masse trompeuse | Calcul |
 | [D11](FeuilleDeRoute_Calcul.md#d11--des-fichiers-dentrée-mal-remplis-donnent-des-erreurs-python-brutes) | Des fichiers d'entrée mal remplis donnent des erreurs Python brutes | Calcul |
+| [D12](FeuilleDeRoute_Calcul.md#d12--les-paramètres-dun-nœud-dont-le-nom-a-des-espaces-en-trop-ne-sont-pas-appliqués) | Les paramètres d'un nœud dont le nom a des espaces en trop ne sont pas appliqués | Calcul |
 | [U00](FeuilleDeRoute_Interface.md#u00--un-deuxième-téléversement-efface-le-premier) | Un deuxième téléversement efface le premier | Interface |
 | [U01](FeuilleDeRoute_Interface.md#u01--le-formulaire-calculer-perd-un-champ-par-sortie) | Le formulaire Calculer perd un champ par sortie | Interface |
 | [U02](FeuilleDeRoute_Interface.md#u02--beta-nest-pas-obligatoire-dans-le-formulaire) | Beta n'est pas obligatoire dans le formulaire | Interface |
@@ -120,6 +156,7 @@ nettoyage, jamais au milieu d'un autre changement.
 | [U04](FeuilleDeRoute_Interface.md#u04--un-téléversement-peut-écrire-hors-du-dossier-de-lutilisateur) | Un téléversement peut écrire hors du dossier de l'utilisateur | Interface |
 | [U05](FeuilleDeRoute_Interface.md#u05--un-téléchargement-peut-lire-nimporte-quel-fichier) | Un téléchargement peut lire n'importe quel fichier | Interface |
 | [U06](FeuilleDeRoute_Interface.md#u06--la-lecture-des-json-par-chemin-absolu-est-cassée-hors-windows) | La lecture des JSON par chemin absolu est cassée hors Windows | Interface |
+| [U07](FeuilleDeRoute_Interface.md#u07--un-rectangle-miro-sans-lien-sortant-est-supprimé-en-silence) | Un rectangle Miro sans lien sortant est supprimé en silence | Interface |
 | [S01](FeuilleDeRoute_Interface.md#s01--identifiants-miro-dans-lhistorique-public) | Identifiants Miro dans l'historique public | Interface |
 | [S02](FeuilleDeRoute_Interface.md#s02--serveur-exposé-au-réseau) | Serveur exposé au réseau | Interface |
 | [Q1](FeuilleDeRoute_Calcul.md#b-questions-métier-tranchées) | Facteur du CO | Calcul |
@@ -142,6 +179,8 @@ nettoyage, jamais au milieu d'un autre changement.
 | [F11](FeuilleDeRoute_Interface.md#f11--page-de-forage) | Page de forage | Interface |
 | [F12](FeuilleDeRoute_Interface.md#f12--exécutables-windows-et-macos) | Exécutables Windows et macOS | Interface |
 | [F13](FeuilleDeRoute_Calcul.md#f13--analyses-de-forage) | Analyses de forage | Calcul |
+| [F14](FeuilleDeRoute_Calcul.md#f14--splits) | Splits | Calcul |
+| [F15](FeuilleDeRoute_Interface.md#f15--ergonomie-générale) | Ergonomie générale | Interface |
 | [E01](FeuilleDeRoute_Calcul.md#d-dette-du-calcul) | Le paquet importe le web | Calcul |
 | [E02](FeuilleDeRoute_Calcul.md#d-dette-du-calcul) | run_calculator ne vérifie pas le graphe | Calcul |
 | [E03](FeuilleDeRoute_Calcul.md#d-dette-du-calcul) | Pas d'exception de base commune, except nus | Calcul |

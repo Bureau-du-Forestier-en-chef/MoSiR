@@ -13,6 +13,7 @@ Cette version est en cours de développement dans la branche `dev`; d'autres cha
 * Nouveaux tests verrouillant les corrections ci-dessous, ainsi que le comportement du cache et le chargement des fichiers JSON.
 * Une suite de tests de performance (avec une charge de référence et des échantillons de résultats enregistrés) mesure maintenant la vitesse du calculateur et verrouille ses résultats numériques, de sorte qu'un ralentissement ou un changement de sortie soit détecté.
 * Nouveaux tests automatisés pour l'interface web: le comportement de ses composants et les contrats HTTP qu'ils exposent.
+* Cas de référence SEPM Nord pour le futur forage : le graphe, des intrants aux demi-vies fictives et des valeurs de référence vérifiées indépendamment, dans `tests/reference/sepm_nord/`. Les scripts qui les produisent sont dans `outils/sepm_nord/`.
 
 ### Changements
 * Le calculateur est maintenant nettement plus rapide, surtout sur de longs horizons de temps, tout en produisant des résultats identiques. Les facteurs de forçage radiatif ne sont lus qu'une seule fois par exécution; les totaux cumulatifs sont accumulés de façon incrémentale au lieu d'être recalculés depuis zéro chaque année; le flux sortant et le stock d'un nœud de dégradation sont calculés par des convolutions vectorisées NumPy plutôt qu'en boucles Python; et les recherches de graphes et de nœuds sont maintenant indexées.

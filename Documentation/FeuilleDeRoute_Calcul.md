@@ -7,8 +7,8 @@ dans l'[index de la feuille de route](FeuilleDeRoute.md). L'interface a sa propr
 
 ## A. Défauts confirmés
 
-Les défauts D01 à D09 ont été reproduits le 2026-09-25 par leur test. D10 et D11 ont été reproduits le
-2026-10-29 par un script : leur test est décrit dans l'entrée et reste à écrire.
+Les défauts D01 à D09 ont été reproduits le 2026-09-25 par leur test. D10, D11 et D12 ont été
+reproduits le 2026-10-29 par un script : leur test est décrit dans l'entrée et reste à écrire.
 
 | ID | Gravité | Défaut | Statut |
 | --- | --- | --- | --- |
@@ -23,6 +23,7 @@ Les défauts D01 à D09 ont été reproduits le 2026-09-25 par leur test. D10 et
 | [D09](#d09--des-paramètres-de-dégradation-invalides-donnent-des-nan) | Moyenne | Des paramètres de dégradation invalides donnent des NaN | Ouvert |
 | [D10](#d10--un-nœud-isolé-produit-une-erreur-de-bilan-de-masse-trompeuse) | Moyenne | Un nœud isolé produit une erreur de bilan de masse trompeuse | Ouvert, test à écrire |
 | [D11](#d11--des-fichiers-dentrée-mal-remplis-donnent-des-erreurs-python-brutes) | Basse | Des fichiers d'entrée mal remplis donnent des erreurs Python brutes | Ouvert, test à écrire |
+| [D12](#d12--les-paramètres-dun-nœud-dont-le-nom-a-des-espaces-en-trop-ne-sont-pas-appliqués) | Haute | Les paramètres d'un nœud dont le nom a des espaces en trop ne sont pas appliqués | Ouvert, test à écrire |
 
 ### D01 — Un cycle dont le seul délai est un DecayNode plante
 
@@ -173,6 +174,26 @@ Les défauts D01 à D09 ont été reproduits le 2026-09-25 par leur test. D10 et
     `QuantityError` qui nomme le nœud et la valeur (aujourd'hui `ValueError`).
 - Un code proposé, vérifié le 2026-10-29, est joint à l'issue.
 
+### D12 : Les paramètres d'un nœud dont le nom a des espaces en trop ne sont pas appliqués
+
+- **Où** : `GraphFactory`, [factory.py:69](../MoSiR/graph_generator/factory.py#L69) et
+  [81](../MoSiR/graph_generator/factory.py#L81).
+- **Symptôme** : quand le nom d'un nœud contient des espaces en trop dans `Graph.json`, par exemple
+  « Site 3 Stockage  Landfilled MSW Sawnwood », ses paramètres de dégradation ne peuvent pas lui
+  être appliqués. Avec le nom normalisé dans `Inputs.json`, `add_import` lève une `NodeError`.
+  Avec le nom brut, le fichier est accepté, mais alpha et beta restent vides et le calcul échoue
+  avec une `TypeError`. SEPM Nord a 7 noms dans ce cas, dont 3 nœuds de dégradation : il ne peut
+  pas être calculé. Le wiki promet pourtant que MoSiR retire les espaces en trop.
+- **Cause** : `GraphFactory` normalise le nom du nœud (`node.NAME`), mais enregistre le nom brut
+  dans les listes des `TopNode` et des `DecayNode`. `add_import` compare les noms du fichier
+  d'intrants à ces listes brutes, puis applique les paramètres aux nœuds par leur nom normalisé.
+- **Correction proposée** : enregistrer `new_node.NAME` au lieu de `node_data['Name']` aux deux
+  lignes. Vérifié le 2026-10-29 : le test ci dessous passe, et MoSiR calcule SEPM Nord à partir des
+  fichiers d'origine.
+- **Test à écrire** : `tests/test_Inputs.py::test_decay_parameters_reach_a_node_whose_name_has_extra_spaces`,
+  en `xfail(strict=True, raises=NodeError)`. Un code proposé, vérifié le 2026-10-29, est joint à
+  l'issue.
+
 ## B. Questions métier tranchées
 
 Ces questions ont été tranchées le 2026-10-29. Le texte d'origine de chaque question est conservé,
@@ -209,6 +230,8 @@ et une mention dans les deux CHANGELOG.
     ([feuille de route de l'interface](FeuilleDeRoute_Interface.md#c-décisions-du-calcul-à-reporter-dans-linterface)).
   - **À faire** : validation dans `ReportData`. Aucun résultat correct ne change : seul le
     `RecyclingNode` tenait compte de l'option.
+  - **Migration** : un `Reports.json` qui demande un stock cumulé était accepté et sera refusé. Le
+    message dit de mettre `Cumulative` à `false`. Mention dans les deux CHANGELOG.
   - **Test à écrire** : `tests/test_Report.py::test_cumulative_stock_is_rejected_for_every_node_type`,
     paramétré pour un `DecayNode`, un `RecyclingNode` et un `PoolNode`, en `xfail(strict=True)`
     jusqu'à la correction. Un code proposé, vérifié le 2026-10-29, est joint à l'issue.
@@ -241,6 +264,9 @@ et une mention dans les deux CHANGELOG.
   - **À faire** : comparer un pulse calculé par MoSiR et par l'outil DynCO2, et faire valider la
     convention par la personne responsable du volet scientifique. Ajouter la validation de `Time`
     pour les sorties en W/m².
+  - **Migration** : un rapport en W/m² avec un horizon de plus de 2000 ans était tronqué en silence
+    et sera refusé. Le message propose un horizon de 2000 ans au plus, ou une autre unité. Mention
+    dans les deux CHANGELOG.
   - **Test à écrire** : `tests/test_Report.py::test_radiative_output_beyond_the_dynco2_horizon_is_rejected`,
     en `xfail(strict=True)` jusqu'à la correction. Un code proposé, vérifié le 2026-10-29, est joint à l'issue.
 - **Q6 — Reconnaissance des gaz.** Le gaz est reconnu par une sous-chaîne en majuscules dans le nom
@@ -251,19 +277,29 @@ et une mention dans les deux CHANGELOG.
     W/m² testent CO2, CH4, CO puis N2O
     ([carbon_to_radiatif.py:139-145](../MoSiR/carbon_to_radiatif.py#L139-L145)). Un nœud
     « N2O emissions COGEN » est du N2O en tCO2eq et du CO en W/m².
-  - **Décision (2026-10-29)** : un attribut `Gas` facultatif sur le nœud dans `Graph.json` (`CO2`,
-    `CH4`, `N2O` ou `CO`), réglable dans l'éditeur (F10). Sans lui, le gaz est reconnu par mot
-    entier, comme le dit le wiki, par une seule fonction partagée par les deux chemins, avec un
-    avertissement.
-  - **À faire** : la fonction commune, la lecture de `Gas` dans `GraphFactory` et la page wiki
-    « Nomenclature des fichiers JSON ». Modifier au même moment
-    `test_formatting_matches_on_substrings_not_on_words`, qui fige la reconnaissance par
-    sous-chaîne.
-  - **Tests à écrire** : dans `tests/test_Report.py`, `test_tco2eq_does_not_read_co_inside_another_word`
-    et `test_tco2eq_reads_n2o_when_another_word_contains_co` (passe déjà). Dans
-    `tests/test_Radiatif.py`, `test_formatting_reads_n2o_when_another_word_contains_co` et
+  - **Décision (2026-10-29)** : un gaz à l'atmosphère est un **nœud final** (sans aucun lien
+    sortant) dont le nom contient un gaz. Le gaz est un mot entier, en majuscules, quand on découpe le
+    nom sur tout ce qui n'est ni lettre ni chiffre : « CO2 emissions » et « CO2_emissions » sont
+    du CO2, « Recyclage COMPOST » n'est aucun gaz, « N2O emissions COGEN » est du N2O. Une seule
+    fonction, partagée par les tCO2eq et les W/m². Les sorties en tCO2eq ou en W/m² ne sont
+    acceptées que sur ces nœuds. Pas d'attribut supplémentaire dans `Graph.json`.
+  - **Effet sur SEPM Nord** : la règle trouve exactement les trois exutoires gazeux (CO2, CH4, N2O).
+    Les 9 autres nœuds finaux, cendres comprises, sont des stocks. Les 49 nœuds intermédiaires dont
+    le nom contient un gaz (« CH4 to energy », « CH4 flared »…) ne sont pas des gaz à l'atmosphère.
+  - **À faire** : la fonction commune, et la page wiki « Nomenclature des fichiers JSON ». Modifier au
+    même moment `test_formatting_matches_on_substrings_not_on_words`, dont le nom ne correspondra
+    plus à la règle (le cas « CO2_emissions » reste accepté).
+  - **Migration** : une sortie en tCO2eq ou en W/m² sur un nœud intermédiaire, ou sur un nom où le
+    gaz est collé à d'autres lettres (« CO2emissions »), était convertie et sera refusée. Le
+    message nomme le nœud et explique la règle. Mention dans les deux CHANGELOG.
+  - **Tests à écrire** : dans `tests/test_Report.py`, `test_tco2eq_does_not_read_co_inside_another_word`,
+    `test_tco2eq_is_refused_on_an_intermediate_node`, ainsi que
+    `test_tco2eq_reads_n2o_when_another_word_contains_co` et
+    `test_tco2eq_reads_a_gas_joined_by_an_underscore`, qui passent déjà et figent la compatibilité.
+    Dans `tests/test_Radiatif.py`, `test_formatting_reads_n2o_when_another_word_contains_co` et
     `test_formatting_does_not_read_co_inside_another_word`. Ceux qui ne passent pas encore sont en
-    `xfail(strict=True)` jusqu'à la correction. Comparer les forçages en relatif (voir E16). Un code proposé, vérifié le 2026-10-29, est joint à l'issue.
+    `xfail(strict=True)` jusqu'à la correction. Comparer les forçages en relatif (voir E16). Un code
+    proposé, vérifié le 2026-10-29, est joint à l'issue.
 - **Q7 — Liens overflow.** Seul le vérificateur les distingue ; le calcul ajoute leur carbone en
   plus des 100 %. Il faut écrire noir sur blanc leur sens (facteur d'émission ou flux ?) et les cas
   permis.
@@ -299,6 +335,61 @@ recommandée, les prérequis et la façon de mesurer le succès
   sur un graphe neuf à chaque changement de quantité ou de paramètre, ce qui demande `simulate()`
   et la correction de D03.
 
+### F14 : Splits
+
+- **Pourquoi** : les rectangles jaunes de Miro, les splits, ne servent pas au calcul, mais ils
+  rendent l'architecture lisible à l'œil. Un split porte aussi des proportions partagées : les
+  pourcentages de ses liens sortants valent pour tous les nœuds qui y entrent. Dans SEPM Nord, les
+  six stocks de bois massif partagent ainsi « Split, Solid wood retirement ». Décision du
+  2026-10-29 : les splits font partie du graphe, dans l'éditeur (F10) comme dans le forage (F11 et
+  F13).
+- **Aujourd'hui** : l'import Miro aplatit les rectangles (`__SimplifyEdgesForks`,
+  [miro_generator.py:307-330](../MoSiR/mirowrapper/miro_generator.py#L307-L330)). Chaque source est
+  reliée directement à chaque cible, avec le produit des proportions, et `Graph.json` ne garde ni
+  les rectangles ni leur position. Deux rectangles à la suite donnent une erreur peu claire. Le
+  script de forage de SEPM Nord reconstruit les rectangles avec des tables écrites à la main
+  (`PROCESS_GROUPS` et `PROCESS_NAMES` de `outils/sepm_nord/miro_json_to_image.py`).
+- **Format** : une clé facultative `Splits` à côté de `Nodes` et `Edges`, de la même forme que
+  `Nodes` : identifiant, `Name`, `X` et `Y`. Un lien peut aller d'un nœud vers un split ou d'un
+  split vers un nœud. Proportions, listes, années et `Overflow` s'écrivent sur les liens comme
+  aujourd'hui.
+- **Règles**, vérifiées sur le graphe avec ses splits, chacune avec un message qui nomme le split :
+  - **un split n'est jamais un élément final** : il reçoit au moins un lien, venu d'un nœud, et en
+    envoie au moins un, vers un nœud. Il n'est donc jamais un stock ni un exutoire gazeux (Q6). Dans
+    l'import Miro, un rectangle sans sortie est aujourd'hui supprimé en silence (U07).
+  - un lien d'un split vers un split est refusé : **jamais deux splits à la suite**.
+  - les liens sortants d'un split font 100 % chaque année, comme ceux d'un nœud.
+  - un split n'a ni `Decay` ni `Recycling`, et ne reçoit pas d'intrants.
+  - son nom suit les règles d'un nom de nœud, et il est unique parmi les nœuds et les splits.
+  - aucun rapport sur un split en v2.0 : `Reports.json` ne peut pas le nommer.
+- **Aplatissement** : une seule fonction du cœur, appelée par `GraphFactory`. Chaque paire formée
+  d'un lien entrant et d'un lien sortant d'un split devient un lien direct, avec le produit des
+  proportions année par année. Un lien direct est `Overflow` si l'un des deux liens l'est, comme
+  dans l'import Miro aujourd'hui. Les vérifications habituelles, dont celles de Q7, portent ensuite
+  sur le graphe aplati. Le calcul, les intrants et les rapports ne voient jamais de split. Le code
+  de l'import Miro sert de modèle, sans que l'import soit modifié.
+- **Import Miro** : inchangé (décision du 2026-10-29, aucun développement sur Miro). Un tableau Miro
+  arrive donc aplati, sans ses rectangles, comme aujourd'hui. On peut ensuite ajouter des splits
+  dans l'éditeur (F10).
+- **Compatibilité** : c'est un élément clé de la v2.0. Un `Graph.json` sans `Splits` est lu tel quel
+  et donne les mêmes résultats. Un graphe avec splits n'a pas à s'ouvrir dans MoSiR 1.x (décision du
+  2026-10-29). La reconnaissance d'un fichier de graphe au téléversement accepte la clé `Splits`
+  ([upload/views.py:50](../MoSiR/upload/views.py#L50) n'accepte aujourd'hui que `Nodes` et `Edges`).
+- **Prérequis** : aucun. F14 passe avant F10 et F13, qui en dépendent.
+- **Tests à écrire** :
+  - un graphe avec un split partagé par deux nœuds donne les mêmes résultats, à 1e-12 près, que le
+    même graphe aplati à la main, avec des proportions constantes puis variables.
+  - chaque règle a son test de refus, dont deux splits à la suite, et un split sans lien sortant,
+    qu'il reçoive une partie ou toute la sortie d'un nœud.
+  - un `Graph.json` sans `Splits` donne des résultats identiques (la suite existante le couvre).
+  - l'aplatissement d'un split donne les mêmes liens que l'import Miro pour le même montage : le
+    produit des proportions, année par année.
+- **Cas de référence** : SEPM Nord reste sans splits, puisqu'il vient de Miro. Les tests utilisent
+  de petits graphes écrits pour l'occasion.
+- **Mesure du succès** :
+  - les tests ci dessus passent.
+  - aucun graphe existant ne change de résultat.
+
 ### F13 : Analyses de forage
 
 - **Pourquoi** : explorer un graphe sans écrire de rapport : où va le carbone, par où il passe,
@@ -306,8 +397,8 @@ recommandée, les prérequis et la façon de mesurer le succès
   ([F11](FeuilleDeRoute_Interface.md#f11--page-de-forage)), utilisable aussi sans l'interface.
   Remplace F6 pour l'origine des émissions (#11).
 - **Origine** : le script `miro_json_to_image.py` écrit pour SEPM Nord. Ses analyses sont générales,
-  mais ses tables de noms (filières, exutoires, repères, traductions) ne valent que pour cette
-  architecture.
+  mais ses tables de noms (filières, exutoires, repères, traductions, rectangles) ne valent que pour
+  cette architecture.
 - **Contenu** :
   - pour un graphe et des intrants : le flux cumulé qui traverse chaque nœud, les destinations
     finales de chaque nœud et, pour un chemin choisi, ses routes.
@@ -321,7 +412,11 @@ recommandée, les prérequis et la façon de mesurer le succès
   - origine par filière, par linéarité : un calcul par filière, avec la méthode décrite en F6. Les
     filières viennent du fichier de lecture (F11).
   - les flux overflow sont reconnus par le drapeau `Overflow` (Q7) et présentés à part.
-  - aucun nom de nœud en dur dans le module.
+  - les splits (F14) : le calcul tourne sur le graphe aplati, puis le module redonne, année par
+    année, le flux de chaque lien qui entre dans un split ou qui en sort. Le flux d'un split est la
+    somme de ses liens entrants. Un split a, comme un nœud, ses destinations finales et ses origines
+    par filière, et les routes d'un chemin le traversent.
+  - aucun nom de nœud ou de split en dur dans le module.
 - **Méthode** : le calcul dynamique de MoSiR par `simulate()` (F1), sur un graphe neuf à chaque
   appel. Il est exact avec des proportions variables, plusieurs nœuds d'entrée et n'importe quelle
   boucle.
@@ -334,19 +429,40 @@ recommandée, les prérequis et la façon de mesurer le succès
     les mêmes injectées en 2050 en donnent 60,0.
   - horizon à 1 % : environ 6,6 fois la demi-vie pour une loi exponentielle, beaucoup moins pour
     une Gamma (demi-vie de 35 ans : 233 ans en exponentielle, 51 ans en Gamma). Graphe d'exemple :
-    46 ans. L'horizon de SEPM Nord reste à mesurer.
+    46 ans.
+- **Mesures du 2026-10-29, SEPM Nord** (182 nœuds, demi-vies fictives de
+  `tests/reference/sepm_nord/Inputs.json`) :
+  - le calcul dynamique de MoSiR, avec un pulse de 100 suivi 1500 ans, retrouve les flux en régime
+    permanent du script à 3 × 10⁻⁶ près (l'arrondi de la page), et ceux d'un calcul indépendant à
+    3 × 10⁻¹⁵ près.
+  - moins de 1 % du carbone reste dans les `DecayNode` et `RecyclingNode` après 99 ans, moins de
+    0,1 % après 165 ans. Ces deux chiffres dépendent des demi-vies, fictives ici.
+  - temps de calcul : 2,3 s pour les stocks année par année jusqu'à 1500 ans, plus 0,8 s pour les
+    flux cumulés. Un forage avec l'origine par filière (5 filières, donc 6 calculs) prendrait de
+    l'ordre de 20 s : à mesurer une fois F13 écrit.
 - **Points à trancher** :
   - les routes d'un chemin quand les proportions varient : calculées pour une année choisie, ou
     agrégées sur la période.
   - les deux conventions de comptage (chaque passage dans une boucle, ou unités distinctes) restent
     nommées en toutes lettres dans chaque résultat.
-- **Prérequis** : F1, Q7.
-- **Tests** : les sept contrôles de `verifier_flux.py` deviennent des tests. Les graphes aléatoires
-  du générateur de comparaison servent de garde-fou. SEPM Nord est le cas de référence.
+- **Prérequis** : F1, F14, Q7, D12 (sans lui, SEPM Nord ne peut pas être calculé).
+- **Tests** :
+  - cas de référence : `tests/reference/sepm_nord/`. `forage_reference.json` donne, pour chaque
+    nœud, le flux, les destinations finales et les origines par filière produits par le script de
+    SEPM Nord, vérifiés indépendamment. Il se régénère avec `outils/sepm_nord/extraire_reference.py`
+    (voir le `README.md` du dossier).
+  - les vérifications indépendantes de `extraire_reference.py` (flux, destinations, origines)
+    remplacent celles de `verifier_flux.py`, dont la version reçue n'est plus compatible avec le
+    générateur (elle appelle `merge_identical_branches`, qui n'existe plus).
+  - les graphes aléatoires du générateur de comparaison servent de garde-fou pour les formes que
+    SEPM Nord ne couvre pas (plusieurs entrées, proportions variables).
+  - splits : sur un graphe avec un split partagé, le flux du split égale la somme de ses flux
+    entrants et la somme de ses flux sortants, et les destinations des nœuds sont les mêmes que sur
+    le graphe aplati.
 - **Mesure du succès** :
-  - sur SEPM Nord avec des proportions constantes, mêmes flux à 6 chiffres que le script actuel.
-  - temps d'un forage complet sur SEPM Nord.
-  - le module ne contient aucun nom de nœud.
+  - sur SEPM Nord, mêmes flux, destinations et origines que `forage_reference.json`, à 1e-5 près.
+  - temps d'un forage complet sur SEPM Nord, comparé aux 3,1 s mesurées sans l'origine par filière.
+  - le module ne contient aucun nom de nœud ni de split.
 
 ### F5 — Monte Carlo
 
@@ -436,6 +552,9 @@ recommandée, les prérequis et la façon de mesurer le succès
     ([nodes.py:55](../MoSiR/graph_generator/nodes.py#L55)).
 - Toute piste passe par la fiche d'amélioration et le
   [seuil de lisibilité](CodingStandards.md#optimisation-et-lisibilité).
+- **Mise à jour (2026-10-29, #20)** : #20 a été fermée le 2026-10-29 (« Réglé dans dev »), puisque
+  « Faster run » est sur `dev`. L'entrée reste pour la suite : une issue « [F7] » sera ouverte
+  quand un besoin mesuré se présentera.
 
 ### F9 — Long terme
 

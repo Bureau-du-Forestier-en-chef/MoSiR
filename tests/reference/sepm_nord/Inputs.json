@@ -1,0 +1,117 @@
+{
+    "_commentaire": "Demi-vies FICTIVES, choisies pour etre plausibles, sans valeur scientifique. Elles servent uniquement aux tests et aux mesures de l'horizon et du temps de calcul. Les flux a long terme n'en dependent pas, car les proportions de SEPM Nord sont constantes.",
+    "Inputs": {
+        "sepm_nord": {
+            "Roundwood_GCBM": {
+                "0": 100.0
+            }
+        }
+    },
+    "Decay": {
+        "sepm_nord": {
+            "Papers storage": {
+                "Exponential": 2.0
+            },
+            "Cardboards storage": {
+                "Exponential": 2.0
+            },
+            "Pulp storage": {
+                "Exponential": 2.0
+            },
+            "Site 1 Stockage Landfilled industrial P&P": {
+                "Exponential": 20.0
+            },
+            "Site 3 Stockage Landfilled industrial P&P": {
+                "Exponential": 20.0
+            },
+            "Site 1 Stockage Landfilled MSW P&P": {
+                "Exponential": 20.0
+            },
+            "Site 2 Stockage Landfilled MSW P&P": {
+                "Exponential": 20.0
+            },
+            "Site 3 Stockage Landfilled MSW P&P": {
+                "Exponential": 20.0
+            },
+            "Sawnwood storage": {
+                "Gamma": 35.0
+            },
+            "Engineered wood storage": {
+                "Gamma": 35.0
+            },
+            "Site 1 Stockage Landfilled MSW Sawnwood": {
+                "Exponential": 20.0
+            },
+            "Site 2 Stockage Landfilled MSW Sawnwood": {
+                "Exponential": 20.0
+            },
+            "Site 3 Stockage Landfilled MSW Sawnwood": {
+                "Exponential": 20.0
+            },
+            "Site 1 Stockage Landfilled industrial Sawnwood": {
+                "Exponential": 20.0
+            },
+            "Site 2 Stockage Landfilled industrial Sawnwood": {
+                "Exponential": 20.0
+            },
+            "Site 3 Stockage Landfilled industrial Sawnwood": {
+                "Exponential": 20.0
+            },
+            "Site 1 Stockage Landfilled MSW Panels": {
+                "Exponential": 20.0
+            },
+            "Site 2 A Landfilled MSW Panels": {
+                "Exponential": 20.0
+            },
+            "Site 3 Stockage Landfilled MSW Panels": {
+                "Exponential": 20.0
+            },
+            "Site 1 Stockage Landfilled industrial Panels": {
+                "Exponential": 20.0
+            },
+            "Site 2 Stockage Landfilled industrial Panels": {
+                "Exponential": 20.0
+            },
+            "Site 3 Stockage Landfilled industrial Panels": {
+                "Exponential": 20.0
+            },
+            "Poteaux storage": {
+                "Gamma": 30.0
+            },
+            "Site 1 Stockage industrial Otherwood": {
+                "Exponential": 20.0
+            },
+            "Site 2 Stockage industrial Otherwood": {
+                "Exponential": 20.0
+            },
+            "Site 3 Stockage industrial Otherwood": {
+                "Exponential": 20.0
+            },
+            "Site 1 Stockage Landfilled MSW Otherwood": {
+                "Exponential": 20.0
+            },
+            "Site 2 Stockage Landfilled MSW Otherwood": {
+                "Exponential": 20.0
+            },
+            "Site 3 Stockage Landfilled MSW Otherwood": {
+                "Exponential": 20.0
+            },
+            "Site 2 Stockage Landfilled industrial P&P": {
+                "Exponential": 20.0
+            },
+            "Otherwood storage": {
+                "Gamma": 35.0
+            },
+            "Litiere storage": {
+                "Exponential": 1.0
+            },
+            "Structural panels storage": {
+                "Gamma": 25.0
+            },
+            "Non Structural panels storage": {
+                "Gamma": 25.0
+            }
+        }
+    },
+    "Unit": "tC"
+}

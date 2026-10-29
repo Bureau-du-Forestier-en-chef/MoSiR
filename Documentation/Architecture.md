@@ -219,6 +219,10 @@ clair liste ceux qui manquent.
   travail. Tout run part donc de fichiers, et le manifeste dit exactement avec quoi un résultat a
   été produit.
 - Le serveur écoute sur `127.0.0.1` par défaut.
+- Le cadre commun des pages (barre de navigation horizontale, charte graphique, comportement
+  d'application, aucune ressource chargée depuis Internet) est décrit dans
+  [F15](FeuilleDeRoute_Interface.md#f15--ergonomie-générale), et la charte dans
+  [CharteGraphique.md](CharteGraphique.md).
 
 ### Migration
 
