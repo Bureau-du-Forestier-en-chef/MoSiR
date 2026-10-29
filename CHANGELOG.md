@@ -25,6 +25,7 @@ This version is being developed on the `dev` branch; more changes will be added 
 * The graph verificator has been simplified: the checks performed before a calculation now share a common traversal of graphs and nodes.
 * Each node type now only allocates the caches it actually uses.
 * Removal of unused code: an empty internal class, a method and a field that were never used, and superfluous imports.
+* The roadmap is split into three files: an index (`Documentation/FeuilleDeRoute.md`), the calculator roadmap and the interface roadmap. Each entry now has its GitHub issue, whose title starts with the entry's identifier.
 
 ### Corrections
 * Fixed the cumulative outgoing flux ("Flux out") of a transition node: in some cases carbon was counted twice and then corrupted the same node's non-cumulative results.

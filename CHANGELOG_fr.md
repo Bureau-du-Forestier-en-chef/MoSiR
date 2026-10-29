@@ -25,6 +25,7 @@ Cette version est en cours de développement dans la branche `dev`; d'autres cha
 * Le vérificateur de graphe a été simplifié: les contrôles effectués avant un calcul partagent maintenant un même parcours des graphes et des nœuds.
 * Chaque type de nœud n'alloue plus que les caches qu'il utilise réellement.
 * Retrait de code inutilisé: classe interne vide, méthode et champ jamais utilisés, imports superflus.
+* La feuille de route est découpée en trois fichiers : un index (`Documentation/FeuilleDeRoute.md`), la feuille de route du calcul et celle de l'interface. Chaque entrée a désormais son issue GitHub, dont le titre commence par son identifiant.
 
 ### Corrections
 * Correction du flux sortant cumulatif d'un nœud de transition: dans certains cas, le carbone était compté en double, puis faussait les résultats non cumulatifs du même nœud.

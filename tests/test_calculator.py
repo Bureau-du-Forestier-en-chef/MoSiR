@@ -212,7 +212,7 @@ def test_multiple_top(graph_05):
 
 # Bugs connus du moteur -------------------------------------------------------
 # Chaque test de cette section reproduit un défaut décrit dans
-# Documentation/FeuilleDeRoute.md (section A). Il est marqué
+# Documentation/FeuilleDeRoute_Calcul.md (section A). Il est marqué
 # xfail(strict=True): il échoue tant que le défaut existe, et pytest signale
 # une erreur dès qu'il se met à passer. Au moment du correctif, retirer le
 # marqueur: le test devient le test de régression.

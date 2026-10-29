@@ -68,7 +68,7 @@ que les proportions ne dépendent que du temps, et pas des quantités. Trois con
    combiné.
 
 Les approches proposées pour les classes de DHP, Monte Carlo et l'origine des émissions reposent
-sur cette propriété ([feuille de route](FeuilleDeRoute.md#d-développements)).
+sur cette propriété ([feuille de route du calcul](FeuilleDeRoute_Calcul.md#c-développements-du-calcul)).
 
 ## Les couches aujourd'hui
 
@@ -224,7 +224,7 @@ clair liste ceux qui manquent.
 
 La migration se fait par lots, et l'application reste utilisable après chacun. Les anciennes pages
 sont remplacées une à une. Le détail des lots et leur état sont dans la
-[feuille de route](FeuilleDeRoute.md#d-développements) (développement F2), puis, une fois la
+[feuille de route de l'interface](FeuilleDeRoute_Interface.md#f2--refonte-de-linterface) (développement F2), puis, une fois la
 campagne commencée, dans `Documentation/ETAT_interface.md`.
 
 ## Principe de décision
