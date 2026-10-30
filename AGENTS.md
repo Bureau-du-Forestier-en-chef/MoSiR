@@ -11,7 +11,8 @@ change.
 | --- | --- |
 | Le modèle, les couches, le déroulement d'un calcul, l'architecture cible de l'interface | [Documentation/Architecture.md](Documentation/Architecture.md) |
 | Lisibilité, nommage, documentation, erreurs, numérique, tests, mesure des améliorations, compatibilité, liste de vérification | [Documentation/CodingStandards.md](Documentation/CodingStandards.md) |
-| Développements prévus, défauts connus, questions métier, sécurité, dette | [Documentation/FeuilleDeRoute.md](Documentation/FeuilleDeRoute.md) |
+| Couleurs, polices, composants et mise en page de l'interface | [Documentation/CharteGraphique.md](Documentation/CharteGraphique.md) |
+| Développements prévus, défauts connus, questions métier, sécurité, dette | [Documentation/FeuilleDeRoute.md](Documentation/FeuilleDeRoute.md) (index et ordre global), puis [FeuilleDeRoute_Calcul.md](Documentation/FeuilleDeRoute_Calcul.md) et [FeuilleDeRoute_Interface.md](Documentation/FeuilleDeRoute_Interface.md) |
 | Carte du dépôt, commandes, pièges, déroulement d'une tâche | ce fichier |
 
 ## Trois règles de base
@@ -60,6 +61,8 @@ dans les [issues GitHub](https://github.com/Bureau-du-Forestier-en-chef/MoSiR/is
 | `MoSiR/upload/`, `download/`, `reporting/`, `visualization/`, `stats/`, `mirowrapper/` | Les pages de l'interface. `reporting/` est la page « Calculer » ; `stats/` n'est pas branchée ; `mirowrapper/` gère la connexion à Miro. |
 | `MoSiR/templates/main.html` | Le gabarit commun à toutes les pages, qui contient aussi tout le JavaScript. |
 | `tests/` | La suite pytest. `tests/reference/` : résultats de référence ; `tests/benchmark/` : banc d'essai et journal des temps. |
+| `tests/reference/sepm_nord/` | Le cas de référence du forage (F13) : un graphe réel, des intrants aux demi-vies fictives et `forage_reference.json`. Voir son `README.md`. |
+| `outils/sepm_nord/` | Hors du paquet. Les scripts qui produisent les références de SEPM Nord (`miro_json_to_image.py`, `extraire_reference.py`) et la note qui documente leurs conventions (`PASSATION.md`). Demandent pillow et cairosvg, absents de `environment.yml`. |
 | `examples/Inputs/` | Un exemple complet : `Graph.json`, `Inputs.json`, `Reports.json`. |
 | `standalone/Nuitka_wrapper.bat` | Construction de l'exécutable Windows. |
 | `Documentation/` | Architecture, normes, feuille de route, et fichiers `ETAT_<campagne>.md` des campagnes en cours. |
@@ -144,7 +147,8 @@ faite, le dire explicitement.
 3. **Amélioration** : mesurer avant, modifier, mesurer après, puis remplir la fiche d'amélioration
    ([gabarit](Documentation/CodingStandards.md#mesurer-une-amélioration)).
 4. Lancer la suite complète. Si le nombre de tests a changé, lancer `make docs-coverage`.
-5. Mettre à jour la feuille de route (statut et date) et les deux CHANGELOG.
+5. Mettre à jour la feuille de route (statut et date), l'issue GitHub de l'entrée et les deux
+   CHANGELOG.
 6. Dire ce qui a été vérifié et ce qui ne l'a pas été.
 
 Ne pas créer de commit sans qu'on le demande : décrire ce qui a changé et laisser le commit à la
