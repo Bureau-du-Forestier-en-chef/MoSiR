@@ -127,7 +127,7 @@ def test_second_upload_keeps_the_first(web_client, user_folder, e2e_graph_dict):
 
 # Bugs connus de l'interface --------------------------------------------------
 # Chaque test de cette section reproduit un défaut décrit dans
-# Documentation/FeuilleDeRoute.md (section A). Au moment du correctif,
+# Documentation/FeuilleDeRoute_Interface.md (section A). Au moment du correctif,
 # retirer le marqueur xfail: le test devient le test de régression.
 
 @pytest.mark.xfail(strict=True, raises=AssertionError, reason=(

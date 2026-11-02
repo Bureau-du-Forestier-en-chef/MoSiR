@@ -1,0 +1,3465 @@
+{
+  "_description": "Valeurs de référence du forage (F13) pour SEPM Nord, en régime permanent. Produites par outils/sepm_nord/miro_json_to_image.py, extraites et vérifiées indépendamment par outils/sepm_nord/extraire_reference.py. Ne pas modifier à la main.",
+  "_conventions": {
+    "injection": "100 unités de carbone dans le nœud d'entrée, proportions de l'année 0",
+    "flux": "carbone qui entre dans le nœud, chaque passage dans une boucle compté",
+    "destinations": "part d'une unité entrée dans le nœud qui finit dans chaque exutoire. stock : nœuds finaux qui ne sont pas des exutoires. n2o : en plus du carbone",
+    "origines": "quantités, sur les 100 unités, selon la première production traversée. brut : pas encore passé par une production",
+    "filieres": {
+      "Sawnwood production": "sci",
+      "Panels production": "pan",
+      "P&P production": "pp",
+      "Otherwood production": "aut",
+      "Bioenergy production": "bio"
+    }
+  },
+  "graphe": "sepm_nord",
+  "noeud_entree": "Roundwood_GCBM",
+  "exutoires": {
+    "co2": 50.90017526982591,
+    "ch4": 2.760300074172647,
+    "ash": 0.1717675039746456,
+    "n2o": 0.007019918008401656
+  },
+  "noeuds": {
+    "3458764601963695477": {
+      "nom": "Industrial Roundwood",
+      "nom_affiche_fr": "Bois rond industriel",
+      "flux": 100.0,
+      "destinations": {
+        "co2": 0.509002,
+        "ch4": 0.027603,
+        "ash": 0.00171767,
+        "stock": 0.461677,
+        "n2o": 7.01992e-05
+      },
+      "origines": {
+        "brut": 100.0
+      },
+      "filieres_possibles": [],
+      "etape": "prod"
+    },
+    "3458764601963695478": {
+      "nom": "Roundwood_GCBM",
+      "nom_affiche_fr": "Bois rond récolté (GCBM)",
+      "flux": 100.0,
+      "destinations": {
+        "co2": 0.509002,
+        "ch4": 0.027603,
+        "ash": 0.00171767,
+        "stock": 0.461677,
+        "n2o": 7.01992e-05
+      },
+      "origines": {
+        "brut": 100.0
+      },
+      "filieres_possibles": [],
+      "etape": "prod"
+    },
+    "3458764601963695480": {
+      "nom": "Panels production",
+      "nom_affiche_fr": "Production Panneaux",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.27948,
+        "ch4": 0.014194,
+        "ash": 0.00113639,
+        "stock": 0.70519,
+        "n2o": 3.38081e-05
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "pan"
+      ],
+      "etape": "prod"
+    },
+    "3458764601963695481": {
+      "nom": "Sawnwood production",
+      "nom_affiche_fr": "Production Sciage",
+      "flux": 99.0,
+      "destinations": {
+        "co2": 0.508469,
+        "ch4": 0.0273271,
+        "ash": 0.00172692,
+        "stock": 0.462477,
+        "n2o": 7.01257e-05
+      },
+      "origines": {
+        "sci": 99.0
+      },
+      "filieres_possibles": [
+        "sci"
+      ],
+      "etape": "prod"
+    },
+    "3458764601963695482": {
+      "nom": "P&P production",
+      "nom_affiche_fr": "Production P&P",
+      "flux": 1.0,
+      "destinations": {
+        "co2": 0.561735,
+        "ch4": 0.0549113,
+        "ash": 0.00080213,
+        "stock": 0.382551,
+        "n2o": 7.74708e-05
+      },
+      "origines": {
+        "pp": 1.0
+      },
+      "filieres_possibles": [
+        "pp"
+      ],
+      "etape": "prod"
+    },
+    "3458764601963695483": {
+      "nom": "Otherwood production",
+      "nom_affiche_fr": "Production Autre",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.257384,
+        "ch4": 0.0146066,
+        "ash": 0.00100917,
+        "stock": 0.727,
+        "n2o": 3.02389e-05
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "aut"
+      ],
+      "etape": "prod"
+    },
+    "3458764601963695484": {
+      "nom": "Bioenergy production",
+      "nom_affiche_fr": "Production de bioénergie",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.987155,
+        "ch4": 0.00759492,
+        "ash": 0.00525,
+        "stock": 0.0,
+        "n2o": 0.000149213
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "bio"
+      ],
+      "etape": "prod"
+    },
+    "3458764601963695490": {
+      "nom": "Papers produced",
+      "nom_affiche_fr": "Papiers produits",
+      "flux": 4.92243,
+      "destinations": {
+        "co2": 0.50016,
+        "ch4": 0.0663287,
+        "ash": 0.000457214,
+        "stock": 0.433054,
+        "n2o": 4.83023e-05
+      },
+      "origines": {
+        "pp": 0.13,
+        "sci": 4.79243
+      },
+      "filieres_possibles": [
+        "pp",
+        "sci"
+      ],
+      "etape": "prod"
+    },
+    "3458764601963695491": {
+      "nom": "Cardboards produced",
+      "nom_affiche_fr": "Cartons produits",
+      "flux": 25.3917,
+      "destinations": {
+        "co2": 0.50016,
+        "ch4": 0.0663287,
+        "ash": 0.000457214,
+        "stock": 0.433054,
+        "n2o": 4.83023e-05
+      },
+      "origines": {
+        "pp": 0.670588,
+        "sci": 24.7211
+      },
+      "filieres_possibles": [
+        "pp",
+        "sci"
+      ],
+      "etape": "prod"
+    },
+    "3458764601963695492": {
+      "nom": "Pulp produced",
+      "nom_affiche_fr": "Pâte produite",
+      "flux": 25.3694,
+      "destinations": {
+        "co2": 0.50016,
+        "ch4": 0.0663287,
+        "ash": 0.000457214,
+        "stock": 0.433054,
+        "n2o": 4.83023e-05
+      },
+      "origines": {
+        "pp": 0.67,
+        "sci": 24.6994
+      },
+      "filieres_possibles": [
+        "pp",
+        "sci"
+      ],
+      "etape": "prod"
+    },
+    "3458764601963695493": {
+      "nom": "Unused P&P biomass",
+      "nom_affiche_fr": "Biomasse résiduelle P&P",
+      "flux": 13.9209,
+      "destinations": {
+        "co2": 0.808037,
+        "ch4": 0.00924158,
+        "ash": 0.0021818,
+        "stock": 0.18054,
+        "n2o": 0.000194145
+      },
+      "origines": {
+        "pp": 0.367647,
+        "sci": 13.5532
+      },
+      "filieres_possibles": [
+        "pp",
+        "sci"
+      ],
+      "etape": "prod"
+    },
+    "3458764601963695494": {
+      "nom": "Sawnwood produced",
+      "nom_affiche_fr": "Produits de sciage",
+      "flux": 37.62,
+      "destinations": {
+        "co2": 0.257384,
+        "ch4": 0.0146066,
+        "ash": 0.00100917,
+        "stock": 0.727,
+        "n2o": 3.02389e-05
+      },
+      "origines": {
+        "sci": 37.62
+      },
+      "filieres_possibles": [
+        "sci"
+      ],
+      "etape": "prod"
+    },
+    "3458764601963695495": {
+      "nom": "Coproducts produced",
+      "nom_affiche_fr": "Coproduits Sciage générés",
+      "flux": 61.38,
+      "destinations": {
+        "co2": 0.66236,
+        "ch4": 0.0351236,
+        "ash": 0.00216684,
+        "stock": 0.30035,
+        "n2o": 9.45725e-05
+      },
+      "origines": {
+        "sci": 61.38
+      },
+      "filieres_possibles": [
+        "sci"
+      ],
+      "etape": "prod"
+    },
+    "3458764601963695496": {
+      "nom": "Engineered wood produced",
+      "nom_affiche_fr": "Bois d'ingénierie produit",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.257384,
+        "ch4": 0.0146066,
+        "ash": 0.00100917,
+        "stock": 0.727,
+        "n2o": 3.02389e-05
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "sci"
+      ],
+      "etape": "prod"
+    },
+    "3458764601963695497": {
+      "nom": "Unused Panels biomass",
+      "nom_affiche_fr": "Biomasse résiduelle Panneaux",
+      "flux": 0.276255,
+      "destinations": {
+        "co2": 0.993895,
+        "ch4": 0.000855485,
+        "ash": 0.00525,
+        "stock": 0.0,
+        "n2o": 0.000149213
+      },
+      "origines": {
+        "sci": 0.276255
+      },
+      "filieres_possibles": [
+        "aut",
+        "pan",
+        "sci"
+      ],
+      "etape": "prod"
+    },
+    "3458764601963695498": {
+      "nom": "Otherwood Poteaux produced",
+      "nom_affiche_fr": "Autre, poteaux produits",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.257384,
+        "ch4": 0.0146066,
+        "ash": 0.00100917,
+        "stock": 0.727,
+        "n2o": 3.02389e-05
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "aut"
+      ],
+      "etape": "prod"
+    },
+    "3458764601963695499": {
+      "nom": "Unused Otherwood biomass",
+      "nom_affiche_fr": "Biomasse résiduelle Autre",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.0775,
+        "ch4": 0.0225,
+        "ash": 0.0,
+        "stock": 0.9,
+        "n2o": 0.0
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "aut"
+      ],
+      "etape": "prod"
+    },
+    "3458764601963695500": {
+      "nom": "Biofuel non-transport",
+      "nom_affiche_fr": "Biocarburant hors transport",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 1.0,
+        "ch4": 0.0,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 0.0
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "bio",
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695501": {
+      "nom": "Biofuel transport",
+      "nom_affiche_fr": "Biocarburant transport",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 1.0,
+        "ch4": 0.0,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 0.0
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "bio",
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695502": {
+      "nom": "Residential Bioenergy furnace",
+      "nom_affiche_fr": "Bioénergie résidentielle, fournaise",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.98344,
+        "ch4": 0.0113103,
+        "ash": 0.00525,
+        "stock": 0.0,
+        "n2o": 0.000298425
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "bio",
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695503": {
+      "nom": "Residential Bioenergy advanced",
+      "nom_affiche_fr": "Bioénergie résidentielle, appareil à haut rendement",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.98344,
+        "ch4": 0.0113103,
+        "ash": 0.00525,
+        "stock": 0.0,
+        "n2o": 0.000298425
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "bio",
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695507": {
+      "nom": "Papers storage",
+      "nom_affiche_fr": "Stock papiers",
+      "flux": 4.92243,
+      "destinations": {
+        "co2": 0.50016,
+        "ch4": 0.0663287,
+        "ash": 0.000457214,
+        "stock": 0.433054,
+        "n2o": 4.83023e-05
+      },
+      "origines": {
+        "pp": 0.13,
+        "sci": 4.79243
+      },
+      "filieres_possibles": [
+        "pp",
+        "sci"
+      ],
+      "etape": "prod"
+    },
+    "3458764601963695508": {
+      "nom": "Cardboards storage",
+      "nom_affiche_fr": "Stock cartons",
+      "flux": 25.3917,
+      "destinations": {
+        "co2": 0.50016,
+        "ch4": 0.0663287,
+        "ash": 0.000457214,
+        "stock": 0.433054,
+        "n2o": 4.83023e-05
+      },
+      "origines": {
+        "pp": 0.670588,
+        "sci": 24.7211
+      },
+      "filieres_possibles": [
+        "pp",
+        "sci"
+      ],
+      "etape": "prod"
+    },
+    "3458764601963695509": {
+      "nom": "Pulp storage",
+      "nom_affiche_fr": "Stock pâte",
+      "flux": 25.3694,
+      "destinations": {
+        "co2": 0.50016,
+        "ch4": 0.0663287,
+        "ash": 0.000457214,
+        "stock": 0.433054,
+        "n2o": 4.83023e-05
+      },
+      "origines": {
+        "pp": 0.67,
+        "sci": 24.6994
+      },
+      "filieres_possibles": [
+        "pp",
+        "sci"
+      ],
+      "etape": "prod"
+    },
+    "3458764601963695511": {
+      "nom": "Landfilled MSW P&P",
+      "nom_affiche_fr": "Enfouissement municipal P&P",
+      "flux": 24.2924,
+      "destinations": {
+        "co2": 0.418537,
+        "ch4": 0.0814635,
+        "ash": 0.0,
+        "stock": 0.5,
+        "n2o": 9.637e-06
+      },
+      "origines": {
+        "pp": 0.641555,
+        "sci": 23.6508
+      },
+      "filieres_possibles": [
+        "pp",
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695512": {
+      "nom": "Landfilled industrial P&P",
+      "nom_affiche_fr": "Enfouissement industriel P&P",
+      "flux": 2.73573,
+      "destinations": {
+        "co2": 0.112375,
+        "ch4": 0.032625,
+        "ash": 0.0,
+        "stock": 0.855,
+        "n2o": 0.0
+      },
+      "origines": {
+        "pp": 0.07225,
+        "sci": 2.66348
+      },
+      "filieres_possibles": [
+        "pp",
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695513": {
+      "nom": "Treatment/Disposal centre P&P",
+      "nom_affiche_fr": "Treatment/Disposal centre P&P",
+      "flux": 31.7396,
+      "destinations": {
+        "co2": 0.561735,
+        "ch4": 0.0549113,
+        "ash": 0.00080213,
+        "stock": 0.382551,
+        "n2o": 7.74708e-05
+      },
+      "origines": {
+        "pp": 0.838235,
+        "sci": 30.9014
+      },
+      "filieres_possibles": [
+        "pp",
+        "sci"
+      ],
+      "etape": "recy"
+    },
+    "3458764601963695514": {
+      "nom": "Bioenergy feedstock P&P",
+      "nom_affiche_fr": "Bioénergie P&P",
+      "flux": 5.78524,
+      "destinations": {
+        "co2": 0.993895,
+        "ch4": 0.000855485,
+        "ash": 0.00525,
+        "stock": 0.0,
+        "n2o": 0.000149213
+      },
+      "origines": {
+        "pp": 0.152787,
+        "sci": 5.63246
+      },
+      "filieres_possibles": [
+        "pp",
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695515": {
+      "nom": "CO2 emissions",
+      "nom_affiche_fr": "Émissions de CO2",
+      "flux": 50.9002,
+      "destinations": {
+        "co2": 1.0,
+        "ch4": 0.0,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 0.0
+      },
+      "origines": {
+        "pp": 0.561735,
+        "sci": 50.3384
+      },
+      "filieres_possibles": [],
+      "etape": "atm"
+    },
+    "3458764601963695516": {
+      "nom": "CH4 emissions",
+      "nom_affiche_fr": "Émissions de CH4",
+      "flux": 2.7603,
+      "destinations": {
+        "co2": 0.0,
+        "ch4": 1.0,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 0.0
+      },
+      "origines": {
+        "pp": 0.0549113,
+        "sci": 2.70539
+      },
+      "filieres_possibles": [],
+      "etape": "atm"
+    },
+    "3458764601963695518": {
+      "nom": "Non-degradable Landfilled industrial P&P",
+      "nom_affiche_fr": "Fraction non dégradable, enfouissement industriel P&P",
+      "flux": 2.33905,
+      "destinations": {
+        "co2": 0.0,
+        "ch4": 0.0,
+        "ash": 0.0,
+        "stock": 1.0,
+        "n2o": 0.0
+      },
+      "origines": {
+        "pp": 0.0617737,
+        "sci": 2.27728
+      },
+      "filieres_possibles": [
+        "pp",
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695519": {
+      "nom": "Degradable Landfilled industrial P&P",
+      "nom_affiche_fr": "Fraction dégradable, enfouissement industriel P&P",
+      "flux": 0.396681,
+      "destinations": {
+        "co2": 0.775,
+        "ch4": 0.225,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 0.0
+      },
+      "origines": {
+        "pp": 0.0104762,
+        "sci": 0.386205
+      },
+      "filieres_possibles": [
+        "pp",
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695522": {
+      "nom": "Site 1 Stockage Landfilled industrial P&P",
+      "nom_affiche_fr": "Site 1 Stockage, enfouissement industriel P&P",
+      "flux": 0.396681,
+      "destinations": {
+        "co2": 0.775,
+        "ch4": 0.225,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 0.0
+      },
+      "origines": {
+        "pp": 0.0104762,
+        "sci": 0.386205
+      },
+      "filieres_possibles": [
+        "pp",
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695523": {
+      "nom": "Site 3 Stockage Landfilled industrial P&P",
+      "nom_affiche_fr": "Site 3 Stockage, enfouissement industriel P&P",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.775,
+        "ch4": 0.225,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 0.0
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "pp",
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695526": {
+      "nom": "CH4 production Landfilled industrial P&P",
+      "nom_affiche_fr": "CH4 produit, enfouissement industriel P&P",
+      "flux": 0.0991703,
+      "destinations": {
+        "co2": 0.1,
+        "ch4": 0.9,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 0.0
+      },
+      "origines": {
+        "pp": 0.00261906,
+        "sci": 0.0965513
+      },
+      "filieres_possibles": [
+        "pp",
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695528": {
+      "nom": "CH4 to energy Landfilled industrial P&P",
+      "nom_affiche_fr": "CH4 valorisé en énergie, enfouissement industriel P&P",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.99994,
+        "ch4": 6e-05,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 7e-05
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "pp",
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695529": {
+      "nom": "CH4 fugitif Landfilled industrial P&P",
+      "nom_affiche_fr": "CH4 non capté, enfouissement industriel P&P",
+      "flux": 0.0991703,
+      "destinations": {
+        "co2": 0.1,
+        "ch4": 0.9,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 0.0
+      },
+      "origines": {
+        "pp": 0.00261906,
+        "sci": 0.0965513
+      },
+      "filieres_possibles": [
+        "pp",
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695530": {
+      "nom": "CH4 flared Landfilled industrial P&P",
+      "nom_affiche_fr": "CH4 brûlé à la torchère, enfouissement industriel P&P",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.999858,
+        "ch4": 0.000142,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 3.8e-05
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "pp",
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695535": {
+      "nom": "Non degradable Landfilled MSW P&P",
+      "nom_affiche_fr": "Fraction non dégradable, enfouissement municipal P&P",
+      "flux": 12.1462,
+      "destinations": {
+        "co2": 0.0,
+        "ch4": 0.0,
+        "ash": 0.0,
+        "stock": 1.0,
+        "n2o": 0.0
+      },
+      "origines": {
+        "pp": 0.320778,
+        "sci": 11.8254
+      },
+      "filieres_possibles": [
+        "pp",
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695536": {
+      "nom": "Degradable Landfilled MSW P&P",
+      "nom_affiche_fr": "Fraction dégradable, enfouissement municipal P&P",
+      "flux": 12.1462,
+      "destinations": {
+        "co2": 0.837073,
+        "ch4": 0.162927,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 1.9274e-05
+      },
+      "origines": {
+        "pp": 0.320778,
+        "sci": 11.8254
+      },
+      "filieres_possibles": [
+        "pp",
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695538": {
+      "nom": "Site 1 Stockage Landfilled MSW P&P",
+      "nom_affiche_fr": "Site 1 Stockage, enfouissement municipal P&P",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.918537,
+        "ch4": 0.0814635,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 9.637e-06
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "pp",
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695539": {
+      "nom": "Site 2 Stockage Landfilled MSW P&P",
+      "nom_affiche_fr": "Site 2 Stockage, enfouissement municipal P&P",
+      "flux": 12.1462,
+      "destinations": {
+        "co2": 0.837073,
+        "ch4": 0.162927,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 1.9274e-05
+      },
+      "origines": {
+        "pp": 0.320777,
+        "sci": 11.8254
+      },
+      "filieres_possibles": [
+        "pp",
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695540": {
+      "nom": "Site 3 Stockage Landfilled MSW P&P",
+      "nom_affiche_fr": "Site 3 Stockage, enfouissement municipal P&P",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.918537,
+        "ch4": 0.0814635,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 9.637e-06
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "pp",
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695544": {
+      "nom": "CH4 produced Landfilled MSW P&P",
+      "nom_affiche_fr": "CH4 produit, enfouissement municipal P&P",
+      "flux": 6.07309,
+      "destinations": {
+        "co2": 0.674146,
+        "ch4": 0.325854,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 3.8548e-05
+      },
+      "origines": {
+        "pp": 0.160389,
+        "sci": 5.9127
+      },
+      "filieres_possibles": [
+        "pp",
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695546": {
+      "nom": "CH4 to energy Landfilled MSW P&P",
+      "nom_affiche_fr": "CH4 valorisé en énergie, enfouissement municipal P&P",
+      "flux": 1.4211,
+      "destinations": {
+        "co2": 0.99994,
+        "ch4": 6e-05,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 7e-05
+      },
+      "origines": {
+        "pp": 0.037531,
+        "sci": 1.38357
+      },
+      "filieres_possibles": [
+        "pp",
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695547": {
+      "nom": "CH4 to atmosphere Landfilled MSW P&P",
+      "nom_affiche_fr": "CH4 non capté, enfouissement municipal P&P",
+      "flux": 2.19846,
+      "destinations": {
+        "co2": 0.1,
+        "ch4": 0.9,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 0.0
+      },
+      "origines": {
+        "pp": 0.0580607,
+        "sci": 2.1404
+      },
+      "filieres_possibles": [
+        "pp",
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695548": {
+      "nom": "CH4 flared Landfilled MSW P&P",
+      "nom_affiche_fr": "CH4 brûlé à la torchère, enfouissement municipal P&P",
+      "flux": 1.15996,
+      "destinations": {
+        "co2": 0.999858,
+        "ch4": 0.000142,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 3.8e-05
+      },
+      "origines": {
+        "pp": 0.0306342,
+        "sci": 1.12933
+      },
+      "filieres_possibles": [
+        "pp",
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695554": {
+      "nom": "Sawnwood storage",
+      "nom_affiche_fr": "Stock Sciage",
+      "flux": 37.62,
+      "destinations": {
+        "co2": 0.257384,
+        "ch4": 0.0146066,
+        "ash": 0.00100917,
+        "stock": 0.727,
+        "n2o": 3.02389e-05
+      },
+      "origines": {
+        "sci": 37.62
+      },
+      "filieres_possibles": [
+        "sci"
+      ],
+      "etape": "prod"
+    },
+    "3458764601963695555": {
+      "nom": "Engineered wood storage",
+      "nom_affiche_fr": "Stock bois d'ingénierie",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.257384,
+        "ch4": 0.0146066,
+        "ash": 0.00100917,
+        "stock": 0.727,
+        "n2o": 3.02389e-05
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "sci"
+      ],
+      "etape": "prod"
+    },
+    "3458764601963695556": {
+      "nom": "Landfilled MSW Sawnwood",
+      "nom_affiche_fr": "Enfouissement municipal Sciage",
+      "flux": 28.4482,
+      "destinations": {
+        "co2": 0.0837073,
+        "ch4": 0.0162927,
+        "ash": 0.0,
+        "stock": 0.9,
+        "n2o": 1.9274e-06
+      },
+      "origines": {
+        "sci": 28.4482
+      },
+      "filieres_possibles": [
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695557": {
+      "nom": "Treatment/Disposal centre Sawnwood",
+      "nom_affiche_fr": "Treatment/Disposal centre Sawnwood",
+      "flux": 19.9386,
+      "destinations": {
+        "co2": 0.4114,
+        "ch4": 0.0131113,
+        "ash": 0.00190409,
+        "stock": 0.573585,
+        "n2o": 5.53453e-05
+      },
+      "origines": {
+        "sci": 19.9386
+      },
+      "filieres_possibles": [
+        "sci"
+      ],
+      "etape": "recy"
+    },
+    "3458764601963695559": {
+      "nom": "Non degradable Landfilled MSW Sawnwood",
+      "nom_affiche_fr": "Fraction non dégradable, enfouissement municipal Sciage",
+      "flux": 25.6034,
+      "destinations": {
+        "co2": 0.0,
+        "ch4": 0.0,
+        "ash": 0.0,
+        "stock": 1.0,
+        "n2o": 0.0
+      },
+      "origines": {
+        "sci": 25.6034
+      },
+      "filieres_possibles": [
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695561": {
+      "nom": "Site 1 Stockage Landfilled MSW Sawnwood",
+      "nom_affiche_fr": "Site 1 Stockage, enfouissement municipal Sciage",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.918537,
+        "ch4": 0.0814635,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 9.637e-06
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695562": {
+      "nom": "Site 2 Stockage Landfilled MSW Sawnwood",
+      "nom_affiche_fr": "Site 2 Stockage, enfouissement municipal Sciage",
+      "flux": 2.84482,
+      "destinations": {
+        "co2": 0.837073,
+        "ch4": 0.162927,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 1.9274e-05
+      },
+      "origines": {
+        "sci": 2.84482
+      },
+      "filieres_possibles": [
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695563": {
+      "nom": "Site 3 Stockage Landfilled MSW Sawnwood",
+      "nom_affiche_fr": "Site 3 Stockage, enfouissement municipal Sciage",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.918537,
+        "ch4": 0.0814635,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 9.637e-06
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695567": {
+      "nom": "CH4 produced Landfilled MSW Sawnwood",
+      "nom_affiche_fr": "CH4 produit, enfouissement municipal Sciage",
+      "flux": 1.42241,
+      "destinations": {
+        "co2": 0.674146,
+        "ch4": 0.325854,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 3.8548e-05
+      },
+      "origines": {
+        "sci": 1.42241
+      },
+      "filieres_possibles": [
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695568": {
+      "nom": "CH4 to energy Landfilled MSW Sawnwood",
+      "nom_affiche_fr": "CH4 valorisé en énergie, enfouissement municipal Sciage",
+      "flux": 0.332844,
+      "destinations": {
+        "co2": 0.99994,
+        "ch4": 6e-05,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 7e-05
+      },
+      "origines": {
+        "sci": 0.332844
+      },
+      "filieres_possibles": [
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695569": {
+      "nom": "CH4 to atmosphere Landfilled MSW Sawnwood",
+      "nom_affiche_fr": "CH4 non capté, enfouissement municipal Sciage",
+      "flux": 0.514913,
+      "destinations": {
+        "co2": 0.1,
+        "ch4": 0.9,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 0.0
+      },
+      "origines": {
+        "sci": 0.514913
+      },
+      "filieres_possibles": [
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695570": {
+      "nom": "CH4 flared Landfilled MSW Sawnwood",
+      "nom_affiche_fr": "CH4 brûlé à la torchère, enfouissement municipal Sciage",
+      "flux": 0.271681,
+      "destinations": {
+        "co2": 0.999858,
+        "ch4": 0.000142,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 3.8e-05
+      },
+      "origines": {
+        "sci": 0.271681
+      },
+      "filieres_possibles": [
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695572": {
+      "nom": "Degradable Landfilled MSW Sawnwood",
+      "nom_affiche_fr": "Fraction dégradable, enfouissement municipal Sciage",
+      "flux": 2.84482,
+      "destinations": {
+        "co2": 0.837073,
+        "ch4": 0.162927,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 1.9274e-05
+      },
+      "origines": {
+        "sci": 2.84482
+      },
+      "filieres_possibles": [
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695575": {
+      "nom": "Landfilled industrial Sawnwood",
+      "nom_affiche_fr": "Enfouissement industriel Sciage",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.0775,
+        "ch4": 0.0225,
+        "ash": 0.0,
+        "stock": 0.9,
+        "n2o": 0.0
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695576": {
+      "nom": "Bioenergy feedstock Sawnwood",
+      "nom_affiche_fr": "Bioénergie Sciage",
+      "flux": 14.1174,
+      "destinations": {
+        "co2": 0.993895,
+        "ch4": 0.000855485,
+        "ash": 0.00525,
+        "stock": 0.0,
+        "n2o": 0.000149213
+      },
+      "origines": {
+        "sci": 14.1174
+      },
+      "filieres_possibles": [
+        "sci"
+      ],
+      "etape": "prod"
+    },
+    "3458764601963695578": {
+      "nom": "Non degradable Landfilled industrial Sawnwood",
+      "nom_affiche_fr": "Fraction non dégradable, enfouissement industriel Sciage",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.0,
+        "ch4": 0.0,
+        "ash": 0.0,
+        "stock": 1.0,
+        "n2o": 0.0
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695579": {
+      "nom": "Degradable Landfilled industrial Sawnwood",
+      "nom_affiche_fr": "Fraction dégradable, enfouissement industriel Sciage",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.775,
+        "ch4": 0.225,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 0.0
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695582": {
+      "nom": "Site 1 Stockage Landfilled industrial Sawnwood",
+      "nom_affiche_fr": "Site 1 Stockage, enfouissement industriel Sciage",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.775,
+        "ch4": 0.225,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 0.0
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695583": {
+      "nom": "Site 2 Stockage Landfilled industrial Sawnwood",
+      "nom_affiche_fr": "Site 2 Stockage, enfouissement industriel Sciage",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.55,
+        "ch4": 0.45,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 0.0
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695584": {
+      "nom": "Site 3 Stockage Landfilled industrial Sawnwood",
+      "nom_affiche_fr": "Site 3 Stockage, enfouissement industriel Sciage",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.775,
+        "ch4": 0.225,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 0.0
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695587": {
+      "nom": "CH4 produced Landfilled industrial Sawnwood",
+      "nom_affiche_fr": "CH4 produit, enfouissement industriel Sciage",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.1,
+        "ch4": 0.9,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 0.0
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695589": {
+      "nom": "Unused Sawnwood biomass",
+      "nom_affiche_fr": "Biomasse résiduelle Sciage",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.0775,
+        "ch4": 0.0225,
+        "ash": 0.0,
+        "stock": 0.9,
+        "n2o": 0.0
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "sci"
+      ],
+      "etape": "prod"
+    },
+    "3458764601963695593": {
+      "nom": "Site 1 Stockage Landfilled MSW Panels",
+      "nom_affiche_fr": "Site 1 Stockage, enfouissement municipal Panneaux",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.918537,
+        "ch4": 0.0814635,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 9.637e-06
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "aut",
+        "pan",
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695594": {
+      "nom": "Site 2 A Landfilled MSW Panels",
+      "nom_affiche_fr": "Site 2 Stockage, enfouissement municipal Panneaux",
+      "flux": 0.675455,
+      "destinations": {
+        "co2": 0.837073,
+        "ch4": 0.162927,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 1.9274e-05
+      },
+      "origines": {
+        "sci": 0.675455
+      },
+      "filieres_possibles": [
+        "aut",
+        "pan",
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695595": {
+      "nom": "Site 3 Stockage Landfilled MSW Panels",
+      "nom_affiche_fr": "Site 3 Stockage, enfouissement municipal Panneaux",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.918537,
+        "ch4": 0.0814635,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 9.637e-06
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "aut",
+        "pan",
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695596": {
+      "nom": "CH4 produced Landfilled MSW Panels",
+      "nom_affiche_fr": "CH4 produit, enfouissement municipal Panneaux",
+      "flux": 0.337728,
+      "destinations": {
+        "co2": 0.674146,
+        "ch4": 0.325854,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 3.8548e-05
+      },
+      "origines": {
+        "sci": 0.337728
+      },
+      "filieres_possibles": [
+        "aut",
+        "pan",
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695597": {
+      "nom": "CH4 to energy Landfilled MSW Panels",
+      "nom_affiche_fr": "CH4 valorisé en énergie, enfouissement municipal Panneaux",
+      "flux": 0.0790283,
+      "destinations": {
+        "co2": 0.99994,
+        "ch4": 6e-05,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 7e-05
+      },
+      "origines": {
+        "sci": 0.0790283
+      },
+      "filieres_possibles": [
+        "aut",
+        "pan",
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695598": {
+      "nom": "CH4 to atmosphere Landfilled MSW Panels",
+      "nom_affiche_fr": "CH4 non capté, enfouissement municipal Panneaux",
+      "flux": 0.122257,
+      "destinations": {
+        "co2": 0.1,
+        "ch4": 0.9,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 0.0
+      },
+      "origines": {
+        "sci": 0.122257
+      },
+      "filieres_possibles": [
+        "aut",
+        "pan",
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695599": {
+      "nom": "CH4 flared Landfilled MSW Panels",
+      "nom_affiche_fr": "CH4 brûlé à la torchère, enfouissement municipal Panneaux",
+      "flux": 0.064506,
+      "destinations": {
+        "co2": 0.999858,
+        "ch4": 0.000142,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 3.8e-05
+      },
+      "origines": {
+        "sci": 0.064506
+      },
+      "filieres_possibles": [
+        "aut",
+        "pan",
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695600": {
+      "nom": "Landfilled industrial Panels",
+      "nom_affiche_fr": "Enfouissement industriel Panneaux",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.0775,
+        "ch4": 0.0225,
+        "ash": 0.0,
+        "stock": 0.9,
+        "n2o": 0.0
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "aut",
+        "pan",
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695601": {
+      "nom": "Bioenergy feedstock Panels",
+      "nom_affiche_fr": "Bioénergie Panneaux",
+      "flux": 0.276255,
+      "destinations": {
+        "co2": 0.993895,
+        "ch4": 0.000855485,
+        "ash": 0.00525,
+        "stock": 0.0,
+        "n2o": 0.000149213
+      },
+      "origines": {
+        "sci": 0.276255
+      },
+      "filieres_possibles": [
+        "aut",
+        "pan",
+        "sci"
+      ],
+      "etape": "prod"
+    },
+    "3458764601963695603": {
+      "nom": "Non-degradable Landfilled industrial Panels",
+      "nom_affiche_fr": "Fraction non dégradable, enfouissement industriel Panneaux",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.0,
+        "ch4": 0.0,
+        "ash": 0.0,
+        "stock": 1.0,
+        "n2o": 0.0
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "aut",
+        "pan",
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695604": {
+      "nom": "Degradable Landfilled industrial Panels",
+      "nom_affiche_fr": "Fraction dégradable, enfouissement industriel Panneaux",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.775,
+        "ch4": 0.225,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 0.0
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "aut",
+        "pan",
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695607": {
+      "nom": "Site 1 Stockage Landfilled industrial Panels",
+      "nom_affiche_fr": "Site 1 Stockage, enfouissement industriel Panneaux",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.775,
+        "ch4": 0.225,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 0.0
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "aut",
+        "pan",
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695608": {
+      "nom": "Site 2 Stockage Landfilled industrial Panels",
+      "nom_affiche_fr": "Site 2 Stockage, enfouissement industriel Panneaux",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.55,
+        "ch4": 0.45,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 0.0
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "aut",
+        "pan",
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695609": {
+      "nom": "Site 3 Stockage Landfilled industrial Panels",
+      "nom_affiche_fr": "Site 3 Stockage, enfouissement industriel Panneaux",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.775,
+        "ch4": 0.225,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 0.0
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "aut",
+        "pan",
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695612": {
+      "nom": "CH4 produced Landfilled industrial Panels",
+      "nom_affiche_fr": "CH4 produit, enfouissement industriel Panneaux",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.1,
+        "ch4": 0.9,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 0.0
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "aut",
+        "pan",
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695613": {
+      "nom": "CH4 to energy Landfilled industrial Panels",
+      "nom_affiche_fr": "CH4 valorisé en énergie, enfouissement industriel Panneaux",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.99994,
+        "ch4": 6e-05,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 7e-05
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "aut",
+        "pan",
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695614": {
+      "nom": "CH4 to atmosphere Landfilled industrial Panels",
+      "nom_affiche_fr": "CH4 non capté, enfouissement industriel Panneaux",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.1,
+        "ch4": 0.9,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 0.0
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "aut",
+        "pan",
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695615": {
+      "nom": "CH4 flared Landfilled industrial Panels",
+      "nom_affiche_fr": "CH4 brûlé à la torchère, enfouissement industriel Panneaux",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.999858,
+        "ch4": 0.000142,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 3.8e-05
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "aut",
+        "pan",
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695617": {
+      "nom": "Poteaux storage",
+      "nom_affiche_fr": "Stock poteaux",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.257384,
+        "ch4": 0.0146066,
+        "ash": 0.00100917,
+        "stock": 0.727,
+        "n2o": 3.02389e-05
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "aut"
+      ],
+      "etape": "prod"
+    },
+    "3458764601963695620": {
+      "nom": "Landfilled industrial Otherwood",
+      "nom_affiche_fr": "Enfouissement industriel Autre",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.0775,
+        "ch4": 0.0225,
+        "ash": 0.0,
+        "stock": 0.9,
+        "n2o": 0.0
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "aut"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695621": {
+      "nom": "Bioenergy feedstock Otherwood",
+      "nom_affiche_fr": "Bioénergie Autre",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.993895,
+        "ch4": 0.000855485,
+        "ash": 0.00525,
+        "stock": 0.0,
+        "n2o": 0.000149213
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "aut"
+      ],
+      "etape": "prod"
+    },
+    "3458764601963695623": {
+      "nom": "Non degradable Landfilled industrial Otherwood",
+      "nom_affiche_fr": "Fraction non dégradable, enfouissement industriel Autre",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.0,
+        "ch4": 0.0,
+        "ash": 0.0,
+        "stock": 1.0,
+        "n2o": 0.0
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "aut"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695624": {
+      "nom": "Degradable Landfilled industrial Otherwood",
+      "nom_affiche_fr": "Fraction dégradable, enfouissement industriel Autre",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.775,
+        "ch4": 0.225,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 0.0
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "aut"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695627": {
+      "nom": "Site 1 Stockage industrial Otherwood",
+      "nom_affiche_fr": "Site 1 Stockage, enfouissement industriel Autre",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.775,
+        "ch4": 0.225,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 0.0
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "aut"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695628": {
+      "nom": "Site 2 Stockage industrial Otherwood",
+      "nom_affiche_fr": "Site 2 Stockage, enfouissement industriel Autre",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.55,
+        "ch4": 0.45,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 0.0
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "aut"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695629": {
+      "nom": "Site 3 Stockage industrial Otherwood",
+      "nom_affiche_fr": "Site 3 Stockage, enfouissement industriel Autre",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.775,
+        "ch4": 0.225,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 0.0
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "aut"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695632": {
+      "nom": "CH4 produced Landfilled industrial Otherwood",
+      "nom_affiche_fr": "CH4 produit, enfouissement industriel Autre",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.1,
+        "ch4": 0.9,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 0.0
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "aut"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695633": {
+      "nom": "CH4 to energy Landfilled industrial Otherwood",
+      "nom_affiche_fr": "CH4 valorisé en énergie, enfouissement industriel Autre",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.99994,
+        "ch4": 6e-05,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 7e-05
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "aut"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695634": {
+      "nom": "CH4 to atmosphere Landfilled industrial Otherwood",
+      "nom_affiche_fr": "CH4 non capté, enfouissement industriel Autre",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.1,
+        "ch4": 0.9,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 0.0
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "aut"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695635": {
+      "nom": "CH4 flared Landfilled industrial Otherwood",
+      "nom_affiche_fr": "CH4 brûlé à la torchère, enfouissement industriel Autre",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.999858,
+        "ch4": 0.000142,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 3.8e-05
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "aut"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695639": {
+      "nom": "Landfilled MSW Otherwood",
+      "nom_affiche_fr": "Enfouissement municipal Autre",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.0837073,
+        "ch4": 0.0162927,
+        "ash": 0.0,
+        "stock": 0.9,
+        "n2o": 1.9274e-06
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "aut"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695641": {
+      "nom": "Non degradable Landfilled MSW Otherwood",
+      "nom_affiche_fr": "Fraction non dégradable, enfouissement municipal Autre",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.0,
+        "ch4": 0.0,
+        "ash": 0.0,
+        "stock": 1.0,
+        "n2o": 0.0
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "aut"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695642": {
+      "nom": "Site 1 Stockage Landfilled MSW Otherwood",
+      "nom_affiche_fr": "Site 1 Stockage, enfouissement municipal Autre",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.918537,
+        "ch4": 0.0814635,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 9.637e-06
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "aut"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695643": {
+      "nom": "Site 2 Stockage Landfilled MSW Otherwood",
+      "nom_affiche_fr": "Site 2 Stockage, enfouissement municipal Autre",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.837073,
+        "ch4": 0.162927,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 1.9274e-05
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "aut"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695644": {
+      "nom": "Site 3 Stockage Landfilled MSW Otherwood",
+      "nom_affiche_fr": "Site 3 Stockage, enfouissement municipal Autre",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.918537,
+        "ch4": 0.0814635,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 9.637e-06
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "aut"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695645": {
+      "nom": "CH4 produced Landfilled MSW Otherwood",
+      "nom_affiche_fr": "CH4 produit, enfouissement municipal Autre",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.674146,
+        "ch4": 0.325854,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 3.8548e-05
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "aut"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695646": {
+      "nom": "CH4 to energy Landfilled MSW Otherwood",
+      "nom_affiche_fr": "CH4 valorisé en énergie, enfouissement municipal Autre",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.99994,
+        "ch4": 6e-05,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 7e-05
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "aut"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695647": {
+      "nom": "CH4 to atmosphere Landfilled MSW Otherwood",
+      "nom_affiche_fr": "CH4 non capté, enfouissement municipal Autre",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.1,
+        "ch4": 0.9,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 0.0
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "aut"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695648": {
+      "nom": "CH4 flared Landfilled MSW Otherwood",
+      "nom_affiche_fr": "CH4 brûlé à la torchère, enfouissement municipal Autre",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.999858,
+        "ch4": 0.000142,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 3.8e-05
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "aut"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695649": {
+      "nom": "Degradable Landfilled MSW Otherwood",
+      "nom_affiche_fr": "Fraction dégradable, enfouissement municipal Autre",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.837073,
+        "ch4": 0.162927,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 1.9274e-05
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "aut"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695656": {
+      "nom": "CH4 to energy Landfilled industrial sawnwood",
+      "nom_affiche_fr": "CH4 valorisé en énergie, enfouissement industriel Sciage",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.99994,
+        "ch4": 6e-05,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 7e-05
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695657": {
+      "nom": "CH4 to atmosphere Landfilled industrial sawnwood",
+      "nom_affiche_fr": "CH4 non capté, enfouissement industriel Sciage",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.1,
+        "ch4": 0.9,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 0.0
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695658": {
+      "nom": "CH4 flared Landfilled industrial sawnwood",
+      "nom_affiche_fr": "CH4 brûlé à la torchère, enfouissement industriel Sciage",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.999858,
+        "ch4": 0.000142,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 3.8e-05
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695659": {
+      "nom": "Site 2 Stockage Landfilled industrial P&P",
+      "nom_affiche_fr": "Site 2 Stockage, enfouissement industriel P&P",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.55,
+        "ch4": 0.45,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 0.0
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "pp",
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695680": {
+      "nom": "Treatment/Disposal centre Otherwood",
+      "nom_affiche_fr": "Treatment/Disposal centre Otherwood",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.4114,
+        "ch4": 0.0131113,
+        "ash": 0.00190409,
+        "stock": 0.573585,
+        "n2o": 5.53453e-05
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "aut"
+      ],
+      "etape": "recy"
+    },
+    "3458764601963695689": {
+      "nom": "N2O emissions",
+      "nom_affiche_fr": "Émissions de N2O",
+      "flux": 0.00701992,
+      "destinations": {
+        "co2": 0.0,
+        "ch4": 0.0,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 1.0
+      },
+      "origines": {
+        "pp": 7.74709e-05,
+        "sci": 0.00694245
+      },
+      "filieres_possibles": [],
+      "etape": "atm"
+    },
+    "3458764601963695692": {
+      "nom": "Bio-CH4 Unused P&P",
+      "nom_affiche_fr": "Biométhanisation, biomasse résiduelle P&P",
+      "flux": 0.176795,
+      "destinations": {
+        "co2": 0.978941,
+        "ch4": 0.0210587,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 6.853e-05
+      },
+      "origines": {
+        "pp": 0.00466912,
+        "sci": 0.172126
+      },
+      "filieres_possibles": [
+        "pp",
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695693": {
+      "nom": "Land application",
+      "nom_affiche_fr": "Épandage",
+      "flux": 4.65389,
+      "destinations": {
+        "co2": 1.0,
+        "ch4": 0.0,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 0.000342632
+      },
+      "origines": {
+        "pp": 0.122908,
+        "sci": 4.53098
+      },
+      "filieres_possibles": [
+        "pp",
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695755": {
+      "nom": "CH4 oxydation Landfilled industrial P&P",
+      "nom_affiche_fr": "Oxydation du CH4, enfouissement industriel P&P",
+      "flux": 0.00991703,
+      "destinations": {
+        "co2": 1.0,
+        "ch4": 0.0,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 0.0
+      },
+      "origines": {
+        "pp": 0.000261906,
+        "sci": 0.00965512
+      },
+      "filieres_possibles": [
+        "pp",
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695761": {
+      "nom": "CH4 fugitive to atmosphere Landfilled industrial P&P",
+      "nom_affiche_fr": "CH4 fugitif vers l'atmosphère, enfouissement industriel P&P",
+      "flux": 0.0892533,
+      "destinations": {
+        "co2": 0.0,
+        "ch4": 1.0,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 0.0
+      },
+      "origines": {
+        "pp": 0.00235716,
+        "sci": 0.0868961
+      },
+      "filieres_possibles": [
+        "pp",
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695766": {
+      "nom": "CH4 oxydation Landfilled MSW P&P",
+      "nom_affiche_fr": "Oxydation du CH4, enfouissement municipal P&P",
+      "flux": 0.219846,
+      "destinations": {
+        "co2": 1.0,
+        "ch4": 0.0,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 0.0
+      },
+      "origines": {
+        "pp": 0.00580607,
+        "sci": 0.21404
+      },
+      "filieres_possibles": [
+        "pp",
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695770": {
+      "nom": "CH4 fugitive to atmosphere Landfilled MSW P&P",
+      "nom_affiche_fr": "CH4 fugitif vers l'atmosphère, enfouissement municipal P&P",
+      "flux": 1.97861,
+      "destinations": {
+        "co2": 0.0,
+        "ch4": 1.0,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 0.0
+      },
+      "origines": {
+        "pp": 0.0522546,
+        "sci": 1.92636
+      },
+      "filieres_possibles": [
+        "pp",
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695772": {
+      "nom": "CH4 oxydation Landfilled MSW Sawnwood",
+      "nom_affiche_fr": "Oxydation du CH4, enfouissement municipal Sciage",
+      "flux": 0.0514913,
+      "destinations": {
+        "co2": 1.0,
+        "ch4": 0.0,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 0.0
+      },
+      "origines": {
+        "sci": 0.0514913
+      },
+      "filieres_possibles": [
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695776": {
+      "nom": "CH4 fugitive to atmosphere Landfilled MSW Sawnwood",
+      "nom_affiche_fr": "CH4 fugitif vers l'atmosphère, enfouissement municipal Sciage",
+      "flux": 0.463422,
+      "destinations": {
+        "co2": 0.0,
+        "ch4": 1.0,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 0.0
+      },
+      "origines": {
+        "sci": 0.463422
+      },
+      "filieres_possibles": [
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695778": {
+      "nom": "CH4 oxydation Landfilled industrial sawnwood",
+      "nom_affiche_fr": "Oxydation du CH4, enfouissement industriel Sciage",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 1.0,
+        "ch4": 0.0,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 0.0
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695782": {
+      "nom": "CH4 fugitive to atmosphere Landfilled industrial sawnwood",
+      "nom_affiche_fr": "CH4 fugitif vers l'atmosphère, enfouissement industriel Sciage",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.0,
+        "ch4": 1.0,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 0.0
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695784": {
+      "nom": "CH4 oxydation Landfilled MSW Panels",
+      "nom_affiche_fr": "Oxydation du CH4, enfouissement municipal Panneaux",
+      "flux": 0.0122257,
+      "destinations": {
+        "co2": 1.0,
+        "ch4": 0.0,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 0.0
+      },
+      "origines": {
+        "sci": 0.0122257
+      },
+      "filieres_possibles": [
+        "aut",
+        "pan",
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695788": {
+      "nom": "CH4 fugitive to atmosphere Landfilled MSW Panels",
+      "nom_affiche_fr": "CH4 fugitif vers l'atmosphère, enfouissement municipal Panneaux",
+      "flux": 0.110032,
+      "destinations": {
+        "co2": 0.0,
+        "ch4": 1.0,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 0.0
+      },
+      "origines": {
+        "sci": 0.110032
+      },
+      "filieres_possibles": [
+        "aut",
+        "pan",
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695791": {
+      "nom": "CH4 oxydation Landfilled industrial Panels",
+      "nom_affiche_fr": "Oxydation du CH4, enfouissement industriel Panneaux",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 1.0,
+        "ch4": 0.0,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 0.0
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "aut",
+        "pan",
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695795": {
+      "nom": "CH4 fugitive to atmosphere Landfilled industrial Panels",
+      "nom_affiche_fr": "CH4 fugitif vers l'atmosphère, enfouissement industriel Panneaux",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.0,
+        "ch4": 1.0,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 0.0
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "aut",
+        "pan",
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695797": {
+      "nom": "CH4 oxydation Landfilled MSW Otherwood",
+      "nom_affiche_fr": "Oxydation du CH4, enfouissement municipal Autre",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 1.0,
+        "ch4": 0.0,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 0.0
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "aut"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695801": {
+      "nom": "CH4 fugitive to atmosphere Landfilled MSW Otherwood",
+      "nom_affiche_fr": "CH4 fugitif vers l'atmosphère, enfouissement municipal Autre",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.0,
+        "ch4": 1.0,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 0.0
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "aut"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695803": {
+      "nom": "CH4 oxydation Landfilled industrial Otherwood",
+      "nom_affiche_fr": "Oxydation du CH4, enfouissement industriel Autre",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 1.0,
+        "ch4": 0.0,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 0.0
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "aut"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695807": {
+      "nom": "CH4 fugitive to atmosphere Landfilled industrial Otherwood",
+      "nom_affiche_fr": "CH4 fugitif vers l'atmosphère, enfouissement industriel Autre",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.0,
+        "ch4": 1.0,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 0.0
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "aut"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695883": {
+      "nom": "Biomethanisation combustion",
+      "nom_affiche_fr": "Combustion du biométhane",
+      "flux": 0.173083,
+      "destinations": {
+        "co2": 0.99994,
+        "ch4": 6e-05,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 7e-05
+      },
+      "origines": {
+        "pp": 0.00457107,
+        "sci": 0.168512
+      },
+      "filieres_possibles": [
+        "pp",
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963695893": {
+      "nom": "Residential",
+      "nom_affiche_fr": "Bioénergie résidentielle",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.98344,
+        "ch4": 0.0113103,
+        "ash": 0.00525,
+        "stock": 0.0,
+        "n2o": 0.000298425
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "bio",
+        "sci"
+      ],
+      "etape": "prod"
+    },
+    "3458764601963695894": {
+      "nom": "Non Residential",
+      "nom_affiche_fr": "Bioénergie non résidentielle",
+      "flux": 4.25363,
+      "destinations": {
+        "co2": 0.987155,
+        "ch4": 0.00759492,
+        "ash": 0.00525,
+        "stock": 0.0,
+        "n2o": 0.000149213
+      },
+      "origines": {
+        "sci": 4.25363
+      },
+      "filieres_possibles": [
+        "bio",
+        "sci"
+      ],
+      "etape": "prod"
+    },
+    "3458764601963695895": {
+      "nom": "Institutional heat",
+      "nom_affiche_fr": "Chauffage institutionnel",
+      "flux": 4.25363,
+      "destinations": {
+        "co2": 0.987155,
+        "ch4": 0.00759492,
+        "ash": 0.00525,
+        "stock": 0.0,
+        "n2o": 0.000149213
+      },
+      "origines": {
+        "sci": 4.25363
+      },
+      "filieres_possibles": [
+        "bio",
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963774967": {
+      "nom": "Ash",
+      "nom_affiche_fr": "Cendres",
+      "flux": 0.171767,
+      "destinations": {
+        "co2": 0.0,
+        "ch4": 0.0,
+        "ash": 1.0,
+        "stock": 0.0,
+        "n2o": 0.0
+      },
+      "origines": {
+        "pp": 0.00080213,
+        "sci": 0.170965
+      },
+      "filieres_possibles": [],
+      "etape": "atm"
+    },
+    "3458764601963774969": {
+      "nom": "Solid bioenergy feedstock gaz fraction",
+      "nom_affiche_fr": "Bioénergie solide, fraction gazeuse",
+      "flux": 20.073,
+      "destinations": {
+        "co2": 0.99914,
+        "ch4": 0.00086,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 0.00015
+      },
+      "origines": {
+        "pp": 0.151985,
+        "sci": 19.921
+      },
+      "filieres_possibles": [
+        "aut",
+        "pan",
+        "pp",
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963774974": {
+      "nom": "Solid wood retired incineration gaz fraction",
+      "nom_affiche_fr": "Bois massif en fin de vie, incinération, fraction gazeuse",
+      "flux": 8.24159,
+      "destinations": {
+        "co2": 0.992365,
+        "ch4": 0.007635,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 0.00015
+      },
+      "origines": {
+        "sci": 8.24159
+      },
+      "filieres_possibles": [
+        "aut",
+        "pan",
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963774996": {
+      "nom": "Residential Bioenergy furnace incineration gaz fraction",
+      "nom_affiche_fr": "Bioénergie résidentielle, fournaise, fraction gazeuse",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.98863,
+        "ch4": 0.01137,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 0.0003
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "bio",
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963774998": {
+      "nom": "Residential Bioenergy advanced incineration gaz fraction",
+      "nom_affiche_fr": "Bioénergie résidentielle, appareil à haut rendement, fraction gazeuse",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.98863,
+        "ch4": 0.01137,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 0.0003
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "bio",
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963775009": {
+      "nom": "Quebec Treatment/Disposal centre P&P",
+      "nom_affiche_fr": "Quebec Treatment/Disposal centre P&P",
+      "flux": 31.7396,
+      "destinations": {
+        "co2": 0.561735,
+        "ch4": 0.0549113,
+        "ash": 0.00080213,
+        "stock": 0.382551,
+        "n2o": 7.74708e-05
+      },
+      "origines": {
+        "pp": 0.838235,
+        "sci": 30.9014
+      },
+      "filieres_possibles": [
+        "pp",
+        "sci"
+      ],
+      "etape": "recy"
+    },
+    "3458764601963775012": {
+      "nom": "P&P Recycled biomass",
+      "nom_affiche_fr": "Biomasse recyclée P&P",
+      "flux": 31.7396,
+      "destinations": {
+        "co2": 0.561735,
+        "ch4": 0.0549113,
+        "ash": 0.00080213,
+        "stock": 0.382551,
+        "n2o": 7.74708e-05
+      },
+      "origines": {
+        "pp": 0.838235,
+        "sci": 30.9014
+      },
+      "filieres_possibles": [
+        "pp",
+        "sci"
+      ],
+      "etape": "recy"
+    },
+    "3458764601963775015": {
+      "nom": "Sawnwood for recycling",
+      "nom_affiche_fr": "Sawnwood for recycling",
+      "flux": 9.17176,
+      "destinations": {
+        "co2": 0.796083,
+        "ch4": 0.00937668,
+        "ash": 0.00413933,
+        "stock": 0.190401,
+        "n2o": 0.000118053
+      },
+      "origines": {
+        "sci": 9.17176
+      },
+      "filieres_possibles": [
+        "sci"
+      ],
+      "etape": "recy"
+    },
+    "3458764601963775020": {
+      "nom": "Sawnwood Recycled biomass",
+      "nom_affiche_fr": "Sawnwood Recycled biomass",
+      "flux": 2.47637,
+      "destinations": {
+        "co2": 0.27948,
+        "ch4": 0.014194,
+        "ash": 0.00113639,
+        "stock": 0.70519,
+        "n2o": 3.38081e-05
+      },
+      "origines": {
+        "sci": 2.47637
+      },
+      "filieres_possibles": [
+        "sci"
+      ],
+      "etape": "recy"
+    },
+    "3458764601963775024": {
+      "nom": "Landfilled MSW Panels",
+      "nom_affiche_fr": "Enfouissement municipal Panneaux",
+      "flux": 6.75455,
+      "destinations": {
+        "co2": 0.0837073,
+        "ch4": 0.0162927,
+        "ash": 0.0,
+        "stock": 0.9,
+        "n2o": 1.9274e-06
+      },
+      "origines": {
+        "sci": 6.75455
+      },
+      "filieres_possibles": [
+        "aut",
+        "pan",
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963775025": {
+      "nom": "Treatment/Disposal centre Panels",
+      "nom_affiche_fr": "Treatment/Disposal centre Panels",
+      "flux": 4.73408,
+      "destinations": {
+        "co2": 0.4114,
+        "ch4": 0.0131113,
+        "ash": 0.00190409,
+        "stock": 0.573585,
+        "n2o": 5.53453e-05
+      },
+      "origines": {
+        "sci": 4.73408
+      },
+      "filieres_possibles": [
+        "aut",
+        "pan",
+        "sci"
+      ],
+      "etape": "recy"
+    },
+    "3458764601963775027": {
+      "nom": "Non degradable Landfilled MSW Panels",
+      "nom_affiche_fr": "Fraction non dégradable, enfouissement municipal Panneaux",
+      "flux": 6.0791,
+      "destinations": {
+        "co2": 0.0,
+        "ch4": 0.0,
+        "ash": 0.0,
+        "stock": 1.0,
+        "n2o": 0.0
+      },
+      "origines": {
+        "sci": 6.0791
+      },
+      "filieres_possibles": [
+        "aut",
+        "pan",
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963775028": {
+      "nom": "Degradable Landfilled MSW Panels",
+      "nom_affiche_fr": "Fraction dégradable, enfouissement municipal Panneaux",
+      "flux": 0.675455,
+      "destinations": {
+        "co2": 0.837073,
+        "ch4": 0.162927,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 1.9274e-05
+      },
+      "origines": {
+        "sci": 0.675455
+      },
+      "filieres_possibles": [
+        "aut",
+        "pan",
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963775030": {
+      "nom": "Panels for recycling",
+      "nom_affiche_fr": "Panels for recycling",
+      "flux": 2.17768,
+      "destinations": {
+        "co2": 0.796083,
+        "ch4": 0.00937668,
+        "ash": 0.00413933,
+        "stock": 0.190401,
+        "n2o": 0.000118053
+      },
+      "origines": {
+        "sci": 2.17768
+      },
+      "filieres_possibles": [
+        "aut",
+        "pan",
+        "sci"
+      ],
+      "etape": "recy"
+    },
+    "3458764601963775032": {
+      "nom": "Panels Recycled biomass",
+      "nom_affiche_fr": "Panels Recycled biomass",
+      "flux": 0.587973,
+      "destinations": {
+        "co2": 0.27948,
+        "ch4": 0.014194,
+        "ash": 0.00113639,
+        "stock": 0.70519,
+        "n2o": 3.38081e-05
+      },
+      "origines": {
+        "sci": 0.587973
+      },
+      "filieres_possibles": [
+        "aut",
+        "pan",
+        "sci"
+      ],
+      "etape": "recy"
+    },
+    "3458764601963775036": {
+      "nom": "Recycling Coproducts end-use",
+      "nom_affiche_fr": "Valorisation des coproduits Sciage",
+      "flux": 47.2626,
+      "destinations": {
+        "co2": 0.56333,
+        "ch4": 0.0453596,
+        "ash": 0.00124589,
+        "stock": 0.390065,
+        "n2o": 7.82514e-05
+      },
+      "origines": {
+        "sci": 47.2626
+      },
+      "filieres_possibles": [
+        "sci"
+      ],
+      "etape": "prod"
+    },
+    "3458764601963775930": {
+      "nom": "Coproducts recycled to P&P",
+      "nom_affiche_fr": "Coproduits recyclés en P&P",
+      "flux": 36.8648,
+      "destinations": {
+        "co2": 0.561735,
+        "ch4": 0.0549113,
+        "ash": 0.00080213,
+        "stock": 0.382551,
+        "n2o": 7.74708e-05
+      },
+      "origines": {
+        "sci": 36.8648
+      },
+      "filieres_possibles": [
+        "sci"
+      ],
+      "etape": "prod"
+    },
+    "3458764601963775949": {
+      "nom": "Coproducts recycled to Panels",
+      "nom_affiche_fr": "Coproduits recyclés en Panneaux",
+      "flux": 6.14414,
+      "destinations": {
+        "co2": 0.27948,
+        "ch4": 0.014194,
+        "ash": 0.00113639,
+        "stock": 0.70519,
+        "n2o": 3.38081e-05
+      },
+      "origines": {
+        "sci": 6.14414
+      },
+      "filieres_possibles": [
+        "sci"
+      ],
+      "etape": "prod"
+    },
+    "3458764601963776078": {
+      "nom": "Coproducts Otherwood produced",
+      "nom_affiche_fr": "Coproduits Autre générés",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.993895,
+        "ch4": 0.000855485,
+        "ash": 0.00525,
+        "stock": 0.0,
+        "n2o": 0.000149213
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "aut"
+      ],
+      "etape": "prod"
+    },
+    "3458764601963776089": {
+      "nom": "Otherwood for recycling",
+      "nom_affiche_fr": "Otherwood for recycling",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.796083,
+        "ch4": 0.00937668,
+        "ash": 0.00413933,
+        "stock": 0.190401,
+        "n2o": 0.000118053
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "aut"
+      ],
+      "etape": "recy"
+    },
+    "3458764601963776094": {
+      "nom": "Otherwood Recycled biomass",
+      "nom_affiche_fr": "Otherwood Recycled biomass",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.27948,
+        "ch4": 0.014194,
+        "ash": 0.00113639,
+        "stock": 0.70519,
+        "n2o": 3.38081e-05
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "aut"
+      ],
+      "etape": "recy"
+    },
+    "3458764601963776105": {
+      "nom": "Otherwood Habitation bois rond produced",
+      "nom_affiche_fr": "Autre, habitations en bois rond produites",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.257384,
+        "ch4": 0.0146066,
+        "ash": 0.00100917,
+        "stock": 0.727,
+        "n2o": 3.02389e-05
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "aut"
+      ],
+      "etape": "prod"
+    },
+    "3458764601963776106": {
+      "nom": "Otherwood litiere et paillis produced",
+      "nom_affiche_fr": "Autre, litière et paillis produits",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.0775,
+        "ch4": 0.0225,
+        "ash": 0.0,
+        "stock": 0.9,
+        "n2o": 0.0
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "aut"
+      ],
+      "etape": "prod"
+    },
+    "3458764601963776121": {
+      "nom": "Otherwood storage",
+      "nom_affiche_fr": "Stock habitations en bois rond",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.257384,
+        "ch4": 0.0146066,
+        "ash": 0.00100917,
+        "stock": 0.727,
+        "n2o": 3.02389e-05
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "aut"
+      ],
+      "etape": "prod"
+    },
+    "3458764601963776125": {
+      "nom": "Litiere storage",
+      "nom_affiche_fr": "Stock litière et paillis",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.0775,
+        "ch4": 0.0225,
+        "ash": 0.0,
+        "stock": 0.9,
+        "n2o": 0.0
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "aut"
+      ],
+      "etape": "prod"
+    },
+    "3458764601963776135": {
+      "nom": "Solid wood retired Otherwood incineration",
+      "nom_affiche_fr": "Solid wood retired Otherwood incineration",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.987155,
+        "ch4": 0.00759492,
+        "ash": 0.00525,
+        "stock": 0.0,
+        "n2o": 0.000149213
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "aut"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963776140": {
+      "nom": "Solid wood retired Panels incineration",
+      "nom_affiche_fr": "Solid wood retired Panels incineration",
+      "flux": 1.5897,
+      "destinations": {
+        "co2": 0.987155,
+        "ch4": 0.00759492,
+        "ash": 0.00525,
+        "stock": 0.0,
+        "n2o": 0.000149213
+      },
+      "origines": {
+        "sci": 1.5897
+      },
+      "filieres_possibles": [
+        "aut",
+        "pan",
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963776145": {
+      "nom": "Solid wood retired Sawnwood incineration",
+      "nom_affiche_fr": "Solid wood retired Sawnwood incineration",
+      "flux": 6.69538,
+      "destinations": {
+        "co2": 0.987155,
+        "ch4": 0.00759492,
+        "ash": 0.00525,
+        "stock": 0.0,
+        "n2o": 0.000149213
+      },
+      "origines": {
+        "sci": 6.69538
+      },
+      "filieres_possibles": [
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963776153": {
+      "nom": "Coproducts recycled to Bioenergy",
+      "nom_affiche_fr": "Coproduits valorisés en bioénergie",
+      "flux": 4.25363,
+      "destinations": {
+        "co2": 0.987155,
+        "ch4": 0.00759492,
+        "ash": 0.00525,
+        "stock": 0.0,
+        "n2o": 0.000149213
+      },
+      "origines": {
+        "sci": 4.25363
+      },
+      "filieres_possibles": [
+        "sci"
+      ],
+      "etape": "prod"
+    },
+    "3458764601963776162": {
+      "nom": "Compostage Unused P&P",
+      "nom_affiche_fr": "Compostage, biomasse résiduelle P&P",
+      "flux": 0.220785,
+      "destinations": {
+        "co2": 0.9894,
+        "ch4": 0.0106,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 0.001039
+      },
+      "origines": {
+        "pp": 0.00583088,
+        "sci": 0.214954
+      },
+      "filieres_possibles": [
+        "pp",
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963776172": {
+      "nom": "Compostage to epandage",
+      "nom_affiche_fr": "Compost vers épandage",
+      "flux": 0.218445,
+      "destinations": {
+        "co2": 1.0,
+        "ch4": 0.0,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 0.000342632
+      },
+      "origines": {
+        "pp": 0.00576907,
+        "sci": 0.212676
+      },
+      "filieres_possibles": [
+        "pp",
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963776190": {
+      "nom": "Institutional heat combustion gaz fraction",
+      "nom_affiche_fr": "Chauffage institutionnel, fraction gazeuse",
+      "flux": 4.2313,
+      "destinations": {
+        "co2": 0.992365,
+        "ch4": 0.007635,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 0.00015
+      },
+      "origines": {
+        "sci": 4.2313
+      },
+      "filieres_possibles": [
+        "bio",
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963776201": {
+      "nom": "Biomethane Landfilled industrial P&P",
+      "nom_affiche_fr": "Biométhane, enfouissement industriel P&P",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.99994,
+        "ch4": 6e-05,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 7e-05
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "pp",
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963776215": {
+      "nom": "Biomethane Landfilled MSW P&P",
+      "nom_affiche_fr": "Biométhane, enfouissement municipal P&P",
+      "flux": 1.29357,
+      "destinations": {
+        "co2": 0.99994,
+        "ch4": 6e-05,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 7e-05
+      },
+      "origines": {
+        "pp": 0.0341628,
+        "sci": 1.25941
+      },
+      "filieres_possibles": [
+        "pp",
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963776229": {
+      "nom": "Biomethane Landfilled MSW Sawnwood",
+      "nom_affiche_fr": "Biométhane, enfouissement municipal Sciage",
+      "flux": 0.302974,
+      "destinations": {
+        "co2": 0.99994,
+        "ch4": 6e-05,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 7e-05
+      },
+      "origines": {
+        "sci": 0.302974
+      },
+      "filieres_possibles": [
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963776243": {
+      "nom": "Biomethane Landfilled industrial Sawnwood",
+      "nom_affiche_fr": "Biométhane, enfouissement industriel Sciage",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.99994,
+        "ch4": 6e-05,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 7e-05
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963776257": {
+      "nom": "Biomethane Landfilled MSW Panels",
+      "nom_affiche_fr": "Biométhane, enfouissement municipal Panneaux",
+      "flux": 0.071936,
+      "destinations": {
+        "co2": 0.99994,
+        "ch4": 6e-05,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 7e-05
+      },
+      "origines": {
+        "sci": 0.071936
+      },
+      "filieres_possibles": [
+        "aut",
+        "pan",
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963776271": {
+      "nom": "Biomethane Landfilled industrial Panels",
+      "nom_affiche_fr": "Biométhane, enfouissement industriel Panneaux",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.99994,
+        "ch4": 6e-05,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 7e-05
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "aut",
+        "pan",
+        "sci"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963776285": {
+      "nom": "Biomethane Landfilled MSW Otherwood",
+      "nom_affiche_fr": "Biométhane, enfouissement municipal Autre",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.99994,
+        "ch4": 6e-05,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 7e-05
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "aut"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963776299": {
+      "nom": "Biomethane Landfilled industrial Otherwood",
+      "nom_affiche_fr": "Biométhane, enfouissement industriel Autre",
+      "flux": 0.0,
+      "destinations": {
+        "co2": 0.99994,
+        "ch4": 6e-05,
+        "ash": 0.0,
+        "stock": 0.0,
+        "n2o": 7e-05
+      },
+      "origines": {},
+      "filieres_possibles": [
+        "aut"
+      ],
+      "etape": "eol"
+    },
+    "3458764601963776349": {
+      "nom": "Structural panels",
+      "nom_affiche_fr": "Panneaux structuraux",
+      "flux": 3.93225,
+      "destinations": {
+        "co2": 0.257384,
+        "ch4": 0.0146066,
+        "ash": 0.00100917,
+        "stock": 0.727,
+        "n2o": 3.02389e-05
+      },
+      "origines": {
+        "sci": 3.93225
+      },
+      "filieres_possibles": [
+        "aut",
+        "pan",
+        "sci"
+      ],
+      "etape": "prod"
+    },
+    "3458764601963776350": {
+      "nom": "Non Structural panels",
+      "nom_affiche_fr": "Panneaux non structuraux",
+      "flux": 4.99998,
+      "destinations": {
+        "co2": 0.257384,
+        "ch4": 0.0146066,
+        "ash": 0.00100917,
+        "stock": 0.727,
+        "n2o": 3.02389e-05
+      },
+      "origines": {
+        "sci": 4.99998
+      },
+      "filieres_possibles": [
+        "aut",
+        "pan",
+        "sci"
+      ],
+      "etape": "prod"
+    },
+    "3458764601963776371": {
+      "nom": "Structural panels storage",
+      "nom_affiche_fr": "Stock panneaux structuraux",
+      "flux": 3.93225,
+      "destinations": {
+        "co2": 0.257384,
+        "ch4": 0.0146066,
+        "ash": 0.00100917,
+        "stock": 0.727,
+        "n2o": 3.02389e-05
+      },
+      "origines": {
+        "sci": 3.93225
+      },
+      "filieres_possibles": [
+        "aut",
+        "pan",
+        "sci"
+      ],
+      "etape": "prod"
+    },
+    "3458764601963776375": {
+      "nom": "Non Structural panels storage",
+      "nom_affiche_fr": "Stock panneaux non structuraux",
+      "flux": 4.99998,
+      "destinations": {
+        "co2": 0.257384,
+        "ch4": 0.0146066,
+        "ash": 0.00100917,
+        "stock": 0.727,
+        "n2o": 3.02389e-05
+      },
+      "origines": {
+        "sci": 4.99998
+      },
+      "filieres_possibles": [
+        "aut",
+        "pan",
+        "sci"
+      ],
+      "etape": "prod"
+    },
+    "3458764601963776392": {
+      "nom": "Panels Recycled products",
+      "nom_affiche_fr": "Produits recyclés Panneaux",
+      "flux": 2.97242,
+      "destinations": {
+        "co2": 0.257384,
+        "ch4": 0.0146066,
+        "ash": 0.00100917,
+        "stock": 0.727,
+        "n2o": 3.02389e-05
+      },
+      "origines": {
+        "sci": 2.97242
+      },
+      "filieres_possibles": [
+        "aut",
+        "pan",
+        "sci"
+      ],
+      "etape": "prod"
+    }
+  }
+}
